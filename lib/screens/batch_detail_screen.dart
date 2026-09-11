@@ -308,11 +308,6 @@ class _BatchDetailScreenState extends State<BatchDetailScreen> {
       padding: const EdgeInsets.only(top: 80, left: 20, right: 20),
       decoration: const BoxDecoration(
         color: KalroColors.headerGreen,
-        image: DecorationImage(
-          image: AssetImage('assets/images/pattern.png'),
-          fit: BoxFit.cover,
-          opacity: 0.1,
-        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
