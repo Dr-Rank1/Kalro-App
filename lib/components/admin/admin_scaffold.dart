@@ -94,7 +94,7 @@ class AdminInfoCard extends StatelessWidget {
   AdminInfoCard({
     super.key,
     required this.child,
-    this.padding = EdgeInsets.all(16),
+    this.padding = const EdgeInsets.all(16),
   });
 
   final Widget child;

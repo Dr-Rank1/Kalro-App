@@ -6,7 +6,7 @@ class KalroPage extends StatelessWidget {
   KalroPage({
     super.key,
     required this.child,
-    this.padding = EdgeInsets.fromLTRB(16, 16, 16, 24),
+    this.padding = const EdgeInsets.fromLTRB(16, 16, 16, 24),
     this.onRefresh,
     this.scrollable = true,
   });

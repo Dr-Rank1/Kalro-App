@@ -5,18 +5,21 @@ import 'package:intl/intl.dart';
 import '../models/batch.dart';
 import '../models/batch_status.dart';
 import '../models/species.dart';
+import '../services/batch_metrics_service.dart';
+import '../services/lifecycle_engine.dart';
+import '../services/prediction_adjuster.dart';
 import '../services/app_repositories.dart';
-import '../services/lifecycle/lifecycle_planning_service.dart';
-import '../services/lifecycle/rearing_conditions.dart';
-import '../services/lifecycle/rearing_conditions_service.dart';
+import '../services/lifecycle_planning_service.dart';
+import '../models/rearing_conditions.dart';
+import '../services/rearing_conditions_service.dart';
 import '../theme/kalro_colors.dart';
 import '../theme/kalro_theme.dart';
-import '../components/batch/batch_status_chips.dart';
-import '../components/batch/batch_metrics_panel.dart';
-import '../components/lifecycle/lifecycle_key_dates_card.dart';
-import '../components/lifecycle/milestone_timeline.dart';
-import '../components/lifecycle/prediction_outcome_card.dart';
-import '../components/lifecycle/prediction_scenario_bar.dart';
+
+
+import '../components/components.dart';
+
+
+
 import '../components/health/environment_log_section.dart';
 import '../l10n/translator.dart';
 
@@ -38,10 +41,13 @@ class BatchDetailScreen extends StatefulWidget {
 
 class _BatchDetailScreenState extends State<BatchDetailScreen> {
   final _planning = LifecyclePlanningService();
+  final _adjuster = PredictionAdjuster();
+  final _metricsService = BatchMetricsService();
+  final _lifecycleEngine = LifecycleEngine();
   final _conditionsService = RearingConditionsService();
 
   Future<_BatchDetailData>? _dataFuture;
-  PredictionScenario? _scenario;
+  RearingScenario? _scenario;
 
   @override
   void initState() {
@@ -58,7 +64,7 @@ class _BatchDetailScreenState extends State<BatchDetailScreen> {
   Future<_BatchDetailData> _loadData() async {
     final batch = await widget.repositories.batches.getById(widget.batchId);
     if (batch == null) {
-      return const _BatchDetailData(
+      return _BatchDetailData(
         batch: null,
         observations: {},
         totalMortality: 0,
@@ -142,13 +148,13 @@ class _BatchDetailScreenState extends State<BatchDetailScreen> {
               observedStageDates: observations,
               conditions: conditions,
             );
-            final metrics = _planning.calculateMetrics(batch, totalMortality: data.totalMortality);
-            final milestones = cycle.stages.where((s) => s.isMilestone).toList();
-            final current = cycle.currentStage(DateTime.now());
-            final next = cycle.nextMilestone(DateTime.now());
-            final harvestDate = cycle.harvestDate;
+            final metrics = _metricsService.compute(batch, data.totalMortality);
+            final milestones = cycle.milestones;
+            final current = _lifecycleEngine.currentStage(batch, observedStageDates: observations, conditions: conditions);
+            final next = _lifecycleEngine.nextMilestone(batch, observedStageDates: observations, conditions: conditions);
+            final harvestDate = cycle.harvest?.effectiveDate;
 
-            final adjustment = cycle.daysAdjustedFromTypical;
+            final adjustment = _adjuster.adjust(batch.species, conditions);
 
             return NestedScrollView(
               headerSliverBuilder: (context, innerBoxIsScrolled) {
@@ -367,7 +373,7 @@ class _BatchDetailScreenState extends State<BatchDetailScreen> {
                       style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14),
                     ),
                     Text(
-                      '${metrics.liveLarvae}',
+                      '${metrics.liveCount}',
                       style: GoogleFonts.poppins(
                         color: Colors.white,
                         fontSize: 32,
@@ -494,7 +500,7 @@ class _BatchDetailScreenState extends State<BatchDetailScreen> {
                   style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.primaryGreen),
                 ),
                 Text(
-                  '${metrics.survivalPercent.toStringAsFixed(1)}%',
+                  '${metrics.survivalRatePercent.toStringAsFixed(1)}%',
                   style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.bold, color: KalroColors.textDark),
                 ),
               ],

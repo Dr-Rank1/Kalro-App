@@ -248,7 +248,7 @@ class BatchComparisonTable extends StatelessWidget {
           color: KalroColors.textDark,
         ),
         dataTextStyle: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
-        columns: const [
+        columns: [
           DataColumn(label: Text('Species'.tr)),
           DataColumn(label: Text('Started'.tr)),
           DataColumn(label: Text('Live'.tr)),

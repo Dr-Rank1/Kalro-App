@@ -7,7 +7,7 @@ class KalroOutlineCard extends StatelessWidget {
     super.key,
     required this.child,
     this.onTap,
-    this.padding = EdgeInsets.all(20),
+    this.padding = const EdgeInsets.all(20),
   });
 
   final Widget child;
