@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../theme/kalro_colors.dart';
 
 class AdminPageScaffold extends StatelessWidget {
-  const AdminPageScaffold({
+  AdminPageScaffold({
     super.key,
     required this.title,
     required this.body,
@@ -28,7 +28,7 @@ class AdminPageScaffold extends StatelessWidget {
             child: body is ScrollView
                 ? body
                 : ListView(
-                    physics: const AlwaysScrollableScrollPhysics(),
+                    physics: AlwaysScrollableScrollPhysics(),
                     children: [body],
                   ),
           );
@@ -38,14 +38,14 @@ class AdminPageScaffold extends StatelessWidget {
       appBar: AppBar(
         title: Text(title),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: actions,
       ),
       floatingActionButton: floatingActionButton,
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: KalroColors.background,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
@@ -56,7 +56,7 @@ class AdminPageScaffold extends StatelessWidget {
 }
 
 class AdminSectionHeader extends StatelessWidget {
-  const AdminSectionHeader({
+  AdminSectionHeader({
     super.key,
     required this.title,
     this.subtitle,
@@ -79,7 +79,7 @@ class AdminSectionHeader extends StatelessWidget {
           ),
         ),
         if (subtitle != null) ...[
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text(
             subtitle!,
             style: GoogleFonts.poppins(fontSize: 13, color: KalroColors.textMuted),
@@ -91,10 +91,10 @@ class AdminSectionHeader extends StatelessWidget {
 }
 
 class AdminInfoCard extends StatelessWidget {
-  const AdminInfoCard({
+  AdminInfoCard({
     super.key,
     required this.child,
-    this.padding = const EdgeInsets.all(16),
+    this.padding = EdgeInsets.all(16),
   });
 
   final Widget child;
@@ -116,7 +116,7 @@ class AdminInfoCard extends StatelessWidget {
 }
 
 class AdminHubTile extends StatelessWidget {
-  const AdminHubTile({
+  AdminHubTile({
     super.key,
     required this.icon,
     required this.title,
@@ -142,7 +142,7 @@ class AdminHubTile extends StatelessWidget {
         onTap: enabled ? onTap : null,
         borderRadius: BorderRadius.circular(12),
         child: Container(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: KalroColors.divider),
@@ -158,7 +158,7 @@ class AdminHubTile extends StatelessWidget {
                 ),
                 child: Icon(icon, color: KalroColors.headerGreen),
               ),
-              const SizedBox(width: 14),
+              SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -170,7 +170,7 @@ class AdminHubTile extends StatelessWidget {
                         color: enabled ? KalroColors.textDark : KalroColors.textMuted,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    SizedBox(height: 2),
                     Text(
                       subtitle,
                       style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
@@ -192,7 +192,7 @@ class AdminHubTile extends StatelessWidget {
 }
 
 class AdminStatChip extends StatelessWidget {
-  const AdminStatChip({
+  AdminStatChip({
     super.key,
     required this.label,
     required this.value,
@@ -207,13 +207,13 @@ class AdminStatChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: AdminInfoCard(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        padding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (icon != null) ...[
               Icon(icon, size: 18, color: KalroColors.headerGreen),
-              const SizedBox(height: 6),
+              SizedBox(height: 6),
             ],
             Text(
               value,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class KalroPrimaryButton extends StatelessWidget {
-  const KalroPrimaryButton({
+  KalroPrimaryButton({
     super.key,
     required this.label,
     this.onPressed,
@@ -17,7 +17,7 @@ class KalroPrimaryButton extends StatelessWidget {
     final button = ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        minimumSize: expanded ? const Size.fromHeight(44) : null,
+        minimumSize: expanded ? Size.fromHeight(44) : null,
       ),
       child: Text(label),
     );

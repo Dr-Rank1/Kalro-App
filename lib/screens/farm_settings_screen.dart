@@ -8,9 +8,10 @@ import '../services/auth_repository.dart';
 import '../services/permission_service.dart';
 import '../services/user_preferences.dart';
 import '../theme/kalro_colors.dart';
+import 'package:kalro/l10n/translator.dart';
 
 class FarmSettingsScreen extends StatefulWidget {
-  const FarmSettingsScreen({
+  FarmSettingsScreen({
     super.key,
     required this.session,
     this.authRepository,
@@ -49,7 +50,7 @@ class _FarmSettingsScreenState extends State<FarmSettingsScreen> {
   Future<void> _save() async {
     if (!_permissions.canManageUsers(widget.session.user)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Admin access required')),
+        SnackBar(content: Text('Admin access required'.tr)),
       );
       return;
     }
@@ -64,13 +65,13 @@ class _FarmSettingsScreenState extends State<FarmSettingsScreen> {
       widget.onFarmUpdated?.call(updated);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Farm settings saved')),
+        SnackBar(content: Text('Farm settings saved'.tr)),
       );
       Navigator.of(context).pop();
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Save failed: $error')),
+        SnackBar(content: Text('Save failed: $error'.tr)),
       );
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -83,39 +84,39 @@ class _FarmSettingsScreenState extends State<FarmSettingsScreen> {
     final farm = widget.session.farm;
 
     return AdminPageScaffold(
-      title: 'Farm settings',
+      title: 'Farm settings'.tr,
       body: ListView(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(20),
         children: [
-          const AdminSectionHeader(
-            title: 'Organization',
-            subtitle: 'This name appears on your profile and exports.',
+          AdminSectionHeader(
+            title: 'Organization'.tr,
+            subtitle: 'This name appears on your profile and exports.'.tr,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           TextField(
             controller: _orgController,
             enabled: !_saving,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'Organization name',
-              hintText: 'e.g. Kalro Sericulture Farm',
+              hintText: 'e.g. Kalro Sericulture Farm'.tr,
             ),
           ),
-          const SizedBox(height: 24),
-          const AdminSectionHeader(title: 'Farm details'),
-          const SizedBox(height: 12),
+          SizedBox(height: 24),
+          AdminSectionHeader(title: 'Farm details'),
+          SizedBox(height: 12),
           AdminInfoCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _detailRow('Farm ID', farm.id),
-                const Divider(height: 24),
+                Divider(height: 24),
                 _detailRow('Sync code', farm.syncCode),
-                const Divider(height: 24),
+                Divider(height: 24),
                 _detailRow('Created', dateFormat.format(farm.createdAt)),
               ],
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           KalroPrimaryButton(
             label: _saving ? 'Saving...' : 'Save changes',
             onPressed: _saving ? null : _save,

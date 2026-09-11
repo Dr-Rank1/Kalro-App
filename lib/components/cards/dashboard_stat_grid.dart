@@ -6,7 +6,7 @@ import '../../models/dashboard_summary.dart';
 import 'kalro_stat_card.dart';
 
 class DashboardStatGrid extends StatelessWidget {
-  const DashboardStatGrid({super.key, required this.stats});
+  DashboardStatGrid({super.key, required this.stats});
 
   final List<DashboardStat> stats;
 
@@ -15,7 +15,7 @@ class DashboardStatGrid extends StatelessWidget {
     return GridView.count(
       crossAxisCount: 2,
       shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
+      physics: NeverScrollableScrollPhysics(),
       mainAxisSpacing: 12,
       crossAxisSpacing: 12,
       childAspectRatio: 1.45,
@@ -70,7 +70,7 @@ class DashboardStatGrid extends StatelessWidget {
 }
 
 class DashboardStat {
-  const DashboardStat(this.icon, this.title, this.value);
+  DashboardStat(this.icon, this.title, this.value);
 
   final IconData icon;
   final String title;

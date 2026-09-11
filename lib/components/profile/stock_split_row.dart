@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../theme/kalro_colors.dart';
 
 class StockSplitRow extends StatelessWidget {
-  const StockSplitRow({
+  StockSplitRow({
     super.key,
     required this.leftTitle,
     required this.leftValue,
@@ -43,7 +43,7 @@ class _StockCell extends StatelessWidget {
           title,
           style: GoogleFonts.poppins(fontWeight: FontWeight.w600, color: KalroColors.textDark),
         ),
-        const SizedBox(height: 4),
+        SizedBox(height: 4),
         Text(value, style: GoogleFonts.poppins(color: KalroColors.textMuted)),
       ],
     );

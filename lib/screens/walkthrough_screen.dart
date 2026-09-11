@@ -7,7 +7,7 @@ import '../theme/kalro_colors.dart';
 import '../l10n/app_localizations.dart';
 
 class WalkthroughScreen extends StatefulWidget {
-  const WalkthroughScreen({super.key, required this.onComplete});
+  WalkthroughScreen({super.key, required this.onComplete});
 
   final VoidCallback onComplete;
 
@@ -64,12 +64,12 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
                 itemBuilder: (context, index) {
                   final slide = slides[index];
                   return Padding(
-                    padding: const EdgeInsets.all(40),
+                    padding: EdgeInsets.all(40),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          padding: const EdgeInsets.all(32),
+                          padding: EdgeInsets.all(32),
                           decoration: BoxDecoration(
                             color: KalroColors.primaryGreen.withValues(alpha: 0.1),
                             shape: BoxShape.circle,
@@ -80,7 +80,7 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
                             color: KalroColors.primaryGreen,
                           ),
                         ),
-                        const SizedBox(height: 48),
+                        SizedBox(height: 48),
                         Text(
                           slide.title,
                           textAlign: TextAlign.center,
@@ -90,7 +90,7 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
                             color: KalroColors.textDark,
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16),
                         Text(
                           slide.description,
                           textAlign: TextAlign.center,
@@ -106,7 +106,7 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(24),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -114,7 +114,7 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
                     children: List.generate(
                       slides.length,
                       (index) => Container(
-                        margin: const EdgeInsets.only(right: 8),
+                        margin: EdgeInsets.only(right: 8),
                         width: _currentIndex == index ? 24 : 8,
                         height: 8,
                         decoration: BoxDecoration(
@@ -130,7 +130,7 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
                     onPressed: () {
                       if (_currentIndex < slides.length - 1) {
                         _controller.nextPage(
-                          duration: const Duration(milliseconds: 300),
+                          duration: Duration(milliseconds: 300),
                           curve: Curves.easeInOut,
                         );
                       } else {
@@ -140,7 +140,7 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: KalroColors.primaryGreen,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),

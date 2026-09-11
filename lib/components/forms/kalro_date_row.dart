@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../theme/kalro_colors.dart';
 
 class KalroDateRow extends StatelessWidget {
-  const KalroDateRow({
+  KalroDateRow({
     super.key,
     required this.label,
     required this.date,
@@ -23,7 +23,7 @@ class KalroDateRow extends StatelessWidget {
       contentPadding: EdgeInsets.zero,
       title: Text(label, style: GoogleFonts.poppins()),
       subtitle: Text(MaterialLocalizations.of(context).formatMediumDate(date)),
-      trailing: const Icon(Icons.calendar_today, color: KalroColors.primaryGreen),
+      trailing: Icon(Icons.calendar_today, color: KalroColors.primaryGreen),
       onTap: enabled ? onTap : null,
     );
   }

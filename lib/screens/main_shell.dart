@@ -13,7 +13,7 @@ import 'profile_screen.dart';
 import 'purchase_screen.dart';
 
 class MainShell extends StatefulWidget {
-  const MainShell({
+  MainShell({
     super.key,
     required this.repositories,
     required this.userPreferences,
@@ -108,7 +108,7 @@ class _MainShellState extends State<MainShell> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _index,
         onTap: (value) => setState(() => _index = value),
-        items: const [
+        items: [
           BottomNavigationBarItem(icon: Icon(Icons.home_outlined), activeIcon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.payments_outlined), activeIcon: Icon(Icons.payments), label: 'Payments'),
           BottomNavigationBarItem(icon: Icon(Icons.add_shopping_cart_outlined), activeIcon: Icon(Icons.add_shopping_cart), label: 'Purchase'),

@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../theme/kalro_colors.dart';
 
 class OptionGridCard extends StatelessWidget {
-  const OptionGridCard({
+  OptionGridCard({
     super.key,
     required this.primaryLabel,
     required this.secondaryLabel,
@@ -38,7 +38,7 @@ class OptionGridCard extends StatelessWidget {
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 6,
-              offset: const Offset(0, 2),
+              offset: Offset(0, 2),
             ),
           ],
         ),
@@ -47,7 +47,7 @@ class OptionGridCard extends StatelessWidget {
           children: [
             if (icon != null) ...[
               Icon(icon, size: 48, color: KalroColors.textDark),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
             ],
             Text(
               primaryLabel,

@@ -8,9 +8,10 @@ import '../services/auth_repository.dart';
 import '../services/session_service.dart';
 import '../services/user_preferences.dart';
 import '../theme/kalro_colors.dart';
+import 'package:kalro/l10n/translator.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({
+  LoginScreen({
     super.key,
     required this.onLoggedIn,
     this.authRepository,
@@ -177,14 +178,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildHeader() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 24, 24, 20),
+      padding: EdgeInsets.fromLTRB(24, 24, 24, 20),
       child: Column(
         children: [
           GestureDetector(
             onTap: _onLogoTap,
             child: Image.asset('assets/images/kalro_app_icon.png', height: 56),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
           Text(
             'Kalro Sericulture',
             style: GoogleFonts.poppins(
@@ -194,7 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
           if (_selectedFarm != null && !_showAdvanced) ...[
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Text(
               _selectedFarm!.orgName,
               style: GoogleFonts.poppins(color: Colors.white70, fontSize: 12),
@@ -208,12 +209,12 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _buildBody() {
     return Container(
       width: double.infinity,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: KalroColors.background,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: _preparing
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator())
           : _farms.isEmpty
               ? _buildNoFarmState()
               : _buildLoginForm(),
@@ -223,24 +224,24 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _buildNoFarmState() {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: EdgeInsets.all(32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(Icons.cloud_off_outlined, size: 40, color: KalroColors.textMuted),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Text(
               'Setup required',
               style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               _errorMessage ?? 'Complete app setup first.',
               textAlign: TextAlign.center,
               style: GoogleFonts.poppins(fontSize: 13, color: KalroColors.textMuted),
             ),
-            const SizedBox(height: 20),
-            KalroPrimaryButton(label: 'Retry', onPressed: _prepareFarm),
+            SizedBox(height: 20),
+            KalroPrimaryButton(label: 'Retry'.tr, onPressed: _prepareFarm),
           ],
         ),
       ),
@@ -249,7 +250,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildLoginForm() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+      padding: EdgeInsets.fromLTRB(24, 32, 24, 24),
       child: Form(
         key: _formKey,
         child: Column(
@@ -257,13 +258,13 @@ class _LoginScreenState extends State<LoginScreen> {
           children: [
             if (_showAdvanced) ...[
               _buildAdvancedSection(),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
             ],
             TextFormField(
               controller: _usernameController,
               textInputAction: TextInputAction.next,
               autocorrect: false,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Username',
                 filled: true,
                 fillColor: Colors.white,
@@ -275,7 +276,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 return null;
               },
             ),
-            const SizedBox(height: 14),
+            SizedBox(height: 14),
             TextFormField(
               controller: _pinController,
               obscureText: _obscurePin,
@@ -299,13 +300,13 @@ class _LoginScreenState extends State<LoginScreen> {
               onFieldSubmitted: (_) => _loading ? null : _login(),
             ),
             if (_errorMessage != null) ...[
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
               Text(
                 _errorMessage!,
                 style: GoogleFonts.poppins(fontSize: 13, color: Colors.red.shade700),
               ),
             ],
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             KalroPrimaryButton(
               label: _loading ? 'Signing in...' : 'Sign in',
               onPressed: _loading ? null : _login,
@@ -320,7 +321,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final farm = _selectedFarm!;
 
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -333,11 +334,11 @@ class _LoginScreenState extends State<LoginScreen> {
             'Farm details',
             style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           if (_farms.length > 1)
             DropdownButtonFormField<FarmProfile>(
               initialValue: _selectedFarm,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Farm',
                 isDense: true,
                 filled: true,
@@ -353,7 +354,7 @@ class _LoginScreenState extends State<LoginScreen> {
               farm.orgName,
               style: GoogleFonts.poppins(fontSize: 13),
             ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text(
             'Sync code ${farm.syncCode}',
             style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),

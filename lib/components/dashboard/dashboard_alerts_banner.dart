@@ -5,7 +5,7 @@ import '../../models/batch_alert.dart';
 import '../../theme/kalro_colors.dart';
 
 class DashboardAlertsBanner extends StatelessWidget {
-  const DashboardAlertsBanner({
+  DashboardAlertsBanner({
     super.key,
     required this.alerts,
     this.onAlertTap,
@@ -16,7 +16,7 @@ class DashboardAlertsBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (alerts.isEmpty) return const SizedBox.shrink();
+    if (alerts.isEmpty) return SizedBox.shrink();
 
     final top = alerts.take(3).toList();
 
@@ -27,7 +27,7 @@ class DashboardAlertsBanner extends StatelessWidget {
           'Alerts',
           style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         ...top.map((alert) {
           final color = switch (alert.severity) {
             BatchAlertSeverity.critical => Colors.red.shade50,
@@ -41,7 +41,7 @@ class DashboardAlertsBanner extends StatelessWidget {
           };
 
           return Card(
-            margin: const EdgeInsets.only(bottom: 8),
+            margin: EdgeInsets.only(bottom: 8),
             color: color,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),

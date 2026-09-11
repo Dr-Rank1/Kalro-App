@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../../theme/kalro_colors.dart';
 
 class KalroBackground extends StatelessWidget {
-  const KalroBackground({super.key, required this.child});
+  KalroBackground({super.key, required this.child});
 
   final Widget child;
 
@@ -13,8 +13,8 @@ class KalroBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        const Positioned.fill(child: ColoredBox(color: KalroColors.background)),
-        const Positioned.fill(child: CustomPaint(painter: _WavePatternPainter())),
+        Positioned.fill(child: ColoredBox(color: KalroColors.background)),
+        Positioned.fill(child: CustomPaint(painter: _WavePatternPainter())),
         child,
       ],
     );

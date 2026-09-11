@@ -18,7 +18,7 @@ import 'batch_detail_screen.dart';
 
 /// Primary home screen — the eight core sericulture capabilities.
 class RearingHubScreen extends StatefulWidget {
-  const RearingHubScreen({
+  RearingHubScreen({
     super.key,
     required this.repositories,
     required this.userPreferences,
@@ -36,8 +36,8 @@ class RearingHubScreen extends StatefulWidget {
 }
 
 class _RearingHubScreenState extends State<RearingHubScreen> {
-  final _lifecycleEngine = const LifecycleEngine();
-  final _dashboardService = const DashboardService();
+  final _lifecycleEngine = LifecycleEngine();
+  final _dashboardService = DashboardService();
   late Future<DashboardSummary> _summaryFuture;
 
   @override
@@ -83,28 +83,28 @@ class _RearingHubScreenState extends State<RearingHubScreen> {
               child: RefreshIndicator(
                 onRefresh: () async => _reload(),
                 child: ListView(
-                  padding: const EdgeInsets.only(top: 16, bottom: 88),
+                  padding: EdgeInsets.only(top: 16, bottom: 88),
                   children: [
-                    Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: KalroWelcomeHeader(displayName: summary.displayName)),
-                    const SizedBox(height: 8),
-                    Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: Text(
+                    Padding(padding: EdgeInsets.symmetric(horizontal: 16), child: KalroWelcomeHeader(displayName: summary.displayName)),
+                    SizedBox(height: 8),
+                    Padding(padding: EdgeInsets.symmetric(horizontal: 16), child: Text(
                       'Kalro Sericulture — plan, track, and improve every rearing cycle.',
                       style: GoogleFonts.poppins(fontSize: 13, color: KalroColors.textMuted),
                     )),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     FarmKpiCards(summary: summary),
                     if (summary.alerts.isNotEmpty) ...[
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: EdgeInsets.symmetric(horizontal: 16),
                         child: Text(
                           l10n?.dashboardNeedsAttention ?? 'Needs Attention',
                           style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: EdgeInsets.symmetric(horizontal: 16),
                         child: DashboardAlertsBanner(
                           alerts: summary.alerts.take(3).toList(),
                           onAlertTap: (alert) {
@@ -114,21 +114,21 @@ class _RearingHubScreenState extends State<RearingHubScreen> {
                       ),
                     ],
                     if (active.isNotEmpty) ...[
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: EdgeInsets.symmetric(horizontal: 16),
                         child: KalroSectionHeader(
                           title: l10n?.dashboardActiveBatches ?? 'Active batches',
                           subtitle: l10n?.dashboardActiveBatchesSub(active.length) ?? '${active.length} in progress',
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: EdgeInsets.symmetric(horizontal: 16),
                         child: GridView.builder(
                           shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          physics: NeverScrollableScrollPhysics(),
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
                             crossAxisSpacing: 12,
                             mainAxisSpacing: 12,
@@ -147,11 +147,11 @@ class _RearingHubScreenState extends State<RearingHubScreen> {
                         ),
                       ),
                     ] else ...[
-                      const SizedBox(height: 32),
+                      SizedBox(height: 32),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: EdgeInsets.symmetric(horizontal: 16),
                         child: Container(
-                          padding: const EdgeInsets.all(24),
+                          padding: EdgeInsets.all(24),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(20),
@@ -159,25 +159,25 @@ class _RearingHubScreenState extends State<RearingHubScreen> {
                               BoxShadow(
                                 color: KalroColors.primaryGreen.withValues(alpha: 0.05),
                                 blurRadius: 10,
-                                offset: const Offset(0, 4),
+                                offset: Offset(0, 4),
                               ),
                             ],
                           ),
                           child: Column(
                             children: [
                               Container(
-                                padding: const EdgeInsets.all(16),
+                                padding: EdgeInsets.all(16),
                                 decoration: BoxDecoration(
                                   color: KalroColors.primaryGreen.withValues(alpha: 0.1),
                                   shape: BoxShape.circle,
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.eco_outlined,
                                   size: 48,
                                   color: KalroColors.primaryGreen,
                                 ),
                               ),
-                              const SizedBox(height: 16),
+                              SizedBox(height: 16),
                               Text(
                                 l10n?.dashboardStartFirstBatch ?? 'Start Your First Batch',
                                 style: GoogleFonts.poppins(
@@ -186,7 +186,7 @@ class _RearingHubScreenState extends State<RearingHubScreen> {
                                   color: KalroColors.textDark,
                                 ),
                               ),
-                              const SizedBox(height: 8),
+                              SizedBox(height: 8),
                               Text(
                                 l10n?.dashboardStartFirstBatchDesc ?? 'No rearing cycles in progress. Tap the + button below to create a new batch and start tracking feeding, health, and harvests.',
                                 textAlign: TextAlign.center,

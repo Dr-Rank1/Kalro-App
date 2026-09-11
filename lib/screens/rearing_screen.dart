@@ -12,11 +12,12 @@ import '../theme/kalro_colors.dart';
 import 'batch_detail_screen.dart';
 import 'create_batch_screen.dart';
 import 'reports_screen.dart';
+import 'package:kalro/l10n/translator.dart';
 
 typedef RearingData = ({InventorySummary inventory, FarmerSummary summary});
 
 class RearingScreen extends StatefulWidget {
-  const RearingScreen({
+  RearingScreen({
     super.key,
     required this.repositories,
     required this.userPreferences,
@@ -34,7 +35,7 @@ class RearingScreen extends StatefulWidget {
 }
 
 class _RearingScreenState extends State<RearingScreen> {
-  final _inventoryService = const InventoryService();
+  final _inventoryService = InventoryService();
   final _farmerSummary = FarmerSummaryService();
   late Future<RearingData> _dataFuture;
 
@@ -108,8 +109,8 @@ class _RearingScreenState extends State<RearingScreen> {
               ? FloatingActionButton.extended(
                   onPressed: _openCreateBatch,
                   backgroundColor: KalroColors.buttonGreen,
-                  icon: const Icon(Icons.add),
-                  label: const Text('New batch'),
+                  icon: Icon(Icons.add),
+                  label: Text('New batch'.tr),
                 )
               : null,
           body: KalroBackground(
@@ -117,44 +118,44 @@ class _RearingScreenState extends State<RearingScreen> {
               child: RefreshIndicator(
                 onRefresh: () async => _reload(),
                 child: ListView(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 88),
+                  padding: EdgeInsets.fromLTRB(20, 20, 20, 88),
                   children: [
-                    const KalroToolbar(
-                      title: 'Rearing',
-                      subtitle: 'Tap a batch to log feeding, health, and harvest.',
+                    KalroToolbar(
+                      title: 'Rearing'.tr,
+                      subtitle: 'Tap a batch to log feeding, health, and harvest.'.tr,
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     Row(
                       children: [
                         Expanded(
                           child: PaymentSummaryCard(
-                            title: 'Active batches',
+                            title: 'Active batches'.tr,
                             value: data.summary.activeBatchCount.toString(),
                             icon: Icons.layers_outlined,
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12),
                         Expanded(
                           child: PaymentSummaryCard(
-                            title: 'Alerts',
+                            title: 'Alerts'.tr,
                             value: data.summary.alertCount.toString(),
                             icon: Icons.warning_amber_outlined,
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                     KalroMenuTile(
                       icon: Icons.assessment_outlined,
-                      title: 'Reports & exports',
+                      title: 'Reports & exports'.tr,
                       onTap: _openReports,
                     ),
-                    const SizedBox(height: 24),
-                    const KalroSectionHeader(title: 'Active batches'),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 24),
+                    KalroSectionHeader(title: 'Active batches'),
+                    SizedBox(height: 12),
                     if (_activeBatches(data.inventory).isEmpty)
                       EmptyStateCard(
-                        title: 'No active batches',
+                        title: 'No active batches'.tr,
                         message: 'Start a rearing cycle to plan feeding, milestones, and harvest.',
                         actionLabel: widget.canEdit ? 'Create batch' : 'View only',
                         onAction: widget.canEdit ? _openCreateBatch : () {},
@@ -163,14 +164,14 @@ class _RearingScreenState extends State<RearingScreen> {
                     else
                       ..._activeBatches(data.inventory).map(
                         (batch) => Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
+                          padding: EdgeInsets.only(bottom: 10),
                           child: BatchInventoryTile(
                             batch: batch,
                             onTap: () => _openBatch(batch.id),
                           ),
                         ),
                       ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     LeafInventorySection(
                       repository: widget.repositories.leafInventory,
                     ),

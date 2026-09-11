@@ -7,9 +7,10 @@ import '../models/producer.dart';
 import '../models/species.dart';
 import '../services/app_repositories.dart';
 import '../theme/kalro_colors.dart';
+import 'package:kalro/l10n/translator.dart';
 
 class CreatePurchaseScreen extends StatefulWidget {
-  const CreatePurchaseScreen({
+  CreatePurchaseScreen({
     super.key,
     required this.repositories,
     required this.producer,
@@ -48,7 +49,7 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
       context: context,
       initialDate: _orderedAt,
       firstDate: DateTime(2020),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
+      lastDate: DateTime.now().add(Duration(days: 365)),
     );
     if (picked != null) setState(() => _orderedAt = picked);
   }
@@ -92,7 +93,7 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not save purchase: $error')),
+        SnackBar(content: Text('Could not save purchase: $error'.tr)),
       );
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -104,14 +105,14 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
     return Scaffold(
       backgroundColor: KalroColors.headerGreen,
       appBar: AppBar(
-        title: Text('Purchase from ${widget.producer.name}'),
+        title: Text('Purchase from ${widget.producer.name}'.tr),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back),
           onPressed: _saving ? null : () => Navigator.of(context).pop(),
         ),
       ),
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: KalroColors.background,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
@@ -119,7 +120,7 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
           child: Form(
             key: _formKey,
             child: ListView(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(20),
               children: [
                 Text(
                   widget.producer.type.label,
@@ -127,27 +128,27 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                         color: KalroColors.textMuted,
                       ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 TextFormField(
                   controller: _itemController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Item',
-                    hintText: 'DFL, eggs, chawki batch',
+                    hintText: 'DFL, eggs, chawki batch'.tr,
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) return 'Enter what you purchased';
                     return null;
                   },
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 Row(
                   children: [
                     Expanded(
                       flex: 2,
                       child: TextFormField(
                         controller: _quantityController,
-                        decoration: const InputDecoration(labelText: 'Quantity'),
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        decoration: InputDecoration(labelText: 'Quantity'),
+                        keyboardType: TextInputType.numberWithOptions(decimal: true),
                         inputFormatters: [
                           FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
                         ],
@@ -158,11 +159,11 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                         },
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     Expanded(
                       child: TextFormField(
                         controller: _unitController,
-                        decoration: const InputDecoration(labelText: 'Unit'),
+                        decoration: InputDecoration(labelText: 'Unit'),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) return 'Required';
                           return null;
@@ -171,7 +172,7 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 KalroSpeciesDropdown(
                   value: _species ?? Species.bombyx,
                   enabled: !_saving,
@@ -179,33 +180,33 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                     if (value != null) setState(() => _species = value);
                   },
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 TextFormField(
                   controller: _amountController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Amount (KSh, optional)',
-                    hintText: 'Creates a payable on Payments tab',
+                    hintText: 'Creates a payable on Payments tab'.tr,
                     prefixText: 'KSh ',
                   ),
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
                   inputFormatters: [
                     FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
                   ],
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 KalroDateRow(
-                  label: 'Order date',
+                  label: 'Order date'.tr,
                   date: _orderedAt,
                   enabled: !_saving,
                   onTap: _pickDate,
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 TextFormField(
                   controller: _notesController,
-                  decoration: const InputDecoration(labelText: 'Notes (optional)'),
+                  decoration: InputDecoration(labelText: 'Notes (optional)'),
                   maxLines: 2,
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 KalroPrimaryButton(
                   label: _saving ? 'Saving...' : 'Save purchase',
                   onPressed: _saving ? null : _save,

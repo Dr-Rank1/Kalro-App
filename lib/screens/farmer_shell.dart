@@ -18,10 +18,11 @@ import 'farmer_profile_screen.dart';
 import 'finance_screen.dart';
 import 'reports_screen.dart';
 import 'create_batch_screen.dart';
+import 'package:kalro/l10n/translator.dart';
 
 /// Main app navigation using Hybrid Nav (Bottom Bar + Drawer).
 class FarmerShell extends StatefulWidget {
-  const FarmerShell({
+  FarmerShell({
     super.key,
     required this.repositories,
     required this.userPreferences,
@@ -58,18 +59,18 @@ class _FarmerShellState extends State<FarmerShell> {
   void _showQuickAddMenu() {
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
         return SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20),
+            padding: EdgeInsets.symmetric(vertical: 20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
@@ -82,8 +83,8 @@ class _FarmerShellState extends State<FarmerShell> {
                   ),
                 ),
                 ListTile(
-                  leading: const Icon(Icons.add_circle_outline, color: KalroColors.primaryGreen),
-                  title: const Text('Start New Batch'),
+                  leading: Icon(Icons.add_circle_outline, color: KalroColors.primaryGreen),
+                  title: Text('Start New Batch'.tr),
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.push(
@@ -97,8 +98,8 @@ class _FarmerShellState extends State<FarmerShell> {
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.restaurant_outlined, color: KalroColors.primaryGreen),
-                  title: const Text('Log Feeding'),
+                  leading: Icon(Icons.restaurant_outlined, color: KalroColors.primaryGreen),
+                  title: Text('Log Feeding'.tr),
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.push(
@@ -113,8 +114,8 @@ class _FarmerShellState extends State<FarmerShell> {
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.healing_outlined, color: KalroColors.primaryGreen),
-                  title: const Text('Record Health & Mortality'),
+                  leading: Icon(Icons.healing_outlined, color: KalroColors.primaryGreen),
+                  title: Text('Record Health & Mortality'.tr),
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.push(
@@ -167,7 +168,7 @@ class _FarmerShellState extends State<FarmerShell> {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              decoration: const BoxDecoration(color: KalroColors.primaryGreen),
+              decoration: BoxDecoration(color: KalroColors.primaryGreen),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -180,7 +181,7 @@ class _FarmerShellState extends State<FarmerShell> {
                       color: Colors.white,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Text(
                     widget.session.user.displayName,
                     style: GoogleFonts.poppins(
@@ -192,32 +193,32 @@ class _FarmerShellState extends State<FarmerShell> {
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.restaurant_outlined),
-              title: const Text('Feeding'),
+              leading: Icon(Icons.restaurant_outlined),
+              title: Text('Feeding'.tr),
               onTap: () => _pushScreen(FeedingScreen(
                 repositories: widget.repositories,
                 canEdit: _canEdit,
               )),
             ),
             ListTile(
-              leading: const Icon(Icons.healing_outlined),
-              title: const Text('Health & Mortality'),
+              leading: Icon(Icons.healing_outlined),
+              title: Text('Health & Mortality'.tr),
               onTap: () => _pushScreen(HealthScreen(
                 repositories: widget.repositories,
                 canEdit: _canEdit,
               )),
             ),
             ListTile(
-              leading: const Icon(Icons.egg_outlined),
-              title: const Text('Cocoon Harvest'),
+              leading: Icon(Icons.egg_outlined),
+              title: Text('Cocoon Harvest'.tr),
               onTap: () => _pushScreen(HarvestScreen(
                 repositories: widget.repositories,
                 canEdit: _canEdit,
               )),
             ),
             ListTile(
-              leading: const Icon(Icons.account_balance_wallet_outlined),
-              title: const Text('Finance'),
+              leading: Icon(Icons.account_balance_wallet_outlined),
+              title: Text('Finance'.tr),
               onTap: () => _pushScreen(FinanceScreen(
                 repositories: widget.repositories,
                 userPreferences: widget.userPreferences,
@@ -225,8 +226,8 @@ class _FarmerShellState extends State<FarmerShell> {
               )),
             ),
             ListTile(
-              leading: const Icon(Icons.assessment_outlined),
-              title: const Text('Reports'),
+              leading: Icon(Icons.assessment_outlined),
+              title: Text('Reports'.tr),
               onTap: () => _pushScreen(ReportsScreen(
                 repositories: widget.repositories,
                 userPreferences: widget.userPreferences,
@@ -240,7 +241,7 @@ class _FarmerShellState extends State<FarmerShell> {
           ? FloatingActionButton(
               onPressed: _showQuickAddMenu,
               backgroundColor: KalroColors.primaryGreen,
-              child: const Icon(Icons.add, color: Colors.white),
+              child: Icon(Icons.add, color: Colors.white),
             )
           : null,
       bottomNavigationBar: BottomNavigationBar(

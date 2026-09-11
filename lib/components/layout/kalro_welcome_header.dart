@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../theme/kalro_colors.dart';
 
 class KalroWelcomeHeader extends StatelessWidget {
-  const KalroWelcomeHeader({
+  KalroWelcomeHeader({
     super.key,
     required this.displayName,
     this.onNotificationsTap,
@@ -29,7 +29,7 @@ class KalroWelcomeHeader extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(width: 12),
+        SizedBox(width: 12),
         Expanded(
           child: Text(
             'Welcome to Kalro Sericulture, $displayName!',
@@ -42,7 +42,7 @@ class KalroWelcomeHeader extends StatelessWidget {
         ),
         IconButton(
           onPressed: onNotificationsTap,
-          icon: const Icon(Icons.notifications_none, color: KalroColors.textDark),
+          icon: Icon(Icons.notifications_none, color: KalroColors.textDark),
         ),
       ],
     );

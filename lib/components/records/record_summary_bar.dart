@@ -4,21 +4,21 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../theme/kalro_colors.dart';
 
 class RecordSummaryItem {
-  const RecordSummaryItem({required this.label, required this.value});
+  RecordSummaryItem({required this.label, required this.value});
 
   final String label;
   final String value;
 }
 
 class RecordSummaryBar extends StatelessWidget {
-  const RecordSummaryBar({super.key, required this.items});
+  RecordSummaryBar({super.key, required this.items});
 
   final List<RecordSummaryItem> items;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         color: KalroColors.background,
         borderRadius: BorderRadius.circular(10),
@@ -31,7 +31,7 @@ class RecordSummaryBar extends StatelessWidget {
               Container(
                 width: 1,
                 height: 28,
-                margin: const EdgeInsets.symmetric(horizontal: 10),
+                margin: EdgeInsets.symmetric(horizontal: 10),
                 color: KalroColors.divider,
               ),
             Expanded(

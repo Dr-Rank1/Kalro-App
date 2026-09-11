@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../theme/kalro_colors.dart';
 
 class ReportMetricRow extends StatelessWidget {
-  const ReportMetricRow({
+  ReportMetricRow({
     super.key,
     required this.label,
     required this.value,
@@ -18,8 +18,8 @@ class ReportMetricRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      margin: EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
@@ -29,7 +29,7 @@ class ReportMetricRow extends StatelessWidget {
         children: [
           if (icon != null) ...[
             Icon(icon, size: 20, color: KalroColors.primaryGreen),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
           ],
           Expanded(
             child: Text(
@@ -52,7 +52,7 @@ class ReportMetricRow extends StatelessWidget {
 }
 
 class ReportSectionCard extends StatelessWidget {
-  const ReportSectionCard({
+  ReportSectionCard({
     super.key,
     required this.title,
     required this.children,
@@ -74,7 +74,7 @@ class ReportSectionCard extends StatelessWidget {
             color: KalroColors.textDark,
           ),
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: 10),
         ...children,
       ],
     );

@@ -31,12 +31,13 @@ import 'admin_hub_screen.dart';
 import 'farmer_hub_screen.dart';
 
 import 'reports_screen.dart';
+import 'package:kalro/l10n/translator.dart';
 
 
 
 class ProfileScreen extends StatefulWidget {
 
-  const ProfileScreen({
+  ProfileScreen({
 
     super.key,
 
@@ -88,7 +89,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
 
-  final _profileService = const ProfileService();
+  final _profileService = ProfileService();
 
   static const _permissions = PermissionService();
 
@@ -158,19 +159,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                 controller: nameController,
 
-                decoration: const InputDecoration(labelText: 'Display name'),
+                decoration: InputDecoration(labelText: 'Display name'),
 
               ),
 
               if (_isAdmin) ...[
 
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
 
                 TextField(
 
                   controller: orgController,
 
-                  decoration: const InputDecoration(labelText: 'Organization'),
+                  decoration: InputDecoration(labelText: 'Organization'),
 
                 ),
 
@@ -186,7 +187,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               onPressed: () => Navigator.of(context).pop(false),
 
-              child: const Text('Cancel'),
+              child: Text('Cancel'.tr),
 
             ),
 
@@ -194,7 +195,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               onPressed: () => Navigator.of(context).pop(true),
 
-              child: const Text('Save'),
+              child: Text('Save'.tr),
 
             ),
 
@@ -310,7 +311,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
 
-      SnackBar(content: Text('$feature coming soon')),
+      SnackBar(content: Text('$feature coming soon'.tr)),
 
     );
 
@@ -348,13 +349,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               child: ListView(
 
-                padding: const EdgeInsets.fromLTRB(0, 8, 0, 24),
+                padding: EdgeInsets.fromLTRB(0, 8, 0, 24),
 
                 children: [
 
                   _buildHeader(profile),
 
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20),
 
                   if (_isAdmin)
 
@@ -364,7 +365,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                     _buildFarmerStats(profile),
 
-                  const Divider(height: 32),
+                  Divider(height: 32),
 
                   if (_isAdmin) ..._buildAdminMenu() else ..._buildFarmerMenu(),
 
@@ -400,21 +401,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
         Padding(
 
-          padding: const EdgeInsets.symmetric(horizontal: 8),
+          padding: EdgeInsets.symmetric(horizontal: 8),
 
           child: Row(
 
             children: [
 
-              const SizedBox(width: 48),
+              SizedBox(width: 48),
 
-              const Spacer(),
+              Spacer(),
 
               IconButton(
 
                 onPressed: () => _editProfile(profile),
 
-                icon: const Icon(Icons.edit_outlined),
+                icon: Icon(Icons.edit_outlined),
 
               ),
 
@@ -426,7 +427,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
         Padding(
 
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: EdgeInsets.symmetric(horizontal: 20),
 
           child: ProfileHeader(
 
@@ -442,7 +443,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
         Padding(
 
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+          padding: EdgeInsets.fromLTRB(20, 8, 20, 0),
 
           child: Row(
 
@@ -450,7 +451,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               PermissionBadge(permission: permission, compact: true),
 
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
 
               Expanded(
 
@@ -490,7 +491,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Padding(
 
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: EdgeInsets.symmetric(horizontal: 20),
 
       child: Column(
 
@@ -504,7 +505,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           ),
 
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
 
           Row(
 
@@ -514,7 +515,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                 child: PaymentSummaryCard(
 
-                  title: 'Active Batches',
+                  title: 'Active Batches'.tr,
 
                   value: profile.activeBatchCount.toString(),
 
@@ -524,13 +525,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               ),
 
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
 
               Expanded(
 
                 child: PaymentSummaryCard(
 
-                  title: 'Purchases',
+                  title: 'Purchases'.tr,
 
                   value: profile.totalPurchases.toString(),
 
@@ -544,7 +545,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           ),
 
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
 
           Row(
 
@@ -554,7 +555,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                 child: PaymentSummaryCard(
 
-                  title: 'Payables',
+                  title: 'Payables'.tr,
 
                   value: currency.format(profile.pendingPayables),
 
@@ -564,13 +565,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               ),
 
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
 
               Expanded(
 
                 child: PaymentSummaryCard(
 
-                  title: 'Feed Logged',
+                  title: 'Feed Logged'.tr,
 
                   value: _formatFeed(profile.totalFeedGrams),
 
@@ -598,7 +599,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Padding(
 
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: EdgeInsets.symmetric(horizontal: 20),
 
       child: Column(
 
@@ -612,7 +613,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           ),
 
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
 
           StockSplitRow(
 
@@ -626,7 +627,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           ),
 
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
 
           Row(
 
@@ -636,7 +637,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                 child: PaymentSummaryCard(
 
-                  title: 'Active Batches',
+                  title: 'Active Batches'.tr,
 
                   value: profile.activeBatchCount.toString(),
 
@@ -646,13 +647,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               ),
 
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
 
               Expanded(
 
                 child: PaymentSummaryCard(
 
-                  title: 'Feed Logged',
+                  title: 'Feed Logged'.tr,
 
                   value: _formatFeed(profile.totalFeedGrams),
 
@@ -682,7 +683,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       Padding(
 
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+        padding: EdgeInsets.fromLTRB(20, 0, 20, 8),
 
         child: Text(
 
@@ -698,7 +699,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
         icon: Icons.admin_panel_settings_outlined,
 
-        title: 'Farm management hub',
+        title: 'Farm management hub'.tr,
 
         onTap: _openAdminHub,
 
@@ -708,7 +709,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
         icon: Icons.show_chart,
 
-        title: 'Reports & exports',
+        title: 'Reports & exports'.tr,
 
         onTap: _openReports,
 
@@ -730,7 +731,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       Padding(
 
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+        padding: EdgeInsets.fromLTRB(20, 0, 20, 8),
 
         child: Text(
 
@@ -746,7 +747,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
         icon: Icons.agriculture_outlined,
 
-        title: 'My farm work',
+        title: 'My farm work'.tr,
 
         onTap: _openFarmerHub,
 
@@ -756,7 +757,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
         icon: Icons.show_chart,
 
-        title: 'Reports',
+        title: 'Reports'.tr,
 
         onTap: _openReports,
 
@@ -764,11 +765,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       if (canEdit) ...[
 
-        const Divider(height: 32),
+        Divider(height: 32),
 
         Padding(
 
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+          padding: EdgeInsets.fromLTRB(20, 0, 20, 8),
 
           child: Text(
 
@@ -784,7 +785,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           icon: Icons.menu_book_outlined,
 
-          title: 'Field guides',
+          title: 'Field guides'.tr,
 
           onTap: () => _showComingSoon('Field guides'),
 
@@ -794,7 +795,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           icon: Icons.help_outline,
 
-          title: 'FAQs',
+          title: 'FAQs'.tr,
 
           onTap: () => _showComingSoon('FAQs'),
 
@@ -804,7 +805,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           icon: Icons.support_agent,
 
-          title: 'Support',
+          title: 'Support'.tr,
 
           onTap: () => _showComingSoon('Support'),
 
@@ -824,13 +825,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       if (_isAdmin) ...[
 
-        const Divider(height: 32),
+        Divider(height: 32),
 
         KalroMenuTile(
 
           icon: Icons.description_outlined,
 
-          title: 'Terms & Conditions',
+          title: 'Terms & Conditions'.tr,
 
           onTap: () => _showComingSoon('Terms & Conditions'),
 
@@ -840,7 +841,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           icon: Icons.lock_outline,
 
-          title: 'Privacy Policy',
+          title: 'Privacy Policy'.tr,
 
           onTap: () => _showComingSoon('Privacy Policy'),
 
@@ -854,7 +855,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           icon: Icons.logout,
 
-          title: 'Sign out',
+          title: 'Sign out'.tr,
 
           onTap: widget.onLogout!,
 
@@ -862,7 +863,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       Padding(
 
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(20),
 
         child: Text(
 

@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import '../../theme/kalro_colors.dart';
 
 class KalroOutlineCard extends StatelessWidget {
-  const KalroOutlineCard({
+  KalroOutlineCard({
     super.key,
     required this.child,
     this.onTap,
-    this.padding = const EdgeInsets.all(20),
+    this.padding = EdgeInsets.all(20),
   });
 
   final Widget child;
@@ -31,7 +31,7 @@ class KalroOutlineCard extends StatelessWidget {
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.04),
                 blurRadius: 6,
-                offset: const Offset(0, 2),
+                offset: Offset(0, 2),
               ),
             ],
           ),

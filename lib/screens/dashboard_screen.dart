@@ -8,9 +8,10 @@ import '../services/lifecycle_engine.dart';
 import '../services/user_preferences.dart';
 import 'batch_detail_screen.dart';
 import 'create_batch_screen.dart';
+import 'package:kalro/l10n/translator.dart';
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({
+  DashboardScreen({
     super.key,
     required this.repositories,
     required this.userPreferences,
@@ -26,8 +27,8 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  final _lifecycleEngine = const LifecycleEngine();
-  final _dashboardService = const DashboardService();
+  final _lifecycleEngine = LifecycleEngine();
+  final _dashboardService = DashboardService();
   late Future<DashboardSummary> _summaryFuture;
 
   @override
@@ -79,13 +80,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
             child: RefreshIndicator(
               onRefresh: () async => _reload(),
               child: ListView(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                padding: EdgeInsets.fromLTRB(16, 16, 16, 24),
                 children: [
                   KalroWelcomeHeader(displayName: summary.displayName),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20),
                   DashboardStatGrid(stats: DashboardStatGrid.fromRearingSummary(summary)),
                   if (summary.alerts.isNotEmpty) ...[
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     DashboardAlertsBanner(
                       alerts: summary.alerts,
                       onAlertTap: (alert) {
@@ -94,26 +95,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                   ],
                   if (summary.todayTasks.isNotEmpty) ...[
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     DashboardTodayTasks(
                       tasks: summary.todayTasks,
                       onTaskTap: (task) => _openBatch(task.batchId),
                     ),
                   ],
                   if (summary.nextMilestone != null) ...[
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     DashboardNextEventBanner(
                       item: summary.nextMilestone!,
                       onTap: () => _openBatch(summary.nextMilestone!.batch.id),
                     ),
                   ],
                   if (upcoming.isNotEmpty) ...[
-                    const SizedBox(height: 24),
-                    const KalroSectionHeader(title: 'Upcoming This Week'),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 24),
+                    KalroSectionHeader(title: 'Upcoming This Week'),
+                    SizedBox(height: 8),
                     ...upcoming.map(
                       (item) => Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
+                        padding: EdgeInsets.only(bottom: 8),
                         child: DashboardUpcomingTile(
                           item: item,
                           onTap: () => _openBatch(item.batch.id),
@@ -121,12 +122,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                     ),
                   ],
-                  const SizedBox(height: 24),
-                  const KalroSectionHeader(title: 'Active Rearing Batches'),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 24),
+                  KalroSectionHeader(title: 'Active Rearing Batches'),
+                  SizedBox(height: 12),
                   if (active.isEmpty)
                     EmptyStateCard(
-                      title: 'No active batches yet',
+                      title: 'No active batches yet'.tr,
                       message: 'Start a rearing batch to track lifecycle dates.',
                       actionLabel: 'Create Batch',
                       onAction: _openCreateBatch,
@@ -135,7 +136,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   else
                     ...active.map(
                       (batch) => Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
+                        padding: EdgeInsets.only(bottom: 10),
                         child: BatchHorizontalCard(
                           batch: batch,
                           lifecycleEngine: _lifecycleEngine,

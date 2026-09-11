@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../theme/kalro_colors.dart';
 
 class ProfileHeader extends StatelessWidget {
-  const ProfileHeader({
+  ProfileHeader({
     super.key,
     required this.orgName,
     required this.displayName,
@@ -34,7 +34,7 @@ class ProfileHeader extends StatelessWidget {
                 right: 0,
                 child: GestureDetector(
                   onTap: onEditAvatar,
-                  child: const CircleAvatar(
+                  child: CircleAvatar(
                     radius: 12,
                     backgroundColor: KalroColors.primaryGreen,
                     child: Icon(Icons.edit, size: 12, color: Colors.white),
@@ -43,7 +43,7 @@ class ProfileHeader extends StatelessWidget {
               ),
           ],
         ),
-        const SizedBox(width: 16),
+        SizedBox(width: 16),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

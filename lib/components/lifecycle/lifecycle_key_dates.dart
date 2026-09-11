@@ -5,10 +5,11 @@ import 'package:intl/intl.dart';
 import '../../models/lifecycle_milestone.dart';
 import '../../services/lifecycle_planning_service.dart';
 import '../../theme/kalro_colors.dart';
+import 'package:kalro/l10n/translator.dart';
 
 /// Compact hatch / spinning / harvest / moth dates for planning.
 class LifecycleKeyDatesCard extends StatelessWidget {
-  const LifecycleKeyDatesCard({
+  LifecycleKeyDatesCard({
     super.key,
     required this.cycle,
     this.footnote,
@@ -22,7 +23,7 @@ class LifecycleKeyDatesCard extends StatelessWidget {
     final dateFormat = DateFormat.MMMd();
     final items = [
       _KeyDate(
-        label: 'Egg hatch',
+        label: 'Egg hatch'.tr,
         milestone: cycle.hatch,
         icon: Icons.egg_outlined,
       ),
@@ -32,19 +33,19 @@ class LifecycleKeyDatesCard extends StatelessWidget {
         icon: Icons.auto_awesome_outlined,
       ),
       _KeyDate(
-        label: 'Cocoon harvest',
+        label: 'Cocoon harvest'.tr,
         milestone: cycle.harvest,
         icon: Icons.inventory_2_outlined,
       ),
       _KeyDate(
-        label: 'Moths emerge',
+        label: 'Moths emerge'.tr,
         milestone: cycle.mothEmergence,
         icon: Icons.flutter_dash_outlined,
       ),
     ];
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -64,24 +65,24 @@ class LifecycleKeyDatesCard extends StatelessWidget {
               color: KalroColors.headerGreen,
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Row(
             children: [
               Expanded(child: _tile(items[0], dateFormat)),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Expanded(child: _tile(items[1], dateFormat)),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Row(
             children: [
               Expanded(child: _tile(items[2], dateFormat)),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Expanded(child: _tile(items[3], dateFormat)),
             ],
           ),
           if (footnote != null) ...[
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
             Text(
               footnote!,
               style: GoogleFonts.poppins(fontSize: 11, color: KalroColors.textMuted),
@@ -99,7 +100,7 @@ class LifecycleKeyDatesCard extends StatelessWidget {
     final typical = milestone?.typicalDate;
 
     return Container(
-      padding: const EdgeInsets.all(10),
+      padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: KalroColors.background,
         borderRadius: BorderRadius.circular(10),
@@ -111,7 +112,7 @@ class LifecycleKeyDatesCard extends StatelessWidget {
             children: [
               Icon(item.icon, size: 18, color: KalroColors.accentBrown),
               if (shift != null && shift != 0) ...[
-                const Spacer(),
+                Spacer(),
                 Text(
                   '${shift > 0 ? '+' : ''}${shift}d',
                   style: GoogleFonts.poppins(
@@ -123,12 +124,12 @@ class LifecycleKeyDatesCard extends StatelessWidget {
               ],
             ],
           ),
-          const SizedBox(height: 6),
+          SizedBox(height: 6),
           Text(
             item.label,
             style: GoogleFonts.poppins(fontSize: 11, color: KalroColors.textMuted),
           ),
-          const SizedBox(height: 2),
+          SizedBox(height: 2),
           Text(
             date == null ? '—' : dateFormat.format(date),
             style: GoogleFonts.poppins(
@@ -162,7 +163,7 @@ class _KeyDate {
 
 /// Typical vs predicted dates for hatch, harvest, and moths.
 class PredictionOutcomeCard extends StatelessWidget {
-  const PredictionOutcomeCard({
+  PredictionOutcomeCard({
     super.key,
     required this.cycle,
   });
@@ -183,7 +184,7 @@ class PredictionOutcomeCard extends StatelessWidget {
     ];
 
     return Container(
-      padding: const EdgeInsets.fromLTRB(14, 14, 14, 8),
+      padding: EdgeInsets.fromLTRB(14, 14, 14, 8),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -200,17 +201,17 @@ class PredictionOutcomeCard extends StatelessWidget {
               color: KalroColors.headerGreen,
             ),
           ),
-          const SizedBox(height: 2),
+          SizedBox(height: 2),
           Text(
             cycle.shiftSummary == null
                 ? 'Same as a typical house with enough leaf.'
                 : cycle.shiftSummary!,
             style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
           Row(
             children: [
-              const SizedBox(width: 108),
+              SizedBox(width: 108),
               Expanded(
                 child: Text(
                   'Typical',
@@ -233,14 +234,14 @@ class PredictionOutcomeCard extends StatelessWidget {
               ),
             ],
           ),
-          const Divider(height: 16),
+          Divider(height: 16),
           ...rows.map((row) {
             final milestone = row.$2;
             final predicted = milestone?.effectiveDate;
             final typical = milestone?.typicalDate ?? predicted;
             final shift = milestone?.daysVsTypical ?? 0;
             return Padding(
-              padding: const EdgeInsets.only(bottom: 10),
+              padding: EdgeInsets.only(bottom: 10),
               child: Row(
                 children: [
                   SizedBox(
@@ -296,7 +297,7 @@ class PredictionOutcomeCard extends StatelessWidget {
 }
 
 class PlanningTimeline extends StatelessWidget {
-  const PlanningTimeline({
+  PlanningTimeline({
     super.key,
     required this.cycle,
     required this.planning,
@@ -319,7 +320,7 @@ class PlanningTimeline extends StatelessWidget {
       child: Column(
         children: [
           for (var i = 0; i < cycle.milestones.length; i++) ...[
-            if (i > 0) const Divider(height: 1),
+            if (i > 0) Divider(height: 1),
             _row(cycle.milestones[i], dateFormat, today),
           ],
         ],
@@ -338,7 +339,7 @@ class PlanningTimeline extends StatelessWidget {
     final range = cycle.typicalRangeFor(milestone);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      padding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -364,7 +365,7 @@ class PlanningTimeline extends StatelessWidget {
                     fontWeight: isKey ? FontWeight.w600 : FontWeight.w500,
                   ),
                 ),
-                const SizedBox(height: 2),
+                SizedBox(height: 2),
                 Text(
                   [
                     if (range != null) 'Typically $range',

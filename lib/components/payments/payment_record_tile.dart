@@ -8,7 +8,7 @@ import '../../models/payment_record.dart';
 import '../../theme/kalro_colors.dart';
 
 class PaymentRecordTile extends StatelessWidget {
-  const PaymentRecordTile({
+  PaymentRecordTile({
     super.key,
     required this.record,
     this.onSettle,
@@ -28,8 +28,8 @@ class PaymentRecordTile extends StatelessWidget {
     final prefix = isReceivable ? '+' : '-';
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(14),
+      margin: EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
@@ -51,7 +51,7 @@ class PaymentRecordTile extends StatelessWidget {
               size: 20,
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,7 +87,7 @@ class PaymentRecordTile extends StatelessWidget {
                   onPressed: onSettle,
                   style: TextButton.styleFrom(
                     padding: EdgeInsets.zero,
-                    minimumSize: const Size(0, 28),
+                    minimumSize: Size(0, 28),
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
                   child: Text(
@@ -101,10 +101,10 @@ class PaymentRecordTile extends StatelessWidget {
             ],
           ),
           if (onDelete != null) ...[
-            const SizedBox(width: 4),
+            SizedBox(width: 4),
             IconButton(
               onPressed: onDelete,
-              icon: const Icon(Icons.delete_outline, size: 20),
+              icon: Icon(Icons.delete_outline, size: 20),
               color: KalroColors.textMuted,
             ),
           ],

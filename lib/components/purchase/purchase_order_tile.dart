@@ -7,7 +7,7 @@ import '../../models/purchase_order.dart';
 import '../../theme/kalro_colors.dart';
 
 class PurchaseOrderTile extends StatelessWidget {
-  const PurchaseOrderTile({
+  PurchaseOrderTile({
     super.key,
     required this.order,
     this.onDelete,
@@ -22,8 +22,8 @@ class PurchaseOrderTile extends StatelessWidget {
     final dateFormat = DateFormat('MMM d, yyyy');
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(14),
+      margin: EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
@@ -38,9 +38,9 @@ class PurchaseOrderTile extends StatelessWidget {
               color: KalroColors.peach.withValues(alpha: 0.35),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(Icons.shopping_bag_outlined, color: KalroColors.primaryGreen, size: 20),
+            child: Icon(Icons.shopping_bag_outlined, color: KalroColors.primaryGreen, size: 20),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,7 +73,7 @@ class PurchaseOrderTile extends StatelessWidget {
           if (onDelete != null)
             IconButton(
               onPressed: onDelete,
-              icon: const Icon(Icons.delete_outline, size: 20),
+              icon: Icon(Icons.delete_outline, size: 20),
               color: KalroColors.textMuted,
             ),
         ],

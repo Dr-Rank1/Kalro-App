@@ -7,9 +7,10 @@ import '../services/user_preferences.dart';
 import '../theme/kalro_colors.dart';
 import 'payments_screen.dart';
 import 'purchase_screen.dart';
+import 'package:kalro/l10n/translator.dart';
 
 class FinanceScreen extends StatelessWidget {
-  const FinanceScreen({
+  FinanceScreen({
     super.key,
     required this.repositories,
     required this.userPreferences,
@@ -29,11 +30,11 @@ class FinanceScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Padding(
+              Padding(
                 padding: EdgeInsets.fromLTRB(20, 16, 20, 0),
                 child: KalroToolbar(
-                  title: 'Finance',
-                  subtitle: 'Payments, receivables, and seed purchases.',
+                  title: 'Finance'.tr,
+                  subtitle: 'Payments, receivables, and seed purchases.'.tr,
                 ),
               ),
               TabBar(
@@ -41,7 +42,7 @@ class FinanceScreen extends StatelessWidget {
                 unselectedLabelColor: KalroColors.textMuted,
                 indicatorColor: KalroColors.headerGreen,
                 labelStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 13),
-                tabs: const [
+                tabs: [
                   Tab(text: 'Payments'),
                   Tab(text: 'Purchases'),
                 ],

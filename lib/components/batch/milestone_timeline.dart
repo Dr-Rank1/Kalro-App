@@ -5,7 +5,7 @@ import '../../models/lifecycle_milestone.dart';
 import '../../theme/kalro_colors.dart';
 
 class MilestoneTimeline extends StatelessWidget {
-  const MilestoneTimeline({
+  MilestoneTimeline({
     super.key,
     required this.milestones,
     this.onMarkObserved,
@@ -22,13 +22,13 @@ class MilestoneTimeline extends StatelessWidget {
       color: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: KalroColors.divider),
+        side: BorderSide(color: KalroColors.divider),
       ),
       child: ListView.separated(
         shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
+        physics: NeverScrollableScrollPhysics(),
         itemCount: milestones.length,
-        separatorBuilder: (context, index) => const Divider(height: 1),
+        separatorBuilder: (context, index) => Divider(height: 1),
         itemBuilder: (context, index) {
           final milestone = milestones[index];
           final colorScheme = Theme.of(context).colorScheme;

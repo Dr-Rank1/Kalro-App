@@ -4,9 +4,10 @@ import '../components/components.dart';
 import '../models/batch.dart';
 import '../models/batch_status.dart';
 import '../services/app_repositories.dart';
+import 'package:kalro/l10n/translator.dart';
 
 class HealthScreen extends StatefulWidget {
-  const HealthScreen({
+  HealthScreen({
     super.key,
     required this.repositories,
     required this.canEdit,
@@ -54,28 +55,28 @@ class _HealthScreenState extends State<HealthScreen> {
             future: _batchesFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
+                return Center(child: CircularProgressIndicator());
               }
 
               final activeBatches = snapshot.data ?? [];
 
               return ListView(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20),
                 children: [
-                  const KalroToolbar(
-                    title: 'Health & Mortality',
-                    subtitle: 'Record losses, disease, and treatment.',
+                  KalroToolbar(
+                    title: 'Health & Mortality'.tr,
+                    subtitle: 'Record losses, disease, and treatment.'.tr,
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
                   if (activeBatches.isEmpty)
-                    const RecordEmptyState(
+                    RecordEmptyState(
                       icon: Icons.layers_outlined,
-                      title: 'No active batches',
+                      title: 'No active batches'.tr,
                       message: 'Start a rearing cycle to log health records.',
                     )
                   else ...[
                     InputDecorator(
-                      decoration: const InputDecoration(labelText: 'Select Batch'),
+                      decoration: InputDecoration(labelText: 'Select Batch'),
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<Batch>(
                       value: _selectedBatch,
@@ -84,7 +85,7 @@ class _HealthScreenState extends State<HealthScreen> {
                       items: activeBatches.map((b) {
                         return DropdownMenuItem(
                           value: b,
-                          child: Text('${b.species.label} - ${b.eggCount} larvae'),
+                          child: Text('${b.species.label} - ${b.eggCount} larvae'.tr),
                         );
                       }).toList(),
                       onChanged: (val) {
@@ -93,7 +94,7 @@ class _HealthScreenState extends State<HealthScreen> {
                     ),
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                     if (_selectedBatch != null)
                       MortalityLogSection(
                         batchId: _selectedBatch!.id,

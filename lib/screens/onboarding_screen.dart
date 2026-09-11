@@ -9,9 +9,10 @@ import '../services/auth_repository.dart';
 import '../services/session_service.dart';
 import '../services/user_preferences.dart';
 import '../theme/kalro_colors.dart';
+import 'package:kalro/l10n/translator.dart';
 
 class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({
+  OnboardingScreen({
     super.key,
     required this.userPreferences,
     required this.authRepository,
@@ -57,21 +58,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Future<void> _finish() async {
     if (_role == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please choose your role')),
+        SnackBar(content: Text('Please choose your role'.tr)),
       );
       return;
     }
 
     if (_pinController.text.trim().length < 4) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('PIN must be at least 4 digits')),
+        SnackBar(content: Text('PIN must be at least 4 digits'.tr)),
       );
       return;
     }
 
     if (_pinController.text.trim() != _confirmPinController.text.trim()) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('PINs do not match')),
+        SnackBar(content: Text('PINs do not match'.tr)),
       );
       return;
     }
@@ -112,7 +113,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Setup failed: $error')),
+        SnackBar(content: Text('Setup failed: $error'.tr)),
       );
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -128,7 +129,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           SafeArea(
             bottom: false,
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+              padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
               child: Column(
                 children: [
                   Text(
@@ -139,7 +140,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     'Eri & Bombyx mori rearing management',
                     style: GoogleFonts.poppins(color: Colors.white70, fontSize: 13),
@@ -150,18 +151,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           Expanded(
             child: Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: KalroColors.background,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
               ),
               child: KalroBackground(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(24),
+                  padding: EdgeInsets.all(24),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Image.asset('assets/images/kalro_app_icon.png', height: 100),
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20),
                       Text(
                         'Set up your farm profile',
                         textAlign: TextAlign.center,
@@ -171,49 +172,49 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           color: KalroColors.textDark,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
                       Text(
                         'English · Kenya (KES)',
                         textAlign: TextAlign.center,
                         style: GoogleFonts.poppins(fontSize: 13, color: KalroColors.textMuted),
                       ),
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24),
                       TextFormField(
                         controller: _nameController,
-                        decoration: const InputDecoration(labelText: 'Your name'),
+                        decoration: InputDecoration(labelText: 'Your name'),
                         enabled: !_saving,
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
                       TextFormField(
                         controller: _orgController,
-                        decoration: const InputDecoration(labelText: 'Farm / organization'),
+                        decoration: InputDecoration(labelText: 'Farm / organization'),
                         enabled: !_saving,
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
                       TextFormField(
                         controller: _usernameController,
-                        decoration: const InputDecoration(labelText: 'Admin username'),
+                        decoration: InputDecoration(labelText: 'Admin username'),
                         enabled: !_saving,
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
                       TextFormField(
                         controller: _pinController,
-                        decoration: const InputDecoration(labelText: 'PIN (4+ digits)'),
+                        decoration: InputDecoration(labelText: 'PIN (4+ digits)'),
                         obscureText: true,
                         keyboardType: TextInputType.number,
                         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                         enabled: !_saving,
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
                       TextFormField(
                         controller: _confirmPinController,
-                        decoration: const InputDecoration(labelText: 'Confirm PIN'),
+                        decoration: InputDecoration(labelText: 'Confirm PIN'),
                         obscureText: true,
                         keyboardType: TextInputType.number,
                         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                         enabled: !_saving,
                       ),
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24),
                       Text(
                         'Your role',
                         style: GoogleFonts.poppins(
@@ -221,10 +222,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           color: KalroColors.textDark,
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12),
                       GridView.count(
                         shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
+                        physics: NeverScrollableScrollPhysics(),
                         crossAxisCount: 2,
                         mainAxisSpacing: 12,
                         crossAxisSpacing: 12,
@@ -241,7 +242,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           );
                         }).toList(),
                       ),
-                      const SizedBox(height: 28),
+                      SizedBox(height: 28),
                       KalroPrimaryButton(
                         label: _saving ? 'Setting up...' : 'Get started',
                         onPressed: _saving ? null : _finish,

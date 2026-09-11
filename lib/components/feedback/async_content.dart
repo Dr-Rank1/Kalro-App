@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:kalro/l10n/translator.dart';
 
 class AsyncContent<T> extends StatelessWidget {
-  const AsyncContent({
+  AsyncContent({
     super.key,
     required this.future,
     required this.builder,
@@ -20,14 +21,14 @@ class AsyncContent<T> extends StatelessWidget {
       future: future,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return loading ?? const Center(child: CircularProgressIndicator());
+          return loading ?? Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
           return errorBuilder?.call(context, snapshot.error!) ??
-              Center(child: Text('Something went wrong: ${snapshot.error}'));
+              Center(child: Text('Something went wrong: ${snapshot.error}'.tr));
         }
         if (!snapshot.hasData) {
-          return const SizedBox.shrink();
+          return SizedBox.shrink();
         }
         return builder(context, snapshot.data as T);
       },

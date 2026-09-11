@@ -4,9 +4,10 @@ import '../../models/feed_log.dart';
 import '../../theme/kalro_colors.dart';
 import '../../utils/record_helpers.dart';
 import '../records/record_log_tile.dart';
+import 'package:kalro/l10n/translator.dart';
 
 class FeedLogTile extends StatelessWidget {
-  const FeedLogTile({
+  FeedLogTile({
     super.key,
     required this.log,
     this.onDelete,
@@ -21,7 +22,7 @@ class FeedLogTile extends StatelessWidget {
       icon: Icons.restaurant_outlined,
       iconColor: KalroColors.primaryGreen,
       iconBackground: KalroColors.peach.withValues(alpha: 0.35),
-      title: '${formatGrams(log.quantityGrams)} · ${log.feedType}',
+      title: '${formatGrams(log.quantityGrams)} · ${log.feedType}'.tr,
       subtitle: log.feedingStage?.trim().isNotEmpty == true ? log.feedingStage : null,
       meta: formatRecordDate(log.recordedAt),
       note: log.notes,

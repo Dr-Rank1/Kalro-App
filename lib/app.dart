@@ -10,6 +10,7 @@ import '../services/auth_repository.dart';
 import '../services/notification_service.dart';
 import '../services/session_service.dart';
 import '../services/user_preferences.dart';
+import 'l10n/translator.dart';
 import '../theme/kalro_theme.dart';
 import 'screens/batch_detail_screen.dart';
 import 'screens/farmer_shell.dart';
@@ -64,8 +65,10 @@ class _KalroAppState extends State<KalroApp> {
     Locale? savedLocale;
     if ((lang.toLowerCase().startsWith('sw') || lang.toLowerCase() == 'swahili')) {
       savedLocale = const Locale('sw');
+      Translator.currentLanguage = 'sw';
     } else {
       savedLocale = const Locale('en');
+      Translator.currentLanguage = 'en';
     }
 
     if (widget.initialRepositories != null) {
@@ -146,6 +149,7 @@ class _KalroAppState extends State<KalroApp> {
     await widget.userPreferences.setLanguage(langCode);
     setState(() {
       _currentLocale = Locale(langCode);
+      Translator.currentLanguage = langCode;
     });
   }
 

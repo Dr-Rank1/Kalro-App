@@ -5,7 +5,7 @@ import '../../models/account_permission.dart';
 import '../../theme/kalro_colors.dart';
 
 class PermissionBadge extends StatelessWidget {
-  const PermissionBadge({
+  PermissionBadge({
     super.key,
     required this.permission,
     this.compact = false,
@@ -30,7 +30,7 @@ class PermissionBadge extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(permission.icon, size: compact ? 12 : 14, color: permission.badgeColor),
-          const SizedBox(width: 4),
+          SizedBox(width: 4),
           Text(
             permission.label,
             style: GoogleFonts.poppins(
@@ -46,14 +46,14 @@ class PermissionBadge extends StatelessWidget {
 }
 
 class PermissionDescriptionCard extends StatelessWidget {
-  const PermissionDescriptionCard({super.key, required this.permission});
+  PermissionDescriptionCard({super.key, required this.permission});
 
   final AccountPermission permission;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: permission.badgeColor.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(10),
@@ -63,7 +63,7 @@ class PermissionDescriptionCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(permission.icon, color: permission.badgeColor, size: 20),
-          const SizedBox(width: 10),
+          SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -72,7 +72,7 @@ class PermissionDescriptionCard extends StatelessWidget {
                   permission.label,
                   style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
                 ),
-                const SizedBox(height: 2),
+                SizedBox(height: 2),
                 Text(
                   permission.description,
                   style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),

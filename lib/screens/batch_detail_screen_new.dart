@@ -21,8 +21,6 @@ import '../components/health/environment_log_section.dart';
 import '../l10n/translator.dart';
 
 class BatchDetailScreen extends StatefulWidget {
-  static const routeName = "/batch";
-
   const BatchDetailScreen({
     super.key,
     required this.repositories,

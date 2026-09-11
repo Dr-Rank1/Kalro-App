@@ -7,9 +7,10 @@ import '../../services/leaf_inventory_repository.dart';
 import '../../theme/kalro_colors.dart';
 import '../buttons/kalro_primary_button.dart';
 import '../cards/kalro_section_header.dart';
+import 'package:kalro/l10n/translator.dart';
 
 class LeafInventorySection extends StatefulWidget {
-  const LeafInventorySection({super.key, required this.repository});
+  LeafInventorySection({super.key, required this.repository});
 
   final LeafInventoryRepository repository;
 
@@ -44,7 +45,7 @@ class _LeafInventorySectionState extends State<LeafInventorySection> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
@@ -63,30 +64,30 @@ class _LeafInventorySectionState extends State<LeafInventorySection> {
                 'Leaf stock (kg)',
                 style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               TextField(
                 controller: mulberry,
-                decoration: const InputDecoration(labelText: 'Mulberry (kg)'),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                decoration: InputDecoration(labelText: 'Mulberry (kg)'),
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
                 inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               TextField(
                 controller: castor,
-                decoration: const InputDecoration(labelText: 'Castor (kg)'),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                decoration: InputDecoration(labelText: 'Castor (kg)'),
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
                 inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               TextField(
                 controller: kesseru,
-                decoration: const InputDecoration(labelText: 'Kesseru (kg)'),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                decoration: InputDecoration(labelText: 'Kesseru (kg)'),
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
                 inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
               KalroPrimaryButton(
-                label: 'Save leaf stock',
+                label: 'Save leaf stock'.tr,
                 onPressed: () async {
                   await widget.repository.save(
                     LeafInventory(
@@ -119,17 +120,17 @@ class _LeafInventorySectionState extends State<LeafInventorySection> {
       children: [
         Row(
           children: [
-            const Expanded(child: KalroSectionHeader(title: 'Leaf inventory')),
-            TextButton(onPressed: _edit, child: const Text('Edit')),
+            Expanded(child: KalroSectionHeader(title: 'Leaf inventory')),
+            TextButton(onPressed: _edit, child: Text('Edit'.tr)),
           ],
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         FutureBuilder<LeafInventory>(
           future: _inventoryFuture,
           builder: (context, snapshot) {
             final inventory = snapshot.data ?? LeafInventory.empty;
             return Container(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),

@@ -15,9 +15,10 @@ import '../services/user_preferences.dart';
 import '../theme/kalro_colors.dart';
 import 'reminder_settings_screen.dart';
 import '../l10n/app_localizations.dart';
+import 'package:kalro/l10n/translator.dart';
 
 class FarmerProfileScreen extends StatefulWidget {
-  const FarmerProfileScreen({
+  FarmerProfileScreen({
     super.key,
     required this.repositories,
     required this.userPreferences,
@@ -81,11 +82,11 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
         title: Text(l10n?.profileEditName ?? 'Edit Name'),
         content: TextField(
           controller: nameController,
-          decoration: const InputDecoration(labelText: 'Display name'),
+          decoration: InputDecoration(labelText: 'Display name'),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Save')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text('Cancel'.tr)),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: Text('Save'.tr)),
         ],
       ),
     );
@@ -150,11 +151,11 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
             final avgSurvival = survivalCount > 0 ? (totalSurvival / survivalCount * 100) : 0.0;
 
             return ListView(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 88),
+              padding: EdgeInsets.fromLTRB(20, 20, 20, 88),
               children: [
                 // Hero Card
                 Container(
-                  padding: const EdgeInsets.all(24),
+                  padding: EdgeInsets.all(24),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(24),
@@ -183,7 +184,7 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                               ),
                             ),
                           ),
-                          const SizedBox(width: 16),
+                          SizedBox(width: 16),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -203,9 +204,9 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                                     color: KalroColors.textMuted,
                                   ),
                                 ),
-                                const SizedBox(height: 4),
+                                SizedBox(height: 4),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                   decoration: BoxDecoration(
                                     color: KalroColors.primaryGreen.withValues(alpha: 0.2),
                                     borderRadius: BorderRadius.circular(8),
@@ -224,11 +225,11 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                           ),
                           IconButton(
                             onPressed: _editName,
-                            icon: const Icon(Icons.edit_outlined, color: KalroColors.primaryGreen),
+                            icon: Icon(Icons.edit_outlined, color: KalroColors.primaryGreen),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24),
                       // Stats Row
                       Row(
                         children: [
@@ -261,7 +262,7 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                   ),
                 ),
                 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 
                 // Settings & Tools
                 Text(
@@ -272,7 +273,7 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                     color: KalroColors.textDark,
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 
                 // Language Card
                 _ProfileCardTile(
@@ -297,7 +298,7 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
 
                 if (_canEdit) ...[
                   _ProfileCardTile(
@@ -305,7 +306,7 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                     title: l10n?.profileMyReminders ?? 'My reminders',
                     onTap: _openReminders,
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                 ],
 
                 // Backup Card
@@ -327,18 +328,18 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                     child: Text(l10n?.profileBackupNow ?? 'Backup'),
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
 
                 _ProfileCardTile(
                   icon: Icons.menu_book_outlined,
                   title: l10n?.profileKnowledgeBase ?? 'Kalro Knowledge Base',
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Field guides coming soon')),
+                      SnackBar(content: Text('Field guides coming soon'.tr)),
                     );
                   },
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
 
                 if (widget.onLogout != null)
                   _ProfileCardTile(
@@ -376,7 +377,7 @@ class _StatItem extends StatelessWidget {
     return Column(
       children: [
         Icon(icon, color: KalroColors.primaryGreen, size: 20),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         Text(
           value,
           style: GoogleFonts.poppins(
@@ -432,9 +433,9 @@ class _ProfileCardTile extends StatelessWidget {
         ],
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         leading: Container(
-          padding: const EdgeInsets.all(10),
+          padding: EdgeInsets.all(10),
           decoration: BoxDecoration(
             color: (iconColor ?? KalroColors.primaryGreen).withValues(alpha: 0.1),
             shape: BoxShape.circle,
@@ -451,7 +452,7 @@ class _ProfileCardTile extends StatelessWidget {
         subtitle: subtitle != null
             ? Text(subtitle!, style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted))
             : null,
-        trailing: trailing ?? (onTap != null ? const Icon(Icons.chevron_right, color: KalroColors.textMuted) : null),
+        trailing: trailing ?? (onTap != null ? Icon(Icons.chevron_right, color: KalroColors.textMuted) : null),
         onTap: onTap,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),

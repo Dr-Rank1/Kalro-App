@@ -6,7 +6,7 @@ import '../../models/dashboard_summary.dart';
 import '../../theme/kalro_colors.dart';
 
 class DashboardNextEventBanner extends StatelessWidget {
-  const DashboardNextEventBanner({
+  DashboardNextEventBanner({
     super.key,
     required this.item,
     this.onTap,
@@ -27,7 +27,7 @@ class DashboardNextEventBanner extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Container(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: KalroColors.peach),
@@ -41,12 +41,12 @@ class DashboardNextEventBanner extends StatelessWidget {
                   color: KalroColors.peach.withValues(alpha: 0.35),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.notifications_active_outlined,
                   color: KalroColors.accentBrown,
                 ),
               ),
-              const SizedBox(width: 14),
+              SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,7 +59,7 @@ class DashboardNextEventBanner extends StatelessWidget {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    SizedBox(height: 2),
                     Text(
                       item.milestone.label,
                       style: GoogleFonts.poppins(
@@ -68,7 +68,7 @@ class DashboardNextEventBanner extends StatelessWidget {
                         color: KalroColors.textDark,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    SizedBox(height: 2),
                     Text(
                       [
                         item.batch.species.label,
@@ -89,7 +89,7 @@ class DashboardNextEventBanner extends StatelessWidget {
                 ),
               ),
               if (onTap != null)
-                const Icon(
+                Icon(
                   Icons.chevron_right,
                   color: KalroColors.textLight,
                 ),

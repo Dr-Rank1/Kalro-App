@@ -13,9 +13,10 @@ import '../services/user_preferences.dart';
 import '../theme/kalro_colors.dart';
 import 'reminder_settings_screen.dart';
 import 'reports_screen.dart';
+import 'package:kalro/l10n/translator.dart';
 
 class FarmerHubScreen extends StatefulWidget {
-  const FarmerHubScreen({
+  FarmerHubScreen({
     super.key,
     required this.session,
     required this.repositories,
@@ -130,13 +131,13 @@ class _FarmerHubScreenState extends State<FarmerHubScreen> {
     final permission = widget.session.user.permission;
 
     return AdminPageScaffold(
-      title: 'My farm work',
+      title: 'My farm work'.tr,
       onRefresh: () async => _reload(),
       body: AsyncContent(
         future: _summaryFuture,
         builder: (context, summary) {
           return ListView(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(20),
             children: [
               AdminInfoCard(
                 child: Row(
@@ -146,7 +147,7 @@ class _FarmerHubScreenState extends State<FarmerHubScreen> {
                       backgroundColor: permission.badgeColor.withValues(alpha: 0.15),
                       child: Icon(permission.icon, color: permission.badgeColor),
                     ),
-                    const SizedBox(width: 14),
+                    SizedBox(width: 14),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -172,12 +173,12 @@ class _FarmerHubScreenState extends State<FarmerHubScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
-              const AdminSectionHeader(
-                title: 'Today on the farm',
-                subtitle: 'Tasks and alerts that need your attention',
+              SizedBox(height: 16),
+              AdminSectionHeader(
+                title: 'Today on the farm'.tr,
+                subtitle: 'Tasks and alerts that need your attention'.tr,
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               AdminInfoCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -190,14 +191,14 @@ class _FarmerHubScreenState extends State<FarmerHubScreen> {
                       ],
                     ),
                     if (summary.todayTasks.isNotEmpty) ...[
-                      const Divider(height: 24),
+                      Divider(height: 24),
                       ...summary.todayTasks.map(
                         (task) => Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
+                          padding: EdgeInsets.only(bottom: 8),
                           child: Row(
                             children: [
                               Icon(Icons.circle, size: 8, color: KalroColors.primaryGreen),
-                              const SizedBox(width: 8),
+                              SizedBox(width: 8),
                               Expanded(
                                 child: Text(
                                   task.title,
@@ -210,15 +211,15 @@ class _FarmerHubScreenState extends State<FarmerHubScreen> {
                       ),
                     ],
                     if (summary.alerts.isNotEmpty) ...[
-                      const Divider(height: 16),
+                      Divider(height: 16),
                       ...summary.alerts.map(
                         (alert) => Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
+                          padding: EdgeInsets.only(bottom: 8),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Icon(Icons.error_outline, size: 16, color: Colors.orange.shade800),
-                              const SizedBox(width: 8),
+                              SizedBox(width: 8),
                               Expanded(
                                 child: Text(
                                   alert.message,
@@ -238,44 +239,44 @@ class _FarmerHubScreenState extends State<FarmerHubScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               Row(
                 children: [
                   AdminStatChip(
-                    label: 'Active batches',
+                    label: 'Active batches'.tr,
                     value: summary.activeBatchCount.toString(),
                     icon: Icons.layers_outlined,
                   ),
-                  const SizedBox(width: 10),
+                  SizedBox(width: 10),
                   AdminStatChip(
-                    label: 'Survival avg',
+                    label: 'Survival avg'.tr,
                     value: '${summary.averageSurvivalPercent.round()}%',
                     icon: Icons.favorite_outline,
                   ),
                 ],
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               Row(
                 children: [
                   AdminStatChip(
-                    label: 'Bombyx',
+                    label: 'Bombyx'.tr,
                     value: '${summary.bombyxLarvaeCount}',
                     icon: Icons.eco_outlined,
                   ),
-                  const SizedBox(width: 10),
+                  SizedBox(width: 10),
                   AdminStatChip(
-                    label: 'Eri',
+                    label: 'Eri'.tr,
                     value: '${summary.eriLarvaeCount}',
                     icon: Icons.grass_outlined,
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
               AdminInfoCard(
                 child: Row(
                   children: [
                     Icon(Icons.event_outlined, color: KalroColors.headerGreen),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         _milestoneLabel(summary),
@@ -285,71 +286,71 @@ class _FarmerHubScreenState extends State<FarmerHubScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
               AdminSectionHeader(
                 title: _canEdit ? 'Quick actions' : 'View farm data',
                 subtitle: _canEdit
                     ? 'Jump straight to daily rearing tasks'
                     : 'You have read-only access to batches and logs',
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               AdminHubTile(
                 icon: Icons.home_outlined,
                 title: 'Today\'s dashboard',
-                subtitle: 'Tasks, alerts, and batch overview',
+                subtitle: 'Tasks, alerts, and batch overview'.tr,
                 onTap: _goHome,
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               AdminHubTile(
                 icon: Icons.inventory_2_outlined,
-                title: 'Batches & inventory',
-                subtitle: 'View larvae stock and batch details',
+                title: 'Batches & inventory'.tr,
+                subtitle: 'View larvae stock and batch details'.tr,
                 onTap: _goInventory,
               ),
-              const SizedBox(height: 24),
-              const AdminSectionHeader(
-                title: 'Tools',
-                subtitle: 'Reports, reminders, and field support',
+              SizedBox(height: 24),
+              AdminSectionHeader(
+                title: 'Tools'.tr,
+                subtitle: 'Reports, reminders, and field support'.tr,
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               AdminHubTile(
                 icon: Icons.show_chart,
-                title: 'Reports',
-                subtitle: 'Feed trends, harvest, and batch comparison',
+                title: 'Reports'.tr,
+                subtitle: 'Feed trends, harvest, and batch comparison'.tr,
                 onTap: _openReports,
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               if (_canEdit)
                 AdminHubTile(
                   icon: Icons.notifications_outlined,
-                  title: 'My reminders',
+                  title: 'My reminders'.tr,
                   subtitle: summary.remindersEnabled
                       ? 'Reminders are on'
                       : 'Reminders are off',
                   onTap: _openReminders,
                 ),
-              if (_canEdit) const SizedBox(height: 10),
+              if (_canEdit) SizedBox(height: 10),
               if (_canSync)
                 AdminHubTile(
                   icon: Icons.cloud_upload_outlined,
-                  title: 'Upload my latest data',
+                  title: 'Upload my latest data'.tr,
                   subtitle: _syncing ? 'Uploading...' : 'Share today\'s logs with the farm cloud',
                   onTap: _syncing ? null : _uploadWork,
                   enabled: !_syncing,
                 ),
-              if (_canSync) const SizedBox(height: 10),
+              if (_canSync) SizedBox(height: 10),
               AdminHubTile(
                 icon: Icons.menu_book_outlined,
-                title: 'Field guides',
-                subtitle: 'Rearing tips and tutorials',
+                title: 'Field guides'.tr,
+                subtitle: 'Rearing tips and tutorials'.tr,
                 onTap: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Field guides coming soon')),
+                    SnackBar(content: Text('Field guides coming soon'.tr)),
                   );
                 },
               ),
               if (!_canEdit) ...[
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
                 PermissionDescriptionCard(permission: permission),
               ],
             ],
@@ -364,7 +365,7 @@ class _FarmerHubScreenState extends State<FarmerHubScreen> {
       child: Column(
         children: [
           Icon(icon, size: 20, color: KalroColors.headerGreen),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text(
             value,
             style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 16),

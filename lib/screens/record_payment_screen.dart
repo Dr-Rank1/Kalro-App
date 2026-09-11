@@ -5,9 +5,10 @@ import '../components/components.dart';
 import '../models/payment_direction.dart';
 import '../services/payment_repository.dart';
 import '../theme/kalro_colors.dart';
+import 'package:kalro/l10n/translator.dart';
 
 class RecordPaymentScreen extends StatefulWidget {
-  const RecordPaymentScreen({super.key, required this.repository});
+  RecordPaymentScreen({super.key, required this.repository});
 
   final PaymentRepository repository;
 
@@ -39,7 +40,7 @@ class _RecordPaymentScreenState extends State<RecordPaymentScreen> {
       context: context,
       initialDate: _recordedAt,
       firstDate: DateTime(2020),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
+      lastDate: DateTime.now().add(Duration(days: 365)),
     );
     if (picked != null) setState(() => _recordedAt = picked);
   }
@@ -62,7 +63,7 @@ class _RecordPaymentScreenState extends State<RecordPaymentScreen> {
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not save payment: $error')),
+        SnackBar(content: Text('Could not save payment: $error'.tr)),
       );
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -74,14 +75,14 @@ class _RecordPaymentScreenState extends State<RecordPaymentScreen> {
     return Scaffold(
       backgroundColor: KalroColors.headerGreen,
       appBar: AppBar(
-        title: const Text('Record Payment'),
+        title: Text('Record Payment'.tr),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back),
           onPressed: _saving ? null : () => Navigator.of(context).pop(),
         ),
       ),
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: KalroColors.background,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
@@ -89,11 +90,11 @@ class _RecordPaymentScreenState extends State<RecordPaymentScreen> {
           child: Form(
             key: _formKey,
             child: ListView(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(20),
               children: [
                 DropdownButtonFormField<PaymentDirection>(
                   initialValue: _direction,
-                  decoration: const InputDecoration(labelText: 'Payment type'),
+                  decoration: InputDecoration(labelText: 'Payment type'),
                   items: PaymentDirection.values
                       .map(
                         (direction) => DropdownMenuItem(
@@ -108,12 +109,12 @@ class _RecordPaymentScreenState extends State<RecordPaymentScreen> {
                           if (value != null) setState(() => _direction = value);
                         },
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 TextFormField(
                   controller: _counterpartyController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Counterparty',
-                    hintText: 'Buyer, supplier, or center name',
+                    hintText: 'Buyer, supplier, or center name'.tr,
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
@@ -122,12 +123,12 @@ class _RecordPaymentScreenState extends State<RecordPaymentScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 TextFormField(
                   controller: _descriptionController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Description',
-                    hintText: 'Cocoon sale, seed purchase, etc.',
+                    hintText: 'Cocoon sale, seed purchase, etc.'.tr,
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
@@ -136,14 +137,14 @@ class _RecordPaymentScreenState extends State<RecordPaymentScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 TextFormField(
                   controller: _amountController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Amount (KSh)',
                     prefixText: 'KSh ',
                   ),
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
                   inputFormatters: [
                     FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
                   ],
@@ -153,20 +154,20 @@ class _RecordPaymentScreenState extends State<RecordPaymentScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 KalroDateRow(
-                  label: 'Date',
+                  label: 'Date'.tr,
                   date: _recordedAt,
                   enabled: !_saving,
                   onTap: _pickDate,
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 TextFormField(
                   controller: _notesController,
-                  decoration: const InputDecoration(labelText: 'Notes (optional)'),
+                  decoration: InputDecoration(labelText: 'Notes (optional)'),
                   maxLines: 2,
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 KalroPrimaryButton(
                   label: _saving ? 'Saving...' : 'Save payment',
                   onPressed: _saving ? null : _save,

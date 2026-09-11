@@ -12,10 +12,11 @@ import '../theme/kalro_colors.dart';
 import '../l10n/app_localizations.dart';
 import 'batch_detail_screen.dart';
 import 'create_batch_screen.dart';
+import 'package:kalro/l10n/translator.dart';
 
 /// List, create, and open batches for recording and updates.
 class BatchesScreen extends StatefulWidget {
-  const BatchesScreen({
+  BatchesScreen({
     super.key,
     required this.repositories,
     required this.onBatchChanged,
@@ -31,7 +32,7 @@ class BatchesScreen extends StatefulWidget {
 }
 
 class _BatchesScreenState extends State<BatchesScreen> {
-  final _lifecycleEngine = const LifecycleEngine();
+  final _lifecycleEngine = LifecycleEngine();
   static const _conditionsService = RearingConditionsService();
   late Future<_BatchesBundle> _batchesFuture;
 
@@ -110,7 +111,7 @@ class _BatchesScreenState extends State<BatchesScreen> {
               future: _batchesFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
+                  return Center(child: CircularProgressIndicator());
                 }
 
                 final bundle = snapshot.data;
@@ -119,13 +120,13 @@ class _BatchesScreenState extends State<BatchesScreen> {
                 final closed = _closed(all);
 
                 return ListView(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 88),
+                  padding: EdgeInsets.fromLTRB(20, 20, 20, 88),
                   children: [
                     KalroToolbar(
                       title: l10n?.batchesTitle ?? 'Batches',
                       subtitle: l10n?.batchesSubtitle ?? 'Create cycles and log feeding, health, and harvest.',
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     RecordSummaryBar(
                       items: [
                         RecordSummaryItem(label: l10n?.batchesActiveCount ?? 'Active', value: '${active.length}'),
@@ -133,12 +134,12 @@ class _BatchesScreenState extends State<BatchesScreen> {
                         RecordSummaryItem(label: l10n?.batchesTotalCount ?? 'Total', value: '${all.length}'),
                       ],
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                     KalroSectionHeader(
                       title: l10n?.batchesActiveHeader ?? 'Active batches',
                       subtitle: active.isEmpty ? null : '${active.length} ${l10n?.batchesInProgress ?? "in progress"}',
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10),
                     if (active.isEmpty)
                       RecordEmptyState(
                         icon: Icons.layers_outlined,
@@ -150,7 +151,7 @@ class _BatchesScreenState extends State<BatchesScreen> {
                     else
                       ...active.map(
                         (batch) => Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
+                          padding: EdgeInsets.only(bottom: 10),
                           child: BatchHorizontalCard(
                             batch: batch,
                             lifecycleEngine: _lifecycleEngine,
@@ -161,15 +162,15 @@ class _BatchesScreenState extends State<BatchesScreen> {
                         ),
                       ),
                     if (closed.isNotEmpty) ...[
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20),
                       KalroSectionHeader(
                         title: l10n?.batchesClosedHeader ?? 'Closed batches',
-                        subtitle: '${closed.length} ${l10n?.batchesArchived ?? "archived"}',
+                        subtitle: '${closed.length} ${l10n?.batchesArchived ?? "archived"}'.tr,
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10),
                       ...closed.map(
                         (batch) => Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
+                          padding: EdgeInsets.only(bottom: 10),
                           child: _ClosedBatchTile(
                             batch: batch,
                             onTap: () => _openBatch(batch.id),
@@ -220,7 +221,7 @@ class _ClosedBatchTile extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: KalroColors.divider),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          padding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           child: Row(
             children: [
               Container(
@@ -236,7 +237,7 @@ class _ClosedBatchTile extends StatelessWidget {
                   color: KalroColors.textMuted,
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -252,7 +253,7 @@ class _ClosedBatchTile extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: KalroColors.textLight, size: 20),
+              Icon(Icons.chevron_right, color: KalroColors.textLight, size: 20),
             ],
           ),
         ),

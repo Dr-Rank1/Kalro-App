@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../models/species.dart';
+import 'package:kalro/l10n/translator.dart';
 
 class KalroSpeciesDropdown extends StatelessWidget {
-  const KalroSpeciesDropdown({
+  KalroSpeciesDropdown({
     super.key,
     required this.value,
     required this.onChanged,
@@ -18,7 +19,7 @@ class KalroSpeciesDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropdownButtonFormField<Species>(
       initialValue: value,
-      decoration: const InputDecoration(
+      decoration: InputDecoration(
         labelText: 'Species',
         border: OutlineInputBorder(),
       ),
@@ -26,7 +27,7 @@ class KalroSpeciesDropdown extends StatelessWidget {
           .map(
             (species) => DropdownMenuItem(
               value: species,
-              child: Text('${species.label} (${species.scientificName})'),
+              child: Text('${species.label} (${species.scientificName})'.tr),
             ),
           )
           .toList(),

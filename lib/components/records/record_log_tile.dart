@@ -5,7 +5,7 @@ import '../../theme/kalro_colors.dart';
 
 /// Unified row tile for batch activity records (feeding, mortality, etc.).
 class RecordLogTile extends StatelessWidget {
-  const RecordLogTile({
+  RecordLogTile({
     super.key,
     required this.icon,
     required this.title,
@@ -31,8 +31,8 @@ class RecordLogTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(14),
+      margin: EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -50,7 +50,7 @@ class RecordLogTile extends StatelessWidget {
             ),
             child: Icon(icon, color: iconColor, size: 20),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,21 +60,21 @@ class RecordLogTile extends StatelessWidget {
                   style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 14),
                 ),
                 if (subtitle != null && subtitle!.isNotEmpty) ...[
-                  const SizedBox(height: 2),
+                  SizedBox(height: 2),
                   Text(
                     subtitle!,
                     style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
                   ),
                 ],
                 if (meta != null) ...[
-                  const SizedBox(height: 2),
+                  SizedBox(height: 2),
                   Text(
                     meta!,
                     style: GoogleFonts.poppins(fontSize: 11, color: KalroColors.textLight),
                   ),
                 ],
                 if (note != null && note!.trim().isNotEmpty) ...[
-                  const SizedBox(height: 6),
+                  SizedBox(height: 6),
                   Text(
                     note!.trim(),
                     maxLines: 2,
@@ -92,10 +92,10 @@ class RecordLogTile extends StatelessWidget {
           if (onDelete != null)
             IconButton(
               onPressed: onDelete,
-              icon: const Icon(Icons.delete_outline, size: 20),
+              icon: Icon(Icons.delete_outline, size: 20),
               color: KalroColors.textMuted,
               padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+              constraints: BoxConstraints(minWidth: 32, minHeight: 32),
             ),
         ],
       ),

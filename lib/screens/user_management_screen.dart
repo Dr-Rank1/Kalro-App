@@ -9,9 +9,10 @@ import '../models/farm_profile.dart';
 import '../services/auth_repository.dart';
 import '../services/pin_hasher.dart';
 import '../theme/kalro_colors.dart';
+import 'package:kalro/l10n/translator.dart';
 
 class UserManagementScreen extends StatefulWidget {
-  const UserManagementScreen({
+  UserManagementScreen({
     super.key,
     required this.session,
     this.authRepository,
@@ -53,7 +54,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
         return StatefulBuilder(
           builder: (context, setModalState) {
             return AlertDialog(
-              title: const Text('Add team member'),
+              title: Text('Add team member'.tr),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -61,25 +62,25 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                   children: [
                     TextField(
                       controller: usernameController,
-                      decoration: const InputDecoration(labelText: 'Username'),
+                      decoration: InputDecoration(labelText: 'Username'),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     TextField(
                       controller: nameController,
-                      decoration: const InputDecoration(labelText: 'Display name'),
+                      decoration: InputDecoration(labelText: 'Display name'),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     TextField(
                       controller: pinController,
-                      decoration: const InputDecoration(labelText: 'PIN (4+ digits)'),
+                      decoration: InputDecoration(labelText: 'PIN (4+ digits)'),
                       obscureText: true,
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     DropdownButtonFormField<AccountPermission>(
                       initialValue: permission,
-                      decoration: const InputDecoration(labelText: 'Permission'),
+                      decoration: InputDecoration(labelText: 'Permission'),
                       items: AccountPermission.values
                           .map(
                             (p) => DropdownMenuItem(value: p, child: Text(p.label)),
@@ -89,13 +90,13 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                         if (value != null) setModalState(() => permission = value);
                       },
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     PermissionDescriptionCard(permission: permission),
                   ],
                 ),
               ),
               actions: [
-                TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+                TextButton(onPressed: () => Navigator.pop(context, false), child: Text('Cancel'.tr)),
                 TextButton(
                   onPressed: () async {
                     final pin = pinController.text.trim();
@@ -116,11 +117,11 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                     } catch (error) {
                       if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('$error')),
+                        SnackBar(content: Text('$error'.tr)),
                       );
                     }
                   },
-                  child: const Text('Save'),
+                  child: Text('Save'.tr),
                 ),
               ],
             );
@@ -141,23 +142,23 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     final saved = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Reset PIN for ${user.displayName}'),
+        title: Text('Reset PIN for ${user.displayName}'.tr),
         content: TextField(
           controller: pinController,
-          decoration: const InputDecoration(labelText: 'New PIN (4+ digits)'),
+          decoration: InputDecoration(labelText: 'New PIN (4+ digits)'),
           obscureText: true,
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text('Cancel'.tr)),
           TextButton(
             onPressed: () {
               if (pinController.text.trim().length >= 4) {
                 Navigator.pop(context, true);
               }
             },
-            child: const Text('Save'),
+            child: Text('Save'.tr),
           ),
         ],
       ),
@@ -180,13 +181,13 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
         return StatefulBuilder(
           builder: (context, setModalState) {
             return AlertDialog(
-              title: Text('Change role for ${user.displayName}'),
+              title: Text('Change role for ${user.displayName}'.tr),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   DropdownButtonFormField<AccountPermission>(
                     initialValue: permission,
-                    decoration: const InputDecoration(labelText: 'Permission'),
+                    decoration: InputDecoration(labelText: 'Permission'),
                     items: AccountPermission.values
                         .map((p) => DropdownMenuItem(value: p, child: Text(p.label)))
                         .toList(),
@@ -194,15 +195,15 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                       if (value != null) setModalState(() => permission = value);
                     },
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   PermissionDescriptionCard(permission: permission),
                 ],
               ),
               actions: [
-                TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+                TextButton(onPressed: () => Navigator.pop(context, false), child: Text('Cancel'.tr)),
                 TextButton(
                   onPressed: () => Navigator.pop(context, true),
-                  child: const Text('Save'),
+                  child: Text('Save'.tr),
                 ),
               ],
             );
@@ -221,15 +222,15 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Remove ${user.displayName}?'),
-        content: const Text(
+        title: Text('Remove ${user.displayName}?'.tr),
+        content: Text(
           'This deactivates the account. They will no longer be able to sign in.',
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text('Cancel'.tr)),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Remove'),
+            child: Text('Remove'.tr),
           ),
         ],
       ),
@@ -250,16 +251,16 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: const Icon(Icons.lock_reset),
-                title: const Text('Reset PIN'),
+                leading: Icon(Icons.lock_reset),
+                title: Text('Reset PIN'.tr),
                 onTap: () {
                   Navigator.pop(context);
                   _resetPin(user);
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.admin_panel_settings_outlined),
-                title: const Text('Change role'),
+                leading: Icon(Icons.admin_panel_settings_outlined),
+                title: Text('Change role'.tr),
                 onTap: () {
                   Navigator.pop(context);
                   _changePermission(user);
@@ -283,40 +284,40 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
   @override
   Widget build(BuildContext context) {
     return AdminPageScaffold(
-      title: 'Team users',
+      title: 'Team users'.tr,
       onRefresh: () async => _reload(),
       actions: [
-        IconButton(onPressed: _addUser, icon: const Icon(Icons.person_add_outlined)),
+        IconButton(onPressed: _addUser, icon: Icon(Icons.person_add_outlined)),
       ],
       body: FutureBuilder<List<AppUser>>(
         future: _usersFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator());
           }
 
           final users = snapshot.data ?? [];
           if (users.isEmpty) {
             return Center(
               child: Padding(
-                padding: const EdgeInsets.all(32),
+                padding: EdgeInsets.all(32),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(Icons.people_outline, size: 48, color: KalroColors.textMuted),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     Text(
                       'No team members yet',
                       style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text(
                       'Add caretakers or viewers to share farm access.',
                       textAlign: TextAlign.center,
                       style: GoogleFonts.poppins(fontSize: 13, color: KalroColors.textMuted),
                     ),
-                    const SizedBox(height: 20),
-                    KalroPrimaryButton(label: 'Add user', onPressed: _addUser),
+                    SizedBox(height: 20),
+                    KalroPrimaryButton(label: 'Add user'.tr, onPressed: _addUser),
                   ],
                 ),
               ),
@@ -324,9 +325,9 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
           }
 
           return ListView.separated(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(20),
             itemCount: users.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 10),
+            separatorBuilder: (context, index) => SizedBox(height: 10),
             itemBuilder: (context, index) {
               final user = users[index];
               final isSelf = user.id == widget.session.user.id;
@@ -337,7 +338,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                       backgroundColor: user.permission.badgeColor.withValues(alpha: 0.15),
                       child: Icon(user.permission.icon, color: user.permission.badgeColor, size: 20),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -364,14 +365,14 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                             '@${user.username}',
                             style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
                           ),
-                          const SizedBox(height: 6),
+                          SizedBox(height: 6),
                           PermissionBadge(permission: user.permission, compact: true),
                         ],
                       ),
                     ),
                     if (!isSelf)
                       IconButton(
-                        icon: const Icon(Icons.more_vert),
+                        icon: Icon(Icons.more_vert),
                         onPressed: () => _showUserActions(user),
                       ),
                   ],

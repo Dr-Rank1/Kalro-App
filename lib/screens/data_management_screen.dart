@@ -10,9 +10,10 @@ import '../services/app_repositories.dart';
 import '../services/backup_service.dart';
 import '../services/permission_service.dart';
 import '../theme/kalro_colors.dart';
+import 'package:kalro/l10n/translator.dart';
 
 class DataManagementScreen extends StatefulWidget {
-  const DataManagementScreen({
+  DataManagementScreen({
     super.key,
     required this.repositories,
     required this.session,
@@ -38,12 +39,12 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
       final file = await _backupService.exportBackup(widget.repositories);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Backup saved to ${file.path}')),
+        SnackBar(content: Text('Backup saved to ${file.path}'.tr)),
       );
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Backup failed: $error')),
+        SnackBar(content: Text('Backup failed: $error'.tr)),
       );
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -53,7 +54,7 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
   Future<void> _importBackup() async {
     if (!_permissions.canRestoreBackup(widget.session.user)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Admin access required to restore backups')),
+        SnackBar(content: Text('Admin access required to restore backups'.tr)),
       );
       return;
     }
@@ -68,13 +69,13 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Restore backup?'),
-        content: const Text(
+        title: Text('Restore backup?'.tr),
+        content: Text(
           'This replaces all local farm data with the backup file. Continue?',
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Restore')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text('Cancel'.tr)),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: Text('Restore'.tr)),
         ],
       ),
     );
@@ -89,12 +90,12 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
       widget.onDataChanged?.call();
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Backup restored successfully')),
+        SnackBar(content: Text('Backup restored successfully'.tr)),
       );
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Restore failed: $error')),
+        SnackBar(content: Text('Restore failed: $error'.tr)),
       );
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -106,15 +107,15 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
     final canRestore = _permissions.canRestoreBackup(widget.session.user);
 
     return AdminPageScaffold(
-      title: 'Data & backup',
+      title: 'Data & backup'.tr,
       body: ListView(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(20),
         children: [
-          const AdminSectionHeader(
-            title: 'Full farm backup',
-            subtitle: 'Export batches, logs, payments, inventory, and settings as JSON.',
+          AdminSectionHeader(
+            title: 'Full farm backup'.tr,
+            subtitle: 'Export batches, logs, payments, inventory, and settings as JSON.'.tr,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           AdminInfoCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -122,7 +123,7 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
                 Row(
                   children: [
                     Icon(Icons.info_outline, size: 18, color: KalroColors.headerGreen),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         'Backups are saved to your Documents/kalro_exports folder.',
@@ -134,26 +135,26 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           KalroPrimaryButton(
             label: _busy ? 'Working...' : 'Export backup (JSON)',
             onPressed: _busy ? null : _exportBackup,
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           AdminSectionHeader(
-            title: 'Restore',
+            title: 'Restore'.tr,
             subtitle: canRestore
                 ? 'Replace local data with a backup file from another device.'
                 : 'Admin access required to restore backups.',
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           OutlinedButton(
             onPressed: _busy || !canRestore ? null : _importBackup,
             style: OutlinedButton.styleFrom(
-              minimumSize: const Size.fromHeight(48),
-              side: const BorderSide(color: KalroColors.headerGreen),
+              minimumSize: Size.fromHeight(48),
+              side: BorderSide(color: KalroColors.headerGreen),
             ),
-            child: const Text('Restore from backup'),
+            child: Text('Restore from backup'.tr),
           ),
         ],
       ),

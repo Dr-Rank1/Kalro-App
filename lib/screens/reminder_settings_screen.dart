@@ -6,9 +6,10 @@ import '../services/app_repositories.dart';
 import '../services/notification_service.dart';
 import '../services/reminder_preferences.dart';
 import '../theme/kalro_colors.dart';
+import 'package:kalro/l10n/translator.dart';
 
 class ReminderSettingsScreen extends StatefulWidget {
-  const ReminderSettingsScreen({
+  ReminderSettingsScreen({
     super.key,
     required this.repositories,
     this.notificationService,
@@ -74,41 +75,41 @@ class _ReminderSettingsScreenState extends State<ReminderSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return AdminPageScaffold(
-      title: 'Reminders',
+      title: 'Reminders'.tr,
       body: AsyncContent(
         future: _settingsFuture,
         builder: (context, settings) {
           return ListView(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(20),
             children: [
-              const AdminSectionHeader(
-                title: 'Notification schedule',
-                subtitle: 'Stay on top of feeding and lifecycle milestones.',
+              AdminSectionHeader(
+                title: 'Notification schedule'.tr,
+                subtitle: 'Stay on top of feeding and lifecycle milestones.'.tr,
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               AdminInfoCard(
                 child: Column(
                   children: [
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: const Text('Enable reminders'),
+                      title: Text('Enable reminders'.tr),
                       value: settings.enabled,
                       onChanged: (value) => _save(settings.copyWith(enabled: value)),
                     ),
-                    const Divider(height: 1),
+                    Divider(height: 1),
                     ListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: const Text('Daily feeding reminder'),
+                      title: Text('Daily feeding reminder'.tr),
                       subtitle: Text(_formatTime(settings)),
-                      trailing: const Icon(Icons.schedule),
+                      trailing: Icon(Icons.schedule),
                       enabled: settings.enabled,
                       onTap: settings.enabled ? () => _pickTime(settings) : null,
                     ),
-                    const Divider(height: 1),
+                    Divider(height: 1),
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: const Text('Milestone reminders'),
-                      subtitle: const Text('Hatch, moult, and harvest dates'),
+                      title: Text('Milestone reminders'.tr),
+                      subtitle: Text('Hatch, moult, and harvest dates'.tr),
                       value: settings.milestoneReminders,
                       onChanged: settings.enabled
                           ? (value) => _save(settings.copyWith(milestoneReminders: value))
@@ -118,13 +119,13 @@ class _ReminderSettingsScreenState extends State<ReminderSettingsScreen> {
                 ),
               ),
               if (!_notifications.isAvailable) ...[
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 AdminInfoCard(
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Icon(Icons.smartphone_outlined, color: KalroColors.headerGreen),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12),
                       Expanded(
                         child: Text(
                           'Push notifications work on Android and iOS. On this device, use Home tab alerts instead.',

@@ -17,9 +17,10 @@ import 'farm_settings_screen.dart';
 import 'reminder_settings_screen.dart';
 import 'reports_screen.dart';
 import 'user_management_screen.dart';
+import 'package:kalro/l10n/translator.dart';
 
 class AdminHubScreen extends StatefulWidget {
-  const AdminHubScreen({
+  AdminHubScreen({
     super.key,
     required this.session,
     required this.repositories,
@@ -159,20 +160,20 @@ class _AdminHubScreenState extends State<AdminHubScreen> {
   Widget build(BuildContext context) {
     if (!widget.embedded && !_permissions.canManageUsers(widget.session.user)) {
       return AdminPageScaffold(
-        title: 'Farm management',
+        title: 'Farm management'.tr,
         body: Center(
           child: Padding(
-            padding: const EdgeInsets.all(32),
+            padding: EdgeInsets.all(32),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.lock_outline, size: 48, color: KalroColors.textMuted),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 Text(
                   'Admin access only',
                   style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Text(
                   'Farm management is for administrators. Use My farm work for daily rearing tasks.',
                   textAlign: TextAlign.center,
@@ -197,7 +198,7 @@ class _AdminHubScreenState extends State<AdminHubScreen> {
     }
 
     return AdminPageScaffold(
-      title: 'Farm management',
+      title: 'Farm management'.tr,
       onRefresh: () async => _reload(),
       body: _buildBody(),
     );
@@ -208,7 +209,7 @@ class _AdminHubScreenState extends State<AdminHubScreen> {
       future: _summaryFuture,
       builder: (context, summary) {
         return ListView(
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.all(20),
           children: _managementSections(summary),
         );
       },
@@ -217,11 +218,11 @@ class _AdminHubScreenState extends State<AdminHubScreen> {
 
   List<Widget> _managementSections(AdminSummary summary) {
     return [
-              const AdminSectionHeader(
-                title: 'Operations overview',
-                subtitle: 'Farm health, team, and financial activity',
+              AdminSectionHeader(
+                title: 'Operations overview'.tr,
+                subtitle: 'Farm health, team, and financial activity'.tr,
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               AdminInfoCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -240,7 +241,7 @@ class _AdminHubScreenState extends State<AdminHubScreen> {
                         PermissionBadge(permission: widget.session.user.permission),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text(
                       'Sync code ${widget.session.farm.syncCode} · ${_formatSyncStatus(summary)}',
                       style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
@@ -248,96 +249,96 @@ class _AdminHubScreenState extends State<AdminHubScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               Row(
                 children: [
                   AdminStatChip(
-                    label: 'Team members',
+                    label: 'Team members'.tr,
                     value: summary.teamCount.toString(),
                     icon: Icons.people_outline,
                   ),
-                  const SizedBox(width: 10),
+                  SizedBox(width: 10),
                   AdminStatChip(
-                    label: 'Active batches',
+                    label: 'Active batches'.tr,
                     value: summary.activeBatchCount.toString(),
                     icon: Icons.layers_outlined,
                   ),
                 ],
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               Row(
                 children: [
                   AdminStatChip(
-                    label: 'Payments',
+                    label: 'Payments'.tr,
                     value: summary.paymentCount.toString(),
                     icon: Icons.payments_outlined,
                   ),
-                  const SizedBox(width: 10),
+                  SizedBox(width: 10),
                   AdminStatChip(
-                    label: 'Feed logs',
+                    label: 'Feed logs'.tr,
                     value: summary.feedLogCount.toString(),
                     icon: Icons.restaurant_outlined,
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
-              const AdminSectionHeader(
-                title: 'Organization',
-                subtitle: 'Farm identity and user access',
+              SizedBox(height: 24),
+              AdminSectionHeader(
+                title: 'Organization'.tr,
+                subtitle: 'Farm identity and user access'.tr,
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               AdminHubTile(
                 icon: Icons.settings_outlined,
-                title: 'Farm settings',
-                subtitle: 'Organization name and farm metadata',
+                title: 'Farm settings'.tr,
+                subtitle: 'Organization name and farm metadata'.tr,
                 onTap: _openFarmSettings,
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               AdminHubTile(
                 icon: Icons.people_outline,
-                title: 'Team users',
+                title: 'Team users'.tr,
                 subtitle: '${summary.teamCount} active ${summary.teamCount == 1 ? 'user' : 'users'}',
                 onTap: _openTeam,
               ),
-              const SizedBox(height: 24),
-              const AdminSectionHeader(
-                title: 'Data & systems',
-                subtitle: 'Backups, cloud sync, and farm-wide notifications',
+              SizedBox(height: 24),
+              AdminSectionHeader(
+                title: 'Data & systems'.tr,
+                subtitle: 'Backups, cloud sync, and farm-wide notifications'.tr,
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               AdminHubTile(
                 icon: Icons.cloud_sync_outlined,
-                title: 'Cloud sync',
+                title: 'Cloud sync'.tr,
                 subtitle: _formatSyncStatus(summary),
                 onTap: _openCloudSync,
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               AdminHubTile(
                 icon: Icons.backup_outlined,
-                title: 'Data & backup',
-                subtitle: 'Export or restore full farm JSON',
+                title: 'Data & backup'.tr,
+                subtitle: 'Export or restore full farm JSON'.tr,
                 onTap: _openBackup,
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               AdminHubTile(
                 icon: Icons.notifications_outlined,
-                title: 'Farm reminders',
-                subtitle: 'Configure feeding and milestone alerts',
+                title: 'Farm reminders'.tr,
+                subtitle: 'Configure feeding and milestone alerts'.tr,
                 onTap: _openReminders,
               ),
-              const SizedBox(height: 24),
-              const AdminSectionHeader(
-                title: 'Analytics',
-                subtitle: 'Financial and production reports',
+              SizedBox(height: 24),
+              AdminSectionHeader(
+                title: 'Analytics'.tr,
+                subtitle: 'Financial and production reports'.tr,
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               AdminHubTile(
                 icon: Icons.show_chart,
-                title: 'Reports & exports',
-                subtitle: 'Charts, CSV, and PDF for farm records',
+                title: 'Reports & exports'.tr,
+                subtitle: 'Charts, CSV, and PDF for farm records'.tr,
                 onTap: widget.userPreferences == null ? null : _openReports,
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               AdminInfoCard(
                 child: Text(
                   'Management tools control users, backups, and farm-wide settings. Field workers use a separate sign-in.',

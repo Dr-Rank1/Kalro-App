@@ -4,9 +4,10 @@ import '../components/components.dart';
 import '../models/producer_type.dart';
 import '../services/app_repositories.dart';
 import '../theme/kalro_colors.dart';
+import 'package:kalro/l10n/translator.dart';
 
 class AddProducerScreen extends StatefulWidget {
-  const AddProducerScreen({super.key, required this.repositories});
+  AddProducerScreen({super.key, required this.repositories});
 
   final AppRepositories repositories;
 
@@ -52,7 +53,7 @@ class _AddProducerScreenState extends State<AddProducerScreen> {
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not save producer: $error')),
+        SnackBar(content: Text('Could not save producer: $error'.tr)),
       );
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -64,14 +65,14 @@ class _AddProducerScreenState extends State<AddProducerScreen> {
     return Scaffold(
       backgroundColor: KalroColors.headerGreen,
       appBar: AppBar(
-        title: const Text('Add Producer'),
+        title: Text('Add Producer'.tr),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back),
           onPressed: _saving ? null : () => Navigator.of(context).pop(),
         ),
       ),
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: KalroColors.background,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
@@ -79,11 +80,11 @@ class _AddProducerScreenState extends State<AddProducerScreen> {
           child: Form(
             key: _formKey,
             child: ListView(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(20),
               children: [
                 DropdownButtonFormField<ProducerType>(
                   initialValue: _type,
-                  decoration: const InputDecoration(labelText: 'Producer type'),
+                  decoration: InputDecoration(labelText: 'Producer type'),
                   items: ProducerType.values
                       .map(
                         (type) => DropdownMenuItem(
@@ -98,41 +99,41 @@ class _AddProducerScreenState extends State<AddProducerScreen> {
                           if (value != null) setState(() => _type = value);
                         },
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 TextFormField(
                   controller: _nameController,
-                  decoration: const InputDecoration(labelText: 'Name'),
+                  decoration: InputDecoration(labelText: 'Name'),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) return 'Enter a name';
                     return null;
                   },
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 TextFormField(
                   controller: _locationController,
-                  decoration: const InputDecoration(labelText: 'Location (optional)'),
+                  decoration: InputDecoration(labelText: 'Location (optional)'),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 TextFormField(
                   controller: _phoneController,
-                  decoration: const InputDecoration(labelText: 'Contact phone (optional)'),
+                  decoration: InputDecoration(labelText: 'Contact phone (optional)'),
                   keyboardType: TextInputType.phone,
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 TextFormField(
                   controller: _speciesController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Species offered (optional)',
-                    hintText: 'Bombyx mori, Eri',
+                    hintText: 'Bombyx mori, Eri'.tr,
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 TextFormField(
                   controller: _notesController,
-                  decoration: const InputDecoration(labelText: 'Notes (optional)'),
+                  decoration: InputDecoration(labelText: 'Notes (optional)'),
                   maxLines: 2,
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 KalroPrimaryButton(
                   label: _saving ? 'Saving...' : 'Save producer',
                   onPressed: _saving ? null : _save,

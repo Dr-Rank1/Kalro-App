@@ -5,7 +5,7 @@ import '../../theme/kalro_colors.dart';
 import '../buttons/kalro_primary_button.dart';
 
 class EmptyStateCard extends StatelessWidget {
-  const EmptyStateCard({
+  EmptyStateCard({
     super.key,
     required this.title,
     required this.message,
@@ -23,7 +23,7 @@ class EmptyStateCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -32,15 +32,15 @@ class EmptyStateCard extends StatelessWidget {
       child: Column(
         children: [
           Icon(icon, size: 40, color: KalroColors.primaryGreen),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Text(title, style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             message,
             textAlign: TextAlign.center,
             style: GoogleFonts.poppins(fontSize: 13, color: KalroColors.textMuted),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           KalroPrimaryButton(label: actionLabel, onPressed: onAction),
         ],
       ),

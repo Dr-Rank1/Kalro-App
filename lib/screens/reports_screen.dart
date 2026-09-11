@@ -15,6 +15,7 @@ import '../services/report_chart_service.dart';
 import '../services/reports_service.dart';
 import '../services/user_preferences.dart';
 import '../theme/kalro_colors.dart';
+import 'package:kalro/l10n/translator.dart';
 
 class _ReportsBundle {
   const _ReportsBundle({required this.summary, required this.charts});
@@ -24,7 +25,7 @@ class _ReportsBundle {
 }
 
 class ReportsScreen extends StatefulWidget {
-  const ReportsScreen({
+  ReportsScreen({
     super.key,
     required this.repositories,
     required this.userPreferences,
@@ -38,8 +39,8 @@ class ReportsScreen extends StatefulWidget {
 }
 
 class _ReportsScreenState extends State<ReportsScreen> {
-  final _reportsService = const ReportsService();
-  final _chartService = const ReportChartService();
+  final _reportsService = ReportsService();
+  final _chartService = ReportChartService();
   static const _csvExport = CsvExportService();
   static const _pdfExport = PdfExportService();
   late Future<_ReportsBundle> _bundleFuture;
@@ -89,7 +90,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
     await Clipboard.setData(ClipboardData(text: csv));
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Farm data copied to clipboard as CSV')),
+      SnackBar(content: Text('Farm data copied to clipboard as CSV'.tr)),
     );
   }
 
@@ -102,12 +103,12 @@ class _ReportsScreenState extends State<ReportsScreen> {
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('PDF saved to ${file.path}')),
+        SnackBar(content: Text('PDF saved to ${file.path}'.tr)),
       );
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('PDF export failed: $error')),
+        SnackBar(content: Text('PDF export failed: $error'.tr)),
       );
     } finally {
       if (mounted) setState(() => _exportingPdf = false);
@@ -127,14 +128,14 @@ class _ReportsScreenState extends State<ReportsScreen> {
     return Scaffold(
       backgroundColor: KalroColors.headerGreen,
       appBar: AppBar(
-        title: const Text('Reports'),
+        title: Text('Reports'.tr),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: KalroColors.background,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
@@ -148,7 +149,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
               child: RefreshIndicator(
                 onRefresh: () async => _reload(),
                 child: ListView(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+                  padding: EdgeInsets.fromLTRB(20, 20, 20, 24),
                   children: [
                     Text(
                       summary.orgName,
@@ -156,17 +157,17 @@ class _ReportsScreenState extends State<ReportsScreen> {
                             fontWeight: FontWeight.w600,
                           ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
                       'Generated ${dateFormat.format(summary.generatedAt)}',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: KalroColors.textMuted,
                           ),
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                     GridView.count(
                       shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
+                      physics: NeverScrollableScrollPhysics(),
                       crossAxisCount: 2,
                       mainAxisSpacing: 12,
                       crossAxisSpacing: 12,
@@ -174,168 +175,168 @@ class _ReportsScreenState extends State<ReportsScreen> {
                       children: [
                         KalroStatCard(
                           icon: Icons.layers_outlined,
-                          title: 'Active Batches',
+                          title: 'Active Batches'.tr,
                           value: summary.activeBatches.toString(),
                         ),
                         KalroStatCard(
                           icon: Icons.bug_report_outlined,
-                          title: 'Total Larvae',
+                          title: 'Total Larvae'.tr,
                           value: NumberFormat.decimalPattern()
                               .format(summary.bombyxLarvae + summary.eriLarvae),
                         ),
                         KalroStatCard(
                           icon: Icons.restaurant_outlined,
-                          title: 'Feed Logged',
+                          title: 'Feed Logged'.tr,
                           value: _formatFeed(summary.totalFeedGrams),
                         ),
                         KalroStatCard(
                           icon: Icons.favorite_outline,
-                          title: 'Survival',
+                          title: 'Survival'.tr,
                           value: '${summary.averageSurvivalPercent.toStringAsFixed(0)}%',
                         ),
                       ],
                     ),
-                    const SizedBox(height: 28),
+                    SizedBox(height: 28),
                     _ChartSection(
-                      title: 'Feed trend (14 days)',
+                      title: 'Feed trend (14 days)'.tr,
                       child: FeedTrendChart(points: charts.feedTrend),
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
                     _ChartSection(
-                      title: 'Mortality trend (14 days)',
+                      title: 'Mortality trend (14 days)'.tr,
                       child: MortalityTrendChart(points: charts.mortalityTrend),
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
                     _ChartSection(
-                      title: 'Live larvae by species',
+                      title: 'Live larvae by species'.tr,
                       child: SpeciesSplitChart(
                         bombyxLarvae: charts.bombyxLarvae,
                         eriLarvae: charts.eriLarvae,
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
                     _ChartSection(
-                      title: 'Batch comparison',
+                      title: 'Batch comparison'.tr,
                       child: BatchComparisonTable(rows: charts.batchComparisons),
                     ),
-                    const SizedBox(height: 28),
+                    SizedBox(height: 28),
                     ReportSectionCard(
-                      title: 'Rearing',
+                      title: 'Rearing'.tr,
                       children: [
                         ReportMetricRow(
-                          label: 'Total batches',
+                          label: 'Total batches'.tr,
                           value: summary.totalBatches.toString(),
                           icon: Icons.inventory_2_outlined,
                         ),
                         ReportMetricRow(
-                          label: 'Active batches',
+                          label: 'Active batches'.tr,
                           value: summary.activeBatches.toString(),
                           icon: Icons.eco_outlined,
                         ),
                         ReportMetricRow(
-                          label: 'Closed batches',
+                          label: 'Closed batches'.tr,
                           value: summary.closedBatches.toString(),
                           icon: Icons.archive_outlined,
                         ),
                         ReportMetricRow(
-                          label: 'Bombyx larvae',
+                          label: 'Bombyx larvae'.tr,
                           value: summary.bombyxLarvae.toString(),
                           icon: Icons.home_outlined,
                         ),
                         ReportMetricRow(
-                          label: 'Eri larvae',
+                          label: 'Eri larvae'.tr,
                           value: summary.eriLarvae.toString(),
                           icon: Icons.storefront_outlined,
                         ),
                       ],
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                     ReportSectionCard(
-                      title: 'Feeding',
+                      title: 'Feeding'.tr,
                       children: [
                         ReportMetricRow(
-                          label: 'Total feed logged',
+                          label: 'Total feed logged'.tr,
                           value: _formatFeed(summary.totalFeedGrams),
                           icon: Icons.restaurant_outlined,
                         ),
                         ReportMetricRow(
-                          label: 'Feed log entries',
+                          label: 'Feed log entries'.tr,
                           value: summary.feedLogCount.toString(),
                           icon: Icons.list_alt_outlined,
                         ),
                       ],
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                     ReportSectionCard(
-                      title: 'Health & harvest',
+                      title: 'Health & harvest'.tr,
                       children: [
                         ReportMetricRow(
-                          label: 'Total mortality',
+                          label: 'Total mortality'.tr,
                           value: summary.totalMortality.toString(),
                           icon: Icons.health_and_safety_outlined,
                         ),
                         ReportMetricRow(
-                          label: 'Average survival',
+                          label: 'Average survival'.tr,
                           value: '${summary.averageSurvivalPercent.toStringAsFixed(0)}%',
                           icon: Icons.favorite_outline,
                         ),
                         ReportMetricRow(
-                          label: 'Harvest records',
+                          label: 'Harvest records'.tr,
                           value: summary.harvestCount.toString(),
                           icon: Icons.inventory_outlined,
                         ),
                         ReportMetricRow(
-                          label: 'Total cocoon weight',
+                          label: 'Total cocoon weight'.tr,
                           value: _formatFeed(summary.totalHarvestWeightGrams),
                           icon: Icons.scale_outlined,
                         ),
                       ],
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                     KalroPrimaryButton(
                       label: _exportingPdf ? 'Exporting PDF...' : 'Export PDF report',
                       onPressed: _exportingPdf ? null : _exportPdf,
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     OutlinedButton(
                       onPressed: _exportCsv,
                       style: OutlinedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(48),
-                        side: const BorderSide(color: KalroColors.headerGreen),
+                        minimumSize: Size.fromHeight(48),
+                        side: BorderSide(color: KalroColors.headerGreen),
                       ),
-                      child: const Text('Export CSV to clipboard'),
+                      child: Text('Export CSV to clipboard'.tr),
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                     ReportSectionCard(
-                      title: 'Financial',
+                      title: 'Financial'.tr,
                       children: [
                         ReportMetricRow(
-                          label: 'Pending receivable',
+                          label: 'Pending receivable'.tr,
                           value: currency.format(summary.totalReceivable),
                           icon: Icons.arrow_downward,
                         ),
                         ReportMetricRow(
-                          label: 'Pending payable',
+                          label: 'Pending payable'.tr,
                           value: currency.format(summary.totalPayable),
                           icon: Icons.arrow_upward,
                         ),
                         ReportMetricRow(
-                          label: 'Purchase spend',
+                          label: 'Purchase spend'.tr,
                           value: currency.format(summary.purchaseSpend),
                           icon: Icons.shopping_bag_outlined,
                         ),
                         ReportMetricRow(
-                          label: 'Purchase orders',
+                          label: 'Purchase orders'.tr,
                           value: summary.purchaseOrderCount.toString(),
                           icon: Icons.receipt_long_outlined,
                         ),
                         ReportMetricRow(
-                          label: 'Settled payments',
+                          label: 'Settled payments'.tr,
                           value: summary.settledPayments.toString(),
                           icon: Icons.check_circle_outline,
                         ),
                         ReportMetricRow(
-                          label: 'Pending payments',
+                          label: 'Pending payments'.tr,
                           value: summary.pendingPayments.toString(),
                           icon: Icons.schedule,
                         ),
@@ -361,7 +362,7 @@ class _ChartSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -374,7 +375,7 @@ class _ChartSection extends StatelessWidget {
             title,
             style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w600),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           child,
         ],
       ),

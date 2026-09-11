@@ -9,7 +9,7 @@ import '../../theme/kalro_colors.dart';
 
 /// Compact row tile for an active rearing batch.
 class BatchHorizontalCard extends StatelessWidget {
-  const BatchHorizontalCard({
+  BatchHorizontalCard({
     super.key,
     required this.batch,
     required this.lifecycleEngine,
@@ -61,7 +61,7 @@ class BatchHorizontalCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: KalroColors.divider),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          padding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           child: Row(
             children: [
               Container(
@@ -77,7 +77,7 @@ class BatchHorizontalCard extends StatelessWidget {
                   color: KalroColors.primaryGreen,
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -88,7 +88,7 @@ class BatchHorizontalCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 14),
                     ),
-                    const SizedBox(height: 2),
+                    SizedBox(height: 2),
                     Text(
                       detail,
                       maxLines: 1,
@@ -98,7 +98,7 @@ class BatchHorizontalCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: KalroColors.textLight, size: 20),
+              Icon(Icons.chevron_right, color: KalroColors.textLight, size: 20),
             ],
           ),
         ),

@@ -12,9 +12,10 @@ import '../services/rearing_conditions_service.dart';
 import '../theme/kalro_colors.dart';
 import 'batch_detail_screen.dart';
 import 'create_batch_screen.dart';
+import 'package:kalro/l10n/translator.dart';
 
 class LifecyclePlannerScreen extends StatefulWidget {
-  const LifecyclePlannerScreen({
+  LifecyclePlannerScreen({
     super.key,
     required this.repositories,
     this.canEdit = true,
@@ -83,7 +84,7 @@ class _LifecyclePlannerScreenState extends State<LifecyclePlannerScreen> {
       context: context,
       initialDate: _startDate,
       firstDate: DateTime(2020),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
+      lastDate: DateTime.now().add(Duration(days: 365)),
     );
     if (picked != null) setState(() => _startDate = picked);
   }
@@ -119,14 +120,14 @@ class _LifecyclePlannerScreenState extends State<LifecyclePlannerScreen> {
     return Scaffold(
       backgroundColor: KalroColors.headerGreen,
       appBar: AppBar(
-        title: const Text('Lifecycle planner'),
+        title: Text('Lifecycle planner'.tr),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: KalroColors.background,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
@@ -134,20 +135,20 @@ class _LifecyclePlannerScreenState extends State<LifecyclePlannerScreen> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+                padding: EdgeInsets.fromLTRB(20, 16, 20, 8),
                 child: Row(
                   children: [
                     Expanded(
                       child: _TabChip(
-                        label: 'My batches',
+                        label: 'My batches'.tr,
                         selected: _tab == 0,
                         onTap: () => setState(() => _tab = 0),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Expanded(
                       child: _TabChip(
-                        label: 'Plan a cycle',
+                        label: 'Plan a cycle'.tr,
                         selected: _tab == 1,
                         onTap: () => setState(() => _tab = 1),
                       ),
@@ -171,11 +172,11 @@ class _LifecyclePlannerScreenState extends State<LifecyclePlannerScreen> {
       builder: (context, events) {
         if (events.isEmpty) {
           return ListView(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+            padding: EdgeInsets.fromLTRB(20, 8, 20, 24),
             children: [
               EmptyStateCard(
                 icon: Icons.auto_graph_outlined,
-                title: 'No predicted dates yet',
+                title: 'No predicted dates yet'.tr,
                 message:
                     'Start a batch, or plan a cycle to see hatch, spinning, harvest, and moth dates.',
                 actionLabel: 'Plan a cycle',
@@ -188,27 +189,27 @@ class _LifecyclePlannerScreenState extends State<LifecyclePlannerScreen> {
         return RefreshIndicator(
           onRefresh: () async => _reload(),
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+            padding: EdgeInsets.fromLTRB(20, 8, 20, 24),
             children: [
               Text(
                 'Dates use logged weather and feeding when you have records. Cool or dry houses, short leaf, and missed feeds each move hatch, harvest, and moths differently.',
                 style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               ..._grouped(events).entries.expand((entry) {
                 return [
                   KalroSectionHeader(title: entry.key, subtitle: '${entry.value.length}'),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   ...entry.value.map(
                     (event) => Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
+                      padding: EdgeInsets.only(bottom: 10),
                       child: _FarmEventTile(
                         event: event,
                         onTap: () => _openBatch(event.batch.id),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                 ];
               }),
             ],
@@ -223,13 +224,13 @@ class _LifecyclePlannerScreenState extends State<LifecyclePlannerScreen> {
     final adjustment = _adjuster.adjust(_species, _scenario.conditionsFor(_species));
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+      padding: EdgeInsets.fromLTRB(20, 8, 20, 24),
       children: [
         Text(
           'Pick species and start date, then test weather and leaf scenarios before you start eggs.',
           style: GoogleFonts.poppins(fontSize: 13, color: KalroColors.textMuted),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         KalroSpeciesDropdown(
           key: ValueKey(_species),
           value: _species,
@@ -237,56 +238,56 @@ class _LifecyclePlannerScreenState extends State<LifecyclePlannerScreen> {
             if (value != null) setState(() => _species = value);
           },
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         KalroDateRow(
-          label: 'Egg start date',
+          label: 'Egg start date'.tr,
           date: _startDate,
           onTap: _pickStartDate,
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         Text(
           'What if conditions change?',
           style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600),
         ),
-        const SizedBox(height: 4),
+        SizedBox(height: 4),
         Text(
           _scenario.detail,
           style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         PredictionScenarioBar(
           selected: _scenario,
           onSelected: (value) {
             if (value != null) setState(() => _scenario = value);
           },
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         PredictionOutcomeCard(cycle: cycle),
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
         LifecycleKeyDatesCard(
           cycle: cycle,
           footnote: cycle.shiftSummary == null
               ? 'Typical ${_species.label} durations from the rearing spec.'
               : 'Compared with a typical house and enough leaf.',
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
         PredictionConditionsBanner(
           adjustment: adjustment,
           harvestShiftDays: cycle.harvestShiftDays,
           shiftSummary: cycle.shiftSummary,
           snapshot: _scenario.conditionsFor(_species).snapshotLabel,
         ),
-        const SizedBox(height: 20),
-        const KalroSectionHeader(
-          title: 'Full predicted timeline',
-          subtitle: 'What to prepare',
+        SizedBox(height: 20),
+        KalroSectionHeader(
+          title: 'Full predicted timeline'.tr,
+          subtitle: 'What to prepare'.tr,
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         PlanningTimeline(cycle: cycle, planning: _planning),
         if (widget.canEdit) ...[
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           KalroPrimaryButton(
-            label: 'Start this batch',
+            label: 'Start this batch'.tr,
             onPressed: _startBatchFromPlan,
           ),
         ],
@@ -333,7 +334,7 @@ class _TabChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
         child: Container(
           alignment: Alignment.center,
-          padding: const EdgeInsets.symmetric(vertical: 10),
+          padding: EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
@@ -373,16 +374,16 @@ class _FarmEventTile extends StatelessWidget {
 
     return KalroOutlineCard(
       onTap: onTap,
-      padding: const EdgeInsets.all(14),
+      padding: EdgeInsets.all(14),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             width: 48,
-            padding: const EdgeInsets.symmetric(vertical: 6),
+            padding: EdgeInsets.symmetric(vertical: 6),
             decoration: BoxDecoration(
               color: event.isOverdue
-                  ? const Color(0xFFFFE8E8)
+                  ? Color(0xFFFFE8E8)
                   : event.isToday
                       ? KalroColors.peach.withValues(alpha: 0.5)
                       : KalroColors.background,
@@ -408,7 +409,7 @@ class _FarmEventTile extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -417,18 +418,18 @@ class _FarmEventTile extends StatelessWidget {
                   event.title,
                   style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 14),
                 ),
-                const SizedBox(height: 2),
+                SizedBox(height: 2),
                 Text(
                   '${event.batch.species.label} · ${dateFormat.format(event.milestone.effectiveDate)} · $timing',
                   style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
                 ),
-                const SizedBox(height: 6),
+                SizedBox(height: 6),
                 Text(
                   event.prepNote,
                   style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textDark),
                 ),
                 if (event.conditionNote != null) ...[
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     event.conditionNote!,
                     style: GoogleFonts.poppins(fontSize: 11, color: KalroColors.accentBrown),

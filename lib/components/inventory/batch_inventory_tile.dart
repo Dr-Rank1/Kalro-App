@@ -6,7 +6,7 @@ import '../../models/batch.dart';
 import '../../theme/kalro_colors.dart';
 
 class BatchInventoryTile extends StatelessWidget {
-  const BatchInventoryTile({
+  BatchInventoryTile({
     super.key,
     required this.batch,
     required this.onTap,
@@ -26,8 +26,8 @@ class BatchInventoryTile extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(10),
         child: Container(
-          margin: const EdgeInsets.only(bottom: 8),
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          margin: EdgeInsets.only(bottom: 8),
+          padding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             border: Border.all(color: KalroColors.divider),
@@ -41,9 +41,9 @@ class BatchInventoryTile extends StatelessWidget {
                   color: KalroColors.peach.withValues(alpha: 0.35),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.eco_outlined, color: KalroColors.primaryGreen, size: 20),
+                child: Icon(Icons.eco_outlined, color: KalroColors.primaryGreen, size: 20),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,7 +59,7 @@ class BatchInventoryTile extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: KalroColors.textLight, size: 20),
+              Icon(Icons.chevron_right, color: KalroColors.textLight, size: 20),
             ],
           ),
         ),

@@ -6,7 +6,7 @@ import '../../services/lifecycle_engine.dart';
 import '../../theme/kalro_colors.dart';
 
 class BatchGridCard extends StatelessWidget {
-  const BatchGridCard({
+  BatchGridCard({
     super.key,
     required this.batch,
     required this.engine,
@@ -34,7 +34,7 @@ class BatchGridCard extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
@@ -60,14 +60,14 @@ class BatchGridCard extends StatelessWidget {
                 Container(
                   width: 12,
                   height: 12,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     color: Colors.green, // healthy
                     shape: BoxShape.circle,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Expanded(
               child: Center(
                 child: Stack(
@@ -94,7 +94,7 @@ class BatchGridCard extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Text(
               currentMilestone?.label ?? 'Started',
               style: GoogleFonts.poppins(

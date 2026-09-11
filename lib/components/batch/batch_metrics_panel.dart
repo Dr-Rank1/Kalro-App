@@ -3,9 +3,10 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../services/batch_metrics_service.dart';
 import '../../theme/kalro_colors.dart';
+import 'package:kalro/l10n/translator.dart';
 
 class BatchMetricsPanel extends StatelessWidget {
-  const BatchMetricsPanel({super.key, required this.metrics});
+  BatchMetricsPanel({super.key, required this.metrics});
 
   final BatchMetrics metrics;
 
@@ -18,7 +19,7 @@ class BatchMetricsPanel extends StatelessWidget {
             : Colors.red;
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -27,15 +28,15 @@ class BatchMetricsPanel extends StatelessWidget {
       child: Row(
         children: [
           _MetricCell(
-            label: 'Live larvae',
+            label: 'Live larvae'.tr,
             value: '${metrics.liveCount}',
           ),
           _MetricCell(
-            label: 'Mortality',
+            label: 'Mortality'.tr,
             value: '${metrics.totalMortality}',
           ),
           _MetricCell(
-            label: 'Survival',
+            label: 'Survival'.tr,
             value: '${metrics.survivalRatePercent.toStringAsFixed(0)}%',
             valueColor: survivalColor,
           ),
@@ -69,7 +70,7 @@ class _MetricCell extends StatelessWidget {
               color: valueColor ?? KalroColors.textDark,
             ),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text(
             label,
             style: GoogleFonts.poppins(

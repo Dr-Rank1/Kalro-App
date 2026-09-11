@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../theme/kalro_colors.dart';
 
 class KalroStatCard extends StatelessWidget {
-  const KalroStatCard({
+  KalroStatCard({
     super.key,
     required this.icon,
     required this.title,
@@ -18,7 +18,7 @@ class KalroStatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: KalroColors.cardWhite,
         borderRadius: BorderRadius.circular(12),
@@ -26,7 +26,7 @@ class KalroStatCard extends StatelessWidget {
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
-            offset: const Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
@@ -34,7 +34,7 @@ class KalroStatCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(icon, color: KalroColors.primaryGreen, size: 28),
-          const Spacer(),
+          Spacer(),
           Text(
             title,
             style: GoogleFonts.poppins(
@@ -43,7 +43,7 @@ class KalroStatCard extends StatelessWidget {
               fontWeight: FontWeight.w500,
             ),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text(
             value,
             style: GoogleFonts.poppins(

@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../theme/kalro_colors.dart';
 
 class KalroToolbar extends StatelessWidget {
-  const KalroToolbar({
+  KalroToolbar({
     super.key,
     required this.title,
     this.onBack,
@@ -24,15 +24,15 @@ class KalroToolbar extends StatelessWidget {
         if (onBack != null)
           IconButton(
             onPressed: onBack,
-            icon: const Icon(Icons.arrow_back, color: KalroColors.textDark),
+            icon: Icon(Icons.arrow_back, color: KalroColors.textDark),
           )
         else if (Scaffold.maybeOf(context)?.hasDrawer ?? false)
           IconButton(
             onPressed: () => Scaffold.of(context).openDrawer(),
-            icon: const Icon(Icons.menu, color: KalroColors.textDark),
+            icon: Icon(Icons.menu, color: KalroColors.textDark),
           )
         else
-          const SizedBox(width: 8),
+          SizedBox(width: 8),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

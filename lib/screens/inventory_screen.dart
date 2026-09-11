@@ -9,9 +9,10 @@ import '../services/inventory_service.dart';
 import '../theme/kalro_colors.dart';
 import 'batch_detail_screen.dart';
 import 'create_batch_screen.dart';
+import 'package:kalro/l10n/translator.dart';
 
 class InventoryScreen extends StatefulWidget {
-  const InventoryScreen({
+  InventoryScreen({
     super.key,
     required this.repositories,
     required this.onBatchChanged,
@@ -27,7 +28,7 @@ class InventoryScreen extends StatefulWidget {
 }
 
 class _InventoryScreenState extends State<InventoryScreen> {
-  final _inventoryService = const InventoryService();
+  final _inventoryService = InventoryService();
   late Future<InventorySummary> _summaryFuture;
 
   @override
@@ -75,7 +76,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Update $title'),
+          title: Text('Update $title'.tr),
           content: TextField(
             controller: controller,
             keyboardType: TextInputType.number,
@@ -88,11 +89,11 @@ class _InventoryScreenState extends State<InventoryScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel'),
+              child: Text('Cancel'.tr),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Save'),
+              child: Text('Save'.tr),
             ),
           ],
         );
@@ -105,7 +106,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
     if (parsed == null || parsed <= 0) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Enter a valid price')),
+        SnackBar(content: Text('Enter a valid price'.tr)),
       );
       return;
     }
@@ -113,7 +114,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
     await onSave(parsed);
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('$title updated to ${currency.format(parsed)}')),
+      SnackBar(content: Text('$title updated to ${currency.format(parsed)}'.tr)),
     );
     _reload();
   }
@@ -137,7 +138,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
               ? FloatingActionButton(
                   onPressed: _openCreateBatch,
                   backgroundColor: KalroColors.buttonGreen,
-                  child: const Icon(Icons.add),
+                  child: Icon(Icons.add),
                 )
               : null,
           body: KalroBackground(
@@ -145,17 +146,17 @@ class _InventoryScreenState extends State<InventoryScreen> {
               child: RefreshIndicator(
                 onRefresh: () async => _reload(),
                 child: ListView(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+                  padding: EdgeInsets.fromLTRB(20, 20, 20, 24),
                   children: [
                     KalroToolbar(
-                      title: 'Inventory',
+                      title: 'Inventory'.tr,
                       subtitle:
                           '${summary.activeBatchCount} active batch${summary.activeBatchCount == 1 ? '' : 'es'}. Tap price cards to update.',
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                     GridView.count(
                       shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
+                      physics: NeverScrollableScrollPhysics(),
                       crossAxisCount: 2,
                       mainAxisSpacing: 16,
                       crossAxisSpacing: 16,
@@ -163,22 +164,22 @@ class _InventoryScreenState extends State<InventoryScreen> {
                       children: [
                         KalroInventoryCard(
                           icon: Icons.home_outlined,
-                          title: 'Bombyx Stock',
+                          title: 'Bombyx Stock'.tr,
                           value: '${summary.bombyxLarvaeCount} larvae\n${_formatFeedGrams(summary.bombyxFeedGrams)}',
                           onTap: _openCreateBatch,
                         ),
                         KalroInventoryCard(
                           icon: Icons.storefront_outlined,
-                          title: 'Eri Stock',
+                          title: 'Eri Stock'.tr,
                           value: '${summary.eriLarvaeCount} larvae\n${_formatFeedGrams(summary.eriFeedGrams)}',
                           onTap: _openCreateBatch,
                         ),
                         KalroInventoryCard(
                           icon: Icons.sell_outlined,
-                          title: 'Bombyx Price',
+                          title: 'Bombyx Price'.tr,
                           value: currency.format(summary.settings.bombyxPrice),
                           onTap: () => _editPrice(
-                            title: 'Bombyx Price',
+                            title: 'Bombyx Price'.tr,
                             current: summary.settings.bombyxPrice,
                             onSave: (value) => widget.repositories.inventorySettings.update(
                               bombyxPrice: value,
@@ -187,10 +188,10 @@ class _InventoryScreenState extends State<InventoryScreen> {
                         ),
                         KalroInventoryCard(
                           icon: Icons.monetization_on_outlined,
-                          title: 'Eri Price',
+                          title: 'Eri Price'.tr,
                           value: currency.format(summary.settings.eriPrice),
                           onTap: () => _editPrice(
-                            title: 'Eri Price',
+                            title: 'Eri Price'.tr,
                             current: summary.settings.eriPrice,
                             onSave: (value) => widget.repositories.inventorySettings.update(
                               eriPrice: value,
@@ -199,16 +200,16 @@ class _InventoryScreenState extends State<InventoryScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                     LeafInventorySection(
                       repository: widget.repositories.leafInventory,
                     ),
-                    const SizedBox(height: 32),
-                    const KalroSectionHeader(title: 'All Batches'),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 32),
+                    KalroSectionHeader(title: 'All Batches'),
+                    SizedBox(height: 12),
                     if (summary.batches.isEmpty)
                       EmptyStateCard(
-                        title: 'No batches in inventory',
+                        title: 'No batches in inventory'.tr,
                         message: 'Create a rearing batch to track Bombyx and Eri stock.',
                         actionLabel: 'Create Batch',
                         onAction: _openCreateBatch,

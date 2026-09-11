@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../theme/kalro_colors.dart';
 
 class KalroSectionHeader extends StatelessWidget {
-  const KalroSectionHeader({super.key, required this.title, this.subtitle});
+  KalroSectionHeader({super.key, required this.title, this.subtitle});
 
   final String title;
   final String? subtitle;
@@ -33,8 +33,8 @@ class KalroSectionHeader extends StatelessWidget {
               ),
           ],
         ),
-        const SizedBox(height: 8),
-        const Divider(height: 1),
+        SizedBox(height: 8),
+        Divider(height: 1),
       ],
     );
   }

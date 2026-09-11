@@ -5,7 +5,7 @@ import '../../theme/kalro_colors.dart';
 import 'kalro_outline_card.dart';
 
 class KalroInventoryCard extends StatelessWidget {
-  const KalroInventoryCard({
+  KalroInventoryCard({
     super.key,
     required this.icon,
     required this.title,
@@ -26,7 +26,7 @@ class KalroInventoryCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(icon, size: 36, color: KalroColors.textDark),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Text(
             title,
             style: GoogleFonts.poppins(
@@ -35,7 +35,7 @@ class KalroInventoryCard extends StatelessWidget {
               color: KalroColors.textDark,
             ),
           ),
-          const SizedBox(height: 6),
+          SizedBox(height: 6),
           Text(
             value,
             style: GoogleFonts.poppins(fontSize: 13, color: KalroColors.textMuted),

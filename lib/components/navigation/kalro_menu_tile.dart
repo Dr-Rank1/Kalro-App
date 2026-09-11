@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../theme/kalro_colors.dart';
 
 class KalroMenuTile extends StatelessWidget {
-  const KalroMenuTile({
+  KalroMenuTile({
     super.key,
     required this.icon,
     required this.title,
@@ -20,11 +20,11 @@ class KalroMenuTile extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 14),
         child: Row(
           children: [
             Icon(icon, color: KalroColors.primaryGreen, size: 24),
-            const SizedBox(width: 16),
+            SizedBox(width: 16),
             Expanded(
               child: Text(
                 title,

@@ -11,9 +11,10 @@ import '../cards/kalro_section_header.dart';
 import '../records/record_empty_state.dart';
 import '../records/record_log_tile.dart';
 import '../records/record_summary_bar.dart';
+import 'package:kalro/l10n/translator.dart';
 
 class FeedLogSection extends StatefulWidget {
-  const FeedLogSection({
+  FeedLogSection({
     super.key,
     required this.batchId,
     required this.repository,
@@ -62,7 +63,7 @@ class _FeedLogSectionState extends State<FeedLogSection> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
@@ -81,32 +82,32 @@ class _FeedLogSectionState extends State<FeedLogSection> {
                 'Log feeding',
                 style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               TextField(
                 controller: feedController,
-                decoration: const InputDecoration(labelText: 'Feed type'),
+                decoration: InputDecoration(labelText: 'Feed type'),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               TextField(
                 controller: quantityController,
-                decoration: const InputDecoration(labelText: 'Quantity (grams)'),
+                decoration: InputDecoration(labelText: 'Quantity (grams)'),
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               TextField(
                 controller: stageController,
-                decoration: const InputDecoration(labelText: 'Feeding stage (optional)'),
+                decoration: InputDecoration(labelText: 'Feeding stage (optional)'),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               TextField(
                 controller: notesController,
-                decoration: const InputDecoration(labelText: 'Notes (optional)'),
+                decoration: InputDecoration(labelText: 'Notes (optional)'),
                 maxLines: 2,
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
               KalroPrimaryButton(
-                label: 'Save feeding log',
+                label: 'Save feeding log'.tr,
                 onPressed: () async {
                   final quantity = double.tryParse(quantityController.text.trim());
                   if (feedController.text.trim().isEmpty || quantity == null || quantity <= 0) {
@@ -147,20 +148,20 @@ class _FeedLogSectionState extends State<FeedLogSection> {
       children: [
         Row(
           children: [
-            const Expanded(child: KalroSectionHeader(title: 'Feeding logs')),
+            Expanded(child: KalroSectionHeader(title: 'Feeding logs')),
             TextButton.icon(
               onPressed: _openAddDialog,
-              icon: const Icon(Icons.add, size: 18),
-              label: const Text('Add'),
+              icon: Icon(Icons.add, size: 18),
+              label: Text('Add'.tr),
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         FutureBuilder<List<FeedLog>>(
           future: _logsFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Padding(
+              return Padding(
                 padding: EdgeInsets.all(16),
                 child: Center(child: CircularProgressIndicator()),
               );
@@ -170,7 +171,7 @@ class _FeedLogSectionState extends State<FeedLogSection> {
             if (logs.isEmpty) {
               return RecordEmptyState(
                 icon: Icons.restaurant_outlined,
-                title: 'No feedings yet',
+                title: 'No feedings yet'.tr,
                 message: 'Log each feeding to track leaf use and consumption over the cycle.',
                 actionLabel: 'Log feeding',
                 onAction: _openAddDialog,
@@ -184,21 +185,21 @@ class _FeedLogSectionState extends State<FeedLogSection> {
               children: [
                 RecordSummaryBar(
                   items: [
-                    RecordSummaryItem(label: 'Total feed', value: formatGrams(total)),
-                    RecordSummaryItem(label: 'Entries', value: '${logs.length}'),
+                    RecordSummaryItem(label: 'Total feed'.tr, value: formatGrams(total)),
+                    RecordSummaryItem(label: 'Entries'.tr, value: '${logs.length}'),
                     RecordSummaryItem(
-                      label: 'Latest',
+                      label: 'Latest'.tr,
                       value: formatGrams(latest.quantityGrams),
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
                 ...logs.map(
                   (log) => RecordLogTile(
                     icon: Icons.restaurant_outlined,
                     iconColor: KalroColors.primaryGreen,
                     iconBackground: KalroColors.peach.withValues(alpha: 0.35),
-                    title: '${formatGrams(log.quantityGrams)} · ${log.feedType}',
+                    title: '${formatGrams(log.quantityGrams)} · ${log.feedType}'.tr,
                     subtitle: log.feedingStage?.trim().isNotEmpty == true ? log.feedingStage : null,
                     meta: formatRecordDate(log.recordedAt),
                     note: log.notes,

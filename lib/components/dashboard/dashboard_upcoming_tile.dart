@@ -6,7 +6,7 @@ import '../../models/dashboard_summary.dart';
 import '../../theme/kalro_colors.dart';
 
 class DashboardUpcomingTile extends StatelessWidget {
-  const DashboardUpcomingTile({
+  DashboardUpcomingTile({
     super.key,
     required this.item,
     required this.onTap,
@@ -26,7 +26,7 @@ class DashboardUpcomingTile extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(10),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          padding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           child: Row(
             children: [
               _DateBadge(
@@ -34,7 +34,7 @@ class DashboardUpcomingTile extends StatelessWidget {
                 isToday: item.isToday,
                 isOverdue: item.isOverdue,
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -47,7 +47,7 @@ class DashboardUpcomingTile extends StatelessWidget {
                         color: KalroColors.textDark,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    SizedBox(height: 2),
                     Text(
                       '${item.batch.species.label} · ${dateFormat.format(item.milestone.effectiveDate)}',
                       style: GoogleFonts.poppins(
@@ -58,7 +58,7 @@ class DashboardUpcomingTile extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: KalroColors.textLight, size: 20),
+              Icon(Icons.chevron_right, color: KalroColors.textLight, size: 20),
             ],
           ),
         ),
@@ -84,7 +84,7 @@ class _DateBadge extends StatelessWidget {
     final day = date.day.toString();
 
     final background = isOverdue
-        ? const Color(0xFFFFE8E8)
+        ? Color(0xFFFFE8E8)
         : isToday
             ? KalroColors.peach.withValues(alpha: 0.5)
             : KalroColors.background;
@@ -93,7 +93,7 @@ class _DateBadge extends StatelessWidget {
 
     return Container(
       width: 48,
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: EdgeInsets.symmetric(vertical: 6),
       decoration: BoxDecoration(
         color: background,
         borderRadius: BorderRadius.circular(8),

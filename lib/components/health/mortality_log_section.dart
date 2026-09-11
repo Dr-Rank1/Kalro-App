@@ -12,9 +12,10 @@ import '../cards/kalro_section_header.dart';
 import '../records/record_empty_state.dart';
 import '../records/record_log_tile.dart';
 import '../records/record_summary_bar.dart';
+import 'package:kalro/l10n/translator.dart';
 
 class MortalityLogSection extends StatefulWidget {
-  const MortalityLogSection({
+  MortalityLogSection({
     super.key,
     required this.batchId,
     required this.repository,
@@ -62,7 +63,7 @@ class _MortalityLogSectionState extends State<MortalityLogSection> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
@@ -84,44 +85,44 @@ class _MortalityLogSectionState extends State<MortalityLogSection> {
                       'Log mortality',
                       style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     TextField(
                       controller: countController,
-                      decoration: const InputDecoration(labelText: 'Count'),
+                      decoration: InputDecoration(labelText: 'Count'),
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     DropdownButtonFormField<String?>(
                       initialValue: disease,
-                      decoration: const InputDecoration(labelText: 'Disease (optional)'),
+                      decoration: InputDecoration(labelText: 'Disease (optional)'),
                       items: [
-                        const DropdownMenuItem(value: null, child: Text('None')),
+                        DropdownMenuItem(value: null, child: Text('None'.tr)),
                         ...DiseaseLibrary.entries.map(
                           (d) => DropdownMenuItem(value: d, child: Text(d)),
                         ),
                       ],
                       onChanged: (value) => setModalState(() => disease = value),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     TextField(
                       controller: reasonController,
-                      decoration: const InputDecoration(labelText: 'Reason (optional)'),
+                      decoration: InputDecoration(labelText: 'Reason (optional)'),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     TextField(
                       controller: treatmentController,
-                      decoration: const InputDecoration(labelText: 'Treatment (optional)'),
+                      decoration: InputDecoration(labelText: 'Treatment (optional)'),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     TextField(
                       controller: notesController,
-                      decoration: const InputDecoration(labelText: 'Notes (optional)'),
+                      decoration: InputDecoration(labelText: 'Notes (optional)'),
                       maxLines: 2,
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
                     KalroPrimaryButton(
-                      label: 'Save mortality log',
+                      label: 'Save mortality log'.tr,
                       onPressed: () async {
                         final count = int.tryParse(countController.text.trim());
                         if (count == null || count <= 0) return;
@@ -172,20 +173,20 @@ class _MortalityLogSectionState extends State<MortalityLogSection> {
       children: [
         Row(
           children: [
-            const Expanded(child: KalroSectionHeader(title: 'Mortality logs')),
+            Expanded(child: KalroSectionHeader(title: 'Mortality logs')),
             TextButton.icon(
               onPressed: _openAddDialog,
-              icon: const Icon(Icons.add, size: 18),
-              label: const Text('Add'),
+              icon: Icon(Icons.add, size: 18),
+              label: Text('Add'.tr),
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         FutureBuilder<List<MortalityLog>>(
           future: _logsFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Padding(
+              return Padding(
                 padding: EdgeInsets.all(16),
                 child: Center(child: CircularProgressIndicator()),
               );
@@ -195,7 +196,7 @@ class _MortalityLogSectionState extends State<MortalityLogSection> {
             if (logs.isEmpty) {
               return RecordEmptyState(
                 icon: Icons.monitor_heart_outlined,
-                title: 'No mortality logged',
+                title: 'No mortality logged'.tr,
                 message: 'Record daily checks to track larvae health and spot problems early.',
                 actionLabel: 'Log mortality',
                 onAction: _openAddDialog,
@@ -209,17 +210,17 @@ class _MortalityLogSectionState extends State<MortalityLogSection> {
               children: [
                 RecordSummaryBar(
                   items: [
-                    RecordSummaryItem(label: 'Total lost', value: '$total'),
-                    RecordSummaryItem(label: 'Entries', value: '${logs.length}'),
-                    RecordSummaryItem(label: 'Last check', value: '${latest.count}'),
+                    RecordSummaryItem(label: 'Total lost'.tr, value: '$total'),
+                    RecordSummaryItem(label: 'Entries'.tr, value: '${logs.length}'),
+                    RecordSummaryItem(label: 'Last check'.tr, value: '${latest.count}'),
                   ],
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
                 ...logs.map(
                   (log) => RecordLogTile(
                     icon: Icons.monitor_heart_outlined,
                     iconColor: log.disease != null ? Colors.orange.shade700 : KalroColors.textMuted,
-                    title: '${log.count} larvae lost',
+                    title: '${log.count} larvae lost'.tr,
                     subtitle: _subtitleFor(log),
                     meta: formatRecordDate(log.recordedAt),
                     note: log.notes,

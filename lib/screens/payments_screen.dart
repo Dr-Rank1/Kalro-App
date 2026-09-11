@@ -8,9 +8,10 @@ import '../services/payments_service.dart';
 import '../services/user_preferences.dart';
 import '../theme/kalro_colors.dart';
 import 'record_payment_screen.dart';
+import 'package:kalro/l10n/translator.dart';
 
 class PaymentsScreen extends StatefulWidget {
-  const PaymentsScreen({
+  PaymentsScreen({
     super.key,
     required this.repositories,
     required this.userPreferences,
@@ -28,7 +29,7 @@ class PaymentsScreen extends StatefulWidget {
 }
 
 class _PaymentsScreenState extends State<PaymentsScreen> {
-  final _paymentsService = const PaymentsService();
+  final _paymentsService = PaymentsService();
   late Future<PaymentsSummary> _summaryFuture;
 
   @override
@@ -76,45 +77,45 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
               : FloatingActionButton(
                   onPressed: _openRecordPayment,
                   backgroundColor: KalroColors.buttonGreen,
-                  child: const Icon(Icons.add),
+                  child: Icon(Icons.add),
                 ),
           body: KalroBackground(
             child: SafeArea(
               child: RefreshIndicator(
                 onRefresh: () async => _reload(),
                 child: ListView(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+                  padding: EdgeInsets.fromLTRB(20, 20, 20, 24),
                   children: [
                     if (widget.showToolbar) ...[
-                      const KalroToolbar(
-                        title: 'Payments',
-                        subtitle: 'Track receivables, payables, and settlement history.',
+                      KalroToolbar(
+                        title: 'Payments'.tr,
+                        subtitle: 'Track receivables, payables, and settlement history.'.tr,
                       ),
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24),
                     ],
                     PaymentSummaryCard(
-                      title: 'Total Receivable',
+                      title: 'Total Receivable'.tr,
                       value: currency.format(summary.totalReceivable),
                       icon: Icons.arrow_downward,
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     PaymentSummaryCard(
-                      title: 'Total Payable',
+                      title: 'Total Payable'.tr,
                       value: currency.format(summary.totalPayable),
                       icon: Icons.arrow_upward,
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     PaymentSummaryCard(
-                      title: 'Pending Settlements',
+                      title: 'Pending Settlements'.tr,
                       value: currency.format(summary.pendingSettlements),
                       icon: Icons.schedule,
                     ),
-                    const SizedBox(height: 24),
-                    const KalroSectionHeader(title: 'Recent Activity'),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 24),
+                    KalroSectionHeader(title: 'Recent Activity'),
+                    SizedBox(height: 12),
                     if (summary.isEmpty)
                       EmptyStateCard(
-                        title: 'No payments recorded yet',
+                        title: 'No payments recorded yet'.tr,
                         message: 'Log cocoon sales, seed purchases, and other transactions.',
                         actionLabel: 'Record Payment',
                         onAction: widget.readOnly ? () {} : _openRecordPayment,

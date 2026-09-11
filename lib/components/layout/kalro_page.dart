@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'kalro_background.dart';
 
 class KalroPage extends StatelessWidget {
-  const KalroPage({
+  KalroPage({
     super.key,
     required this.child,
-    this.padding = const EdgeInsets.fromLTRB(16, 16, 16, 24),
+    this.padding = EdgeInsets.fromLTRB(16, 16, 16, 24),
     this.onRefresh,
     this.scrollable = true,
   });
@@ -36,7 +36,7 @@ class KalroPage extends StatelessWidget {
       return child;
     }
     return ListView(
-      physics: const AlwaysScrollableScrollPhysics(),
+      physics: AlwaysScrollableScrollPhysics(),
       children: [SizedBox(height: 400, child: child)],
     );
   }

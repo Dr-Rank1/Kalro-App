@@ -8,9 +8,10 @@ import '../models/species.dart';
 import '../services/batch_repository.dart';
 import '../services/lifecycle_planning_service.dart';
 import '../theme/kalro_colors.dart';
+import 'package:kalro/l10n/translator.dart';
 
 class CreateBatchScreen extends StatefulWidget {
-  const CreateBatchScreen({
+  CreateBatchScreen({
     super.key,
     required this.repository,
     this.initialSpecies,
@@ -66,7 +67,7 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
       context: context,
       initialDate: _startDate,
       firstDate: DateTime(2020),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
+      lastDate: DateTime.now().add(Duration(days: 365)),
     );
     if (picked != null) setState(() => _startDate = picked);
   }
@@ -92,7 +93,7 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not save batch: $error')),
+        SnackBar(content: Text('Could not save batch: $error'.tr)),
       );
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -104,14 +105,14 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
     return Scaffold(
       backgroundColor: KalroColors.headerGreen,
       appBar: AppBar(
-        title: const Text('New Batch'),
+        title: Text('New Batch'.tr),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back),
           onPressed: _saving ? null : () => Navigator.of(context).pop(),
         ),
       ),
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: KalroColors.background,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
@@ -119,7 +120,7 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
           child: Form(
             key: _formKey,
             child: ListView(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(20),
               children: [
                 KalroSpeciesDropdown(
                   value: _species,
@@ -128,14 +129,14 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                     if (value != null) setState(() => _species = value);
                   },
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 KalroDateRow(
-                  label: 'Start date',
+                  label: 'Start date'.tr,
                   date: _startDate,
                   enabled: !_saving,
                   onTap: _pickStartDate,
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 Text(
                   'What if weather or leaf changes?',
                   style: GoogleFonts.poppins(
@@ -144,19 +145,19 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                     color: KalroColors.textDark,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   _scenario.detail,
                   style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 PredictionScenarioBar(
                   selected: _scenario,
                   onSelected: (value) {
                     if (value != null) setState(() => _scenario = value);
                   },
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 Builder(
                   builder: (context) {
                     final cycle = _planning.planCycle(
@@ -168,7 +169,7 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         PredictionOutcomeCard(cycle: cycle),
-                        const SizedBox(height: 12),
+                        SizedBox(height: 12),
                         LifecycleKeyDatesCard(
                           cycle: cycle,
                           footnote: cycle.shiftSummary == null
@@ -179,10 +180,10 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                     );
                   },
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 TextFormField(
                   controller: _eggCountController,
-                  decoration: const InputDecoration(labelText: 'Number of eggs / larvae'),
+                  decoration: InputDecoration(labelText: 'Number of eggs / larvae'),
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   validator: (value) {
@@ -191,12 +192,12 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 TextFormField(
                   controller: _strainController,
-                  decoration: const InputDecoration(labelText: 'Strain (optional)'),
+                  decoration: InputDecoration(labelText: 'Strain (optional)'),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 TextFormField(
                   controller: _feedController,
                   decoration: InputDecoration(
@@ -205,14 +206,14 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                         : 'Feed material (e.g. mulberry)',
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 TextFormField(
                   controller: _eggSourceController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Egg source (optional, e.g. KALRO Seed Unit)',
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 TextFormField(
                   controller: _rearingTypeController,
                   decoration: InputDecoration(
@@ -221,17 +222,17 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                         : 'Rearing type (optional, e.g. indoor rack)',
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 TextFormField(
                   controller: _locationController,
-                  decoration: const InputDecoration(labelText: 'Rearing location (optional)'),
+                  decoration: InputDecoration(labelText: 'Rearing location (optional)'),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 TextFormField(
                   controller: _caretakerController,
-                  decoration: const InputDecoration(labelText: 'Caretaker (optional)'),
+                  decoration: InputDecoration(labelText: 'Caretaker (optional)'),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 KalroPrimaryButton(
                   label: _saving ? 'Saving...' : 'Save batch',
                   onPressed: _saving ? null : _save,

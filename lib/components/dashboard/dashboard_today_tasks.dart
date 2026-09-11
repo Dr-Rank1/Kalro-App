@@ -5,7 +5,7 @@ import '../../models/today_task.dart';
 import '../../theme/kalro_colors.dart';
 
 class DashboardTodayTasks extends StatelessWidget {
-  const DashboardTodayTasks({
+  DashboardTodayTasks({
     super.key,
     required this.tasks,
     this.onTaskTap,
@@ -16,7 +16,7 @@ class DashboardTodayTasks extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (tasks.isEmpty) return const SizedBox.shrink();
+    if (tasks.isEmpty) return SizedBox.shrink();
 
     final shown = tasks.take(5).toList();
 
@@ -27,7 +27,7 @@ class DashboardTodayTasks extends StatelessWidget {
           "Today's tasks",
           style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         ...shown.map((task) {
           final icon = switch (task.type) {
             TodayTaskType.feeding => Icons.restaurant,
@@ -37,10 +37,10 @@ class DashboardTodayTasks extends StatelessWidget {
           };
 
           return Card(
-            margin: const EdgeInsets.only(bottom: 8),
+            margin: EdgeInsets.only(bottom: 8),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
-              side: const BorderSide(color: KalroColors.divider),
+              side: BorderSide(color: KalroColors.divider),
             ),
             child: ListTile(
               leading: Icon(icon, color: KalroColors.headerGreen),

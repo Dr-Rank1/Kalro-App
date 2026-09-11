@@ -13,9 +13,10 @@ import '../cards/kalro_section_header.dart';
 import '../records/record_empty_state.dart';
 import '../records/record_log_tile.dart';
 import '../records/record_summary_bar.dart';
+import 'package:kalro/l10n/translator.dart';
 
 class EnvironmentLogSection extends StatefulWidget {
-  const EnvironmentLogSection({
+  EnvironmentLogSection({
     super.key,
     required this.batch,
     required this.repository,
@@ -66,7 +67,7 @@ class _EnvironmentLogSectionState extends State<EnvironmentLogSection> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
@@ -90,29 +91,29 @@ class _EnvironmentLogSectionState extends State<EnvironmentLogSection> {
                 '${thresholds.minHumidity.toStringAsFixed(0)}–${thresholds.maxHumidity.toStringAsFixed(0)}% RH',
                 style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               TextField(
                 controller: tempController,
-                decoration: const InputDecoration(labelText: 'Temperature (°C)'),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                decoration: InputDecoration(labelText: 'Temperature (°C)'),
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
                 inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               TextField(
                 controller: humidityController,
-                decoration: const InputDecoration(labelText: 'Humidity (%)'),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                decoration: InputDecoration(labelText: 'Humidity (%)'),
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
                 inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               TextField(
                 controller: notesController,
-                decoration: const InputDecoration(labelText: 'Notes (optional)'),
+                decoration: InputDecoration(labelText: 'Notes (optional)'),
                 maxLines: 2,
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
               KalroPrimaryButton(
-                label: 'Save reading',
+                label: 'Save reading'.tr,
                 onPressed: () async {
                   final temp = double.tryParse(tempController.text.trim());
                   final humidity = double.tryParse(humidityController.text.trim());
@@ -152,20 +153,20 @@ class _EnvironmentLogSectionState extends State<EnvironmentLogSection> {
       children: [
         Row(
           children: [
-            const Expanded(child: KalroSectionHeader(title: 'Environment')),
+            Expanded(child: KalroSectionHeader(title: 'Environment')),
             TextButton.icon(
               onPressed: _openAddDialog,
-              icon: const Icon(Icons.add, size: 18),
-              label: const Text('Add'),
+              icon: Icon(Icons.add, size: 18),
+              label: Text('Add'.tr),
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         FutureBuilder<List<EnvironmentLog>>(
           future: _logsFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Padding(
+              return Padding(
                 padding: EdgeInsets.all(16),
                 child: Center(child: CircularProgressIndicator()),
               );
@@ -175,7 +176,7 @@ class _EnvironmentLogSectionState extends State<EnvironmentLogSection> {
             if (logs.isEmpty) {
               return RecordEmptyState(
                 icon: Icons.thermostat_outlined,
-                title: 'No readings yet',
+                title: 'No readings yet'.tr,
                 message:
                     'Log temperature and humidity daily to catch stress before it affects larvae.',
                 actionLabel: 'Log reading',
@@ -195,20 +196,20 @@ class _EnvironmentLogSectionState extends State<EnvironmentLogSection> {
                 RecordSummaryBar(
                   items: [
                     RecordSummaryItem(
-                      label: 'Latest temp',
+                      label: 'Latest temp'.tr,
                       value: '${latest.temperatureCelsius.toStringAsFixed(1)}°C',
                     ),
                     RecordSummaryItem(
-                      label: 'Latest RH',
+                      label: 'Latest RH'.tr,
                       value: '${latest.humidityPercent.toStringAsFixed(0)}%',
                     ),
                     RecordSummaryItem(
-                      label: 'Out of range',
+                      label: 'Out of range'.tr,
                       value: '$outOfRange',
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
                 ...logs.map((log) {
                   final tempOk = thresholds.isTemperatureOk(log.temperatureCelsius);
                   final humidityOk = thresholds.isHumidityOk(log.humidityPercent);

@@ -6,7 +6,7 @@ import '../../theme/kalro_colors.dart';
 import '../../l10n/app_localizations.dart';
 
 class FarmKpiCards extends StatelessWidget {
-  const FarmKpiCards({super.key, required this.summary});
+  FarmKpiCards({super.key, required this.summary});
 
   final DashboardSummary summary;
 
@@ -19,8 +19,8 @@ class FarmKpiCards extends StatelessWidget {
     String? subtitle,
   }) {
     return Container(
-      width: 140,
-      padding: const EdgeInsets.all(16),
+      width: 160,
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -28,7 +28,7 @@ class FarmKpiCards extends StatelessWidget {
           BoxShadow(
             color: color.withValues(alpha: 0.1),
             blurRadius: 10,
-            offset: const Offset(0, 4),
+            offset: Offset(0, 4),
           ),
         ],
       ),
@@ -36,14 +36,14 @@ class FarmKpiCards extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: color, size: 24),
           ),
-          const Spacer(),
+          Spacer(),
           Text(
             value,
             style: GoogleFonts.poppins(
@@ -52,7 +52,7 @@ class FarmKpiCards extends StatelessWidget {
               color: KalroColors.textDark,
             ),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text(
             title,
             style: GoogleFonts.poppins(
@@ -62,7 +62,7 @@ class FarmKpiCards extends StatelessWidget {
             ),
           ),
           if (subtitle != null) ...[
-            const SizedBox(height: 2),
+            SizedBox(height: 2),
             Text(
               subtitle,
               style: GoogleFonts.poppins(
@@ -81,10 +81,10 @@ class FarmKpiCards extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return SizedBox(
-      height: 160,
+      height: 175,
       child: ListView(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: EdgeInsets.symmetric(horizontal: 16),
         children: [
           _buildCard(
             context: context,
@@ -94,7 +94,7 @@ class FarmKpiCards extends StatelessWidget {
             icon: Icons.bug_report,
             color: Colors.blue,
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           _buildCard(
             context: context,
             title: l10n?.dashboardSurvivalRate ?? 'Survival Rate',
@@ -103,7 +103,7 @@ class FarmKpiCards extends StatelessWidget {
             color: summary.averageSurvivalPercent > 90 ? Colors.green : Colors.orange,
             subtitle: summary.averageSurvivalPercent > 90 ? 'Excellent' : 'Needs attention',
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           _buildCard(
             context: context,
             title: l10n?.dashboardExpectedYield ?? 'Expected Yield',

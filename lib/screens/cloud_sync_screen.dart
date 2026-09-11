@@ -9,9 +9,10 @@ import '../models/sync_settings.dart';
 import '../services/app_repositories.dart';
 import '../services/cloud_sync_service.dart';
 import '../theme/kalro_colors.dart';
+import 'package:kalro/l10n/translator.dart';
 
 class CloudSyncScreen extends StatefulWidget {
-  const CloudSyncScreen({
+  CloudSyncScreen({
     super.key,
     required this.session,
     required this.repositories,
@@ -84,13 +85,13 @@ class _CloudSyncScreenState extends State<CloudSyncScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Download cloud data?'),
-        content: const Text(
+        title: Text('Download cloud data?'.tr),
+        content: Text(
           'This replaces local farm data with the cloud snapshot. Continue?',
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Download')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text('Cancel'.tr)),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: Text('Download'.tr)),
         ],
       ),
     );
@@ -120,23 +121,23 @@ class _CloudSyncScreenState extends State<CloudSyncScreen> {
     final dateFormat = DateFormat('MMM d, yyyy · HH:mm');
 
     return AdminPageScaffold(
-      title: 'Cloud sync',
+      title: 'Cloud sync'.tr,
       body: FutureBuilder<SyncSettings>(
         future: _settingsFuture,
         builder: (context, snapshot) {
           final settings = snapshot.data;
           if (settings == null && snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator());
           }
 
           return ListView(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(20),
             children: [
-              const AdminSectionHeader(
-                title: 'Farm sync code',
-                subtitle: 'Share this code with team devices on your farm.',
+              AdminSectionHeader(
+                title: 'Farm sync code'.tr,
+                subtitle: 'Share this code with team devices on your farm.'.tr,
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               AdminInfoCard(
                 child: Row(
                   children: [
@@ -150,50 +151,50 @@ class _CloudSyncScreenState extends State<CloudSyncScreen> {
                       onPressed: () {
                         Clipboard.setData(ClipboardData(text: widget.session.farm.syncCode));
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Sync code copied')),
+                          SnackBar(content: Text('Sync code copied'.tr)),
                         );
                       },
-                      icon: const Icon(Icons.copy),
+                      icon: Icon(Icons.copy),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
-              const AdminSectionHeader(
-                title: 'Sync server',
-                subtitle: 'Optional HTTP endpoint for multi-device sync.',
+              SizedBox(height: 24),
+              AdminSectionHeader(
+                title: 'Sync server'.tr,
+                subtitle: 'Optional HTTP endpoint for multi-device sync.'.tr,
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               TextField(
                 controller: _serverController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Server URL',
-                  hintText: 'https://your-server.example.com/api',
+                  hintText: 'https://your-server.example.com/api'.tr,
                 ),
                 enabled: !_busy,
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               Text(
                 'Leave empty to use the built-in local cloud folder on this device.',
                 style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
               ),
               if (settings != null &&
                   (settings.lastUploadedAt != null || settings.lastDownloadedAt != null)) ...[
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
                 AdminInfoCard(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Sync history', style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
                       if (settings.lastUploadedAt != null) ...[
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8),
                         Text(
                           'Last upload: ${dateFormat.format(settings.lastUploadedAt!)}',
                           style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
                         ),
                       ],
                       if (settings.lastDownloadedAt != null) ...[
-                        const SizedBox(height: 4),
+                        SizedBox(height: 4),
                         Text(
                           'Last download: ${dateFormat.format(settings.lastDownloadedAt!)}',
                           style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
@@ -203,17 +204,17 @@ class _CloudSyncScreenState extends State<CloudSyncScreen> {
                   ),
                 ),
               ],
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
               KalroPrimaryButton(
                 label: _busy ? 'Uploading...' : 'Upload to cloud',
                 onPressed: _busy || settings == null ? null : () => _upload(settings),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               OutlinedButton(
                 onPressed: _busy || settings == null ? null : () => _download(settings),
                 style: OutlinedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(48),
-                  side: const BorderSide(color: KalroColors.headerGreen),
+                  minimumSize: Size.fromHeight(48),
+                  side: BorderSide(color: KalroColors.headerGreen),
                 ),
                 child: Text(_busy ? 'Working...' : 'Download from cloud'),
               ),

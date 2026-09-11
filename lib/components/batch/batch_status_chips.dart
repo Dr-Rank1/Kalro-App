@@ -6,7 +6,7 @@ import '../../models/batch_status.dart';
 import '../../theme/kalro_colors.dart';
 
 class BatchStatusChips extends StatelessWidget {
-  const BatchStatusChips({
+  BatchStatusChips({
     super.key,
     required this.current,
     required this.onSelected,
@@ -36,7 +36,7 @@ class BatchStatusChips extends StatelessWidget {
 }
 
 class BatchInfoPanel extends StatelessWidget {
-  const BatchInfoPanel({
+  BatchInfoPanel({
     super.key,
     required this.batch,
     required this.rows,
@@ -48,7 +48,7 @@ class BatchInfoPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -61,10 +61,10 @@ class BatchInfoPanel extends StatelessWidget {
             '${batch.species.label} batch',
             style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           ...rows.map(
             (row) => Padding(
-              padding: const EdgeInsets.only(bottom: 8),
+              padding: EdgeInsets.only(bottom: 8),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -89,7 +89,7 @@ class BatchInfoPanel extends StatelessWidget {
 }
 
 class BatchInfoRow {
-  const BatchInfoRow(this.label, this.value);
+  BatchInfoRow(this.label, this.value);
 
   final String label;
   final String value;

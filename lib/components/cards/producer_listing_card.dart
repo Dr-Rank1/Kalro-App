@@ -5,7 +5,7 @@ import '../../theme/kalro_colors.dart';
 import '../buttons/kalro_primary_button.dart';
 
 class ProducerListingCard extends StatelessWidget {
-  const ProducerListingCard({
+  ProducerListingCard({
     super.key,
     required this.title,
     required this.subtitle,
@@ -23,7 +23,7 @@ class ProducerListingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -31,7 +31,7 @@ class ProducerListingCard extends StatelessWidget {
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
-            offset: const Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
@@ -42,20 +42,20 @@ class ProducerListingCard extends StatelessWidget {
             backgroundColor: KalroColors.background,
             child: Image.asset('assets/images/kalro_app_icon.png', width: 48),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Text(title, style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 16)),
           Text(
             subtitle,
             style: GoogleFonts.poppins(fontSize: 13, color: KalroColors.textMuted),
           ),
           if (detail != null) ...[
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Text(
               detail!,
               style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textLight),
             ),
           ],
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           KalroPrimaryButton(label: actionLabel, onPressed: onAction),
         ],
       ),

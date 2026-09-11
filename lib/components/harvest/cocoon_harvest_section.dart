@@ -14,9 +14,10 @@ import '../cards/kalro_section_header.dart';
 import '../records/record_empty_state.dart';
 import '../records/record_log_tile.dart';
 import '../records/record_summary_bar.dart';
+import 'package:kalro/l10n/translator.dart';
 
 class CocoonHarvestSection extends StatefulWidget {
-  const CocoonHarvestSection({
+  CocoonHarvestSection({
     super.key,
     required this.batchId,
     required this.startingCount,
@@ -68,7 +69,7 @@ class _CocoonHarvestSectionState extends State<CocoonHarvestSection> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
@@ -88,45 +89,45 @@ class _CocoonHarvestSectionState extends State<CocoonHarvestSection> {
                   'Record cocoon harvest',
                   style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 TextField(
                   controller: countController,
-                  decoration: const InputDecoration(labelText: 'Cocoon count'),
+                  decoration: InputDecoration(labelText: 'Cocoon count'),
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 TextField(
                   controller: weightController,
-                  decoration: const InputDecoration(labelText: 'Total weight (grams)'),
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  decoration: InputDecoration(labelText: 'Total weight (grams)'),
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
                   inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 TextField(
                   controller: defectiveController,
-                  decoration: const InputDecoration(labelText: 'Defective count'),
+                  decoration: InputDecoration(labelText: 'Defective count'),
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 TextField(
                   controller: shellController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Shell weight sample (g, optional)',
                   ),
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
                   inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 TextField(
                   controller: notesController,
-                  decoration: const InputDecoration(labelText: 'Notes (optional)'),
+                  decoration: InputDecoration(labelText: 'Notes (optional)'),
                   maxLines: 2,
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
                 KalroPrimaryButton(
-                  label: 'Save harvest',
+                  label: 'Save harvest'.tr,
                   onPressed: () async {
                     final count = int.tryParse(countController.text.trim());
                     final weight = double.tryParse(weightController.text.trim());
@@ -192,20 +193,20 @@ class _CocoonHarvestSectionState extends State<CocoonHarvestSection> {
       children: [
         Row(
           children: [
-            const Expanded(child: KalroSectionHeader(title: 'Cocoon harvest')),
+            Expanded(child: KalroSectionHeader(title: 'Cocoon harvest')),
             TextButton.icon(
               onPressed: _openAddDialog,
-              icon: const Icon(Icons.add, size: 18),
-              label: const Text('Add'),
+              icon: Icon(Icons.add, size: 18),
+              label: Text('Add'.tr),
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         FutureBuilder<List<CocoonHarvest>>(
           future: _harvestsFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Padding(
+              return Padding(
                 padding: EdgeInsets.all(16),
                 child: Center(child: CircularProgressIndicator()),
               );
@@ -215,7 +216,7 @@ class _CocoonHarvestSectionState extends State<CocoonHarvestSection> {
             if (harvests.isEmpty) {
               return RecordEmptyState(
                 icon: Icons.inventory_2_outlined,
-                title: 'No harvest recorded',
+                title: 'No harvest recorded'.tr,
                 message: 'Weigh cocoons when ready to track yield, survival, and quality.',
                 actionLabel: 'Record harvest',
                 onAction: _openAddDialog,
@@ -239,15 +240,15 @@ class _CocoonHarvestSectionState extends State<CocoonHarvestSection> {
                       RecordSummaryBar(
                         items: [
                           RecordSummaryItem(
-                            label: 'Avg weight',
+                            label: 'Avg weight'.tr,
                             value: '${metrics.averageCocoonWeightGrams.toStringAsFixed(1)} g',
                           ),
                           RecordSummaryItem(
-                            label: 'Survival',
+                            label: 'Survival'.tr,
                             value: '${metrics.survivalPercent.toStringAsFixed(0)}%',
                           ),
                           RecordSummaryItem(
-                            label: 'Yield/100 eggs',
+                            label: 'Yield/100 eggs'.tr,
                             value: '${metrics.yieldPer100EggsGrams.toStringAsFixed(0)} g',
                           ),
                         ],
@@ -255,17 +256,17 @@ class _CocoonHarvestSectionState extends State<CocoonHarvestSection> {
                     else
                       RecordSummaryBar(
                         items: [
-                          RecordSummaryItem(label: 'Cocoons', value: '$totalCocoons'),
-                          RecordSummaryItem(label: 'Total weight', value: formatGrams(totalWeight)),
-                          RecordSummaryItem(label: 'Records', value: '${harvests.length}'),
+                          RecordSummaryItem(label: 'Cocoons'.tr, value: '$totalCocoons'),
+                          RecordSummaryItem(label: 'Total weight'.tr, value: formatGrams(totalWeight)),
+                          RecordSummaryItem(label: 'Records'.tr, value: '${harvests.length}'),
                         ],
                       ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10),
                     ...harvests.map(
                       (harvest) => RecordLogTile(
                         icon: Icons.inventory_2_outlined,
                         iconColor: KalroColors.headerGreen,
-                        title: '${harvest.cocoonCount} cocoons · ${formatGrams(harvest.totalWeightGrams)}',
+                        title: '${harvest.cocoonCount} cocoons · ${formatGrams(harvest.totalWeightGrams)}'.tr,
                         subtitle: _subtitleFor(harvest),
                         meta: formatRecordDay(harvest.harvestDate),
                         note: harvest.notes,

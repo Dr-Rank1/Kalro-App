@@ -4,9 +4,10 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../models/report_chart_data.dart';
 import '../../theme/kalro_colors.dart';
+import 'package:kalro/l10n/translator.dart';
 
 class FeedTrendChart extends StatelessWidget {
-  const FeedTrendChart({super.key, required this.points});
+  FeedTrendChart({super.key, required this.points});
 
   final List<ChartPoint> points;
 
@@ -30,8 +31,8 @@ class FeedTrendChart extends StatelessWidget {
             horizontalInterval: maxY > 0 ? maxY / 4 : 1,
           ),
           titlesData: FlTitlesData(
-            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
             leftTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
@@ -48,9 +49,9 @@ class FeedTrendChart extends StatelessWidget {
                 interval: 2,
                 getTitlesWidget: (value, meta) {
                   final index = value.toInt();
-                  if (index < 0 || index >= points.length) return const SizedBox.shrink();
+                  if (index < 0 || index >= points.length) return SizedBox.shrink();
                   return Padding(
-                    padding: const EdgeInsets.only(top: 6),
+                    padding: EdgeInsets.only(top: 6),
                     child: Text(
                       points[index].label,
                       style: GoogleFonts.poppins(fontSize: 9, color: KalroColors.textMuted),
@@ -70,7 +71,7 @@ class FeedTrendChart extends StatelessWidget {
               isCurved: true,
               color: KalroColors.headerGreen,
               barWidth: 3,
-              dotData: const FlDotData(show: false),
+              dotData: FlDotData(show: false),
               belowBarData: BarAreaData(
                 show: true,
                 color: KalroColors.headerGreen.withValues(alpha: 0.12),
@@ -84,7 +85,7 @@ class FeedTrendChart extends StatelessWidget {
 }
 
 class MortalityTrendChart extends StatelessWidget {
-  const MortalityTrendChart({super.key, required this.points});
+  MortalityTrendChart({super.key, required this.points});
 
   final List<ChartPoint> points;
 
@@ -107,8 +108,8 @@ class MortalityTrendChart extends StatelessWidget {
             horizontalInterval: maxY > 0 ? (maxY / 4).clamp(1, double.infinity) : 1,
           ),
           titlesData: FlTitlesData(
-            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
             leftTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
@@ -125,9 +126,9 @@ class MortalityTrendChart extends StatelessWidget {
                 interval: 2,
                 getTitlesWidget: (value, meta) {
                   final index = value.toInt();
-                  if (index < 0 || index >= points.length) return const SizedBox.shrink();
+                  if (index < 0 || index >= points.length) return SizedBox.shrink();
                   return Padding(
-                    padding: const EdgeInsets.only(top: 6),
+                    padding: EdgeInsets.only(top: 6),
                     child: Text(
                       points[index].label,
                       style: GoogleFonts.poppins(fontSize: 9, color: KalroColors.textMuted),
@@ -147,7 +148,7 @@ class MortalityTrendChart extends StatelessWidget {
                     toY: points[i].value,
                     color: Colors.orange.shade400,
                     width: 10,
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(4)),
                   ),
                 ],
               ),
@@ -159,7 +160,7 @@ class MortalityTrendChart extends StatelessWidget {
 }
 
 class SpeciesSplitChart extends StatelessWidget {
-  const SpeciesSplitChart({
+  SpeciesSplitChart({
     super.key,
     required this.bombyxLarvae,
     required this.eriLarvae,
@@ -216,11 +217,11 @@ class SpeciesSplitChart extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _LegendDot(color: KalroColors.headerGreen, label: 'Bombyx: $bombyxLarvae'),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               _LegendDot(color: KalroColors.accentBrown, label: 'Eri: $eriLarvae'),
             ],
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
         ],
       ),
     );
@@ -228,7 +229,7 @@ class SpeciesSplitChart extends StatelessWidget {
 }
 
 class BatchComparisonTable extends StatelessWidget {
-  const BatchComparisonTable({super.key, required this.rows});
+  BatchComparisonTable({super.key, required this.rows});
 
   final List<BatchComparisonRow> rows;
 
@@ -248,13 +249,13 @@ class BatchComparisonTable extends StatelessWidget {
         ),
         dataTextStyle: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
         columns: const [
-          DataColumn(label: Text('Species')),
-          DataColumn(label: Text('Started')),
-          DataColumn(label: Text('Live')),
-          DataColumn(label: Text('Survival')),
-          DataColumn(label: Text('Feed')),
-          DataColumn(label: Text('Harvest')),
-          DataColumn(label: Text('Status')),
+          DataColumn(label: Text('Species'.tr)),
+          DataColumn(label: Text('Started'.tr)),
+          DataColumn(label: Text('Live'.tr)),
+          DataColumn(label: Text('Survival'.tr)),
+          DataColumn(label: Text('Feed'.tr)),
+          DataColumn(label: Text('Harvest'.tr)),
+          DataColumn(label: Text('Status'.tr)),
         ],
         rows: rows
             .map(
@@ -262,8 +263,8 @@ class BatchComparisonTable extends StatelessWidget {
                 cells: [
                   DataCell(Text(row.speciesLabel)),
                   DataCell(Text(row.startDateLabel)),
-                  DataCell(Text('${row.liveCount}/${row.startingCount}')),
-                  DataCell(Text('${row.survivalPercent.toStringAsFixed(0)}%')),
+                  DataCell(Text('${row.liveCount}/${row.startingCount}'.tr)),
+                  DataCell(Text('${row.survivalPercent.toStringAsFixed(0)}%'.tr)),
                   DataCell(Text(_formatGrams(row.totalFeedGrams))),
                   DataCell(Text(_formatGrams(row.harvestWeightGrams))),
                   DataCell(Text(row.statusLabel)),
@@ -286,7 +287,7 @@ Widget _emptyState(String message) {
   return Container(
     height: 120,
     alignment: Alignment.center,
-    padding: const EdgeInsets.all(16),
+    padding: EdgeInsets.all(16),
     child: Text(
       message,
       style: GoogleFonts.poppins(fontSize: 13, color: KalroColors.textMuted),
@@ -311,7 +312,7 @@ class _LegendDot extends StatelessWidget {
           height: 10,
           decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
-        const SizedBox(width: 6),
+        SizedBox(width: 6),
         Text(label, style: GoogleFonts.poppins(fontSize: 12)),
       ],
     );

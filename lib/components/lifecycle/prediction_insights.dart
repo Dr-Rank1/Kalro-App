@@ -4,9 +4,10 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../models/rearing_conditions.dart';
 import '../../services/prediction_adjuster.dart';
 import '../../theme/kalro_colors.dart';
+import 'package:kalro/l10n/translator.dart';
 
 class PredictionScenarioBar extends StatelessWidget {
-  const PredictionScenarioBar({
+  PredictionScenarioBar({
     super.key,
     required this.selected,
     required this.onSelected,
@@ -26,7 +27,7 @@ class PredictionScenarioBar extends StatelessWidget {
       children: [
         if (includeRecorded)
           FilterChip(
-            label: const Text('Recorded'),
+            label: Text('Recorded'.tr),
             selected: selected == null,
             selectedColor: KalroColors.peach,
             checkmarkColor: KalroColors.primaryGreen,
@@ -50,7 +51,7 @@ class PredictionScenarioBar extends StatelessWidget {
 }
 
 class PredictionConditionsBanner extends StatelessWidget {
-  const PredictionConditionsBanner({
+  PredictionConditionsBanner({
     super.key,
     required this.adjustment,
     this.logged = false,
@@ -71,7 +72,7 @@ class PredictionConditionsBanner extends StatelessWidget {
 
     if (!adjustment.affectsDates && adjustment.reasons.isEmpty) {
       return Container(
-        padding: const EdgeInsets.all(14),
+        padding: EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
@@ -79,8 +80,8 @@ class PredictionConditionsBanner extends StatelessWidget {
         ),
         child: Row(
           children: [
-            const Icon(Icons.thermostat_outlined, color: KalroColors.headerGreen),
-            const SizedBox(width: 10),
+            Icon(Icons.thermostat_outlined, color: KalroColors.headerGreen),
+            SizedBox(width: 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -95,7 +96,7 @@ class PredictionConditionsBanner extends StatelessWidget {
                     ),
                   ),
                   if (snapshot != null) ...[
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
                       snapshot!,
                       style: GoogleFonts.poppins(
@@ -113,7 +114,7 @@ class PredictionConditionsBanner extends StatelessWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -131,14 +132,14 @@ class PredictionConditionsBanner extends StatelessWidget {
             ),
           ),
           if (snapshot != null) ...[
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Text(
               snapshot!,
               style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textDark),
             ),
           ],
           if (headline != null) ...[
-            const SizedBox(height: 6),
+            SizedBox(height: 6),
             Text(
               headline,
               style: GoogleFonts.poppins(
@@ -148,18 +149,18 @@ class PredictionConditionsBanner extends StatelessWidget {
               ),
             ),
           ],
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           ...adjustment.reasons.map(
             (reason) => Padding(
-              padding: const EdgeInsets.only(bottom: 4),
+              padding: EdgeInsets.only(bottom: 4),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.only(top: 3),
                     child: Icon(Icons.circle, size: 6, color: KalroColors.accentBrown),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       reason,
@@ -184,7 +185,7 @@ class PredictionConditionsBanner extends StatelessWidget {
 }
 
 class LifecyclePlanHomeCard extends StatelessWidget {
-  const LifecyclePlanHomeCard({
+  LifecyclePlanHomeCard({
     super.key,
     required this.onOpenPlanner,
     this.nextLabel,
@@ -206,7 +207,7 @@ class LifecyclePlanHomeCard extends StatelessWidget {
         onTap: onOpenPlanner,
         borderRadius: BorderRadius.circular(12),
         child: Container(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: KalroColors.headerGreen.withValues(alpha: 0.25)),
@@ -220,9 +221,9 @@ class LifecyclePlanHomeCard extends StatelessWidget {
                   color: KalroColors.headerGreen.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(Icons.auto_graph_outlined, color: KalroColors.headerGreen),
+                child: Icon(Icons.auto_graph_outlined, color: KalroColors.headerGreen),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -234,7 +235,7 @@ class LifecyclePlanHomeCard extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    SizedBox(height: 2),
                     Text(
                       nextLabel == null
                           ? 'See hatch, harvest, and moth dates. Test cool weather, heat, or short leaf.'
@@ -242,7 +243,7 @@ class LifecyclePlanHomeCard extends StatelessWidget {
                       style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
                     ),
                     if (conditionNote != null) ...[
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4),
                       Text(
                         conditionNote!,
                         maxLines: 2,
@@ -256,7 +257,7 @@ class LifecyclePlanHomeCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: KalroColors.textLight),
+              Icon(Icons.chevron_right, color: KalroColors.textLight),
             ],
           ),
         ),

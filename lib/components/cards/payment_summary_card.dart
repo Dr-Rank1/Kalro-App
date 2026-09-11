@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../theme/kalro_colors.dart';
 
 class PaymentSummaryCard extends StatelessWidget {
-  const PaymentSummaryCard({
+  PaymentSummaryCard({
     super.key,
     required this.title,
     required this.value,
@@ -19,7 +19,7 @@ class PaymentSummaryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -28,7 +28,7 @@ class PaymentSummaryCard extends StatelessWidget {
       child: Row(
         children: [
           Icon(icon, color: KalroColors.primaryGreen),
-          const SizedBox(width: 16),
+          SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
