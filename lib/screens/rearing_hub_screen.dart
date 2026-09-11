@@ -24,18 +24,29 @@ class RearingHubScreen extends StatefulWidget {
     required this.userPreferences,
     required this.onBatchChanged,
     this.canEdit = true,
+    this.reloadCounter = 0,
   });
 
   final AppRepositories repositories;
   final UserPreferences userPreferences;
   final VoidCallback onBatchChanged;
   final bool canEdit;
+  final int reloadCounter;
 
   @override
   State<RearingHubScreen> createState() => _RearingHubScreenState();
 }
 
 class _RearingHubScreenState extends State<RearingHubScreen> {
+
+  @override
+  void didUpdateWidget(covariant RearingHubScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.reloadCounter != widget.reloadCounter) {
+      _reload();
+    }
+  }
+
   final _lifecycleEngine = LifecycleEngine();
   final _dashboardService = DashboardService();
   late Future<DashboardSummary> _summaryFuture;

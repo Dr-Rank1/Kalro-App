@@ -17,13 +17,20 @@ class KalroToolbar extends StatelessWidget {
   final VoidCallback? onBack;
   final Widget? trailing;
 
+
   @override
   Widget build(BuildContext context) {
+    final bool canPop = Navigator.canPop(context);
     return Row(
       children: [
         if (onBack != null)
           IconButton(
             onPressed: onBack,
+            icon: Icon(Icons.arrow_back, color: KalroColors.textDark),
+          )
+        else if (canPop)
+          IconButton(
+            onPressed: () => Navigator.pop(context),
             icon: Icon(Icons.arrow_back, color: KalroColors.textDark),
           )
         else if (Scaffold.maybeOf(context)?.hasDrawer ?? false)
@@ -33,6 +40,7 @@ class KalroToolbar extends StatelessWidget {
           )
         else
           SizedBox(width: 8),
+
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

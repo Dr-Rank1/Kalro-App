@@ -160,19 +160,11 @@ class _BatchDetailScreenState extends State<BatchDetailScreen> {
               headerSliverBuilder: (context, innerBoxIsScrolled) {
                 return [
                   SliverAppBar(
-                    expandedHeight: 220,
+                    expandedHeight: 250,
                     pinned: true,
                     backgroundColor: KalroColors.headerGreen,
+                    title: Text('Batch ${batch.id.substring(0, 8).toUpperCase()}'),
                     flexibleSpace: FlexibleSpaceBar(
-                      titlePadding: const EdgeInsets.only(left: 48, bottom: 62),
-                      title: Text(
-                        batch.id.toUpperCase(),
-                        style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 20,
-                          color: Colors.white,
-                        ),
-                      ),
                       background: _buildHeroHeader(batch, metrics, current),
                     ),
                     bottom: TabBar(

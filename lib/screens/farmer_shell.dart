@@ -45,9 +45,10 @@ class FarmerShell extends StatefulWidget {
 
 class _FarmerShellState extends State<FarmerShell> {
   var _index = 0;
+  var _reloadCount = 0;
   static const _permissions = PermissionService();
 
-  void _reloadAll() => setState(() {});
+  void _reloadAll() => setState(() => _reloadCount++);
 
   bool get _canEdit => _permissions.canEditData(widget.session.user);
 
@@ -146,11 +147,13 @@ class _FarmerShellState extends State<FarmerShell> {
         userPreferences: widget.userPreferences,
         onBatchChanged: _reloadAll,
         canEdit: _canEdit,
+        reloadCounter: _reloadCount,
       ),
       BatchesScreen(
         repositories: widget.repositories,
         onBatchChanged: _reloadAll,
         canEdit: _canEdit,
+        reloadCounter: _reloadCount,
       ),
       FarmerProfileScreen(
         repositories: widget.repositories,

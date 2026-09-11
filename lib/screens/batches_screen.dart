@@ -21,17 +21,28 @@ class BatchesScreen extends StatefulWidget {
     required this.repositories,
     required this.onBatchChanged,
     this.canEdit = true,
+    this.reloadCounter = 0,
   });
 
   final AppRepositories repositories;
   final VoidCallback onBatchChanged;
   final bool canEdit;
+  final int reloadCounter;
 
   @override
   State<BatchesScreen> createState() => _BatchesScreenState();
 }
 
 class _BatchesScreenState extends State<BatchesScreen> {
+
+  @override
+  void didUpdateWidget(covariant BatchesScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.reloadCounter != widget.reloadCounter) {
+      _reload();
+    }
+  }
+
   final _lifecycleEngine = LifecycleEngine();
   static const _conditionsService = RearingConditionsService();
   late Future<_BatchesBundle> _batchesFuture;
