@@ -223,6 +223,7 @@ class _KalroAppState extends State<KalroApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      key: ValueKey(_currentLocale?.languageCode),
       title: 'Kalro',
       debugShowCheckedModeBanner: false,
       theme: KalroTheme.light(),
