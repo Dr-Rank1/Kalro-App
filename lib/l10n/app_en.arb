@@ -1,0 +1,47 @@
+{
+  "@@locale": "en",
+  "appTitle": "Kalro Sericulture",
+  "onboardingWelcomeTitle": "Karibu Kalro!",
+  "onboardingWelcomeDesc": "Your digital sericulture assistant. Plan, track, and improve every rearing cycle.",
+  "onboardingTrackTitle": "Track Daily Logs",
+  "onboardingTrackDesc": "Log metric weights (grams/kg) of feeding and monitor disease and farm health.",
+  "onboardingPredictTitle": "Predict Harvests",
+  "onboardingPredictDesc": "Know exactly when your cocoons will be ready with our AI-powered predictions.",
+  "getStarted": "Get Started",
+  "navHome": "Home",
+  "navBatches": "Batches",
+  "navProfile": "Profile",
+  "dashboardLiveLarvae": "Live Larvae",
+  "dashboardLiveLarvaeSub": "{count} batches",
+  "@dashboardLiveLarvaeSub": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "dashboardSurvivalRate": "Survival Rate",
+  "dashboardExpectedYield": "Expected Yield",
+  "dashboardYieldSub": "Estimated cocoon",
+  "dashboardNeedsAttention": "Needs Attention",
+  "dashboardActiveBatches": "Active batches",
+  "dashboardActiveBatchesSub": "{count} in progress",
+  "@dashboardActiveBatchesSub": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "dashboardStartFirstBatch": "Start Your First Batch",
+  "dashboardStartFirstBatchDesc": "No rearing cycles in progress. Tap the + button below to create a new batch and start tracking feeding, health, and harvests.",
+  "profileTotalCycles": "Total Cycles",
+  "profileLifetimeYield": "Lifetime Yield",
+  "profileAvgSurvival": "Avg Survival",
+  "profileLanguage": "Language",
+  "profileEnglish": "English",
+  "profileSwahili": "Swahili",
+  "profileDataBackup": "Data & Backup",
+  "profileBackupDesc": "Secure your data locally",
+  "profileBackupNow": "Backup Now",
+  "profileKnowledgeBase": "Kalro Knowledge Base",
+  "profileSignOut": "Sign Out",
+  "profileEditName": "Edit Name",
+  "profileMyReminders": "My Reminders"
+}
