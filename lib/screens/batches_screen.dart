@@ -9,6 +9,7 @@ import '../services/app_repositories.dart';
 import '../services/lifecycle_engine.dart';
 import '../services/rearing_conditions_service.dart';
 import '../theme/kalro_colors.dart';
+import '../l10n/app_localizations.dart';
 import 'batch_detail_screen.dart';
 import 'create_batch_screen.dart';
 
@@ -98,6 +99,7 @@ class _BatchesScreenState extends State<BatchesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: KalroBackground(
@@ -119,32 +121,30 @@ class _BatchesScreenState extends State<BatchesScreen> {
                 return ListView(
                   padding: const EdgeInsets.fromLTRB(20, 20, 20, 88),
                   children: [
-                    const KalroToolbar(
-                      title: 'Batches',
-                      subtitle: 'Create cycles and log feeding, health, and harvest.',
+                    KalroToolbar(
+                      title: l10n?.batchesTitle ?? 'Batches',
+                      subtitle: l10n?.batchesSubtitle ?? 'Create cycles and log feeding, health, and harvest.',
                     ),
                     const SizedBox(height: 16),
                     RecordSummaryBar(
                       items: [
-                        RecordSummaryItem(label: 'Active', value: '${active.length}'),
-                        RecordSummaryItem(label: 'Closed', value: '${closed.length}'),
-                        RecordSummaryItem(label: 'Total', value: '${all.length}'),
+                        RecordSummaryItem(label: l10n?.batchesActiveCount ?? 'Active', value: '${active.length}'),
+                        RecordSummaryItem(label: l10n?.batchesClosedCount ?? 'Closed', value: '${closed.length}'),
+                        RecordSummaryItem(label: l10n?.batchesTotalCount ?? 'Total', value: '${all.length}'),
                       ],
                     ),
                     const SizedBox(height: 24),
                     KalroSectionHeader(
-                      title: 'Active batches',
-                      subtitle: active.isEmpty ? null : '${active.length} in progress',
+                      title: l10n?.batchesActiveHeader ?? 'Active batches',
+                      subtitle: active.isEmpty ? null : '${active.length} ${l10n?.batchesInProgress ?? "in progress"}',
                     ),
                     const SizedBox(height: 10),
                     if (active.isEmpty)
                       RecordEmptyState(
                         icon: Icons.layers_outlined,
-                        title: 'No active batches',
-                        message: widget.canEdit
-                            ? 'Start a rearing cycle to plan milestones and record daily work.'
-                            : 'No batches are running right now.',
-                        actionLabel: widget.canEdit ? 'Create batch' : null,
+                        title: l10n?.batchesNoActive ?? 'No active batches',
+                        message: widget.canEdit ? (l10n?.batchesNoActiveDesc ?? 'Start a rearing cycle to plan milestones and record daily work.') : (l10n?.batchesNoActiveDescViewer ?? 'No batches are running right now.'),
+                        actionLabel: widget.canEdit ? (l10n?.batchesCreateAction ?? 'Create batch') : null,
                         onAction: widget.canEdit ? _openCreateBatch : null,
                       )
                     else
@@ -163,8 +163,8 @@ class _BatchesScreenState extends State<BatchesScreen> {
                     if (closed.isNotEmpty) ...[
                       const SizedBox(height: 20),
                       KalroSectionHeader(
-                        title: 'Closed batches',
-                        subtitle: '${closed.length} archived',
+                        title: l10n?.batchesClosedHeader ?? 'Closed batches',
+                        subtitle: '${closed.length} ${l10n?.batchesArchived ?? "archived"}',
                       ),
                       const SizedBox(height: 10),
                       ...closed.map(
@@ -208,6 +208,7 @@ class _ClosedBatchTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Material(
       color: Colors.white,
       borderRadius: BorderRadius.circular(12),
@@ -245,7 +246,7 @@ class _ClosedBatchTile extends StatelessWidget {
                       style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 14),
                     ),
                     Text(
-                      'Closed · ${batch.eggCount} larvae',
+                      '${AppLocalizations.of(context)?.batchesClosedLabel ?? "Closed"} · ${batch.eggCount} ${AppLocalizations.of(context)?.batchesLarvaeLabel ?? "larvae"}',
                       style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
                     ),
                   ],

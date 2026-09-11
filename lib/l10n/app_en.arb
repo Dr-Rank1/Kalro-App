@@ -43,5 +43,20 @@
   "profileKnowledgeBase": "Kalro Knowledge Base",
   "profileSignOut": "Sign Out",
   "profileEditName": "Edit Name",
-  "profileMyReminders": "My Reminders"
+  "profileMyReminders": "My Reminders",
+  "batchesTitle": "Batches",
+  "batchesSubtitle": "Create cycles and log feeding, health, and harvest.",
+  "batchesActiveCount": "Active",
+  "batchesClosedCount": "Closed",
+  "batchesTotalCount": "Total",
+  "batchesActiveHeader": "Active batches",
+  "batchesInProgress": "in progress",
+  "batchesNoActive": "No active batches",
+  "batchesNoActiveDesc": "Start a rearing cycle to plan milestones and record daily work.",
+  "batchesNoActiveDescViewer": "No batches are running right now.",
+  "batchesCreateAction": "Create batch",
+  "batchesClosedHeader": "Closed batches",
+  "batchesArchived": "archived",
+  "batchesLarvaeLabel": "larvae",
+  "batchesClosedLabel": "Closed"
 }

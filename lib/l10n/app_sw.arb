@@ -33,5 +33,20 @@
   "profileKnowledgeBase": "Maktaba ya Kalro",
   "profileSignOut": "Ondoka",
   "profileEditName": "Badilisha Jina",
-  "profileMyReminders": "Vikumbusho Vyangu"
+  "profileMyReminders": "Vikumbusho Vyangu",
+  "batchesTitle": "Makundi",
+  "batchesSubtitle": "Unda mizunguko na urekodi chakula, afya, na mavuno.",
+  "batchesActiveCount": "Hai",
+  "batchesClosedCount": "Yamefungwa",
+  "batchesTotalCount": "Jumla",
+  "batchesActiveHeader": "Makundi yanayoendelea",
+  "batchesInProgress": "yanaendelea",
+  "batchesNoActive": "Hakuna makundi hai",
+  "batchesNoActiveDesc": "Anzisha mzunguko wa ufugaji kupanga hatua na kurekodi kazi ya kila siku.",
+  "batchesNoActiveDescViewer": "Hakuna makundi yanayoendelea sasa.",
+  "batchesCreateAction": "Unda kundi",
+  "batchesClosedHeader": "Makundi yaliyofungwa",
+  "batchesArchived": "yaliyohifadhiwa",
+  "batchesLarvaeLabel": "mabuu",
+  "batchesClosedLabel": "Yamefungwa"
 }

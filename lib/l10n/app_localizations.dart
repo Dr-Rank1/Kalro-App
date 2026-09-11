@@ -301,6 +301,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'My Reminders'**
   String get profileMyReminders;
+
+  /// No description provided for @batchesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Batches'**
+  String get batchesTitle;
+
+  /// No description provided for @batchesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create cycles and log feeding, health, and harvest.'**
+  String get batchesSubtitle;
+
+  /// No description provided for @batchesActiveCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get batchesActiveCount;
+
+  /// No description provided for @batchesClosedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get batchesClosedCount;
+
+  /// No description provided for @batchesTotalCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get batchesTotalCount;
+
+  /// No description provided for @batchesActiveHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Active batches'**
+  String get batchesActiveHeader;
+
+  /// No description provided for @batchesInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'in progress'**
+  String get batchesInProgress;
+
+  /// No description provided for @batchesNoActive.
+  ///
+  /// In en, this message translates to:
+  /// **'No active batches'**
+  String get batchesNoActive;
+
+  /// No description provided for @batchesNoActiveDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Start a rearing cycle to plan milestones and record daily work.'**
+  String get batchesNoActiveDesc;
+
+  /// No description provided for @batchesNoActiveDescViewer.
+  ///
+  /// In en, this message translates to:
+  /// **'No batches are running right now.'**
+  String get batchesNoActiveDescViewer;
+
+  /// No description provided for @batchesCreateAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Create batch'**
+  String get batchesCreateAction;
+
+  /// No description provided for @batchesClosedHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed batches'**
+  String get batchesClosedHeader;
+
+  /// No description provided for @batchesArchived.
+  ///
+  /// In en, this message translates to:
+  /// **'archived'**
+  String get batchesArchived;
+
+  /// No description provided for @batchesLarvaeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'larvae'**
+  String get batchesLarvaeLabel;
+
+  /// No description provided for @batchesClosedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get batchesClosedLabel;
 }
 
 class _AppLocalizationsDelegate

@@ -4,6 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../components/components.dart';
 import '../models/batch.dart';
 import '../models/batch_status.dart';
+import '../services/auth_repository.dart';
+import '../models/app_user.dart';
 import '../models/cocoon_harvest.dart';
 import '../models/farm_profile.dart';
 import '../services/app_repositories.dart';
@@ -39,8 +41,9 @@ class FarmerProfileScreen extends StatefulWidget {
 class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
   static const _permissions = PermissionService();
 
-  late Future<_ProfileData> _dataFuture;
+  Future<_ProfileData>? _dataFuture;
   String _selectedLanguage = 'en';
+  AppUser? _currentUser;
 
   @override
   void initState() {
@@ -68,7 +71,8 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
   bool get _canEdit => _permissions.canEditData(widget.session.user);
 
   Future<void> _editName() async {
-    final currentName = widget.session.user.displayName;
+    final user = _currentUser ?? widget.session.user;
+    final currentName = user.displayName;
     final nameController = TextEditingController(text: currentName);
     final l10n = AppLocalizations.of(context);
     final saved = await showDialog<bool>(
@@ -86,8 +90,13 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
       ),
     );
     if (saved != true || !mounted) return;
-    await widget.userPreferences.updateProfile(name: nameController.text);
-    setState(() {});
+    
+    final updatedUser = user.copyWith(displayName: nameController.text);
+    await AuthRepository().updateUser(updatedUser);
+    
+    setState(() {
+      _currentUser = updatedUser;
+    });
   }
 
   void _openReminders() {
@@ -114,7 +123,7 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
     return KalroBackground(
       child: SafeArea(
         child: FutureBuilder<_ProfileData>(
-          future: _dataFuture,
+          future: _dataFuture ?? Future.value(_ProfileData([], [])),
           builder: (context, snapshot) {
             final data = snapshot.data;
             final harvestedBatches = data?.harvestedBatches ?? [];

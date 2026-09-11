@@ -1,4 +1,4 @@
-# Kalro Sericulture App 🐛🍃
+# Kalro Sericulture App
 
 [![Flutter Version](https://img.shields.io/badge/Flutter-3.16+-blue.svg)](https://flutter.dev)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
@@ -7,7 +7,7 @@
 
 ---
 
-## 🌟 Key Features
+## Key Features
 
 * **Offline-First Architecture**: Built for rural Kenya. All data is persisted locally via encrypted JSON and can be securely synced to the cloud via Zip exports.
 * **Dual Language Support (i18n)**: Instantly switch between **English** and **Swahili** within the app. No restarts required.
@@ -18,13 +18,13 @@
 
 ---
 
-## 📸 Screenshots & UI
+## Screenshots & UI
 
 *(Insert screenshots here showcasing the Farm Identity Hero Card, the tabbed Batch Details, and the Horizontal KPI lists)*
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 * **Framework:** Flutter & Dart
 * **Architecture:** Custom MVC with localized offline Repositories.
@@ -34,7 +34,7 @@
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 * Flutter SDK (3.16 or higher)
@@ -67,7 +67,7 @@ For development testing, a default offline session can be established using:
 
 ---
 
-## 🌍 Contributing & Localization
+## Contributing & Localization
 
 We welcome contributions! To add a new language:
 1. Navigate to `lib/l10n/`.
@@ -77,6 +77,6 @@ We welcome contributions! To add a new language:
 
 ---
 
-## 📝 License
+## License
 
 This project is proprietary for KALRO Sericulture operations. Please refer to the specific licensing guidelines provided by Dr-Rank1.

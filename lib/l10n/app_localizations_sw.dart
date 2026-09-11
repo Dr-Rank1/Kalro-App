@@ -117,4 +117,51 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get profileMyReminders => 'Vikumbusho Vyangu';
+
+  @override
+  String get batchesTitle => 'Makundi';
+
+  @override
+  String get batchesSubtitle =>
+      'Unda mizunguko na urekodi chakula, afya, na mavuno.';
+
+  @override
+  String get batchesActiveCount => 'Hai';
+
+  @override
+  String get batchesClosedCount => 'Yamefungwa';
+
+  @override
+  String get batchesTotalCount => 'Jumla';
+
+  @override
+  String get batchesActiveHeader => 'Makundi yanayoendelea';
+
+  @override
+  String get batchesInProgress => 'yanaendelea';
+
+  @override
+  String get batchesNoActive => 'Hakuna makundi hai';
+
+  @override
+  String get batchesNoActiveDesc =>
+      'Anzisha mzunguko wa ufugaji kupanga hatua na kurekodi kazi ya kila siku.';
+
+  @override
+  String get batchesNoActiveDescViewer => 'Hakuna makundi yanayoendelea sasa.';
+
+  @override
+  String get batchesCreateAction => 'Unda kundi';
+
+  @override
+  String get batchesClosedHeader => 'Makundi yaliyofungwa';
+
+  @override
+  String get batchesArchived => 'yaliyohifadhiwa';
+
+  @override
+  String get batchesLarvaeLabel => 'mabuu';
+
+  @override
+  String get batchesClosedLabel => 'Yamefungwa';
 }

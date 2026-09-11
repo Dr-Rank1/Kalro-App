@@ -117,4 +117,51 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileMyReminders => 'My Reminders';
+
+  @override
+  String get batchesTitle => 'Batches';
+
+  @override
+  String get batchesSubtitle =>
+      'Create cycles and log feeding, health, and harvest.';
+
+  @override
+  String get batchesActiveCount => 'Active';
+
+  @override
+  String get batchesClosedCount => 'Closed';
+
+  @override
+  String get batchesTotalCount => 'Total';
+
+  @override
+  String get batchesActiveHeader => 'Active batches';
+
+  @override
+  String get batchesInProgress => 'in progress';
+
+  @override
+  String get batchesNoActive => 'No active batches';
+
+  @override
+  String get batchesNoActiveDesc =>
+      'Start a rearing cycle to plan milestones and record daily work.';
+
+  @override
+  String get batchesNoActiveDescViewer => 'No batches are running right now.';
+
+  @override
+  String get batchesCreateAction => 'Create batch';
+
+  @override
+  String get batchesClosedHeader => 'Closed batches';
+
+  @override
+  String get batchesArchived => 'archived';
+
+  @override
+  String get batchesLarvaeLabel => 'larvae';
+
+  @override
+  String get batchesClosedLabel => 'Closed';
 }
