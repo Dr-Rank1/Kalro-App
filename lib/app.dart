@@ -84,8 +84,8 @@ class _KalroAppState extends State<KalroApp> {
         user: AppUser(
           id: 'test-user',
           farmId: 'test-farm',
-          username: 'admin',
-          displayName: 'Admin',
+          username: 'farmer',
+          displayName: 'Farmer',
           pinHash: 'test',
           permission: AccountPermission.admin,
           createdAt: DateTime(2020),

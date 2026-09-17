@@ -70,7 +70,7 @@ class _FarmSettingsScreenState extends State<FarmSettingsScreen> {
     if (!_permissions.canManageUsers(widget.session.user)) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Admin access required'.tr)));
+      ).showSnackBar(SnackBar(content: Text('Farm owner access required'.tr)));
       return;
     }
 
@@ -249,7 +249,7 @@ class _FarmSettingsScreenState extends State<FarmSettingsScreen> {
             )
           else
             Text(
-              'Ask an admin to change farm name, county, or houses.'.tr,
+              'Ask the farm owner to change farm name, county, or houses.'.tr,
               style: GoogleFonts.poppins(
                 fontSize: 13,
                 color: KalroColors.textMuted,

@@ -58,12 +58,12 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                   children: [
                     TextField(
                       controller: usernameController,
-                      decoration: InputDecoration(labelText: 'Username'.tr),
+                      decoration: InputDecoration(labelText: 'Login name'.tr),
                     ),
                     SizedBox(height: 12),
                     TextField(
                       controller: nameController,
-                      decoration: InputDecoration(labelText: 'Display name'.tr),
+                      decoration: InputDecoration(labelText: 'Name'.tr),
                     ),
                     SizedBox(height: 12),
                     TextField(
@@ -78,7 +78,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                     SizedBox(height: 12),
                     DropdownButtonFormField<AccountPermission>(
                       initialValue: permission,
-                      decoration: InputDecoration(labelText: 'Permission'.tr),
+                      decoration: InputDecoration(labelText: 'Access'.tr),
                       items: AccountPermission.values
                           .map(
                             (p) => DropdownMenuItem(
@@ -147,7 +147,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     final saved = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Reset PIN for ${user.displayName}'.tr),
+        title: Text('Reset PIN for ${user.farmerFacingName}'.tr),
         content: TextField(
           controller: pinController,
           decoration: InputDecoration(labelText: 'New PIN (4+ digits)'.tr),
@@ -189,13 +189,13 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
         return StatefulBuilder(
           builder: (context, setModalState) {
             return AlertDialog(
-              title: Text('Change role for ${user.displayName}'.tr),
+              title: Text('Change role for ${user.farmerFacingName}'.tr),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   DropdownButtonFormField<AccountPermission>(
                     initialValue: permission,
-                    decoration: InputDecoration(labelText: 'Permission'.tr),
+                    decoration: InputDecoration(labelText: 'Access'.tr),
                     items: AccountPermission.values
                         .map(
                           (p) =>
@@ -237,7 +237,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Remove ${user.displayName}?'.tr),
+        title: Text('Remove ${user.farmerFacingName}?'.tr),
         content: Text(
           'This deactivates the account. They will no longer be able to sign in.'
               .tr,
@@ -278,7 +278,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                 },
               ),
               ListTile(
-                leading: Icon(Icons.admin_panel_settings_outlined),
+                leading: Icon(Icons.badge_outlined),
                 title: Text('Change role'.tr),
                 onTap: () {
                   Navigator.pop(context);
@@ -388,7 +388,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                             children: [
                               Expanded(
                                 child: Text(
-                                  user.displayName,
+                                  user.farmerFacingName,
                                   style: GoogleFonts.poppins(
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -404,13 +404,14 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                                 ),
                             ],
                           ),
-                          Text(
-                            '@${user.username}',
-                            style: GoogleFonts.poppins(
-                              fontSize: 12,
-                              color: KalroColors.textMuted,
+                          if (user.showsLoginName)
+                            Text(
+                              user.username,
+                              style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                color: KalroColors.textMuted,
+                              ),
                             ),
-                          ),
                           SizedBox(height: 6),
                           PermissionBadge(
                             permission: user.permission,

@@ -180,7 +180,7 @@ class _AdminHubScreenState extends State<AdminHubScreen> {
                 ),
                 SizedBox(height: 16),
                 Text(
-                  'Admin access only'.tr,
+                  'Farm owner access only'.tr,
                   style: GoogleFonts.poppins(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -188,7 +188,7 @@ class _AdminHubScreenState extends State<AdminHubScreen> {
                 ),
                 SizedBox(height: 8),
                 Text(
-                  'Farm management is for administrators. Use My farm work for daily rearing tasks.'
+                  'Farm settings are for the farm owner. Use Today and Farm for daily rearing work.'
                       .tr,
                   textAlign: TextAlign.center,
                   style: GoogleFonts.poppins(

@@ -99,7 +99,11 @@ class UserPreferences {
 
   Future<String> getDisplayName() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_nameKey) ?? 'Farmer';
+    final name = prefs.getString(_nameKey) ?? 'Farmer';
+    if (name.trim().isEmpty || name.trim().toLowerCase() == 'admin') {
+      return 'Farmer';
+    }
+    return name;
   }
 
   Future<String> getOrgName() async {

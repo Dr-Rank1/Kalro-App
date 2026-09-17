@@ -142,7 +142,7 @@ class ProfileService {
         : (liveSurvivalN > 0 ? liveSurvivalSum / liveSurvivalN : 0.0);
 
     return ProfileSummary(
-      name: session.user.displayName,
+      name: session.user.farmerFacingName,
       org: session.farm.orgName,
       id: session.user.id,
       role: role,

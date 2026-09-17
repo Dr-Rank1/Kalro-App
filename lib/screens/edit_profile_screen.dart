@@ -42,7 +42,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     super.initState();
     _auth = widget.authRepository ?? AuthRepository.forSession(widget.session);
     _session = widget.session;
-    _name = TextEditingController(text: _session.user.displayName);
+    _name = TextEditingController(text: _session.user.farmerFacingName);
     _phone = TextEditingController(text: _session.user.phone ?? '');
     widget.userPreferences.getRole().then((role) {
       if (mounted) setState(() => _role = role);

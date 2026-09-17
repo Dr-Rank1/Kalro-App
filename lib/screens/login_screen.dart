@@ -277,13 +277,13 @@ class _LoginScreenState extends State<LoginScreen> {
               textInputAction: TextInputAction.next,
               autocorrect: false,
               decoration: InputDecoration(
-                labelText: 'Username'.tr,
+                labelText: 'Login name'.tr,
                 filled: true,
                 fillColor: Colors.white,
               ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'Enter your username'.tr;
+                  return 'Enter your login name'.tr;
                 }
                 return null;
               },

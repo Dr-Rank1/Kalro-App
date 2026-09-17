@@ -33,7 +33,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   UserRole? _role = UserRole.swr;
   final _nameController = TextEditingController(text: 'Farmer');
   final _orgController = TextEditingController(text: 'Kalro Sericulture Farm');
-  final _usernameController = TextEditingController(text: 'admin');
+  final _usernameController = TextEditingController(text: 'farmer');
   final _pinController = TextEditingController();
   final _confirmPinController = TextEditingController();
   var _saving = false;

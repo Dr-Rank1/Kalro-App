@@ -1,3 +1,4 @@
+import '../l10n/translator.dart';
 import 'account_permission.dart';
 
 class AppUser {
@@ -24,6 +25,18 @@ class AppUser {
   final bool active;
   final String? phone;
   final String? photoPath;
+
+  /// Name shown in farmer UI. Legacy accounts used "Admin".
+  String get farmerFacingName {
+    final name = displayName.trim();
+    if (name.isEmpty || name.toLowerCase() == 'admin') return 'Farmer'.tr;
+    return name;
+  }
+
+  bool get showsLoginName {
+    final login = username.trim().toLowerCase();
+    return login.isNotEmpty && login != 'admin';
+  }
 
   AppUser copyWith({
     String? displayName,

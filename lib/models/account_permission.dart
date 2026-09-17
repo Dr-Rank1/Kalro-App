@@ -4,9 +4,9 @@ import '../l10n/translator.dart';
 import '../theme/kalro_colors.dart';
 
 enum AccountPermission {
-  admin('Admin'),
-  caretaker('Caretaker'),
-  viewer('Viewer');
+  admin('Farm owner'),
+  caretaker('Farm worker'),
+  viewer('View only');
 
   const AccountPermission(this._label);
 
@@ -24,14 +24,15 @@ enum AccountPermission {
 
   String get description => switch (this) {
         AccountPermission.admin =>
-          'Full access including team management, backups, and cloud sync.'.tr,
+          'You can run this farm, add people, and restore backups.'.tr,
         AccountPermission.caretaker =>
-          'Can record batches, logs, payments, and purchases. Cannot manage users.'.tr,
-        AccountPermission.viewer => 'Read-only access to farm data and reports.'.tr,
+          'You can record lots, feeding, and harvests.'.tr,
+        AccountPermission.viewer =>
+          'You can look at farm records. You cannot change them.'.tr,
       };
 
   IconData get icon => switch (this) {
-        AccountPermission.admin => Icons.admin_panel_settings_outlined,
+        AccountPermission.admin => Icons.home_outlined,
         AccountPermission.caretaker => Icons.agriculture_outlined,
         AccountPermission.viewer => Icons.visibility_outlined,
       };

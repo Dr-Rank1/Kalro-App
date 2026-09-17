@@ -54,7 +54,7 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
   Future<void> _importBackup() async {
     if (!_permissions.canRestoreBackup(widget.session.user)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Admin access required to restore backups'.tr)),
+        SnackBar(content: Text('Only the farm owner can restore backups'.tr)),
       );
       return;
     }
@@ -161,8 +161,8 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
           AdminSectionHeader(
             title: 'Restore'.tr,
             subtitle: canRestore
-                ? 'Replace local data with a backup file from another device.'
-                : 'Admin access required to restore backups.',
+                ? 'Replace local data with a backup file from another device.'.tr
+                : 'Only the farm owner can restore backups.'.tr,
           ),
           SizedBox(height: 16),
           OutlinedButton(

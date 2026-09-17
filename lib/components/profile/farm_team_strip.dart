@@ -75,7 +75,7 @@ class FarmTeamStrip extends StatelessWidget {
                             backgroundColor:
                                 KalroColors.primaryGreen.withValues(alpha: 0.12),
                             child: Text(
-                              _initials(member.displayName),
+                              _initials(member.farmerFacingName),
                               style: GoogleFonts.poppins(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
@@ -85,7 +85,7 @@ class FarmTeamStrip extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            you ? 'You'.tr : member.displayName,
+                            you ? 'You'.tr : member.farmerFacingName,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             textAlign: TextAlign.center,

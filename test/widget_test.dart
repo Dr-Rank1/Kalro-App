@@ -98,6 +98,6 @@ void main() {
     expect(find.text('This season'), findsOneWidget);
     expect(find.text('Test Farm'), findsWidgets);
     expect(find.text('No lots yet'), findsOneWidget);
-    expect(find.text('Admin'), findsWidgets);
+    expect(find.text('Farmer'), findsWidgets);
   });
 }

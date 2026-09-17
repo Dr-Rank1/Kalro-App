@@ -42,7 +42,7 @@ class ProfileHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _Avatar(
-                name: user.displayName,
+                name: user.farmerFacingName,
                 photoPath: photo,
                 onEditPhoto: onEditPhoto,
               ),
@@ -52,23 +52,25 @@ class ProfileHeader extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      user.displayName,
+                      user.farmerFacingName,
                       style: GoogleFonts.poppins(
                         fontSize: 22,
                         fontWeight: FontWeight.w700,
                         height: 1.15,
                       ),
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      Translator.fill('Signed in as {name}', {
-                        'name': user.username,
-                      }),
-                      style: GoogleFonts.poppins(
-                        fontSize: 13,
-                        color: KalroColors.textMuted,
+                    if (user.showsLoginName) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        Translator.fill('Signed in as {name}', {
+                          'name': user.username,
+                        }),
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          color: KalroColors.textMuted,
+                        ),
                       ),
-                    ),
+                    ],
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 6,
