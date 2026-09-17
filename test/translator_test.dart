@@ -40,6 +40,12 @@ void main() {
     expect('in 3 days'.tr.toLowerCase(), isNot(contains('in 3 days')));
     expect('Day 5 / 40'.tr, isNot('Day 5 / 40'));
     expect('Stop feeding — 1st moult'.tr, isNot('Stop feeding — 1st moult'));
+    expect('Change PIN'.tr, isNot('Change PIN'));
+    expect('This season'.tr, isNot('This season'));
+    expect(
+      Translator.fill('Signed in as {name}', {'name': 'Amina'}),
+      contains('Amina'),
+    );
   });
 
   test('compound strings translate each part', () {

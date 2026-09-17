@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kalro/models/account_permission.dart';
+import 'package:kalro/models/farm_profile.dart';
 import 'package:kalro/services/auth_repository.dart';
 import 'package:kalro/services/pin_hasher.dart';
 
@@ -102,11 +103,71 @@ void main() {
       permission: AccountPermission.admin,
     );
 
-    final updated = await auth.updateFarm(farm, orgName: 'New Name');
+    final updated = await auth.updateFarm(farm.copyWith(orgName: 'New Name'));
     expect(updated.orgName, 'New Name');
 
     final loaded = await auth.getFarm(farm.id);
     expect(loaded?.orgName, 'New Name');
     expect(await auth.countActiveUsers(farm.id), 1);
+  });
+
+  test('persists farm county and house count', () async {
+    final farm = await auth.createFarm(orgName: 'Kiambu Farm');
+    final updated = await auth.updateFarm(
+      farm.copyWith(county: 'Kiambu', houseCount: 4),
+    );
+    expect(updated.county, 'Kiambu');
+    expect(updated.houseCount, 4);
+    final loaded = await auth.getFarm(farm.id);
+    expect(loaded?.county, 'Kiambu');
+    expect(loaded?.houseCount, 4);
+  });
+
+  test('changePin rejects the wrong current PIN and accepts a valid one', () async {
+    final farm = await auth.createFarm(orgName: 'PIN Farm');
+    final user = await auth.createUser(
+      farmId: farm.id,
+      username: 'admin',
+      displayName: 'Admin',
+      pin: '1234',
+      permission: AccountPermission.admin,
+    );
+
+    expect(
+      () => auth.changePin(user: user, currentPin: '0000', newPin: '5678'),
+      throwsStateError,
+    );
+
+    final changed = await auth.changePin(
+      user: user,
+      currentPin: '1234',
+      newPin: '5678',
+    );
+    expect(await auth.authenticate(farmId: farm.id, username: 'admin', pin: '1234'), isNull);
+    expect(await auth.authenticate(farmId: farm.id, username: 'admin', pin: '5678'), isNotNull);
+    expect(changed.displayName, 'Admin');
+  });
+
+  test('forSession writes into the farm folder named after the farm id', () async {
+    final farm = await auth.createFarm(orgName: 'Folder Farm');
+    final user = await auth.createUser(
+      farmId: farm.id,
+      username: 'admin',
+      displayName: 'Admin',
+      pin: '1234',
+      permission: AccountPermission.admin,
+    );
+    final farmDir = await auth.farmDirectory(farm.id);
+    final scoped = AuthRepository.forSession(
+      UserSession(
+        farm: farm,
+        user: user,
+        farmDirectoryPath: farmDir.path,
+      ),
+    );
+    final renamed = user.copyWith(displayName: 'Amina');
+    await scoped.updateUser(renamed);
+    final loaded = await auth.getUsers(farm.id);
+    expect(loaded.single.displayName, 'Amina');
   });
 }

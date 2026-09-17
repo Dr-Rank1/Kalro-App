@@ -13,6 +13,17 @@ enum UserRole {
   final String _label;
 
   String get label => _label.tr;
+
+  String get blurb => switch (this) {
+        UserRole.swr =>
+          'Daily rearing: feed, deaths, house, and leaf.'.tr,
+        UserRole.asr =>
+          'Seed rearer: lots, field work, and reports.'.tr,
+        UserRole.rsp =>
+          'Seed producer: finance, cycle money, and reports.'.tr,
+        UserRole.crc =>
+          'CRC support: backup, sync, reports, and farm money.'.tr,
+      };
 }
 
 class UserPreferences {
@@ -79,6 +90,11 @@ class UserPreferences {
     final value = prefs.getString(_roleKey);
     if (value == null) return UserRole.swr;
     return UserRole.values.byName(value);
+  }
+
+  Future<void> setRole(UserRole role) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_roleKey, role.name);
   }
 
   Future<String> getDisplayName() async {

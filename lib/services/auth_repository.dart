@@ -21,6 +21,21 @@ class AuthRepository {
   static const _usersFileName = 'users.json';
   static const _farmFileName = 'farm.json';
 
+  /// Uses this farm's folder when [UserSession.farmDirectoryPath] is
+  /// `{farmsRoot}/{farmId}` so PIN and photo writes stay on the signed-in farm.
+  static AuthRepository forSession(UserSession session) {
+    final parts = session.farmDirectoryPath
+        .split(Platform.pathSeparator)
+        .where((part) => part.isNotEmpty);
+    final folderName = parts.isEmpty ? '' : parts.last;
+    if (folderName == session.farm.id) {
+      return AuthRepository(
+        farmsRootDirectory: Directory(session.farmDirectoryPath).parent,
+      );
+    }
+    return AuthRepository();
+  }
+
   Future<Directory> farmsRoot() async {
     return _farmsRootDirectory ??
         Directory('${(await getApplicationDocumentsDirectory()).path}/kalro_farms');
@@ -117,10 +132,28 @@ class AuthRepository {
         .toList();
   }
 
-  Future<FarmProfile> updateFarm(FarmProfile farm, {String? orgName}) async {
-    final updated = farm.copyWith(orgName: orgName);
+  Future<FarmProfile> updateFarm(FarmProfile farm) async {
     final dir = await farmDirectory(farm.id);
-    await FileUtils.atomicWriteAsString(File('${dir.path}/$_farmFileName'), jsonEncode(updated.toJson()));
+    await FileUtils.atomicWriteAsString(
+      File('${dir.path}/$_farmFileName'),
+      jsonEncode(farm.toJson()),
+    );
+    return farm;
+  }
+
+  Future<AppUser> changePin({
+    required AppUser user,
+    required String currentPin,
+    required String newPin,
+  }) async {
+    if (!PinHasher.verifyPin(currentPin, user.pinHash)) {
+      throw StateError('Current PIN is wrong');
+    }
+    if (newPin.trim().length < 4) {
+      throw StateError('PIN must be at least 4 digits');
+    }
+    final updated = user.copyWith(pinHash: PinHasher.hashPin(newPin.trim()));
+    await updateUser(updated);
     return updated;
   }
 

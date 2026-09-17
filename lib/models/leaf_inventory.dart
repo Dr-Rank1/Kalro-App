@@ -11,6 +11,8 @@ class LeafInventory {
   final double kesseruKg;
   final DateTime updatedAt;
 
+  double get stockKg => mulberryKg + castorKg + kesseruKg;
+
   LeafInventory copyWith({
     double? mulberryKg,
     double? castorKg,

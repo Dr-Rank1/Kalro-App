@@ -10,6 +10,8 @@ class AppUser {
     required this.permission,
     required this.createdAt,
     this.active = true,
+    this.phone,
+    this.photoPath,
   });
 
   final String id;
@@ -20,12 +22,18 @@ class AppUser {
   final AccountPermission permission;
   final DateTime createdAt;
   final bool active;
+  final String? phone;
+  final String? photoPath;
 
   AppUser copyWith({
     String? displayName,
     String? pinHash,
     AccountPermission? permission,
     bool? active,
+    String? phone,
+    String? photoPath,
+    bool clearPhone = false,
+    bool clearPhoto = false,
   }) {
     return AppUser(
       id: id,
@@ -36,6 +44,8 @@ class AppUser {
       permission: permission ?? this.permission,
       createdAt: createdAt,
       active: active ?? this.active,
+      phone: clearPhone ? null : (phone ?? this.phone),
+      photoPath: clearPhoto ? null : (photoPath ?? this.photoPath),
     );
   }
 
@@ -48,6 +58,8 @@ class AppUser {
         'permission': permission.name,
         'createdAt': createdAt.toIso8601String(),
         'active': active,
+        'phone': phone,
+        'photoPath': photoPath,
       };
 
   factory AppUser.fromJson(Map<String, dynamic> json) => AppUser(
@@ -59,5 +71,7 @@ class AppUser {
         permission: AccountPermission.values.byName(json['permission'] as String),
         createdAt: DateTime.parse(json['createdAt'] as String),
         active: json['active'] as bool? ?? true,
+        phone: json['phone'] as String?,
+        photoPath: json['photoPath'] as String?,
       );
 }

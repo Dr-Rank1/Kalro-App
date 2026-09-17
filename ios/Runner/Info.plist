@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Kalro uses the camera to photograph sick larvae for CRC review.</string>
+	<string>Kalro uses the camera for your profile photo and to photograph sick larvae for CRC review.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Kalro can attach a photo of sick larvae to a mortality record.</string>
+	<string>Kalro uses photos for your profile and for sick-larvae records.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>

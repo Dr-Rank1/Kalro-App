@@ -29,6 +29,7 @@ class FarmerShell extends StatefulWidget {
     this.notificationService,
     this.onLogout,
     required this.onLanguageChanged,
+    this.onSessionUpdated,
   });
 
   final AppRepositories repositories;
@@ -37,6 +38,7 @@ class FarmerShell extends StatefulWidget {
   final NotificationService? notificationService;
   final VoidCallback? onLogout;
   final void Function(String) onLanguageChanged;
+  final ValueChanged<UserSession>? onSessionUpdated;
 
   @override
   State<FarmerShell> createState() => _FarmerShellState();
@@ -206,6 +208,7 @@ class _FarmerShellState extends State<FarmerShell> {
         notificationService: widget.notificationService,
         onLogout: widget.onLogout,
         onLanguageChanged: widget.onLanguageChanged,
+        onSessionUpdated: widget.onSessionUpdated,
       ),
     ];
 

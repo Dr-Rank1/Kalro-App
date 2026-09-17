@@ -50,5 +50,7 @@ export 'onboarding/option_grid_card.dart';
 export 'payments/payment_record_tile.dart';
 export 'profile/profile_header.dart';
 export 'profile/stock_split_row.dart';
+export 'profile/season_record_grid.dart';
+export 'profile/farm_team_strip.dart';
 export 'purchase/purchase_order_tile.dart';
 export 'reports/report_metric_row.dart';

@@ -201,6 +201,9 @@ class _KalroAppState extends State<KalroApp> {
         session: _session!,
         onLogout: widget.initialRepositories == null ? _onLogout : null,
         onLanguageChanged: _changeLanguage,
+        onSessionUpdated: (session) {
+          setState(() => _session = session);
+        },
       );
     }
 
