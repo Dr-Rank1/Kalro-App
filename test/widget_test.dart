@@ -61,6 +61,10 @@ void main() {
   testWidgets('You tab shows farm account identity', (tester) async {
     final repositories = AppRepositories(storageDirectory: tempDir);
 
+    await tester.runAsync(() async {
+      await repositories.batches.getAll();
+    });
+
     await tester.pumpWidget(
       KalroApp(
         repositories: repositories,

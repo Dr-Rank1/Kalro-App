@@ -49,9 +49,9 @@ class ProfileService {
     DateTime? lastBackupAt;
     try {
       final metaFile = File('${session.farmDirectoryPath}/sync_meta.json');
-      if (await metaFile.exists()) {
+      if (metaFile.existsSync()) {
         final meta =
-            jsonDecode(await metaFile.readAsString()) as Map<String, dynamic>;
+            jsonDecode(metaFile.readAsStringSync()) as Map<String, dynamic>;
         final uploaded = meta['lastUploadedAt'] as String?;
         final snapshot = meta['lastSnapshotExportedAt'] as String?;
         lastBackupAt = uploaded == null ? null : DateTime.tryParse(uploaded);
@@ -183,8 +183,8 @@ class ProfileService {
   Future<List<AppUser>> _team(UserSession session) async {
     try {
       final file = File('${session.farmDirectoryPath}/users.json');
-      if (!await file.exists()) return [session.user];
-      final decoded = jsonDecode(await file.readAsString()) as List<dynamic>;
+      if (!file.existsSync()) return [session.user];
+      final decoded = jsonDecode(file.readAsStringSync()) as List<dynamic>;
       final users = decoded
           .map((item) => AppUser.fromJson(item as Map<String, dynamic>))
           .where((user) => user.active)

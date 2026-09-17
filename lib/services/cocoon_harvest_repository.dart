@@ -1,20 +1,21 @@
-import '../utils/file_utils.dart';
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../models/cocoon_harvest.dart';
+import 'farm_store.dart';
 
 class CocoonHarvestRepository {
-  CocoonHarvestRepository({Uuid? uuid, Directory? storageDirectory})
-      : _uuid = uuid ?? const Uuid(),
-        _storageDirectory = storageDirectory;
+  CocoonHarvestRepository({
+    Uuid? uuid,
+    Directory? storageDirectory,
+    FarmStore? store,
+  })  : _uuid = uuid ?? const Uuid(),
+        _store = store ?? FarmStore(directory: storageDirectory);
 
   final Uuid _uuid;
-  final Directory? _storageDirectory;
-  static const _fileName = 'cocoon_harvests.json';
+  final FarmStore _store;
+  static const collection = 'cocoon_harvests';
   List<CocoonHarvest>? _cache;
 
   Future<List<CocoonHarvest>> getAll() async {
@@ -54,40 +55,19 @@ class CocoonHarvestRepository {
 
     final harvests = await getAll();
     _cache = [...harvests, harvest];
-    await _save(_cache!);
+    await _store.upsert(collection, harvest.id, harvest.toJson());
     return harvest;
   }
 
   Future<void> delete(String id) async {
     final harvests = await getAll();
     _cache = harvests.where((h) => h.id != id).toList();
-    await _save(_cache!);
+    await _store.delete(collection, id);
   }
 
   Future<List<CocoonHarvest>> _load() async {
-    final file = await _storageFile();
-    if (!await file.exists()) return [];
-
-    final contents = await file.readAsString();
-    if (contents.trim().isEmpty) return [];
-
-    final decoded = jsonDecode(contents) as List<dynamic>;
-    return decoded
-        .map((item) => CocoonHarvest.fromJson(item as Map<String, dynamic>))
-        .toList();
-  }
-
-  Future<void> _save(List<CocoonHarvest> harvests) async {
-    final file = await _storageFile();
-    final encoded =
-        jsonEncode(harvests.map((h) => h.toJson()).toList());
-    await FileUtils.atomicWriteAsString(file, encoded);
-  }
-
-  Future<File> _storageFile() async {
-    final directory =
-        _storageDirectory ?? await getApplicationDocumentsDirectory();
-    return File('${directory.path}/$_fileName');
+    final rows = await _store.getCollection(collection);
+    return [for (final row in rows) CocoonHarvest.fromJson(row)];
   }
 
   void invalidateCache() => _cache = null;

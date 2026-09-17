@@ -4,7 +4,7 @@ import 'dart:io';
 
 import 'app_repositories.dart';
 
-/// Exports and restores all local JSON data as a single backup file.
+/// Exports and restores farm data as a single JSON file for CRC / sharing.
 class BackupService {
   const BackupService();
 
@@ -33,20 +33,48 @@ class BackupService {
     }
 
     final data = payload['data'] as Map<String, dynamic>;
-    final storageDir = await repositories.storageDirectory();
+    final store = repositories.store;
 
-    await _writeJson(storageDir, 'batches.json', data['batches']);
-    await _writeJson(storageDir, 'feed_logs.json', data['feedLogs']);
-    await _writeJson(storageDir, 'mortality_logs.json', data['mortalityLogs']);
-    await _writeJson(storageDir, 'environment_logs.json', data['environmentLogs']);
-    await _writeJson(storageDir, 'cocoon_harvests.json', data['cocoonHarvests']);
-    await _writeJson(storageDir, 'milestone_observations.json', data['milestoneObservations']);
-    await _writeJson(storageDir, 'payments.json', data['payments']);
-    await _writeJson(storageDir, 'producers.json', data['producers']);
-    await _writeJson(storageDir, 'purchase_orders.json', data['purchaseOrders']);
-    await _writeObject(storageDir, 'inventory_settings.json', data['inventorySettings']);
-    await _writeObject(storageDir, 'leaf_inventory.json', data['leafInventory']);
-    await _writeJson(storageDir, 'leaf_movements.json', data['leafMovements']);
+    await store.replaceCollection('batches', _maps(data['batches']));
+    await store.replaceCollection('feed_logs', _maps(data['feedLogs']));
+    await store.replaceCollection('mortality_logs', _maps(data['mortalityLogs']));
+    await store.replaceCollection(
+      'environment_logs',
+      _maps(data['environmentLogs']),
+    );
+    await store.replaceCollection(
+      'cocoon_harvests',
+      _maps(data['cocoonHarvests']),
+    );
+    await store.replaceCollection(
+      'milestone_observations',
+      _maps(data['milestoneObservations']),
+    );
+    await store.replaceCollection('payments', _maps(data['payments']));
+    await store.replaceCollection('producers', _maps(data['producers']));
+    await store.replaceCollection(
+      'purchase_orders',
+      _maps(data['purchaseOrders']),
+    );
+    await store.replaceCollection(
+      'leaf_movements',
+      _maps(data['leafMovements']),
+    );
+
+    final settings = data['inventorySettings'];
+    if (settings is Map) {
+      await store.putSingleton(
+        'inventory_settings',
+        Map<String, dynamic>.from(settings),
+      );
+    }
+    final leaf = data['leafInventory'];
+    if (leaf is Map) {
+      await store.putSingleton(
+        'leaf_inventory',
+        Map<String, dynamic>.from(leaf),
+      );
+    }
 
     repositories.invalidateCaches();
   }
@@ -79,13 +107,11 @@ class BackupService {
     };
   }
 
-  Future<void> _writeJson(Directory directory, String fileName, dynamic data) async {
-    final file = File('${directory.path}/$fileName');
-    await FileUtils.atomicWriteAsString(file, jsonEncode(data ?? []));
-  }
-
-  Future<void> _writeObject(Directory directory, String fileName, dynamic data) async {
-    final file = File('${directory.path}/$fileName');
-    await FileUtils.atomicWriteAsString(file, jsonEncode(data ?? {}));
+  List<Map<String, dynamic>> _maps(dynamic data) {
+    if (data is! List) return [];
+    return [
+      for (final item in data)
+        if (item is Map) Map<String, dynamic>.from(item),
+    ];
   }
 }

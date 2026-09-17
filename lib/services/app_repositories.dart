@@ -3,6 +3,7 @@ import 'dart:io';
 import 'batch_repository.dart';
 import 'cocoon_harvest_repository.dart';
 import 'environment_log_repository.dart';
+import 'farm_store.dart';
 import 'feed_log_repository.dart';
 import 'inventory_settings_repository.dart';
 import 'leaf_inventory_repository.dart';
@@ -14,24 +15,62 @@ import 'producer_repository.dart';
 import 'purchase_order_repository.dart';
 
 class AppRepositories {
-  AppRepositories({Directory? storageDirectory})
-      : batches = BatchRepository(storageDirectory: storageDirectory),
-        feedLogs = FeedLogRepository(storageDirectory: storageDirectory),
-        mortalityLogs = MortalityLogRepository(storageDirectory: storageDirectory),
-        environmentLogs =
-            EnvironmentLogRepository(storageDirectory: storageDirectory),
-        cocoonHarvests =
-            CocoonHarvestRepository(storageDirectory: storageDirectory),
-        milestoneObservations =
-            MilestoneObservationRepository(storageDirectory: storageDirectory),
-        leafInventory = LeafInventoryRepository(storageDirectory: storageDirectory),
-        leafMovements =
-            LeafMovementRepository(storageDirectory: storageDirectory),
-        payments = PaymentRepository(storageDirectory: storageDirectory),
-        producers = ProducerRepository(storageDirectory: storageDirectory),
-        purchaseOrders = PurchaseOrderRepository(storageDirectory: storageDirectory),
-        inventorySettings = InventorySettingsRepository(storageDirectory: storageDirectory);
+  factory AppRepositories({Directory? storageDirectory, FarmStore? store}) {
+    final farmStore = store ?? FarmStore(directory: storageDirectory);
+    return AppRepositories._(storageDirectory, farmStore);
+  }
 
+  AppRepositories._(Directory? storageDirectory, this.store)
+      : batches = BatchRepository(
+          storageDirectory: storageDirectory,
+          store: store,
+        ),
+        feedLogs = FeedLogRepository(
+          storageDirectory: storageDirectory,
+          store: store,
+        ),
+        mortalityLogs = MortalityLogRepository(
+          storageDirectory: storageDirectory,
+          store: store,
+        ),
+        environmentLogs = EnvironmentLogRepository(
+          storageDirectory: storageDirectory,
+          store: store,
+        ),
+        cocoonHarvests = CocoonHarvestRepository(
+          storageDirectory: storageDirectory,
+          store: store,
+        ),
+        milestoneObservations = MilestoneObservationRepository(
+          storageDirectory: storageDirectory,
+          store: store,
+        ),
+        leafInventory = LeafInventoryRepository(
+          storageDirectory: storageDirectory,
+          store: store,
+        ),
+        leafMovements = LeafMovementRepository(
+          storageDirectory: storageDirectory,
+          store: store,
+        ),
+        payments = PaymentRepository(
+          storageDirectory: storageDirectory,
+          store: store,
+        ),
+        producers = ProducerRepository(
+          storageDirectory: storageDirectory,
+          store: store,
+        ),
+        purchaseOrders = PurchaseOrderRepository(
+          storageDirectory: storageDirectory,
+          store: store,
+        ),
+        inventorySettings = InventorySettingsRepository(
+          storageDirectory: storageDirectory,
+          store: store,
+        );
+
+  final FarmStore store;
   final BatchRepository batches;
   final FeedLogRepository feedLogs;
   final MortalityLogRepository mortalityLogs;

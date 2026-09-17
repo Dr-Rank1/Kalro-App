@@ -1,21 +1,22 @@
-import '../utils/file_utils.dart';
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../models/purchase_order.dart';
 import '../models/species.dart';
+import 'farm_store.dart';
 
 class PurchaseOrderRepository {
-  PurchaseOrderRepository({Uuid? uuid, Directory? storageDirectory})
-      : _uuid = uuid ?? const Uuid(),
-        _storageDirectory = storageDirectory;
+  PurchaseOrderRepository({
+    Uuid? uuid,
+    Directory? storageDirectory,
+    FarmStore? store,
+  })  : _uuid = uuid ?? const Uuid(),
+        _store = store ?? FarmStore(directory: storageDirectory);
 
   final Uuid _uuid;
-  final Directory? _storageDirectory;
-  static const _fileName = 'purchase_orders.json';
+  final FarmStore _store;
+  static const collection = 'purchase_orders';
   List<PurchaseOrder>? _cache;
 
   Future<List<PurchaseOrder>> getAll() async {
@@ -51,38 +52,19 @@ class PurchaseOrderRepository {
 
     final orders = await getAll();
     _cache = [...orders, order];
-    await _save(_cache!);
+    await _store.upsert(collection, order.id, order.toJson());
     return order;
   }
 
   Future<void> delete(String id) async {
     final orders = await getAll();
     _cache = orders.where((order) => order.id != id).toList();
-    await _save(_cache!);
+    await _store.delete(collection, id);
   }
 
   Future<List<PurchaseOrder>> _load() async {
-    final file = await _storageFile();
-    if (!await file.exists()) return [];
-
-    final contents = await file.readAsString();
-    if (contents.trim().isEmpty) return [];
-
-    final decoded = jsonDecode(contents) as List<dynamic>;
-    return decoded
-        .map((item) => PurchaseOrder.fromJson(item as Map<String, dynamic>))
-        .toList();
-  }
-
-  Future<void> _save(List<PurchaseOrder> orders) async {
-    final file = await _storageFile();
-    final encoded = jsonEncode(orders.map((order) => order.toJson()).toList());
-    await FileUtils.atomicWriteAsString(file, encoded);
-  }
-
-  Future<File> _storageFile() async {
-    final directory = _storageDirectory ?? await getApplicationDocumentsDirectory();
-    return File('${directory.path}/$_fileName');
+    final rows = await _store.getCollection(collection);
+    return [for (final row in rows) PurchaseOrder.fromJson(row)];
   }
 
   void invalidateCache() => _cache = null;

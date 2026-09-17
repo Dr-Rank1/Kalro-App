@@ -1,17 +1,14 @@
-import '../utils/file_utils.dart';
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:path_provider/path_provider.dart';
-
 import '../models/leaf_inventory.dart';
+import 'farm_store.dart';
 
 class LeafInventoryRepository {
-  LeafInventoryRepository({Directory? storageDirectory})
-      : _storageDirectory = storageDirectory;
+  LeafInventoryRepository({Directory? storageDirectory, FarmStore? store})
+      : _store = store ?? FarmStore(directory: storageDirectory);
 
-  final Directory? _storageDirectory;
-  static const _fileName = 'leaf_inventory.json';
+  final FarmStore _store;
+  static const singleton = 'leaf_inventory';
   LeafInventory? _cache;
 
   Future<LeafInventory> get() async {
@@ -21,30 +18,14 @@ class LeafInventoryRepository {
 
   Future<LeafInventory> save(LeafInventory inventory) async {
     _cache = inventory.copyWith(updatedAt: DateTime.now());
-    await _persist(_cache!);
+    await _store.putSingleton(singleton, _cache!.toJson());
     return _cache!;
   }
 
   Future<LeafInventory> _load() async {
-    final file = await _storageFile();
-    if (!await file.exists()) return LeafInventory.empty;
-
-    final contents = await file.readAsString();
-    if (contents.trim().isEmpty) return LeafInventory.empty;
-
-    final decoded = jsonDecode(contents) as Map<String, dynamic>;
-    return LeafInventory.fromJson(decoded);
-  }
-
-  Future<void> _persist(LeafInventory inventory) async {
-    final file = await _storageFile();
-    await FileUtils.atomicWriteAsString(file, jsonEncode(inventory.toJson()));
-  }
-
-  Future<File> _storageFile() async {
-    final directory =
-        _storageDirectory ?? await getApplicationDocumentsDirectory();
-    return File('${directory.path}/$_fileName');
+    final stored = await _store.getSingleton(singleton);
+    if (stored == null) return LeafInventory.empty;
+    return LeafInventory.fromJson(stored);
   }
 
   void invalidateCache() => _cache = null;

@@ -1,5 +1,3 @@
-import '../utils/file_utils.dart';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
@@ -8,15 +6,18 @@ import 'package:uuid/uuid.dart';
 import '../models/batch.dart';
 import '../models/batch_status.dart';
 import '../models/species.dart';
+import 'farm_store.dart';
 
 class BatchRepository {
-  BatchRepository({Uuid? uuid, Directory? storageDirectory})
+  BatchRepository({Uuid? uuid, Directory? storageDirectory, FarmStore? store})
       : _uuid = uuid ?? const Uuid(),
-        _storageDirectory = storageDirectory;
+        _storageDirectory = storageDirectory,
+        _store = store ?? FarmStore(directory: storageDirectory);
 
   final Uuid _uuid;
   final Directory? _storageDirectory;
-  static const _fileName = 'batches.json';
+  final FarmStore _store;
+  static const collection = 'batches';
   List<Batch>? _cache;
 
   Future<List<Batch>> getAll() async {
@@ -62,7 +63,7 @@ class BatchRepository {
 
     final batches = await getAll();
     _cache = [...batches, batch];
-    await _save(_cache!);
+    await _store.upsert(collection, batch.id, batch.toJson());
     return batch;
   }
 
@@ -75,41 +76,18 @@ class BatchRepository {
 
     final updated = List<Batch>.from(batches)..[index] = batch;
     _cache = updated;
-    await _save(updated);
+    await _store.upsert(collection, batch.id, batch.toJson());
   }
 
   Future<void> delete(String id) async {
     final batches = await getAll();
     _cache = batches.where((batch) => batch.id != id).toList();
-    await _save(_cache!);
+    await _store.delete(collection, id);
   }
 
   Future<List<Batch>> _load() async {
-    final file = await _storageFile();
-    if (!await file.exists()) {
-      return [];
-    }
-
-    final contents = await file.readAsString();
-    if (contents.trim().isEmpty) {
-      return [];
-    }
-
-    final decoded = jsonDecode(contents) as List<dynamic>;
-    return decoded
-        .map((item) => Batch.fromJson(item as Map<String, dynamic>))
-        .toList();
-  }
-
-  Future<void> _save(List<Batch> batches) async {
-    final file = await _storageFile();
-    final encoded = jsonEncode(batches.map((batch) => batch.toJson()).toList());
-    await FileUtils.atomicWriteAsString(file, encoded);
-  }
-
-  Future<File> _storageFile() async {
-    final directory = _storageDirectory ?? await getApplicationDocumentsDirectory();
-    return File('${directory.path}/$_fileName');
+    final rows = await _store.getCollection(collection);
+    return [for (final row in rows) Batch.fromJson(row)];
   }
 
   Future<Directory> storageDirectory() async {

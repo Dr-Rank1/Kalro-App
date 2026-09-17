@@ -1,20 +1,18 @@
-import '../utils/file_utils.dart';
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../models/feed_log.dart';
+import 'farm_store.dart';
 
 class FeedLogRepository {
-  FeedLogRepository({Uuid? uuid, Directory? storageDirectory})
+  FeedLogRepository({Uuid? uuid, Directory? storageDirectory, FarmStore? store})
       : _uuid = uuid ?? const Uuid(),
-        _storageDirectory = storageDirectory;
+        _store = store ?? FarmStore(directory: storageDirectory);
 
   final Uuid _uuid;
-  final Directory? _storageDirectory;
-  static const _fileName = 'feed_logs.json';
+  final FarmStore _store;
+  static const collection = 'feed_logs';
   List<FeedLog>? _cache;
 
   Future<List<FeedLog>> getAll() async {
@@ -48,14 +46,14 @@ class FeedLogRepository {
 
     final logs = await getAll();
     _cache = [...logs, log];
-    await _save(_cache!);
+    await _store.upsert(collection, log.id, log.toJson());
     return log;
   }
 
   Future<void> delete(String id) async {
     final logs = await getAll();
     _cache = logs.where((log) => log.id != id).toList();
-    await _save(_cache!);
+    await _store.delete(collection, id);
   }
 
   Future<double> totalQuantityForBatch(String batchId) async {
@@ -68,27 +66,8 @@ class FeedLogRepository {
   }
 
   Future<List<FeedLog>> _load() async {
-    final file = await _storageFile();
-    if (!await file.exists()) return [];
-
-    final contents = await file.readAsString();
-    if (contents.trim().isEmpty) return [];
-
-    final decoded = jsonDecode(contents) as List<dynamic>;
-    return decoded
-        .map((item) => FeedLog.fromJson(item as Map<String, dynamic>))
-        .toList();
-  }
-
-  Future<void> _save(List<FeedLog> logs) async {
-    final file = await _storageFile();
-    final encoded = jsonEncode(logs.map((log) => log.toJson()).toList());
-    await FileUtils.atomicWriteAsString(file, encoded);
-  }
-
-  Future<File> _storageFile() async {
-    final directory = _storageDirectory ?? await getApplicationDocumentsDirectory();
-    return File('${directory.path}/$_fileName');
+    final rows = await _store.getCollection(collection);
+    return [for (final row in rows) FeedLog.fromJson(row)];
   }
 
   void invalidateCache() => _cache = null;

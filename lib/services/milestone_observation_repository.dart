@@ -1,20 +1,21 @@
-import '../utils/file_utils.dart';
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../models/milestone_observation.dart';
+import 'farm_store.dart';
 
 class MilestoneObservationRepository {
-  MilestoneObservationRepository({Uuid? uuid, Directory? storageDirectory})
-      : _uuid = uuid ?? const Uuid(),
-        _storageDirectory = storageDirectory;
+  MilestoneObservationRepository({
+    Uuid? uuid,
+    Directory? storageDirectory,
+    FarmStore? store,
+  })  : _uuid = uuid ?? const Uuid(),
+        _store = store ?? FarmStore(directory: storageDirectory);
 
   final Uuid _uuid;
-  final Directory? _storageDirectory;
-  static const _fileName = 'milestone_observations.json';
+  final FarmStore _store;
+  static const collection = 'milestone_observations';
   List<MilestoneObservation>? _cache;
 
   Future<List<MilestoneObservation>> getAll() async {
@@ -59,14 +60,14 @@ class MilestoneObservationRepository {
     } else {
       _cache = [...observations, observation];
     }
-    await _save(_cache!);
+    await _store.upsert(collection, observation.id, observation.toJson());
     return observation;
   }
 
   Future<void> delete(String id) async {
     final observations = await getAll();
     _cache = observations.where((o) => o.id != id).toList();
-    await _save(_cache!);
+    await _store.delete(collection, id);
   }
 
   DateTime _dateOnly(DateTime date) {
@@ -74,30 +75,8 @@ class MilestoneObservationRepository {
   }
 
   Future<List<MilestoneObservation>> _load() async {
-    final file = await _storageFile();
-    if (!await file.exists()) return [];
-
-    final contents = await file.readAsString();
-    if (contents.trim().isEmpty) return [];
-
-    final decoded = jsonDecode(contents) as List<dynamic>;
-    return decoded
-        .map((item) =>
-            MilestoneObservation.fromJson(item as Map<String, dynamic>))
-        .toList();
-  }
-
-  Future<void> _save(List<MilestoneObservation> observations) async {
-    final file = await _storageFile();
-    final encoded =
-        jsonEncode(observations.map((o) => o.toJson()).toList());
-    await FileUtils.atomicWriteAsString(file, encoded);
-  }
-
-  Future<File> _storageFile() async {
-    final directory =
-        _storageDirectory ?? await getApplicationDocumentsDirectory();
-    return File('${directory.path}/$_fileName');
+    final rows = await _store.getCollection(collection);
+    return [for (final row in rows) MilestoneObservation.fromJson(row)];
   }
 
   void invalidateCache() => _cache = null;

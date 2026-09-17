@@ -1,28 +1,28 @@
-import '../utils/file_utils.dart';
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../models/producer.dart';
 import '../models/producer_type.dart';
+import 'farm_store.dart';
 
 class ProducerRepository {
-  ProducerRepository({Uuid? uuid, Directory? storageDirectory})
+  ProducerRepository({Uuid? uuid, Directory? storageDirectory, FarmStore? store})
       : _uuid = uuid ?? const Uuid(),
-        _storageDirectory = storageDirectory;
+        _store = store ?? FarmStore(directory: storageDirectory);
 
   final Uuid _uuid;
-  final Directory? _storageDirectory;
-  static const _fileName = 'producers.json';
+  final FarmStore _store;
+  static const collection = 'producers';
   List<Producer>? _cache;
 
   Future<List<Producer>> getAll() async {
     _cache ??= await _load();
     if (_cache!.isEmpty) {
       _cache = _defaultProducers();
-      await _save(_cache!);
+      for (final producer in _cache!) {
+        await _store.upsert(collection, producer.id, producer.toJson());
+      }
     }
     return List.unmodifiable(_cache!);
   }
@@ -56,14 +56,14 @@ class ProducerRepository {
 
     final producers = await getAll();
     _cache = [...producers, producer];
-    await _save(_cache!);
+    await _store.upsert(collection, producer.id, producer.toJson());
     return producer;
   }
 
   Future<void> delete(String id) async {
     final producers = await getAll();
     _cache = producers.where((producer) => producer.id != id).toList();
-    await _save(_cache!);
+    await _store.delete(collection, id);
   }
 
   List<Producer> _defaultProducers() {
@@ -89,27 +89,8 @@ class ProducerRepository {
   }
 
   Future<List<Producer>> _load() async {
-    final file = await _storageFile();
-    if (!await file.exists()) return [];
-
-    final contents = await file.readAsString();
-    if (contents.trim().isEmpty) return [];
-
-    final decoded = jsonDecode(contents) as List<dynamic>;
-    return decoded
-        .map((item) => Producer.fromJson(item as Map<String, dynamic>))
-        .toList();
-  }
-
-  Future<void> _save(List<Producer> producers) async {
-    final file = await _storageFile();
-    final encoded = jsonEncode(producers.map((producer) => producer.toJson()).toList());
-    await FileUtils.atomicWriteAsString(file, encoded);
-  }
-
-  Future<File> _storageFile() async {
-    final directory = _storageDirectory ?? await getApplicationDocumentsDirectory();
-    return File('${directory.path}/$_fileName');
+    final rows = await _store.getCollection(collection);
+    return [for (final row in rows) Producer.fromJson(row)];
   }
 
   void invalidateCache() => _cache = null;

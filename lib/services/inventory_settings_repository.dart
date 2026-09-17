@@ -1,17 +1,14 @@
-import '../utils/file_utils.dart';
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:path_provider/path_provider.dart';
-
 import '../models/inventory_settings.dart';
+import 'farm_store.dart';
 
 class InventorySettingsRepository {
-  InventorySettingsRepository({Directory? storageDirectory})
-      : _storageDirectory = storageDirectory;
+  InventorySettingsRepository({Directory? storageDirectory, FarmStore? store})
+      : _store = store ?? FarmStore(directory: storageDirectory);
 
-  final Directory? _storageDirectory;
-  static const _fileName = 'inventory_settings.json';
+  final FarmStore _store;
+  static const singleton = 'inventory_settings';
   InventorySettings? _cache;
 
   Future<InventorySettings> get() async {
@@ -28,29 +25,14 @@ class InventorySettingsRepository {
       bombyxPrice: bombyxPrice,
       eriPrice: eriPrice,
     );
-    await _save(_cache!);
+    await _store.putSingleton(singleton, _cache!.toJson());
     return _cache!;
   }
 
   Future<InventorySettings> _load() async {
-    final file = await _storageFile();
-    if (!await file.exists()) return InventorySettings.defaults;
-
-    final contents = await file.readAsString();
-    if (contents.trim().isEmpty) return InventorySettings.defaults;
-
-    final decoded = jsonDecode(contents) as Map<String, dynamic>;
-    return InventorySettings.fromJson(decoded);
-  }
-
-  Future<void> _save(InventorySettings settings) async {
-    final file = await _storageFile();
-    await FileUtils.atomicWriteAsString(file, jsonEncode(settings.toJson()));
-  }
-
-  Future<File> _storageFile() async {
-    final directory = _storageDirectory ?? await getApplicationDocumentsDirectory();
-    return File('${directory.path}/$_fileName');
+    final stored = await _store.getSingleton(singleton);
+    if (stored == null) return InventorySettings.defaults;
+    return InventorySettings.fromJson(stored);
   }
 
   void invalidateCache() => _cache = null;
