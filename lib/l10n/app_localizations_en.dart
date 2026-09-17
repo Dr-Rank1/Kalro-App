@@ -36,13 +36,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get getStarted => 'Get Started';
 
   @override
-  String get navHome => 'Home';
+  String get navHome => 'Today';
 
   @override
   String get navBatches => 'Batches';
 
   @override
-  String get navProfile => 'Profile';
+  String get navPlan => 'Plan';
+
+  @override
+  String get navFarm => 'Farm';
+
+  @override
+  String get navProfile => 'You';
 
   @override
   String get dashboardLiveLarvae => 'Live Larvae';
@@ -56,10 +62,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboardSurvivalRate => 'Survival Rate';
 
   @override
-  String get dashboardExpectedYield => 'Expected Yield';
+  String get dashboardExpectedYield => 'Harvested';
 
   @override
-  String get dashboardYieldSub => 'Estimated cocoon';
+  String get dashboardYieldSub => 'Logged cocoons';
 
   @override
   String get dashboardNeedsAttention => 'Needs Attention';

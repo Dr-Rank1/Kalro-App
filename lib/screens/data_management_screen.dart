@@ -43,9 +43,9 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
       );
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Backup failed: $error'.tr)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Backup failed: $error'.tr)));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -71,11 +71,18 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
       builder: (context) => AlertDialog(
         title: Text('Restore backup?'.tr),
         content: Text(
-          'This replaces all local farm data with the backup file. Continue?',
+          'This replaces all local farm data with the backup file. Continue?'
+              .tr,
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: Text('Cancel'.tr)),
-          TextButton(onPressed: () => Navigator.pop(context, true), child: Text('Restore'.tr)),
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('Cancel'.tr),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text('Restore'.tr),
+          ),
         ],
       ),
     );
@@ -94,9 +101,9 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
       );
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Restore failed: $error'.tr)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Restore failed: $error'.tr)));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -113,7 +120,9 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
         children: [
           AdminSectionHeader(
             title: 'Full farm backup'.tr,
-            subtitle: 'Export batches, logs, payments, inventory, and settings as JSON.'.tr,
+            subtitle:
+                'Export batches, logs, payments, inventory, and settings as JSON.'
+                    .tr,
           ),
           SizedBox(height: 16),
           AdminInfoCard(
@@ -122,12 +131,20 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.info_outline, size: 18, color: KalroColors.headerGreen),
+                    Icon(
+                      Icons.info_outline,
+                      size: 18,
+                      color: KalroColors.headerGreen,
+                    ),
                     SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Backups are saved to your Documents/kalro_exports folder.',
-                        style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
+                        'Backups are saved to your Documents/kalro_exports folder.'
+                            .tr,
+                        style: GoogleFonts.poppins(
+                          fontSize: 12,
+                          color: KalroColors.textMuted,
+                        ),
                       ),
                     ),
                   ],

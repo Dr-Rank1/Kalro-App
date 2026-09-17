@@ -58,4 +58,18 @@ void main() {
     expect(user, isNotNull);
     expect(user!.permission.name, 'admin');
   });
+
+  test('empty PIN does not invent a 1234 admin', () async {
+    final farm = await auth.createFarm(orgName: 'Safe Farm');
+    await sessions.ensureFarmFromPreferences(
+      orgName: 'Safe Farm',
+      adminUsername: 'admin',
+      adminDisplayName: 'Farmer',
+      adminPin: '',
+    );
+    final users = await auth.getUsers(farm.id);
+    expect(users, isEmpty);
+    final withPin = await auth.authenticate(farmId: farm.id, username: 'admin', pin: '1234');
+    expect(withPin, isNull);
+  });
 }

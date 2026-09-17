@@ -3,10 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../components/components.dart';
+import '../models/batch.dart';
+import '../models/producer.dart';
 import '../models/rearing_conditions.dart';
 import '../models/species.dart';
 import '../services/batch_repository.dart';
 import '../services/lifecycle_planning_service.dart';
+import '../services/producer_repository.dart';
 import '../theme/kalro_colors.dart';
 import 'package:kalro/l10n/translator.dart';
 
@@ -14,6 +17,8 @@ class CreateBatchScreen extends StatefulWidget {
   CreateBatchScreen({
     super.key,
     required this.repository,
+    this.producers,
+    this.copyFrom,
     this.initialSpecies,
     this.initialStartDate,
   });
@@ -21,6 +26,8 @@ class CreateBatchScreen extends StatefulWidget {
   static const routeName = '/create-batch';
 
   final BatchRepository repository;
+  final ProducerRepository? producers;
+  final Batch? copyFrom;
   final Species? initialSpecies;
   final DateTime? initialStartDate;
 
@@ -39,15 +46,31 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
   final _feedController = TextEditingController();
   final _eggSourceController = TextEditingController();
   final _rearingTypeController = TextEditingController();
-  bool _saving = false;
+  String? _eggSourceName;
+  List<Producer> _producerList = [];
   static const _planning = LifecyclePlanningService();
   RearingScenario _scenario = RearingScenario.typical;
+  bool _saving = false;
 
   @override
   void initState() {
     super.initState();
-    _species = widget.initialSpecies ?? Species.bombyx;
+    _species = widget.copyFrom?.species ?? widget.initialSpecies ?? Species.bombyx;
     _startDate = widget.initialStartDate ?? DateTime.now();
+    final copy = widget.copyFrom;
+    if (copy != null) {
+      _eggCountController.text = '${copy.eggCount}';
+      _strainController.text = copy.strain ?? '';
+      _locationController.text = copy.location ?? '';
+      _caretakerController.text = copy.caretaker ?? '';
+      _feedController.text = copy.feedMaterial ?? '';
+      _eggSourceController.text = copy.eggSource ?? '';
+      _eggSourceName = copy.eggSource;
+      _rearingTypeController.text = copy.rearingType ?? '';
+    }
+    widget.producers?.getAll().then((list) {
+      if (mounted) setState(() => _producerList = list);
+    });
   }
 
   @override
@@ -105,7 +128,9 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
     return Scaffold(
       backgroundColor: KalroColors.headerGreen,
       appBar: AppBar(
-        title: Text('New Batch'.tr),
+        title: Text(
+          widget.copyFrom == null ? 'New Batch'.tr : 'Start like this lot'.tr,
+        ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: _saving ? null : () => Navigator.of(context).pop(),
@@ -138,7 +163,7 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                 ),
                 SizedBox(height: 16),
                 Text(
-                  'What if weather or leaf changes?',
+                  'What if weather or leaf changes?'.tr,
                   style: GoogleFonts.poppins(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
@@ -148,7 +173,10 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                 SizedBox(height: 4),
                 Text(
                   _scenario.detail,
-                  style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    color: KalroColors.textMuted,
+                  ),
                 ),
                 SizedBox(height: 8),
                 PredictionScenarioBar(
@@ -183,19 +211,24 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                 SizedBox(height: 16),
                 TextFormField(
                   controller: _eggCountController,
-                  decoration: InputDecoration(labelText: 'Number of eggs / larvae'),
+                  decoration: InputDecoration(
+                    labelText: 'Number of eggs / larvae'.tr,
+                  ),
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   validator: (value) {
                     final parsed = int.tryParse(value?.trim() ?? '');
-                    if (parsed == null || parsed <= 0) return 'Enter a valid count';
+                    if (parsed == null || parsed <= 0)
+                      return 'Enter a valid count';
                     return null;
                   },
                 ),
                 SizedBox(height: 16),
                 TextFormField(
                   controller: _strainController,
-                  decoration: InputDecoration(labelText: 'Strain (optional)'),
+                  decoration: InputDecoration(
+                    labelText: 'Strain (optional)'.tr,
+                  ),
                 ),
                 SizedBox(height: 16),
                 TextFormField(
@@ -206,11 +239,46 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                         : 'Feed material (e.g. mulberry)',
                   ),
                 ),
+                if (_producerList.isNotEmpty) ...[
+                  SizedBox(height: 16),
+                  DropdownButtonFormField<String?>(
+                    key: ValueKey(
+                      '${_eggSourceName ?? ''}-${_producerList.length}',
+                    ),
+                    initialValue:
+                        _producerList.any((p) => p.name == _eggSourceName)
+                        ? _eggSourceName
+                        : null,
+                    decoration: InputDecoration(
+                      labelText: 'Egg source (seed producer / CRC)'.tr,
+                    ),
+                    items: [
+                      DropdownMenuItem<String?>(
+                        value: null,
+                        child: Text('Other / type below'.tr),
+                      ),
+                      ..._producerList.map(
+                        (p) => DropdownMenuItem<String?>(
+                          value: p.name,
+                          child: Text('${p.name} · ${p.type.label}'),
+                        ),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        _eggSourceName = value;
+                        if (value != null && value.isNotEmpty) {
+                          _eggSourceController.text = value;
+                        }
+                      });
+                    },
+                  ),
+                ],
                 SizedBox(height: 16),
                 TextFormField(
                   controller: _eggSourceController,
                   decoration: InputDecoration(
-                    labelText: 'Egg source (optional, e.g. KALRO Seed Unit)',
+                    labelText: 'Egg source (optional, e.g. KALRO Seed Unit)'.tr,
                   ),
                 ),
                 SizedBox(height: 16),
@@ -225,12 +293,16 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                 SizedBox(height: 16),
                 TextFormField(
                   controller: _locationController,
-                  decoration: InputDecoration(labelText: 'Rearing location (optional)'),
+                  decoration: InputDecoration(
+                    labelText: 'Rearing location (optional)'.tr,
+                  ),
                 ),
                 SizedBox(height: 16),
                 TextFormField(
                   controller: _caretakerController,
-                  decoration: InputDecoration(labelText: 'Caretaker (optional)'),
+                  decoration: InputDecoration(
+                    labelText: 'Caretaker (optional)'.tr,
+                  ),
                 ),
                 SizedBox(height: 24),
                 KalroPrimaryButton(

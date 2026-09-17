@@ -46,6 +46,7 @@ class BackupService {
     await _writeJson(storageDir, 'purchase_orders.json', data['purchaseOrders']);
     await _writeObject(storageDir, 'inventory_settings.json', data['inventorySettings']);
     await _writeObject(storageDir, 'leaf_inventory.json', data['leafInventory']);
+    await _writeJson(storageDir, 'leaf_movements.json', data['leafMovements']);
 
     repositories.invalidateCaches();
   }
@@ -72,6 +73,8 @@ class BackupService {
             (await repositories.purchaseOrders.getAll()).map((o) => o.toJson()).toList(),
         'inventorySettings': (await repositories.inventorySettings.get()).toJson(),
         'leafInventory': (await repositories.leafInventory.get()).toJson(),
+        'leafMovements':
+            (await repositories.leafMovements.getAll()).map((m) => m.toJson()).toList(),
       },
     };
   }

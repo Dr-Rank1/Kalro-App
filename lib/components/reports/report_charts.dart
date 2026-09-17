@@ -38,8 +38,13 @@ class FeedTrendChart extends StatelessWidget {
                 showTitles: true,
                 reservedSize: 36,
                 getTitlesWidget: (value, meta) => Text(
-                  value >= 1000 ? '${(value / 1000).toStringAsFixed(0)}k' : value.toInt().toString(),
-                  style: GoogleFonts.poppins(fontSize: 10, color: KalroColors.textMuted),
+                  value >= 1000
+                      ? '${(value / 1000).toStringAsFixed(0)}k'
+                      : value.toInt().toString(),
+                  style: GoogleFonts.poppins(
+                    fontSize: 10,
+                    color: KalroColors.textMuted,
+                  ),
                 ),
               ),
             ),
@@ -49,12 +54,16 @@ class FeedTrendChart extends StatelessWidget {
                 interval: 2,
                 getTitlesWidget: (value, meta) {
                   final index = value.toInt();
-                  if (index < 0 || index >= points.length) return SizedBox.shrink();
+                  if (index < 0 || index >= points.length)
+                    return SizedBox.shrink();
                   return Padding(
                     padding: EdgeInsets.only(top: 6),
                     child: Text(
                       points[index].label,
-                      style: GoogleFonts.poppins(fontSize: 9, color: KalroColors.textMuted),
+                      style: GoogleFonts.poppins(
+                        fontSize: 9,
+                        color: KalroColors.textMuted,
+                      ),
                     ),
                   );
                 },
@@ -105,7 +114,9 @@ class MortalityTrendChart extends StatelessWidget {
           gridData: FlGridData(
             show: true,
             drawVerticalLine: false,
-            horizontalInterval: maxY > 0 ? (maxY / 4).clamp(1, double.infinity) : 1,
+            horizontalInterval: maxY > 0
+                ? (maxY / 4).clamp(1, double.infinity)
+                : 1,
           ),
           titlesData: FlTitlesData(
             topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
@@ -116,7 +127,10 @@ class MortalityTrendChart extends StatelessWidget {
                 reservedSize: 28,
                 getTitlesWidget: (value, meta) => Text(
                   value.toInt().toString(),
-                  style: GoogleFonts.poppins(fontSize: 10, color: KalroColors.textMuted),
+                  style: GoogleFonts.poppins(
+                    fontSize: 10,
+                    color: KalroColors.textMuted,
+                  ),
                 ),
               ),
             ),
@@ -126,12 +140,16 @@ class MortalityTrendChart extends StatelessWidget {
                 interval: 2,
                 getTitlesWidget: (value, meta) {
                   final index = value.toInt();
-                  if (index < 0 || index >= points.length) return SizedBox.shrink();
+                  if (index < 0 || index >= points.length)
+                    return SizedBox.shrink();
                   return Padding(
                     padding: EdgeInsets.only(top: 6),
                     child: Text(
                       points[index].label,
-                      style: GoogleFonts.poppins(fontSize: 9, color: KalroColors.textMuted),
+                      style: GoogleFonts.poppins(
+                        fontSize: 9,
+                        color: KalroColors.textMuted,
+                      ),
                     ),
                   );
                 },
@@ -148,7 +166,9 @@ class MortalityTrendChart extends StatelessWidget {
                     toY: points[i].value,
                     color: Colors.orange.shade400,
                     width: 10,
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(4)),
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(4),
+                    ),
                   ),
                 ],
               ),
@@ -189,7 +209,9 @@ class SpeciesSplitChart extends StatelessWidget {
                   PieChartSectionData(
                     value: bombyxLarvae.toDouble(),
                     color: KalroColors.headerGreen,
-                    title: bombyxLarvae > 0 ? '${((bombyxLarvae / total) * 100).round()}%' : '',
+                    title: bombyxLarvae > 0
+                        ? '${((bombyxLarvae / total) * 100).round()}%'
+                        : '',
                     radius: 52,
                     titleStyle: GoogleFonts.poppins(
                       fontSize: 12,
@@ -200,7 +222,9 @@ class SpeciesSplitChart extends StatelessWidget {
                   PieChartSectionData(
                     value: eriLarvae.toDouble(),
                     color: KalroColors.accentBrown,
-                    title: eriLarvae > 0 ? '${((eriLarvae / total) * 100).round()}%' : '',
+                    title: eriLarvae > 0
+                        ? '${((eriLarvae / total) * 100).round()}%'
+                        : '',
                     radius: 52,
                     titleStyle: GoogleFonts.poppins(
                       fontSize: 12,
@@ -216,9 +240,15 @@ class SpeciesSplitChart extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _LegendDot(color: KalroColors.headerGreen, label: 'Bombyx: $bombyxLarvae'),
+              _LegendDot(
+                color: KalroColors.headerGreen,
+                label: 'Bombyx: $bombyxLarvae',
+              ),
               SizedBox(height: 8),
-              _LegendDot(color: KalroColors.accentBrown, label: 'Eri: $eriLarvae'),
+              _LegendDot(
+                color: KalroColors.accentBrown,
+                label: 'Eri: $eriLarvae',
+              ),
             ],
           ),
           SizedBox(width: 12),
@@ -247,7 +277,10 @@ class BatchComparisonTable extends StatelessWidget {
           fontWeight: FontWeight.w600,
           color: KalroColors.textDark,
         ),
-        dataTextStyle: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
+        dataTextStyle: GoogleFonts.poppins(
+          fontSize: 12,
+          color: KalroColors.textMuted,
+        ),
         columns: [
           DataColumn(label: Text('Species'.tr)),
           DataColumn(label: Text('Started'.tr)),
@@ -264,7 +297,9 @@ class BatchComparisonTable extends StatelessWidget {
                   DataCell(Text(row.speciesLabel)),
                   DataCell(Text(row.startDateLabel)),
                   DataCell(Text('${row.liveCount}/${row.startingCount}'.tr)),
-                  DataCell(Text('${row.survivalPercent.toStringAsFixed(0)}%'.tr)),
+                  DataCell(
+                    Text('${row.survivalPercent.toStringAsFixed(0)}%'.tr),
+                  ),
                   DataCell(Text(_formatGrams(row.totalFeedGrams))),
                   DataCell(Text(_formatGrams(row.harvestWeightGrams))),
                   DataCell(Text(row.statusLabel)),

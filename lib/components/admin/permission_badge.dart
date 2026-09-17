@@ -5,11 +5,7 @@ import '../../models/account_permission.dart';
 import '../../theme/kalro_colors.dart';
 
 class PermissionBadge extends StatelessWidget {
-  PermissionBadge({
-    super.key,
-    required this.permission,
-    this.compact = false,
-  });
+  PermissionBadge({super.key, required this.permission, this.compact = false});
 
   final AccountPermission permission;
   final bool compact;
@@ -29,7 +25,11 @@ class PermissionBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(permission.icon, size: compact ? 12 : 14, color: permission.badgeColor),
+          Icon(
+            permission.icon,
+            size: compact ? 12 : 14,
+            color: permission.badgeColor,
+          ),
           SizedBox(width: 4),
           Text(
             permission.label,
@@ -75,7 +75,10 @@ class PermissionDescriptionCard extends StatelessWidget {
                 SizedBox(height: 2),
                 Text(
                   permission.description,
-                  style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    color: KalroColors.textMuted,
+                  ),
                 ),
               ],
             ),

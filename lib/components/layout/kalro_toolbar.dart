@@ -17,7 +17,6 @@ class KalroToolbar extends StatelessWidget {
   final VoidCallback? onBack;
   final Widget? trailing;
 
-
   @override
   Widget build(BuildContext context) {
     final bool canPop = Navigator.canPop(context);

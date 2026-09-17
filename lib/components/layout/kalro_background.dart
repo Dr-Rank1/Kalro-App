@@ -38,7 +38,10 @@ class _WavePatternPainter extends CustomPainter {
       for (var x = 0.0; x <= size.width; x += 8) {
         path.lineTo(
           x,
-          yOffset + (12 * (i.isEven ? 1 : -1) * math.sin(x / size.width * math.pi * 2)),
+          yOffset +
+              (12 *
+                  (i.isEven ? 1 : -1) *
+                  math.sin(x / size.width * math.pi * 2)),
         );
       }
       canvas.drawPath(path, paint);

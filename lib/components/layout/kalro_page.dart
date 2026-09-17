@@ -26,7 +26,10 @@ class KalroPage extends StatelessWidget {
       child: SafeArea(
         child: onRefresh == null
             ? content
-            : RefreshIndicator(onRefresh: onRefresh!, child: _wrapScrollable(content)),
+            : RefreshIndicator(
+                onRefresh: onRefresh!,
+                child: _wrapScrollable(content),
+              ),
       ),
     );
   }

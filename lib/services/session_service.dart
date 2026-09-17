@@ -94,14 +94,18 @@ class SessionService {
     final farms = await _authRepository.listFarms();
     if (farms.isNotEmpty) {
       final farm = AuthRepository.resolvePrimaryFarm(farms, orgName) ?? farms.first;
-      await _authRepository.ensureManagerAccount(
-        farmId: farm.id,
-        adminUsername: adminUsername,
-        adminDisplayName: adminDisplayName,
-        adminPin: adminPin,
-      );
+      if (adminPin.trim().isNotEmpty) {
+        await _authRepository.ensureManagerAccount(
+          farmId: farm.id,
+          adminUsername: adminUsername,
+          adminDisplayName: adminDisplayName,
+          adminPin: adminPin,
+        );
+      }
       return farm;
     }
+
+    if (adminPin.trim().isEmpty) return null;
 
     final farm = await _authRepository.createFarm(orgName: orgName);
     await _authRepository.createUser(
@@ -152,13 +156,15 @@ class SessionService {
       }
     }
 
-    await _authRepository.createUser(
-      farmId: farm.id,
-      username: adminUsername,
-      displayName: adminDisplayName,
-      pin: adminPin,
-      permission: AccountPermission.admin,
-    );
+    if (adminPin.trim().isNotEmpty) {
+      await _authRepository.createUser(
+        farmId: farm.id,
+        username: adminUsername,
+        displayName: adminDisplayName,
+        pin: adminPin,
+        permission: AccountPermission.admin,
+      );
+    }
 
     return farm;
   }

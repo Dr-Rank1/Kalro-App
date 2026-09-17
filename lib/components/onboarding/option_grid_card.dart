@@ -55,13 +55,18 @@ class OptionGridCard extends StatelessWidget {
               style: GoogleFonts.poppins(
                 fontSize: icon == null ? 22 : 13,
                 fontWeight: FontWeight.w500,
-                color: icon == null ? KalroColors.textDark : KalroColors.textMuted,
+                color: icon == null
+                    ? KalroColors.textDark
+                    : KalroColors.textMuted,
               ),
             ),
             if (secondaryLabel.isNotEmpty)
               Text(
                 secondaryLabel,
-                style: GoogleFonts.poppins(fontSize: 13, color: KalroColors.textMuted),
+                style: GoogleFonts.poppins(
+                  fontSize: 13,
+                  color: KalroColors.textMuted,
+                ),
               ),
           ],
         ),

@@ -49,9 +49,9 @@ class _FarmSettingsScreenState extends State<FarmSettingsScreen> {
 
   Future<void> _save() async {
     if (!_permissions.canManageUsers(widget.session.user)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Admin access required'.tr)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Admin access required'.tr)));
       return;
     }
 
@@ -60,19 +60,22 @@ class _FarmSettingsScreenState extends State<FarmSettingsScreen> {
 
     setState(() => _saving = true);
     try {
-      final updated = await _auth.updateFarm(widget.session.farm, orgName: orgName);
+      final updated = await _auth.updateFarm(
+        widget.session.farm,
+        orgName: orgName,
+      );
       await widget.userPreferences?.updateProfile(orgName: orgName);
       widget.onFarmUpdated?.call(updated);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Farm settings saved'.tr)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Farm settings saved'.tr)));
       Navigator.of(context).pop();
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Save failed: $error'.tr)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Save failed: $error'.tr)));
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -97,12 +100,12 @@ class _FarmSettingsScreenState extends State<FarmSettingsScreen> {
             controller: _orgController,
             enabled: !_saving,
             decoration: InputDecoration(
-              labelText: 'Organization name',
+              labelText: 'Organization name'.tr,
               hintText: 'e.g. Kalro Sericulture Farm'.tr,
             ),
           ),
           SizedBox(height: 24),
-          AdminSectionHeader(title: 'Farm details'),
+          AdminSectionHeader(title: 'Farm details'.tr),
           SizedBox(height: 12),
           AdminInfoCard(
             child: Column(
@@ -134,14 +137,20 @@ class _FarmSettingsScreenState extends State<FarmSettingsScreen> {
           flex: 2,
           child: Text(
             label,
-            style: GoogleFonts.poppins(fontSize: 13, color: KalroColors.textMuted),
+            style: GoogleFonts.poppins(
+              fontSize: 13,
+              color: KalroColors.textMuted,
+            ),
           ),
         ),
         Expanded(
           flex: 3,
           child: Text(
             value,
-            style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w500),
+            style: GoogleFonts.poppins(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ),
       ],

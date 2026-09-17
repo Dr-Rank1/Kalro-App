@@ -28,7 +28,10 @@ class KalroMenuTile extends StatelessWidget {
             Expanded(
               child: Text(
                 title,
-                style: GoogleFonts.poppins(fontSize: 15, color: KalroColors.textDark),
+                style: GoogleFonts.poppins(
+                  fontSize: 15,
+                  color: KalroColors.textDark,
+                ),
               ),
             ),
             Icon(Icons.chevron_right, color: KalroColors.textLight, size: 22),

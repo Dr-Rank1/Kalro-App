@@ -4,24 +4,22 @@ import 'package:intl/intl.dart';
 
 import '../models/batch.dart';
 import '../models/batch_status.dart';
-import '../models/species.dart';
 import '../services/batch_metrics_service.dart';
 import '../services/lifecycle_engine.dart';
 import '../services/prediction_adjuster.dart';
 import '../services/app_repositories.dart';
 import '../services/lifecycle_planning_service.dart';
 import '../models/rearing_conditions.dart';
+import '../models/cycle_memory.dart';
+import '../models/environment_log.dart';
 import '../services/rearing_conditions_service.dart';
 import '../theme/kalro_colors.dart';
-import '../theme/kalro_theme.dart';
-
-
 import '../components/components.dart';
-
-
-
-import '../components/health/environment_log_section.dart';
 import '../l10n/translator.dart';
+import '../services/rearing_day_service.dart';
+import '../services/cycle_memory_service.dart';
+import 'create_batch_screen.dart';
+import 'field_guide_screen.dart';
 
 class BatchDetailScreen extends StatefulWidget {
   static const routeName = "/batch";
@@ -69,16 +67,34 @@ class _BatchDetailScreenState extends State<BatchDetailScreen> {
         observations: {},
         totalMortality: 0,
         conditions: RearingConditions.typical,
+        environmentLogs: const [],
       );
     }
 
-    final observations =
-        await widget.repositories.milestoneObservations.stageDatesForBatch(batch.id);
-    final totalMortality =
-        await widget.repositories.mortalityLogs.totalMortalityForBatch(batch.id);
-    final environmentLogs =
-        await widget.repositories.environmentLogs.getByBatchId(batch.id);
+    final observations = await widget.repositories.milestoneObservations
+        .stageDatesForBatch(batch.id);
+    final totalMortality = await widget.repositories.mortalityLogs
+        .totalMortalityForBatch(batch.id);
+    final environmentLogs = await widget.repositories.environmentLogs
+        .getByBatchId(batch.id);
     final feedLogs = await widget.repositories.feedLogs.getByBatchId(batch.id);
+    final mortalityLogs = await widget.repositories.mortalityLogs.getByBatchId(
+      batch.id,
+    );
+    final harvests = await widget.repositories.cocoonHarvests.getByBatchId(
+      batch.id,
+    );
+    final purchases = await widget.repositories.purchaseOrders.getAll();
+    final prices = await widget.repositories.inventorySettings.get();
+    final memory = const CycleMemoryService().build(
+      batch: batch,
+      feedLogs: feedLogs,
+      mortalityLogs: mortalityLogs,
+      harvests: harvests,
+      purchases: purchases,
+      prices: prices,
+      observedStageDates: observations,
+    );
 
     return _BatchDetailData(
       batch: batch,
@@ -89,6 +105,8 @@ class _BatchDetailScreenState extends State<BatchDetailScreen> {
         environmentLogs: environmentLogs,
         feedLogs: feedLogs,
       ),
+      environmentLogs: environmentLogs,
+      memory: memory,
     );
   }
 
@@ -110,6 +128,15 @@ class _BatchDetailScreenState extends State<BatchDetailScreen> {
       batchId: batch.id,
       stageKey: stageKey,
       observedDate: picked,
+    );
+    _reload();
+  }
+
+  Future<void> _markObservedToday(Batch batch, String stageKey) async {
+    await widget.repositories.milestoneObservations.record(
+      batchId: batch.id,
+      stageKey: stageKey,
+      observedDate: DateTime.now(),
     );
     _reload();
   }
@@ -150,32 +177,45 @@ class _BatchDetailScreenState extends State<BatchDetailScreen> {
             );
             final metrics = _metricsService.compute(batch, data.totalMortality);
             final milestones = cycle.milestones;
-            final current = _lifecycleEngine.currentStage(batch, observedStageDates: observations, conditions: conditions);
-            final next = _lifecycleEngine.nextMilestone(batch, observedStageDates: observations, conditions: conditions);
-            final harvestDate = cycle.harvest?.effectiveDate;
+            final current = _lifecycleEngine.currentStage(
+              batch,
+              observedStageDates: observations,
+              conditions: conditions,
+            );
 
             final adjustment = _adjuster.adjust(batch.species, conditions);
+            final dayPlan = RearingDayService().planFor(
+              batch,
+              observedStageDates: observations,
+              conditions: conditions,
+              liveCount: metrics.liveCount,
+            );
 
             return NestedScrollView(
               headerSliverBuilder: (context, innerBoxIsScrolled) {
                 return [
                   SliverAppBar(
-                    expandedHeight: 250,
+                    expandedHeight: 228,
                     pinned: true,
                     backgroundColor: KalroColors.headerGreen,
-                    title: Text('Batch ${batch.id.substring(0, 8).toUpperCase()}'),
+                    title: Text(batch.species.label.tr),
                     flexibleSpace: FlexibleSpaceBar(
-                      background: _buildHeroHeader(batch, metrics, current),
+                      background: _buildHeroHeader(
+                        batch,
+                        metrics,
+                        current,
+                        dayPlan,
+                      ),
                     ),
                     bottom: TabBar(
                       labelColor: Colors.white,
-                      unselectedLabelColor: Colors.white54,
+                      unselectedLabelColor: Colors.white70,
                       indicatorColor: KalroColors.peach,
-                      indicatorWeight: 4,
+                      indicatorWeight: 3,
                       tabs: [
-                        Tab(text: 'Overview'.tr),
+                        Tab(text: 'Today'.tr),
                         Tab(text: 'Timeline'.tr),
-                        Tab(text: 'Environment'.tr),
+                        Tab(text: 'Records'.tr),
                       ],
                     ),
                   ),
@@ -183,93 +223,147 @@ class _BatchDetailScreenState extends State<BatchDetailScreen> {
               },
               body: TabBarView(
                 children: [
-                  // Tab 1: Overview
                   ListView(
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
                     children: [
-                      _buildBeautifulInfoGrid(batch),
-                      const SizedBox(height: 24),
-                      Text(
-                        'Health Metrics'.tr,
-                        style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 12),
-                      _buildHealthMetricsCards(metrics),
-                      const SizedBox(height: 24),
-                      Text(
-                        'Update status'.tr,
-                        style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 12),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
+                      if (dayPlan != null) ...[
+                        TodayPlanCard(
+                          plan: dayPlan,
+                          speciesLabel: batch.species.label,
                         ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<BatchStatus>(
-                            value: batch.status,
-                            isExpanded: true,
-                            icon: const Icon(Icons.arrow_drop_down, color: KalroColors.primaryGreen),
-                            items: BatchStatus.values.map((s) {
-                              return DropdownMenuItem(
-                                value: s,
-                                child: Text(s.label.tr, style: GoogleFonts.poppins(fontSize: 16)),
+                        const SizedBox(height: 12),
+                        FloorActionsBar(
+                          batch: batch,
+                          plan: dayPlan,
+                          repositories: widget.repositories,
+                          onChanged: _reload,
+                          onMarkStage: () =>
+                              _markObservedToday(batch, dayPlan.stage.key),
+                        ),
+                        const SizedBox(height: 8),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: TextButton.icon(
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => FieldGuideScreen(
+                                    species: batch.species,
+                                    cycleDay: dayPlan.cycleDay,
+                                    stageKey: dayPlan.stage.key,
+                                    isMoult: dayPlan.stage.isMoult,
+                                    isLightFeedDay: dayPlan.isLightFeedDay,
+                                    actionTitle: dayPlan.actionTitle,
+                                  ),
+                                ),
                               );
-                            }).toList(),
-                            onChanged: (val) {
-                              if (val != null && val != batch.status) {
-                                _updateStatus(batch, val);
-                              }
                             },
+                            icon: const Icon(Icons.menu_book_outlined, size: 18),
+                            label: Text('Field guide for this stage'.tr),
                           ),
                         ),
+                        if (dayPlan.readinessSigns.isNotEmpty) ...[
+                          ReadinessChecklist(
+                            title: dayPlan.stage.isMoult
+                                ? 'Pre-moult signs'.tr
+                                : 'Ready to spin?'.tr,
+                            signs: dayPlan.readinessSigns,
+                            onConfirm: () =>
+                                _markObservedToday(batch, dayPlan.stage.key),
+                            confirmLabel: Translator.fill(
+                              'I see this — mark {stage} today',
+                              {'stage': dayPlan.stage.label},
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                      ],
+                      HouseHistoryStrip(logs: data.environmentLogs),
+                      const SizedBox(height: 16),
+                      _buildHealthMetricsCards(metrics),
+                      const SizedBox(height: 20),
+                      FeedLogSection(
+                        batchId: batch.id,
+                        repository: widget.repositories.feedLogs,
+                        defaultFeedType: batch.feedMaterial,
+                        onChanged: _reload,
+                        feedHint: dayPlan?.feedLabel,
+                        suggestedGrams: dayPlan?.suggestedGrams,
+                        farmRepositories: widget.repositories,
+                        species: batch.species,
                       ),
+                      const SizedBox(height: 20),
+                      MortalityLogSection(
+                        batchId: batch.id,
+                        batchLabel: batch.species.label,
+                        repository: widget.repositories.mortalityLogs,
+                        onChanged: _reload,
+                      ),
+                      if (dayPlan?.isHarvestWork == true) ...[
+                        const SizedBox(height: 20),
+                        CocoonHarvestSection(
+                          batchId: batch.id,
+                          startingCount: batch.eggCount,
+                          harvestRepository: widget.repositories.cocoonHarvests,
+                          batchRepository: widget.repositories.batches,
+                          onHarvestRecorded: _reload,
+                        ),
+                      ],
                     ],
                   ),
-                  
-                  // Tab 2: Timeline & Predictions
                   ListView(
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
                     children: [
-                      PredictionOutcomeCard(cycle: cycle),
-                      const SizedBox(height: 16),
+                      PredictionConditionsBanner(
+                        adjustment: adjustment,
+                        logged: _scenario == null && loggedConditions.fromLogs,
+                        harvestShiftDays: cycle.harvestShiftDays,
+                        shiftSummary: cycle.shiftSummary,
+                        snapshot: conditions.snapshotLabel,
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'What if weather or leaf changes?'.tr,
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
                       PredictionScenarioBar(
                         selected: _scenario,
                         includeRecorded: true,
-                        onSelected: (value) => setState(() => _scenario = value),
+                        onSelected: (value) =>
+                            setState(() => _scenario = value),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 16),
+                      LifecycleKeyDatesCard(cycle: cycle),
+                      const SizedBox(height: 16),
+                      PredictionOutcomeCard(cycle: cycle),
+                      const SizedBox(height: 20),
                       Text(
                         'Lifecycle timeline'.tr,
-                        style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Dates move with temperature, humidity, and how much leaf you log. Mark a stage when you see it.'.tr,
-                        style: GoogleFonts.poppins(fontSize: 13, color: KalroColors.textMuted),
+                        'Dates move with temperature, humidity, and how much leaf you log. Mark a stage when you see it.'
+                            .tr,
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          color: KalroColors.textMuted,
+                        ),
                       ),
                       const SizedBox(height: 16),
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: KalroColors.softShadow,
                         ),
                         child: MilestoneTimeline(
                           milestones: milestones,
@@ -282,15 +376,87 @@ class _BatchDetailScreenState extends State<BatchDetailScreen> {
                       ),
                     ],
                   ),
-                  
-                  // Tab 3: Environment
                   ListView(
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
                     children: [
+                      if (data.memory != null) ...[
+                        CycleMemoryCard(
+                          memory: data.memory!,
+                          showMoney: true,
+                          onStartLikeThis: () async {
+                            final created = await Navigator.of(context)
+                                .push<bool>(
+                              MaterialPageRoute(
+                                builder: (_) => CreateBatchScreen(
+                                  repository: widget.repositories.batches,
+                                  producers: widget.repositories.producers,
+                                  copyFrom: batch,
+                                ),
+                              ),
+                            );
+                            if (created == true && mounted) _reload();
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                      ],
                       EnvironmentLogSection(
                         batch: batch,
                         repository: widget.repositories.environmentLogs,
                         onChanged: _reload,
+                      ),
+                      const SizedBox(height: 20),
+                      CocoonHarvestSection(
+                        batchId: batch.id,
+                        startingCount: batch.eggCount,
+                        harvestRepository: widget.repositories.cocoonHarvests,
+                        batchRepository: widget.repositories.batches,
+                        onHarvestRecorded: _reload,
+                      ),
+                      const SizedBox(height: 24),
+                      _buildBeautifulInfoGrid(batch),
+                      const SizedBox(height: 24),
+                      Text(
+                        'Update status'.tr,
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: KalroColors.softShadow,
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<BatchStatus>(
+                            value: batch.status,
+                            isExpanded: true,
+                            icon: const Icon(
+                              Icons.arrow_drop_down,
+                              color: KalroColors.primaryGreen,
+                            ),
+                            items: BatchStatus.values.map((s) {
+                              return DropdownMenuItem(
+                                value: s,
+                                child: Text(
+                                  s.label.tr,
+                                  style: GoogleFonts.poppins(fontSize: 16),
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (val) {
+                              if (val != null && val != batch.status) {
+                                _updateStatus(batch, val);
+                              }
+                            },
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -303,20 +469,32 @@ class _BatchDetailScreenState extends State<BatchDetailScreen> {
     );
   }
 
-  Widget _buildHeroHeader(Batch batch, BatchMetrics metrics, dynamic current) {
+  Widget _buildHeroHeader(
+    Batch batch,
+    BatchMetrics metrics,
+    dynamic current,
+    RearingDayPlan? dayPlan,
+  ) {
+    final progress = dayPlan?.progress ?? 0;
     return Container(
-      padding: const EdgeInsets.only(top: 80, left: 20, right: 20),
+      padding: const EdgeInsets.fromLTRB(20, 88, 20, 56),
       decoration: const BoxDecoration(
-        color: KalroColors.headerGreen,
+        gradient: LinearGradient(
+          colors: [KalroColors.headerGreen, KalroColors.primaryGreen],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 5,
+                ),
                 decoration: BoxDecoration(
                   color: KalroColors.peach,
                   borderRadius: BorderRadius.circular(20),
@@ -325,15 +503,19 @@ class _BatchDetailScreenState extends State<BatchDetailScreen> {
                   batch.species.label.tr,
                   style: GoogleFonts.poppins(
                     color: KalroColors.textDark,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 12,
                   ),
                 ),
               ),
+              const SizedBox(width: 8),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 5,
+                ),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.18),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -341,13 +523,33 @@ class _BatchDetailScreenState extends State<BatchDetailScreen> {
                   style: GoogleFonts.poppins(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
-                    fontSize: 14,
+                    fontSize: 12,
                   ),
                 ),
               ),
+              const Spacer(),
+              if (dayPlan != null)
+                Text(
+                  'Day ${dayPlan.cycleDay} / ${dayPlan.cycleLengthDays}'.tr,
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                  ),
+                ),
             ],
           ),
           const Spacer(),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(99),
+            child: LinearProgressIndicator(
+              value: progress,
+              minHeight: 6,
+              backgroundColor: Colors.white.withValues(alpha: 0.2),
+              color: KalroColors.peach,
+            ),
+          ),
+          const SizedBox(height: 12),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -356,44 +558,51 @@ class _BatchDetailScreenState extends State<BatchDetailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Live Larvae'.tr,
-                      style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14),
+                      'Live larvae'.tr,
+                      style: GoogleFonts.poppins(
+                        color: Colors.white70,
+                        fontSize: 12,
+                      ),
                     ),
                     Text(
                       '${metrics.liveCount}',
                       style: GoogleFonts.poppins(
                         color: Colors.white,
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 28,
+                        fontWeight: FontWeight.w700,
+                        height: 1.1,
                       ),
                     ),
                   ],
                 ),
               ),
-              if (current != null)
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        'Current stage'.tr,
-                        style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      'Current stage'.tr,
+                      style: GoogleFonts.poppins(
+                        color: Colors.white70,
+                        fontSize: 12,
                       ),
-                      Text(
-                        current.label.tr,
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        textAlign: TextAlign.right,
+                    ),
+                    Text(
+                      (dayPlan?.stage.label ?? current?.label ?? '—')
+                          .toString()
+                          .tr,
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
                       ),
-                    ],
-                  ),
+                      textAlign: TextAlign.right,
+                    ),
+                  ],
                 ),
+              ),
             ],
           ),
-          const SizedBox(height: 60), // Space for bottom TabBar
         ],
       ),
     );
@@ -409,12 +618,21 @@ class _BatchDetailScreenState extends State<BatchDetailScreen> {
       mainAxisSpacing: 16,
       childAspectRatio: 2.2,
       children: [
-        _buildGridItem(Icons.calendar_today, 'Started'.tr, dateFormat.format(batch.startDate)),
-        if (batch.eggSource != null) _buildGridItem(Icons.store, 'Source'.tr, batch.eggSource!),
-        if (batch.strain != null) _buildGridItem(Icons.biotech, 'Strain'.tr, batch.strain!),
-        if (batch.location != null) _buildGridItem(Icons.location_on, 'Location'.tr, batch.location!),
-        if (batch.caretaker != null) _buildGridItem(Icons.person, 'Caretaker'.tr, batch.caretaker!),
-        if (batch.feedMaterial != null) _buildGridItem(Icons.eco, 'Feed'.tr, batch.feedMaterial!),
+        _buildGridItem(
+          Icons.calendar_today,
+          'Started'.tr,
+          dateFormat.format(batch.startDate),
+        ),
+        if (batch.eggSource != null)
+          _buildGridItem(Icons.store, 'Source'.tr, batch.eggSource!),
+        if (batch.strain != null)
+          _buildGridItem(Icons.biotech, 'Strain'.tr, batch.strain!),
+        if (batch.location != null)
+          _buildGridItem(Icons.location_on, 'Location'.tr, batch.location!),
+        if (batch.caretaker != null)
+          _buildGridItem(Icons.person, 'Caretaker'.tr, batch.caretaker!),
+        if (batch.feedMaterial != null)
+          _buildGridItem(Icons.eco, 'Feed'.tr, batch.feedMaterial!),
       ],
     );
   }
@@ -427,7 +645,7 @@ class _BatchDetailScreenState extends State<BatchDetailScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -451,11 +669,17 @@ class _BatchDetailScreenState extends State<BatchDetailScreen> {
               children: [
                 Text(
                   label,
-                  style: GoogleFonts.poppins(fontSize: 11, color: KalroColors.textMuted),
+                  style: GoogleFonts.poppins(
+                    fontSize: 11,
+                    color: KalroColors.textMuted,
+                  ),
                 ),
                 Text(
                   value,
-                  style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600),
+                  style: GoogleFonts.poppins(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -474,7 +698,7 @@ class _BatchDetailScreenState extends State<BatchDetailScreen> {
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: KalroColors.primaryGreen.withOpacity(0.1),
+              color: KalroColors.primaryGreen.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Column(
@@ -484,11 +708,18 @@ class _BatchDetailScreenState extends State<BatchDetailScreen> {
                 const SizedBox(height: 12),
                 Text(
                   'Survival'.tr,
-                  style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.primaryGreen),
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    color: KalroColors.primaryGreen,
+                  ),
                 ),
                 Text(
                   '${metrics.survivalRatePercent.toStringAsFixed(1)}%',
-                  style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.bold, color: KalroColors.textDark),
+                  style: GoogleFonts.poppins(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: KalroColors.textDark,
+                  ),
                 ),
               ],
             ),
@@ -499,7 +730,7 @@ class _BatchDetailScreenState extends State<BatchDetailScreen> {
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.orange.withOpacity(0.1),
+              color: Colors.orange.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Column(
@@ -509,11 +740,18 @@ class _BatchDetailScreenState extends State<BatchDetailScreen> {
                 const SizedBox(height: 12),
                 Text(
                   'Mortality'.tr,
-                  style: GoogleFonts.poppins(fontSize: 12, color: Colors.orange),
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    color: Colors.orange,
+                  ),
                 ),
                 Text(
                   '${metrics.totalMortality}',
-                  style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.bold, color: KalroColors.textDark),
+                  style: GoogleFonts.poppins(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: KalroColors.textDark,
+                  ),
                 ),
               ],
             ),
@@ -530,10 +768,14 @@ class _BatchDetailData {
     required this.observations,
     required this.totalMortality,
     required this.conditions,
+    required this.environmentLogs,
+    this.memory,
   });
 
   final Batch? batch;
   final Map<String, DateTime> observations;
   final int totalMortality;
   final RearingConditions conditions;
+  final List<EnvironmentLog> environmentLogs;
+  final CycleMemory? memory;
 }

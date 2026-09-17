@@ -55,8 +55,9 @@ class PredictionAdjustment {
   double factorForStage(String? stageKey) {
     return switch (stageKey) {
       'incubation' => incubationFactor,
-      'instar1' || 'instar2' || 'instar3' => earlyLarvalFactor,
-      'instar4' || 'instar5' => lateLarvalFactor,
+      'instar1' || 'instar2' || 'instar3' || 'moult1' || 'moult2' || 'moult3' =>
+        earlyLarvalFactor,
+      'instar4' || 'instar5' || 'moult4' => lateLarvalFactor,
       'mounting' || 'spinning' => spinningFactor,
       'moth_emergence' => mothFactor,
       _ => cocoonFactor,

@@ -6,6 +6,7 @@ import '../utils/kalro_formatters.dart';
 
 import '../components/components.dart';
 import '../components/reports/report_charts.dart';
+import '../models/batch.dart';
 import '../models/report_chart_data.dart';
 import '../models/reports_summary.dart';
 import '../services/app_repositories.dart';
@@ -45,6 +46,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
   static const _pdfExport = PdfExportService();
   late Future<_ReportsBundle> _bundleFuture;
   var _exportingPdf = false;
+  int _rangeDays = 14;
+  String? _batchId;
+  List<Batch> _batches = [];
 
   @override
   void initState() {
@@ -59,12 +63,22 @@ class _ReportsScreenState extends State<ReportsScreen> {
   }
 
   Future<_ReportsBundle> _loadBundle() async {
+    _batches = await widget.repositories.batches.getAll();
+    if (_batchId != null && !_batches.any((b) => b.id == _batchId)) {
+      _batchId = null;
+    }
     final results = await Future.wait([
       _reportsService.load(
         repositories: widget.repositories,
         userPreferences: widget.userPreferences,
+        rangeDays: _rangeDays,
+        batchId: _batchId,
       ),
-      _chartService.load(widget.repositories),
+      _chartService.load(
+        widget.repositories,
+        days: _rangeDays,
+        batchId: _batchId,
+      ),
     ]);
     return _ReportsBundle(
       summary: results[0] as ReportsSummary,
@@ -94,6 +108,69 @@ class _ReportsScreenState extends State<ReportsScreen> {
     );
   }
 
+  Future<void> _exportCycleCsv() async {
+    final batches = await widget.repositories.batches.getAll();
+    if (batches.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('No batches to export'.tr)));
+      return;
+    }
+    batches.sort((a, b) => b.startDate.compareTo(a.startDate));
+    final batch = _batchId == null
+        ? batches.first
+        : batches.firstWhere((b) => b.id == _batchId, orElse: () => batches.first);
+    final csv = _csvExport.exportCycle(
+      batch: batch,
+      feedLogs: await widget.repositories.feedLogs.getAll(),
+      mortalityLogs: await widget.repositories.mortalityLogs.getAll(),
+      environmentLogs: await widget.repositories.environmentLogs.getAll(),
+      harvests: await widget.repositories.cocoonHarvests.getAll(),
+    );
+    await Clipboard.setData(ClipboardData(text: csv));
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Cycle CSV copied (${batch.species.label})'.tr)),
+    );
+  }
+
+  Future<void> _exportCyclePdf() async {
+    final batches = await widget.repositories.batches.getAll();
+    if (batches.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('No batches to export'.tr)));
+      return;
+    }
+    batches.sort((a, b) => b.startDate.compareTo(a.startDate));
+    final batch = _batchId == null
+        ? batches.first
+        : batches.firstWhere((b) => b.id == _batchId, orElse: () => batches.first);
+    setState(() => _exportingPdf = true);
+    try {
+      final file = await _pdfExport.exportCycleReport(
+        batch: batch,
+        feedLogs: await widget.repositories.feedLogs.getAll(),
+        mortalityLogs: await widget.repositories.mortalityLogs.getAll(),
+        environmentLogs: await widget.repositories.environmentLogs.getAll(),
+        harvests: await widget.repositories.cocoonHarvests.getAll(),
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Cycle PDF saved to ${file.path}'.tr)),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('PDF export failed: $error'.tr)));
+    } finally {
+      if (mounted) setState(() => _exportingPdf = false);
+    }
+  }
+
   Future<void> _exportPdf() async {
     setState(() => _exportingPdf = true);
     try {
@@ -102,14 +179,14 @@ class _ReportsScreenState extends State<ReportsScreen> {
         userPreferences: widget.userPreferences,
       );
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('PDF saved to ${file.path}'.tr)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('PDF saved to ${file.path}'.tr)));
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('PDF export failed: $error'.tr)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('PDF export failed: $error'.tr)));
     } finally {
       if (mounted) setState(() => _exportingPdf = false);
     }
@@ -154,16 +231,68 @@ class _ReportsScreenState extends State<ReportsScreen> {
                     Text(
                       summary.orgName,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     SizedBox(height: 4),
                     Text(
-                      'Generated ${dateFormat.format(summary.generatedAt)}',
+                      'Generated ${dateFormat.format(summary.generatedAt)}'.tr,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: KalroColors.textMuted,
-                          ),
+                        color: KalroColors.textMuted,
+                      ),
                     ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        for (final days in const [7, 14, 30])
+                          FilterChip(
+                            label: Text(
+                              Translator.fill('{n} days', {'n': '$days'}),
+                            ),
+                            selected: _rangeDays == days,
+                            onSelected: (_) {
+                              setState(() => _rangeDays = days);
+                              _reload();
+                            },
+                          ),
+                      ],
+                    ),
+                    if (_batches.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      InputDecorator(
+                        decoration: InputDecoration(
+                          labelText: 'This batch'.tr,
+                          filled: true,
+                          fillColor: Colors.white,
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String?>(
+                            value: _batchId,
+                            isExpanded: true,
+                            items: [
+                              DropdownMenuItem<String?>(
+                                value: null,
+                                child: Text('All lots'.tr),
+                              ),
+                              ..._batches.map(
+                                (b) => DropdownMenuItem<String?>(
+                                  value: b.id,
+                                  child: Text(
+                                    '${b.species.label} · ${DateFormat.MMMd().format(b.startDate)}',
+                                  ),
+                                ),
+                              ),
+                            ],
+                            onChanged: (value) {
+                              setState(() => _batchId = value);
+                              _reload();
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
                     SizedBox(height: 24),
                     GridView.count(
                       shrinkWrap: true,
@@ -181,8 +310,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
                         KalroStatCard(
                           icon: Icons.bug_report_outlined,
                           title: 'Total Larvae'.tr,
-                          value: NumberFormat.decimalPattern()
-                              .format(summary.bombyxLarvae + summary.eriLarvae),
+                          value: NumberFormat.decimalPattern().format(
+                            summary.bombyxLarvae + summary.eriLarvae,
+                          ),
                         ),
                         KalroStatCard(
                           icon: Icons.restaurant_outlined,
@@ -192,18 +322,23 @@ class _ReportsScreenState extends State<ReportsScreen> {
                         KalroStatCard(
                           icon: Icons.favorite_outline,
                           title: 'Survival'.tr,
-                          value: '${summary.averageSurvivalPercent.toStringAsFixed(0)}%',
+                          value:
+                              '${summary.averageSurvivalPercent.toStringAsFixed(0)}%',
                         ),
                       ],
                     ),
                     SizedBox(height: 28),
                     _ChartSection(
-                      title: 'Feed trend (14 days)'.tr,
+                      title: Translator.fill('Feed trend ({n} days)', {
+                        'n': '$_rangeDays',
+                      }),
                       child: FeedTrendChart(points: charts.feedTrend),
                     ),
                     SizedBox(height: 20),
                     _ChartSection(
-                      title: 'Mortality trend (14 days)'.tr,
+                      title: Translator.fill('Mortality trend ({n} days)', {
+                        'n': '$_rangeDays',
+                      }),
                       child: MortalityTrendChart(points: charts.mortalityTrend),
                     ),
                     SizedBox(height: 20),
@@ -217,7 +352,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
                     SizedBox(height: 20),
                     _ChartSection(
                       title: 'Batch comparison'.tr,
-                      child: BatchComparisonTable(rows: charts.batchComparisons),
+                      child: BatchComparisonTable(
+                        rows: charts.batchComparisons,
+                      ),
                     ),
                     SizedBox(height: 28),
                     ReportSectionCard(
@@ -277,7 +414,8 @@ class _ReportsScreenState extends State<ReportsScreen> {
                         ),
                         ReportMetricRow(
                           label: 'Average survival'.tr,
-                          value: '${summary.averageSurvivalPercent.toStringAsFixed(0)}%',
+                          value:
+                              '${summary.averageSurvivalPercent.toStringAsFixed(0)}%',
                           icon: Icons.favorite_outline,
                         ),
                         ReportMetricRow(
@@ -294,7 +432,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
                     ),
                     SizedBox(height: 24),
                     KalroPrimaryButton(
-                      label: _exportingPdf ? 'Exporting PDF...' : 'Export PDF report',
+                      label: _exportingPdf
+                          ? 'Exporting PDF...'.tr
+                          : 'Export PDF report'.tr,
                       onPressed: _exportingPdf ? null : _exportPdf,
                     ),
                     SizedBox(height: 12),
@@ -304,7 +444,25 @@ class _ReportsScreenState extends State<ReportsScreen> {
                         minimumSize: Size.fromHeight(48),
                         side: BorderSide(color: KalroColors.headerGreen),
                       ),
-                      child: Text('Export CSV to clipboard'.tr),
+                      child: Text('Export farm CSV to clipboard'.tr),
+                    ),
+                    SizedBox(height: 12),
+                    OutlinedButton(
+                      onPressed: _exportCycleCsv,
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: Size.fromHeight(48),
+                        side: BorderSide(color: KalroColors.headerGreen),
+                      ),
+                      child: Text('Export latest cycle CSV'.tr),
+                    ),
+                    SizedBox(height: 12),
+                    OutlinedButton(
+                      onPressed: _exportingPdf ? null : _exportCyclePdf,
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: Size.fromHeight(48),
+                        side: BorderSide(color: KalroColors.headerGreen),
+                      ),
+                      child: Text('Export latest cycle PDF'.tr),
                     ),
                     SizedBox(height: 24),
                     ReportSectionCard(
@@ -373,7 +531,10 @@ class _ChartSection extends StatelessWidget {
         children: [
           Text(
             title,
-            style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w600),
+            style: GoogleFonts.poppins(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           SizedBox(height: 12),
           child,

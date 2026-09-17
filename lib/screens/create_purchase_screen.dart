@@ -125,18 +125,19 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                 Text(
                   widget.producer.type.label,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: KalroColors.textMuted,
-                      ),
+                    color: KalroColors.textMuted,
+                  ),
                 ),
                 SizedBox(height: 16),
                 TextFormField(
                   controller: _itemController,
                   decoration: InputDecoration(
-                    labelText: 'Item',
+                    labelText: 'Item'.tr,
                     hintText: 'DFL, eggs, chawki batch'.tr,
                   ),
                   validator: (value) {
-                    if (value == null || value.trim().isEmpty) return 'Enter what you purchased';
+                    if (value == null || value.trim().isEmpty)
+                      return 'Enter what you purchased';
                     return null;
                   },
                 ),
@@ -147,14 +148,19 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                       flex: 2,
                       child: TextFormField(
                         controller: _quantityController,
-                        decoration: InputDecoration(labelText: 'Quantity'),
-                        keyboardType: TextInputType.numberWithOptions(decimal: true),
+                        decoration: InputDecoration(labelText: 'Quantity'.tr),
+                        keyboardType: TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
                         inputFormatters: [
-                          FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'^\d*\.?\d{0,2}'),
+                          ),
                         ],
                         validator: (value) {
                           final parsed = double.tryParse(value?.trim() ?? '');
-                          if (parsed == null || parsed <= 0) return 'Enter quantity';
+                          if (parsed == null || parsed <= 0)
+                            return 'Enter quantity';
                           return null;
                         },
                       ),
@@ -163,9 +169,10 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                     Expanded(
                       child: TextFormField(
                         controller: _unitController,
-                        decoration: InputDecoration(labelText: 'Unit'),
+                        decoration: InputDecoration(labelText: 'Unit'.tr),
                         validator: (value) {
-                          if (value == null || value.trim().isEmpty) return 'Required';
+                          if (value == null || value.trim().isEmpty)
+                            return 'Required';
                           return null;
                         },
                       ),
@@ -184,13 +191,15 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                 TextFormField(
                   controller: _amountController,
                   decoration: InputDecoration(
-                    labelText: 'Amount (KSh, optional)',
+                    labelText: 'Amount (KSh, optional)'.tr,
                     hintText: 'Creates a payable on Payments tab'.tr,
                     prefixText: 'KSh ',
                   ),
                   keyboardType: TextInputType.numberWithOptions(decimal: true),
                   inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
+                    FilteringTextInputFormatter.allow(
+                      RegExp(r'^\d*\.?\d{0,2}'),
+                    ),
                   ],
                 ),
                 SizedBox(height: 16),
@@ -203,7 +212,7 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                 SizedBox(height: 16),
                 TextFormField(
                   controller: _notesController,
-                  decoration: InputDecoration(labelText: 'Notes (optional)'),
+                  decoration: InputDecoration(labelText: 'Notes (optional)'.tr),
                   maxLines: 2,
                 ),
                 SizedBox(height: 24),

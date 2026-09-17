@@ -84,7 +84,7 @@ class _AddProducerScreenState extends State<AddProducerScreen> {
               children: [
                 DropdownButtonFormField<ProducerType>(
                   initialValue: _type,
-                  decoration: InputDecoration(labelText: 'Producer type'),
+                  decoration: InputDecoration(labelText: 'Producer type'.tr),
                   items: ProducerType.values
                       .map(
                         (type) => DropdownMenuItem(
@@ -102,35 +102,40 @@ class _AddProducerScreenState extends State<AddProducerScreen> {
                 SizedBox(height: 16),
                 TextFormField(
                   controller: _nameController,
-                  decoration: InputDecoration(labelText: 'Name'),
+                  decoration: InputDecoration(labelText: 'Name'.tr),
                   validator: (value) {
-                    if (value == null || value.trim().isEmpty) return 'Enter a name';
+                    if (value == null || value.trim().isEmpty)
+                      return 'Enter a name';
                     return null;
                   },
                 ),
                 SizedBox(height: 16),
                 TextFormField(
                   controller: _locationController,
-                  decoration: InputDecoration(labelText: 'Location (optional)'),
+                  decoration: InputDecoration(
+                    labelText: 'Location (optional)'.tr,
+                  ),
                 ),
                 SizedBox(height: 16),
                 TextFormField(
                   controller: _phoneController,
-                  decoration: InputDecoration(labelText: 'Contact phone (optional)'),
+                  decoration: InputDecoration(
+                    labelText: 'Contact phone (optional)'.tr,
+                  ),
                   keyboardType: TextInputType.phone,
                 ),
                 SizedBox(height: 16),
                 TextFormField(
                   controller: _speciesController,
                   decoration: InputDecoration(
-                    labelText: 'Species offered (optional)',
+                    labelText: 'Species offered (optional)'.tr,
                     hintText: 'Bombyx mori, Eri'.tr,
                   ),
                 ),
                 SizedBox(height: 16),
                 TextFormField(
                   controller: _notesController,
-                  decoration: InputDecoration(labelText: 'Notes (optional)'),
+                  decoration: InputDecoration(labelText: 'Notes (optional)'.tr),
                   maxLines: 2,
                 ),
                 SizedBox(height: 24),

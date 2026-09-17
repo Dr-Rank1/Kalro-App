@@ -4,13 +4,10 @@ import 'package:intl/intl.dart';
 
 import '../../models/dashboard_summary.dart';
 import '../../theme/kalro_colors.dart';
+import '../../l10n/translator.dart';
 
 class DashboardUpcomingTile extends StatelessWidget {
-  DashboardUpcomingTile({
-    super.key,
-    required this.item,
-    required this.onTap,
-  });
+  DashboardUpcomingTile({super.key, required this.item, required this.onTap});
 
   final UpcomingMilestoneItem item;
   final VoidCallback onTap;
@@ -40,7 +37,7 @@ class DashboardUpcomingTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      item.milestone.label,
+                      item.milestone.label.tr,
                       style: GoogleFonts.poppins(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -86,8 +83,8 @@ class _DateBadge extends StatelessWidget {
     final background = isOverdue
         ? Color(0xFFFFE8E8)
         : isToday
-            ? KalroColors.peach.withValues(alpha: 0.5)
-            : KalroColors.background;
+        ? KalroColors.peach.withValues(alpha: 0.5)
+        : KalroColors.background;
 
     final accent = isOverdue ? Colors.red.shade700 : KalroColors.accentBrown;
 

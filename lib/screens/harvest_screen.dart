@@ -7,11 +7,7 @@ import '../services/app_repositories.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class HarvestScreen extends StatefulWidget {
-  HarvestScreen({
-    super.key,
-    required this.repositories,
-    required this.canEdit,
-  });
+  HarvestScreen({super.key, required this.repositories, required this.canEdit});
 
   final AppRepositories repositories;
   final bool canEdit;
@@ -33,10 +29,15 @@ class _HarvestScreenState extends State<HarvestScreen> {
   void _reload() {
     setState(() {
       _batchesFuture = widget.repositories.batches.getAll().then((all) {
-        final active = all.where((b) => b.status != BatchStatus.closed).toList();
+        final active = all
+            .where((b) => b.status != BatchStatus.closed)
+            .toList();
         if (_selectedBatch != null) {
-          final stillExists = active.where((b) => b.id == _selectedBatch!.id).isNotEmpty;
-          if (!stillExists) _selectedBatch = active.isNotEmpty ? active.first : null;
+          final stillExists = active
+              .where((b) => b.id == _selectedBatch!.id)
+              .isNotEmpty;
+          if (!stillExists)
+            _selectedBatch = active.isNotEmpty ? active.first : null;
         } else if (active.isNotEmpty) {
           _selectedBatch = active.first;
         }
@@ -65,33 +66,36 @@ class _HarvestScreenState extends State<HarvestScreen> {
                 children: [
                   KalroToolbar(
                     title: 'Cocoon Harvest'.tr,
-                    subtitle: 'Record harvest weight, count, and shell samples.'.tr,
+                    subtitle:
+                        'Record harvest weight, count, and shell samples.'.tr,
                   ),
                   SizedBox(height: 24),
                   if (activeBatches.isEmpty)
                     RecordEmptyState(
                       icon: Icons.layers_outlined,
                       title: 'No active batches'.tr,
-                      message: 'Start a rearing cycle to record harvests.',
+                      message: 'Start a rearing cycle to record harvests.'.tr,
                     )
                   else ...[
                     InputDecorator(
-                      decoration: InputDecoration(labelText: 'Select Batch'),
+                      decoration: InputDecoration(labelText: 'Select Batch'.tr),
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<Batch>(
-                      value: _selectedBatch,
-                      isExpanded: true,
-                      
-                      items: activeBatches.map((b) {
-                        return DropdownMenuItem(
-                          value: b,
-                          child: Text('${b.species.label} - ${b.eggCount} larvae'.tr),
-                        );
-                      }).toList(),
-                      onChanged: (val) {
-                        setState(() => _selectedBatch = val);
-                      },
-                    ),
+                          value: _selectedBatch,
+                          isExpanded: true,
+
+                          items: activeBatches.map((b) {
+                            return DropdownMenuItem(
+                              value: b,
+                              child: Text(
+                                '${b.species.label} - ${b.eggCount} larvae'.tr,
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (val) {
+                            setState(() => _selectedBatch = val);
+                          },
+                        ),
                       ),
                     ),
                     SizedBox(height: 24),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/translator.dart';
 import '../theme/kalro_colors.dart';
 
 enum AccountPermission {
@@ -7,9 +8,11 @@ enum AccountPermission {
   caretaker('Caretaker'),
   viewer('Viewer');
 
-  const AccountPermission(this.label);
+  const AccountPermission(this._label);
 
-  final String label;
+  final String _label;
+
+  String get label => _label.tr;
 
   bool get canManageUsers => this == AccountPermission.admin;
 
@@ -21,10 +24,10 @@ enum AccountPermission {
 
   String get description => switch (this) {
         AccountPermission.admin =>
-          'Full access including team management, backups, and cloud sync.',
+          'Full access including team management, backups, and cloud sync.'.tr,
         AccountPermission.caretaker =>
-          'Can record batches, logs, payments, and purchases. Cannot manage users.',
-        AccountPermission.viewer => 'Read-only access to farm data and reports.',
+          'Can record batches, logs, payments, and purchases. Cannot manage users.'.tr,
+        AccountPermission.viewer => 'Read-only access to farm data and reports.'.tr,
       };
 
   IconData get icon => switch (this) {

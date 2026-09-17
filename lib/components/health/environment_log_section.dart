@@ -47,7 +47,8 @@ class _EnvironmentLogSectionState extends State<EnvironmentLogSection> {
   }
 
   Future<void> _deleteLog(EnvironmentLog log) async {
-    if (!await confirmDeleteRecord(context, what: 'environment reading')) return;
+    if (!await confirmDeleteRecord(context, what: 'environment reading'))
+      return;
     await widget.repository.delete(log.id);
     _reload();
     widget.onChanged?.call();
@@ -56,10 +57,13 @@ class _EnvironmentLogSectionState extends State<EnvironmentLogSection> {
   Future<void> _openAddDialog() async {
     final thresholds = EnvironmentThresholds.forSpecies(widget.batch.species);
     final tempController = TextEditingController(
-      text: ((thresholds.minTempC + thresholds.maxTempC) / 2).toStringAsFixed(1),
+      text: ((thresholds.minTempC + thresholds.maxTempC) / 2).toStringAsFixed(
+        1,
+      ),
     );
     final humidityController = TextEditingController(
-      text: ((thresholds.minHumidity + thresholds.maxHumidity) / 2).toStringAsFixed(0),
+      text: ((thresholds.minHumidity + thresholds.maxHumidity) / 2)
+          .toStringAsFixed(0),
     );
     final notesController = TextEditingController();
 
@@ -83,32 +87,42 @@ class _EnvironmentLogSectionState extends State<EnvironmentLogSection> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                'Log environment',
-                style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
+                'Log environment'.tr,
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               Text(
                 'Ideal: ${thresholds.minTempC}–${thresholds.maxTempC}°C, '
                 '${thresholds.minHumidity.toStringAsFixed(0)}–${thresholds.maxHumidity.toStringAsFixed(0)}% RH',
-                style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
+                style: GoogleFonts.poppins(
+                  fontSize: 12,
+                  color: KalroColors.textMuted,
+                ),
               ),
               SizedBox(height: 16),
               TextField(
                 controller: tempController,
-                decoration: InputDecoration(labelText: 'Temperature (°C)'),
+                decoration: InputDecoration(labelText: 'Temperature (°C)'.tr),
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
-                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                ],
               ),
               SizedBox(height: 12),
               TextField(
                 controller: humidityController,
-                decoration: InputDecoration(labelText: 'Humidity (%)'),
+                decoration: InputDecoration(labelText: 'Humidity (%)'.tr),
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
-                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                ],
               ),
               SizedBox(height: 12),
               TextField(
                 controller: notesController,
-                decoration: InputDecoration(labelText: 'Notes (optional)'),
+                decoration: InputDecoration(labelText: 'Notes (optional)'.tr),
                 maxLines: 2,
               ),
               SizedBox(height: 20),
@@ -116,7 +130,9 @@ class _EnvironmentLogSectionState extends State<EnvironmentLogSection> {
                 label: 'Save reading'.tr,
                 onPressed: () async {
                   final temp = double.tryParse(tempController.text.trim());
-                  final humidity = double.tryParse(humidityController.text.trim());
+                  final humidity = double.tryParse(
+                    humidityController.text.trim(),
+                  );
                   if (temp == null || humidity == null) return;
                   await widget.repository.create(
                     batchId: widget.batch.id,
@@ -153,7 +169,7 @@ class _EnvironmentLogSectionState extends State<EnvironmentLogSection> {
       children: [
         Row(
           children: [
-            Expanded(child: KalroSectionHeader(title: 'Environment')),
+            Expanded(child: KalroSectionHeader(title: 'Environment'.tr)),
             TextButton.icon(
               onPressed: _openAddDialog,
               icon: Icon(Icons.add, size: 18),
@@ -178,8 +194,9 @@ class _EnvironmentLogSectionState extends State<EnvironmentLogSection> {
                 icon: Icons.thermostat_outlined,
                 title: 'No readings yet'.tr,
                 message:
-                    'Log temperature and humidity daily to catch stress before it affects larvae.',
-                actionLabel: 'Log reading',
+                    'Log temperature and humidity daily to catch stress before it affects larvae.'
+                        .tr,
+                actionLabel: 'Log reading'.tr,
                 onAction: _openAddDialog,
               );
             }
@@ -197,7 +214,8 @@ class _EnvironmentLogSectionState extends State<EnvironmentLogSection> {
                   items: [
                     RecordSummaryItem(
                       label: 'Latest temp'.tr,
-                      value: '${latest.temperatureCelsius.toStringAsFixed(1)}°C',
+                      value:
+                          '${latest.temperatureCelsius.toStringAsFixed(1)}°C',
                     ),
                     RecordSummaryItem(
                       label: 'Latest RH'.tr,
@@ -211,17 +229,28 @@ class _EnvironmentLogSectionState extends State<EnvironmentLogSection> {
                 ),
                 SizedBox(height: 10),
                 ...logs.map((log) {
-                  final tempOk = thresholds.isTemperatureOk(log.temperatureCelsius);
-                  final humidityOk = thresholds.isHumidityOk(log.humidityPercent);
+                  final tempOk = thresholds.isTemperatureOk(
+                    log.temperatureCelsius,
+                  );
+                  final humidityOk = thresholds.isHumidityOk(
+                    log.humidityPercent,
+                  );
                   final alert = !tempOk || !humidityOk;
 
                   return RecordLogTile(
-                    icon: alert ? Icons.warning_amber_rounded : Icons.thermostat_outlined,
-                    iconColor: alert ? Colors.orange.shade700 : KalroColors.headerGreen,
+                    icon: alert
+                        ? Icons.warning_amber_rounded
+                        : Icons.thermostat_outlined,
+                    iconColor: alert
+                        ? Colors.orange.shade700
+                        : KalroColors.headerGreen,
                     borderColor: alert ? Colors.orange.shade300 : null,
-                    title: '${log.temperatureCelsius.toStringAsFixed(1)}°C · '
+                    title:
+                        '${log.temperatureCelsius.toStringAsFixed(1)}°C · '
                         '${log.humidityPercent.toStringAsFixed(0)}% humidity',
-                    subtitle: alert ? 'Outside ideal range for ${widget.batch.species.label}' : 'Within range',
+                    subtitle: alert
+                        ? 'Outside ideal range for ${widget.batch.species.label}'
+                        : 'Within range',
                     meta: formatRecordDate(log.recordedAt),
                     note: log.notes,
                     onDelete: () => _deleteLog(log),

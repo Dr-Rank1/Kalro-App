@@ -23,24 +23,43 @@ class EmptyStateCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(24),
+      padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: KalroColors.divider),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: KalroColors.softShadow,
       ),
       child: Column(
         children: [
-          Icon(icon, size: 40, color: KalroColors.primaryGreen),
-          SizedBox(height: 12),
-          Text(title, style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
-          SizedBox(height: 8),
+          Container(
+            width: 64,
+            height: 64,
+            decoration: BoxDecoration(
+              color: KalroColors.headerGreen.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, size: 32, color: KalroColors.primaryGreen),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.w700,
+              fontSize: 18,
+            ),
+          ),
+          const SizedBox(height: 8),
           Text(
             message,
             textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(fontSize: 13, color: KalroColors.textMuted),
+            style: GoogleFonts.poppins(
+              fontSize: 13,
+              color: KalroColors.textMuted,
+              height: 1.4,
+            ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 20),
           KalroPrimaryButton(label: actionLabel, onPressed: onAction),
         ],
       ),

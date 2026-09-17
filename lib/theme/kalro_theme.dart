@@ -35,9 +35,43 @@ abstract final class KalroTheme {
       ),
       cardTheme: CardThemeData(
         color: KalroColors.cardWhite,
-        elevation: 1,
+        elevation: 0,
         shadowColor: Colors.black.withValues(alpha: 0.06),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        height: 68,
+        indicatorColor: KalroColors.peach.withValues(alpha: 0.7),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          final selected = states.contains(WidgetState.selected);
+          return GoogleFonts.poppins(
+            fontSize: 11,
+            fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+            color: selected ? KalroColors.navActive : KalroColors.navInactive,
+          );
+        }),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          final selected = states.contains(WidgetState.selected);
+          return IconThemeData(
+            size: 22,
+            color: selected ? KalroColors.navActive : KalroColors.navInactive,
+          );
+        }),
+      ),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        backgroundColor: KalroColors.buttonGreen,
+        foregroundColor: Colors.white,
+        elevation: 2,
+      ),
+      tabBarTheme: TabBarThemeData(
+        labelColor: Colors.white,
+        unselectedLabelColor: Colors.white70,
+        indicatorColor: KalroColors.peach,
+        indicatorSize: TabBarIndicatorSize.label,
+        labelStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 13),
+        unselectedLabelStyle: GoogleFonts.poppins(fontWeight: FontWeight.w500, fontSize: 13),
       ),
       dividerTheme: const DividerThemeData(
         color: KalroColors.divider,

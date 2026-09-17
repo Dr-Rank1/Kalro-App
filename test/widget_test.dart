@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kalro/app.dart';
+import 'package:kalro/screens/farmer_shell.dart';
 import 'package:kalro/services/app_repositories.dart';
 import 'package:kalro/services/user_preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,7 +13,10 @@ void main() {
   late Directory tempDir;
 
   setUp(() async {
-    SharedPreferences.setMockInitialValues({'onboarding_complete': true});
+    SharedPreferences.setMockInitialValues({
+      'onboarding_complete': true,
+      'walkthrough_complete': true,
+    });
     tempDir = await Directory.systemTemp.createTemp('kalro_widget_test');
   });
 
@@ -36,10 +40,13 @@ void main() {
       ),
     );
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
 
-    expect(find.text('Home'), findsOneWidget);
-    expect(find.text('Finance'), findsOneWidget);
-    expect(find.text('Batches'), findsOneWidget);
-    expect(find.text('Profile'), findsOneWidget);
+    expect(find.byType(FarmerShell), findsOneWidget);
+    expect(find.text('Today'), findsWidgets);
+    expect(find.text('Batches'), findsWidgets);
+    expect(find.text('Plan'), findsWidgets);
+    expect(find.text('Farm'), findsWidgets);
+    expect(find.text('You'), findsWidgets);
   });
 }

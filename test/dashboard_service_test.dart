@@ -66,6 +66,8 @@ void main() {
     expect(summary.upcomingMilestones, isNotEmpty);
     expect(summary.nextMilestone, isNotNull);
     expect(summary.todayTasks, isNotEmpty);
+    expect(summary.suggestedFeedTodayGrams, greaterThanOrEqualTo(0));
+    expect(summary.leafNeedTodayKg, greaterThanOrEqualTo(0));
   });
 
   test('reflects mortality in live larvae count', () async {

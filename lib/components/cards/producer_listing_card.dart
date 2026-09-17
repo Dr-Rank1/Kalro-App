@@ -43,16 +43,28 @@ class ProducerListingCard extends StatelessWidget {
             child: Image.asset('assets/images/kalro_app_icon.png', width: 48),
           ),
           SizedBox(height: 12),
-          Text(title, style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 16)),
+          Text(
+            title,
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+            ),
+          ),
           Text(
             subtitle,
-            style: GoogleFonts.poppins(fontSize: 13, color: KalroColors.textMuted),
+            style: GoogleFonts.poppins(
+              fontSize: 13,
+              color: KalroColors.textMuted,
+            ),
           ),
           if (detail != null) ...[
             SizedBox(height: 4),
             Text(
               detail!,
-              style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textLight),
+              style: GoogleFonts.poppins(
+                fontSize: 12,
+                color: KalroColors.textLight,
+              ),
             ),
           ],
           SizedBox(height: 16),

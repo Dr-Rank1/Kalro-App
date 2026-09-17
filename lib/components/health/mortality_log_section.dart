@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../constants/disease_library.dart';
 import '../../models/mortality_log.dart';
@@ -12,6 +13,7 @@ import '../cards/kalro_section_header.dart';
 import '../records/record_empty_state.dart';
 import '../records/record_log_tile.dart';
 import '../records/record_summary_bar.dart';
+import 'photo_gallery.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class MortalityLogSection extends StatefulWidget {
@@ -19,11 +21,13 @@ class MortalityLogSection extends StatefulWidget {
     super.key,
     required this.batchId,
     required this.repository,
+    this.batchLabel,
     this.onChanged,
   });
 
   final String batchId;
   final MortalityLogRepository repository;
+  final String? batchLabel;
   final VoidCallback? onChanged;
 
   @override
@@ -58,6 +62,8 @@ class _MortalityLogSectionState extends State<MortalityLogSection> {
     final treatmentController = TextEditingController();
     final notesController = TextEditingController();
     String? disease;
+    String? photoPath;
+    DiseaseInfo? info;
 
     final saved = await showModalBottomSheet<bool>(
       context: context,
@@ -82,42 +88,105 @@ class _MortalityLogSectionState extends State<MortalityLogSection> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      'Log mortality',
-                      style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
+                      'Log mortality'.tr,
+                      style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     SizedBox(height: 16),
                     TextField(
                       controller: countController,
-                      decoration: InputDecoration(labelText: 'Count'),
+                      decoration: InputDecoration(labelText: 'Count'.tr),
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     ),
                     SizedBox(height: 12),
                     DropdownButtonFormField<String?>(
                       initialValue: disease,
-                      decoration: InputDecoration(labelText: 'Disease (optional)'),
+                      decoration: InputDecoration(
+                        labelText: 'Disease (optional)'.tr,
+                      ),
                       items: [
                         DropdownMenuItem(value: null, child: Text('None'.tr)),
-                        ...DiseaseLibrary.entries.map(
-                          (d) => DropdownMenuItem(value: d, child: Text(d)),
+                        ...DiseaseLibrary.info.map(
+                          (d) => DropdownMenuItem(
+                            value: d.name,
+                            child: Text(d.name),
+                          ),
                         ),
                       ],
-                      onChanged: (value) => setModalState(() => disease = value),
+                      onChanged: (value) => setModalState(() {
+                        disease = value;
+                        info = DiseaseLibrary.byName(value);
+                      }),
+                    ),
+                    if (info != null) ...[
+                      SizedBox(height: 12),
+                      Text(
+                        info!.signs,
+                        style: GoogleFonts.poppins(fontSize: 13),
+                      ),
+                      SizedBox(height: 6),
+                      Text(
+                        info!.action,
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          color: KalroColors.textMuted,
+                        ),
+                      ),
+                      if (info!.seedLotRisk)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Text(
+                            'Seed-lot risk — isolate and tell CRC.'.tr,
+                            style: GoogleFonts.poppins(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: KalroColors.danger,
+                            ),
+                          ),
+                        ),
+                    ],
+                    SizedBox(height: 12),
+                    OutlinedButton.icon(
+                      onPressed: () async {
+                        try {
+                          final picked = await ImagePicker().pickImage(
+                            source: ImageSource.camera,
+                            imageQuality: 70,
+                          );
+                          if (picked == null) return;
+                          setModalState(() => photoPath = picked.path);
+                        } catch (_) {}
+                      },
+                      icon: Icon(Icons.photo_camera_outlined, size: 18),
+                      label: Text(
+                        photoPath == null
+                            ? 'Photo (optional)'
+                            : 'Photo attached',
+                      ),
                     ),
                     SizedBox(height: 12),
                     TextField(
                       controller: reasonController,
-                      decoration: InputDecoration(labelText: 'Reason (optional)'),
+                      decoration: InputDecoration(
+                        labelText: 'Reason (optional)'.tr,
+                      ),
                     ),
                     SizedBox(height: 12),
                     TextField(
                       controller: treatmentController,
-                      decoration: InputDecoration(labelText: 'Treatment (optional)'),
+                      decoration: InputDecoration(
+                        labelText: 'Treatment (optional)'.tr,
+                      ),
                     ),
                     SizedBox(height: 12),
                     TextField(
                       controller: notesController,
-                      decoration: InputDecoration(labelText: 'Notes (optional)'),
+                      decoration: InputDecoration(
+                        labelText: 'Notes (optional)'.tr,
+                      ),
                       maxLines: 2,
                     ),
                     SizedBox(height: 20),
@@ -134,6 +203,10 @@ class _MortalityLogSectionState extends State<MortalityLogSection> {
                           reason: reasonController.text,
                           treatment: treatmentController.text,
                           notes: notesController.text,
+                          isolated:
+                              DiseaseLibrary.byName(disease)?.seedLotRisk ??
+                              false,
+                          photoPath: photoPath,
                         );
                         if (context.mounted) Navigator.of(context).pop(true);
                       },
@@ -160,10 +233,12 @@ class _MortalityLogSectionState extends State<MortalityLogSection> {
 
   String _subtitleFor(MortalityLog log) {
     return joinNonEmpty([
-      if (log.disease != null) log.disease,
-      if (log.reason?.trim().isNotEmpty == true) log.reason,
-      if (log.treatment?.trim().isNotEmpty == true) 'Treatment: ${log.treatment}',
-    ]) ?? 'Daily check';
+          if (log.disease != null) log.disease,
+          if (log.reason?.trim().isNotEmpty == true) log.reason,
+          if (log.treatment?.trim().isNotEmpty == true)
+            'Treatment: ${log.treatment}',
+        ]) ??
+        'Daily check';
   }
 
   @override
@@ -173,7 +248,7 @@ class _MortalityLogSectionState extends State<MortalityLogSection> {
       children: [
         Row(
           children: [
-            Expanded(child: KalroSectionHeader(title: 'Mortality logs')),
+            Expanded(child: KalroSectionHeader(title: 'Mortality logs'.tr)),
             TextButton.icon(
               onPressed: _openAddDialog,
               icon: Icon(Icons.add, size: 18),
@@ -197,8 +272,10 @@ class _MortalityLogSectionState extends State<MortalityLogSection> {
               return RecordEmptyState(
                 icon: Icons.monitor_heart_outlined,
                 title: 'No mortality logged'.tr,
-                message: 'Record daily checks to track larvae health and spot problems early.',
-                actionLabel: 'Log mortality',
+                message:
+                    'Record daily checks to track larvae health and spot problems early.'
+                        .tr,
+                actionLabel: 'Log mortality'.tr,
                 onAction: _openAddDialog,
               );
             }
@@ -211,21 +288,43 @@ class _MortalityLogSectionState extends State<MortalityLogSection> {
                 RecordSummaryBar(
                   items: [
                     RecordSummaryItem(label: 'Total lost'.tr, value: '$total'),
-                    RecordSummaryItem(label: 'Entries'.tr, value: '${logs.length}'),
-                    RecordSummaryItem(label: 'Last check'.tr, value: '${latest.count}'),
+                    RecordSummaryItem(
+                      label: 'Entries'.tr,
+                      value: '${logs.length}',
+                    ),
+                    RecordSummaryItem(
+                      label: 'Last check'.tr,
+                      value: '${latest.count}',
+                    ),
                   ],
                 ),
                 SizedBox(height: 10),
                 ...logs.map(
                   (log) => RecordLogTile(
                     icon: Icons.monitor_heart_outlined,
-                    iconColor: log.disease != null ? Colors.orange.shade700 : KalroColors.textMuted,
-                    title: '${log.count} larvae lost'.tr,
+                    iconColor: log.disease != null
+                        ? Colors.orange.shade700
+                        : KalroColors.textMuted,
+                    title: Translator.fill('{n} larvae lost', {
+                      'n': '${log.count}',
+                    }),
                     subtitle: _subtitleFor(log),
                     meta: formatRecordDate(log.recordedAt),
                     note: log.notes,
-                    borderColor: log.disease != null ? Colors.orange.shade200 : null,
+                    imagePath: log.photoPath,
+                    borderColor: log.disease != null
+                        ? Colors.orange.shade200
+                        : null,
                     onDelete: () => _deleteLog(log),
+                    onImageTap: (log.photoPath ?? '').isEmpty
+                        ? null
+                        : () => openMortalityPhoto(
+                            context,
+                            MortalityPhotoItem(
+                              log: log,
+                              batchLabel: widget.batchLabel ?? 'Lot'.tr,
+                            ),
+                          ),
                   ),
                 ),
               ],

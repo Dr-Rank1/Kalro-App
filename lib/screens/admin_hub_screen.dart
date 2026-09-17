@@ -70,14 +70,16 @@ class _AdminHubScreenState extends State<AdminHubScreen> {
   }
 
   void _openTeam() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => UserManagementScreen(
-          session: widget.session,
-          authRepository: widget.authRepository,
-        ),
-      ),
-    ).then((_) => _reload());
+    Navigator.of(context)
+        .push(
+          MaterialPageRoute(
+            builder: (_) => UserManagementScreen(
+              session: widget.session,
+              authRepository: widget.authRepository,
+            ),
+          ),
+        )
+        .then((_) => _reload());
   }
 
   void _openFarmSettings() {
@@ -94,18 +96,20 @@ class _AdminHubScreenState extends State<AdminHubScreen> {
   }
 
   void _openCloudSync() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => CloudSyncScreen(
-          session: widget.session,
-          repositories: widget.repositories,
-          onDataChanged: () {
-            widget.onDataChanged?.call();
-            _reload();
-          },
-        ),
-      ),
-    ).then((_) => _reload());
+    Navigator.of(context)
+        .push(
+          MaterialPageRoute(
+            builder: (_) => CloudSyncScreen(
+              session: widget.session,
+              repositories: widget.repositories,
+              onDataChanged: () {
+                widget.onDataChanged?.call();
+                _reload();
+              },
+            ),
+          ),
+        )
+        .then((_) => _reload());
   }
 
   void _openBackup() {
@@ -147,10 +151,12 @@ class _AdminHubScreenState extends State<AdminHubScreen> {
 
   String _formatSyncStatus(AdminSummary summary) {
     final dateFormat = DateFormat('MMM d · HH:mm');
-    if (summary.hasRecentUpload && summary.syncSettings.lastUploadedAt != null) {
+    if (summary.hasRecentUpload &&
+        summary.syncSettings.lastUploadedAt != null) {
       return 'Uploaded ${dateFormat.format(summary.syncSettings.lastUploadedAt!)}';
     }
-    if (summary.hasRecentDownload && summary.syncSettings.lastDownloadedAt != null) {
+    if (summary.hasRecentDownload &&
+        summary.syncSettings.lastDownloadedAt != null) {
       return 'Downloaded ${dateFormat.format(summary.syncSettings.lastDownloadedAt!)}';
     }
     return 'Not synced yet';
@@ -167,17 +173,28 @@ class _AdminHubScreenState extends State<AdminHubScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.lock_outline, size: 48, color: KalroColors.textMuted),
+                Icon(
+                  Icons.lock_outline,
+                  size: 48,
+                  color: KalroColors.textMuted,
+                ),
                 SizedBox(height: 16),
                 Text(
-                  'Admin access only',
-                  style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
+                  'Admin access only'.tr,
+                  style: GoogleFonts.poppins(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 SizedBox(height: 8),
                 Text(
-                  'Farm management is for administrators. Use My farm work for daily rearing tasks.',
+                  'Farm management is for administrators. Use My farm work for daily rearing tasks.'
+                      .tr,
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(fontSize: 13, color: KalroColors.textMuted),
+                  style: GoogleFonts.poppins(
+                    fontSize: 13,
+                    color: KalroColors.textMuted,
+                  ),
                 ),
               ],
             ),
@@ -218,133 +235,141 @@ class _AdminHubScreenState extends State<AdminHubScreen> {
 
   List<Widget> _managementSections(AdminSummary summary) {
     return [
-              AdminSectionHeader(
-                title: 'Operations overview'.tr,
-                subtitle: 'Farm health, team, and financial activity'.tr,
-              ),
-              SizedBox(height: 12),
-              AdminInfoCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            widget.session.farm.orgName,
-                            style: GoogleFonts.poppins(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                        PermissionBadge(permission: widget.session.user.permission),
-                      ],
+      AdminSectionHeader(
+        title: 'Operations overview'.tr,
+        subtitle: 'Farm health, team, and financial activity'.tr,
+      ),
+      SizedBox(height: 12),
+      AdminInfoCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    widget.session.farm.orgName,
+                    style: GoogleFonts.poppins(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
                     ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Sync code ${widget.session.farm.syncCode} · ${_formatSyncStatus(summary)}',
-                      style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
-                    ),
-                  ],
+                  ),
                 ),
+                PermissionBadge(permission: widget.session.user.permission),
+              ],
+            ),
+            SizedBox(height: 8),
+            Text(
+              'Sync code ${widget.session.farm.syncCode} · ${_formatSyncStatus(summary)}',
+              style: GoogleFonts.poppins(
+                fontSize: 12,
+                color: KalroColors.textMuted,
               ),
-              SizedBox(height: 16),
-              Row(
-                children: [
-                  AdminStatChip(
-                    label: 'Team members'.tr,
-                    value: summary.teamCount.toString(),
-                    icon: Icons.people_outline,
-                  ),
-                  SizedBox(width: 10),
-                  AdminStatChip(
-                    label: 'Active batches'.tr,
-                    value: summary.activeBatchCount.toString(),
-                    icon: Icons.layers_outlined,
-                  ),
-                ],
-              ),
-              SizedBox(height: 10),
-              Row(
-                children: [
-                  AdminStatChip(
-                    label: 'Payments'.tr,
-                    value: summary.paymentCount.toString(),
-                    icon: Icons.payments_outlined,
-                  ),
-                  SizedBox(width: 10),
-                  AdminStatChip(
-                    label: 'Feed logs'.tr,
-                    value: summary.feedLogCount.toString(),
-                    icon: Icons.restaurant_outlined,
-                  ),
-                ],
-              ),
-              SizedBox(height: 24),
-              AdminSectionHeader(
-                title: 'Organization'.tr,
-                subtitle: 'Farm identity and user access'.tr,
-              ),
-              SizedBox(height: 12),
-              AdminHubTile(
-                icon: Icons.settings_outlined,
-                title: 'Farm settings'.tr,
-                subtitle: 'Organization name and farm metadata'.tr,
-                onTap: _openFarmSettings,
-              ),
-              SizedBox(height: 10),
-              AdminHubTile(
-                icon: Icons.people_outline,
-                title: 'Team users'.tr,
-                subtitle: '${summary.teamCount} active ${summary.teamCount == 1 ? 'user' : 'users'}',
-                onTap: _openTeam,
-              ),
-              SizedBox(height: 24),
-              AdminSectionHeader(
-                title: 'Data & systems'.tr,
-                subtitle: 'Backups, cloud sync, and farm-wide notifications'.tr,
-              ),
-              SizedBox(height: 12),
-              AdminHubTile(
-                icon: Icons.cloud_sync_outlined,
-                title: 'Cloud sync'.tr,
-                subtitle: _formatSyncStatus(summary),
-                onTap: _openCloudSync,
-              ),
-              SizedBox(height: 10),
-              AdminHubTile(
-                icon: Icons.backup_outlined,
-                title: 'Data & backup'.tr,
-                subtitle: 'Export or restore full farm JSON'.tr,
-                onTap: _openBackup,
-              ),
-              SizedBox(height: 10),
-              AdminHubTile(
-                icon: Icons.notifications_outlined,
-                title: 'Farm reminders'.tr,
-                subtitle: 'Configure feeding and milestone alerts'.tr,
-                onTap: _openReminders,
-              ),
-              SizedBox(height: 24),
-              AdminSectionHeader(
-                title: 'Analytics'.tr,
-                subtitle: 'Financial and production reports'.tr,
-              ),
-              SizedBox(height: 12),
-              AdminHubTile(
-                icon: Icons.show_chart,
-                title: 'Reports & exports'.tr,
-                subtitle: 'Charts, CSV, and PDF for farm records'.tr,
-                onTap: widget.userPreferences == null ? null : _openReports,
-              ),
-              SizedBox(height: 16),
-              AdminInfoCard(
-                child: Text(
-                  'Management tools control users, backups, and farm-wide settings. Field workers use a separate sign-in.',
-                  style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
-                ),
-              ),
+            ),
+          ],
+        ),
+      ),
+      SizedBox(height: 16),
+      Row(
+        children: [
+          AdminStatChip(
+            label: 'Team members'.tr,
+            value: summary.teamCount.toString(),
+            icon: Icons.people_outline,
+          ),
+          SizedBox(width: 10),
+          AdminStatChip(
+            label: 'Active batches'.tr,
+            value: summary.activeBatchCount.toString(),
+            icon: Icons.layers_outlined,
+          ),
+        ],
+      ),
+      SizedBox(height: 10),
+      Row(
+        children: [
+          AdminStatChip(
+            label: 'Payments'.tr,
+            value: summary.paymentCount.toString(),
+            icon: Icons.payments_outlined,
+          ),
+          SizedBox(width: 10),
+          AdminStatChip(
+            label: 'Feed logs'.tr,
+            value: summary.feedLogCount.toString(),
+            icon: Icons.restaurant_outlined,
+          ),
+        ],
+      ),
+      SizedBox(height: 24),
+      AdminSectionHeader(
+        title: 'Organization'.tr,
+        subtitle: 'Farm identity and user access'.tr,
+      ),
+      SizedBox(height: 12),
+      AdminHubTile(
+        icon: Icons.settings_outlined,
+        title: 'Farm settings'.tr,
+        subtitle: 'Organization name and farm metadata'.tr,
+        onTap: _openFarmSettings,
+      ),
+      SizedBox(height: 10),
+      AdminHubTile(
+        icon: Icons.people_outline,
+        title: 'Team users'.tr,
+        subtitle:
+            '${summary.teamCount} active ${summary.teamCount == 1 ? 'user' : 'users'}',
+        onTap: _openTeam,
+      ),
+      SizedBox(height: 24),
+      AdminSectionHeader(
+        title: 'Data & systems'.tr,
+        subtitle: 'Backups, cloud sync, and farm-wide notifications'.tr,
+      ),
+      SizedBox(height: 12),
+      AdminHubTile(
+        icon: Icons.cloud_sync_outlined,
+        title: 'Cloud sync'.tr,
+        subtitle: _formatSyncStatus(summary),
+        onTap: _openCloudSync,
+      ),
+      SizedBox(height: 10),
+      AdminHubTile(
+        icon: Icons.backup_outlined,
+        title: 'Data & backup'.tr,
+        subtitle: 'Export or restore full farm JSON'.tr,
+        onTap: _openBackup,
+      ),
+      SizedBox(height: 10),
+      AdminHubTile(
+        icon: Icons.notifications_outlined,
+        title: 'Farm reminders'.tr,
+        subtitle: 'Configure feeding and milestone alerts'.tr,
+        onTap: _openReminders,
+      ),
+      SizedBox(height: 24),
+      AdminSectionHeader(
+        title: 'Analytics'.tr,
+        subtitle: 'Financial and production reports'.tr,
+      ),
+      SizedBox(height: 12),
+      AdminHubTile(
+        icon: Icons.show_chart,
+        title: 'Reports & exports'.tr,
+        subtitle: 'Charts, CSV, and PDF for farm records'.tr,
+        onTap: widget.userPreferences == null ? null : _openReports,
+      ),
+      SizedBox(height: 16),
+      AdminInfoCard(
+        child: Text(
+          'Management tools control users, backups, and farm-wide settings. Field workers use a separate sign-in.'
+              .tr,
+          style: GoogleFonts.poppins(
+            fontSize: 12,
+            color: KalroColors.textMuted,
+          ),
+        ),
+      ),
     ];
   }
 }

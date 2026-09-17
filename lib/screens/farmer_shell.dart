@@ -12,15 +12,14 @@ import 'batch_detail_screen.dart';
 import 'batches_screen.dart';
 import 'feeding_screen.dart';
 import 'health_screen.dart';
-import 'harvest_screen.dart';
 import 'rearing_hub_screen.dart';
 import 'farmer_profile_screen.dart';
-import 'finance_screen.dart';
-import 'reports_screen.dart';
+import 'lifecycle_planner_screen.dart';
+import 'farm_work_screen.dart';
 import 'create_batch_screen.dart';
 import 'package:kalro/l10n/translator.dart';
 
-/// Main app navigation using Hybrid Nav (Bottom Bar + Drawer).
+/// Main farmer navigation: Today, Batches, Plan, Farm, You.
 class FarmerShell extends StatefulWidget {
   FarmerShell({
     super.key,
@@ -48,44 +47,69 @@ class _FarmerShellState extends State<FarmerShell> {
   var _reloadCount = 0;
   static const _permissions = PermissionService();
 
+  @override
+  void initState() {
+    super.initState();
+    widget.notificationService?.requestPermission();
+  }
+
   void _reloadAll() => setState(() => _reloadCount++);
 
   bool get _canEdit => _permissions.canEditData(widget.session.user);
 
-  void _pushScreen(Widget screen) {
-    Navigator.pop(context); // Close drawer
-    Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
-  }
+  void _goTo(int index) => setState(() => _index = index);
 
   void _showQuickAddMenu() {
     showModalBottomSheet(
       context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (context) {
         return SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 20),
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Quick Add',
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: KalroColors.divider,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Quick add'.tr,
+                    style: GoogleFonts.poppins(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
-                ListTile(
-                  leading: Icon(Icons.add_circle_outline, color: KalroColors.primaryGreen),
-                  title: Text('Start New Batch'.tr),
+                const SizedBox(height: 4),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Or use the Farm tab for the full feeding, health, and harvest pages.'
+                        .tr,
+                    style: GoogleFonts.poppins(
+                      fontSize: 13,
+                      color: KalroColors.textMuted,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                _QuickAddTile(
+                  icon: Icons.add_circle_outline,
+                  color: KalroColors.headerGreen,
+                  title: 'Start new batch'.tr,
+                  subtitle: 'Eggs in — calendar starts'.tr,
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.push(
@@ -93,14 +117,17 @@ class _FarmerShellState extends State<FarmerShell> {
                       MaterialPageRoute(
                         builder: (_) => CreateBatchScreen(
                           repository: widget.repositories.batches,
+                          producers: widget.repositories.producers,
                         ),
                       ),
                     ).then((_) => _reloadAll());
                   },
                 ),
-                ListTile(
-                  leading: Icon(Icons.restaurant_outlined, color: KalroColors.primaryGreen),
-                  title: Text('Log Feeding'.tr),
+                _QuickAddTile(
+                  icon: Icons.eco_outlined,
+                  color: KalroColors.leaf,
+                  title: 'Log feeding'.tr,
+                  subtitle: 'Opens the Feeding page'.tr,
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.push(
@@ -114,9 +141,11 @@ class _FarmerShellState extends State<FarmerShell> {
                     ).then((_) => _reloadAll());
                   },
                 ),
-                ListTile(
-                  leading: Icon(Icons.healing_outlined, color: KalroColors.primaryGreen),
-                  title: Text('Record Health & Mortality'.tr),
+                _QuickAddTile(
+                  icon: Icons.healing_outlined,
+                  color: KalroColors.rest,
+                  title: 'Record health & mortality'.tr,
+                  subtitle: 'Opens the Health page'.tr,
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.push(
@@ -148,11 +177,26 @@ class _FarmerShellState extends State<FarmerShell> {
         onBatchChanged: _reloadAll,
         canEdit: _canEdit,
         reloadCounter: _reloadCount,
+        onOpenPlan: () => _goTo(2),
+        onOpenFarm: () => _goTo(3),
+        onOpenBatches: () => _goTo(1),
       ),
       BatchesScreen(
         repositories: widget.repositories,
         onBatchChanged: _reloadAll,
         canEdit: _canEdit,
+        reloadCounter: _reloadCount,
+      ),
+      LifecyclePlannerScreen(
+        repositories: widget.repositories,
+        canEdit: _canEdit,
+        asTab: true,
+      ),
+      FarmWorkScreen(
+        repositories: widget.repositories,
+        userPreferences: widget.userPreferences,
+        canEdit: _canEdit,
+        onChanged: _reloadAll,
         reloadCounter: _reloadCount,
       ),
       FarmerProfileScreen(
@@ -166,109 +210,111 @@ class _FarmerShellState extends State<FarmerShell> {
     ];
 
     return Scaffold(
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(color: KalroColors.primaryGreen),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(
-                    'Kalro Sericulture',
-                    style: GoogleFonts.poppins(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    widget.session.user.displayName,
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      color: Colors.white70,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            ListTile(
-              leading: Icon(Icons.restaurant_outlined),
-              title: Text('Feeding'.tr),
-              onTap: () => _pushScreen(FeedingScreen(
-                repositories: widget.repositories,
-                canEdit: _canEdit,
-              )),
-            ),
-            ListTile(
-              leading: Icon(Icons.healing_outlined),
-              title: Text('Health & Mortality'.tr),
-              onTap: () => _pushScreen(HealthScreen(
-                repositories: widget.repositories,
-                canEdit: _canEdit,
-              )),
-            ),
-            ListTile(
-              leading: Icon(Icons.egg_outlined),
-              title: Text('Cocoon Harvest'.tr),
-              onTap: () => _pushScreen(HarvestScreen(
-                repositories: widget.repositories,
-                canEdit: _canEdit,
-              )),
-            ),
-            ListTile(
-              leading: Icon(Icons.account_balance_wallet_outlined),
-              title: Text('Finance'.tr),
-              onTap: () => _pushScreen(FinanceScreen(
-                repositories: widget.repositories,
-                userPreferences: widget.userPreferences,
-                readOnly: !_canEdit,
-              )),
-            ),
-            ListTile(
-              leading: Icon(Icons.assessment_outlined),
-              title: Text('Reports'.tr),
-              onTap: () => _pushScreen(ReportsScreen(
-                repositories: widget.repositories,
-                userPreferences: widget.userPreferences,
-              )),
-            ),
-          ],
-        ),
-      ),
       body: IndexedStack(index: _index, children: screens),
-      floatingActionButton: _canEdit
+      floatingActionButton: _canEdit && (_index == 0 || _index == 1)
           ? FloatingActionButton(
               onPressed: _showQuickAddMenu,
-              backgroundColor: KalroColors.primaryGreen,
-              child: Icon(Icons.add, color: Colors.white),
+              backgroundColor: KalroColors.buttonGreen,
+              child: const Icon(Icons.add, color: Colors.white),
             )
           : null,
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _index,
-        onTap: (idx) => setState(() => _index = idx),
-        selectedItemColor: KalroColors.primaryGreen,
-        unselectedItemColor: Colors.grey,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: l10n?.navHome ?? 'Home',
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _index,
+        onDestinationSelected: _goTo,
+        destinations: [
+          NavigationDestination(
+            icon: const Icon(Icons.wb_sunny_outlined),
+            selectedIcon: const Icon(Icons.wb_sunny_rounded),
+            label: l10n?.navHome ?? 'Today'.tr,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.layers_outlined),
-            activeIcon: Icon(Icons.layers),
-            label: l10n?.navBatches ?? 'Batches',
+          NavigationDestination(
+            icon: const Icon(Icons.layers_outlined),
+            selectedIcon: const Icon(Icons.layers_rounded),
+            label: l10n?.navBatches ?? 'Batches'.tr,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person),
-            label: l10n?.navProfile ?? 'Profile',
+          NavigationDestination(
+            icon: const Icon(Icons.auto_graph_outlined),
+            selectedIcon: const Icon(Icons.auto_graph),
+            label: l10n?.navPlan ?? 'Plan'.tr,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.agriculture_outlined),
+            selectedIcon: const Icon(Icons.agriculture),
+            label: l10n?.navFarm ?? 'Farm'.tr,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.person_outline),
+            selectedIcon: const Icon(Icons.person_rounded),
+            label: l10n?.navProfile ?? 'You'.tr,
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _QuickAddTile extends StatelessWidget {
+  const _QuickAddTile({
+    required this.icon,
+    required this.color,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final Color color;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Material(
+        color: KalroColors.background,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(icon, color: color),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                      ),
+                      Text(
+                        subtitle,
+                        style: GoogleFonts.poppins(
+                          fontSize: 12,
+                          color: KalroColors.textMuted,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.chevron_right, color: KalroColors.textLight),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -280,9 +326,8 @@ class BatchRoutes {
     AppRepositories repositories,
     String batchId,
   ) {
-    return Navigator.of(context).pushNamed(
-      BatchDetailScreen.routeName,
-      arguments: batchId,
-    );
+    return Navigator.of(
+      context,
+    ).pushNamed(BatchDetailScreen.routeName, arguments: batchId);
   }
 }

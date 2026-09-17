@@ -7,11 +7,7 @@ import '../../models/purchase_order.dart';
 import '../../theme/kalro_colors.dart';
 
 class PurchaseOrderTile extends StatelessWidget {
-  PurchaseOrderTile({
-    super.key,
-    required this.order,
-    this.onDelete,
-  });
+  PurchaseOrderTile({super.key, required this.order, this.onDelete});
 
   final PurchaseOrder order;
   final VoidCallback? onDelete;
@@ -38,7 +34,11 @@ class PurchaseOrderTile extends StatelessWidget {
               color: KalroColors.peach.withValues(alpha: 0.35),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(Icons.shopping_bag_outlined, color: KalroColors.primaryGreen, size: 20),
+            child: Icon(
+              Icons.shopping_bag_outlined,
+              color: KalroColors.primaryGreen,
+              size: 20,
+            ),
           ),
           SizedBox(width: 12),
           Expanded(
@@ -47,16 +47,25 @@ class PurchaseOrderTile extends StatelessWidget {
               children: [
                 Text(
                   order.itemDescription,
-                  style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 14),
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
                 ),
                 Text(
                   '${order.producerName} · ${order.quantity.toStringAsFixed(order.quantity == order.quantity.roundToDouble() ? 0 : 1)} ${order.unit}',
-                  style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    color: KalroColors.textMuted,
+                  ),
                 ),
                 Text(
                   '${dateFormat.format(order.orderedAt)}'
                   '${order.species != null ? ' · ${order.species!.label}' : ''}',
-                  style: GoogleFonts.poppins(fontSize: 11, color: KalroColors.textLight),
+                  style: GoogleFonts.poppins(
+                    fontSize: 11,
+                    color: KalroColors.textLight,
+                  ),
                 ),
               ],
             ),

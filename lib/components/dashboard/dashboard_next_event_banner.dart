@@ -5,12 +5,10 @@ import 'package:intl/intl.dart';
 import '../../models/dashboard_summary.dart';
 import '../../theme/kalro_colors.dart';
 
+import 'package:kalro/l10n/translator.dart';
+
 class DashboardNextEventBanner extends StatelessWidget {
-  DashboardNextEventBanner({
-    super.key,
-    required this.item,
-    this.onTap,
-  });
+  DashboardNextEventBanner({super.key, required this.item, this.onTap});
 
   final UpcomingMilestoneItem item;
   final VoidCallback? onTap;
@@ -52,7 +50,7 @@ class DashboardNextEventBanner extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Next up',
+                      'Next up'.tr,
                       style: GoogleFonts.poppins(
                         fontSize: 12,
                         color: KalroColors.textMuted,
@@ -61,7 +59,7 @@ class DashboardNextEventBanner extends StatelessWidget {
                     ),
                     SizedBox(height: 2),
                     Text(
-                      item.milestone.label,
+                      item.milestone.label.tr,
                       style: GoogleFonts.poppins(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
@@ -78,7 +76,9 @@ class DashboardNextEventBanner extends StatelessWidget {
                             item.milestone.daysVsTypical != 0)
                           item.milestone.daysVsTypical! > 0
                               ? '+${item.milestone.daysVsTypical}d vs typical'
-                              : '${item.milestone.daysVsTypical}d vs typical',
+                                    .tr
+                              : '${item.milestone.daysVsTypical}d vs typical'
+                                    .tr,
                       ].join(' · '),
                       style: GoogleFonts.poppins(
                         fontSize: 12,
@@ -89,10 +89,7 @@ class DashboardNextEventBanner extends StatelessWidget {
                 ),
               ),
               if (onTap != null)
-                Icon(
-                  Icons.chevron_right,
-                  color: KalroColors.textLight,
-                ),
+                Icon(Icons.chevron_right, color: KalroColors.textLight),
             ],
           ),
         ),
@@ -101,9 +98,9 @@ class DashboardNextEventBanner extends StatelessWidget {
   }
 
   String _timingLabel(UpcomingMilestoneItem item) {
-    if (item.isToday) return 'Today';
-    if (item.isOverdue) return 'Overdue';
-    if (item.daysUntil == 1) return 'Tomorrow';
-    return 'In ${item.daysUntil} days';
+    if (item.isToday) return 'Today'.tr;
+    if (item.isOverdue) return 'Overdue'.tr;
+    if (item.daysUntil == 1) return 'Tomorrow'.tr;
+    return Translator.fill('In {n} days', {'n': '${item.daysUntil}'});
   }
 }

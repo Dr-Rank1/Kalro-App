@@ -136,12 +136,12 @@ void main() {
     final batch = sample();
     final conditions = conditionsService.fromLogs(
       batch: batch,
-      now: DateTime(2026, 1, 8),
+      now: DateTime(2026, 1, 18),
       environmentLogs: [
         EnvironmentLog(
           id: 'e1',
           batchId: batch.id,
-          recordedAt: DateTime(2026, 1, 7),
+          recordedAt: DateTime(2026, 1, 17),
           temperatureCelsius: 20,
           humidityPercent: 75,
         ),
@@ -150,7 +150,7 @@ void main() {
         FeedLog(
           id: 'f1',
           batchId: batch.id,
-          recordedAt: DateTime(2026, 1, 7),
+          recordedAt: DateTime(2026, 1, 17),
           feedType: 'Mulberry',
           quantityGrams: 10,
         ),

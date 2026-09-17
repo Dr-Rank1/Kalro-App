@@ -9,11 +9,7 @@ import 'package:kalro/l10n/translator.dart';
 
 /// Compact hatch / spinning / harvest / moth dates for planning.
 class LifecycleKeyDatesCard extends StatelessWidget {
-  LifecycleKeyDatesCard({
-    super.key,
-    required this.cycle,
-    this.footnote,
-  });
+  LifecycleKeyDatesCard({super.key, required this.cycle, this.footnote});
 
   final PlannedCycle cycle;
   final String? footnote;
@@ -36,6 +32,10 @@ class LifecycleKeyDatesCard extends StatelessWidget {
         label: 'Cocoon harvest'.tr,
         milestone: cycle.harvest,
         icon: Icons.inventory_2_outlined,
+        dateOverride:
+            cycle.harvestWindowStart != null && cycle.harvestWindowEnd != null
+            ? '${dateFormat.format(cycle.harvestWindowStart!)}–${dateFormat.format(cycle.harvestWindowEnd!)}'
+            : null,
       ),
       _KeyDate(
         label: 'Moths emerge'.tr,
@@ -85,7 +85,10 @@ class LifecycleKeyDatesCard extends StatelessWidget {
             SizedBox(height: 10),
             Text(
               footnote!,
-              style: GoogleFonts.poppins(fontSize: 11, color: KalroColors.textMuted),
+              style: GoogleFonts.poppins(
+                fontSize: 11,
+                color: KalroColors.textMuted,
+              ),
             ),
           ],
         ],
@@ -127,13 +130,16 @@ class LifecycleKeyDatesCard extends StatelessWidget {
           SizedBox(height: 6),
           Text(
             item.label,
-            style: GoogleFonts.poppins(fontSize: 11, color: KalroColors.textMuted),
+            style: GoogleFonts.poppins(
+              fontSize: 11,
+              color: KalroColors.textMuted,
+            ),
           ),
           SizedBox(height: 2),
           Text(
-            date == null ? '—' : dateFormat.format(date),
+            item.dateOverride ?? (date == null ? '—' : dateFormat.format(date)),
             style: GoogleFonts.poppins(
-              fontSize: 14,
+              fontSize: item.dateOverride != null ? 12 : 14,
               fontWeight: FontWeight.w600,
               color: KalroColors.textDark,
             ),
@@ -141,7 +147,10 @@ class LifecycleKeyDatesCard extends StatelessWidget {
           if (typical != null && shift != null && shift != 0)
             Text(
               'typical ${dateFormat.format(typical)}',
-              style: GoogleFonts.poppins(fontSize: 10, color: KalroColors.textMuted),
+              style: GoogleFonts.poppins(
+                fontSize: 10,
+                color: KalroColors.textMuted,
+              ),
             ),
         ],
       ),
@@ -154,19 +163,18 @@ class _KeyDate {
     required this.label,
     required this.milestone,
     required this.icon,
+    this.dateOverride,
   });
 
   final String label;
   final LifecycleMilestone? milestone;
   final IconData icon;
+  final String? dateOverride;
 }
 
 /// Typical vs predicted dates for hatch, harvest, and moths.
 class PredictionOutcomeCard extends StatelessWidget {
-  PredictionOutcomeCard({
-    super.key,
-    required this.cycle,
-  });
+  PredictionOutcomeCard({super.key, required this.cycle});
 
   final PlannedCycle cycle;
 
@@ -188,13 +196,15 @@ class PredictionOutcomeCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: KalroColors.headerGreen.withValues(alpha: 0.2)),
+        border: Border.all(
+          color: KalroColors.headerGreen.withValues(alpha: 0.2),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'How dates change',
+            'How dates change'.tr,
             style: GoogleFonts.poppins(
               fontSize: 13,
               fontWeight: FontWeight.w600,
@@ -206,7 +216,10 @@ class PredictionOutcomeCard extends StatelessWidget {
             cycle.shiftSummary == null
                 ? 'Same as a typical house with enough leaf.'
                 : cycle.shiftSummary!,
-            style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
+            style: GoogleFonts.poppins(
+              fontSize: 12,
+              color: KalroColors.textMuted,
+            ),
           ),
           SizedBox(height: 10),
           Row(
@@ -214,22 +227,31 @@ class PredictionOutcomeCard extends StatelessWidget {
               SizedBox(width: 108),
               Expanded(
                 child: Text(
-                  'Typical',
-                  style: GoogleFonts.poppins(fontSize: 11, color: KalroColors.textMuted),
+                  'Typical'.tr,
+                  style: GoogleFonts.poppins(
+                    fontSize: 11,
+                    color: KalroColors.textMuted,
+                  ),
                 ),
               ),
               Expanded(
                 child: Text(
-                  'Predicted',
-                  style: GoogleFonts.poppins(fontSize: 11, color: KalroColors.textMuted),
+                  'Predicted'.tr,
+                  style: GoogleFonts.poppins(
+                    fontSize: 11,
+                    color: KalroColors.textMuted,
+                  ),
                 ),
               ),
               SizedBox(
                 width: 48,
                 child: Text(
-                  'Shift',
+                  'Shift'.tr,
                   textAlign: TextAlign.end,
-                  style: GoogleFonts.poppins(fontSize: 11, color: KalroColors.textMuted),
+                  style: GoogleFonts.poppins(
+                    fontSize: 11,
+                    color: KalroColors.textMuted,
+                  ),
                 ),
               ),
             ],
@@ -297,11 +319,7 @@ class PredictionOutcomeCard extends StatelessWidget {
 }
 
 class PlanningTimeline extends StatelessWidget {
-  PlanningTimeline({
-    super.key,
-    required this.cycle,
-    required this.planning,
-  });
+  PlanningTimeline({super.key, required this.cycle, required this.planning});
 
   final PlannedCycle cycle;
   final LifecyclePlanningService planning;
@@ -309,7 +327,11 @@ class PlanningTimeline extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dateFormat = DateFormat.MMMd();
-    final today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+    final today = DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+    );
 
     return Container(
       decoration: BoxDecoration(
@@ -328,7 +350,11 @@ class PlanningTimeline extends StatelessWidget {
     );
   }
 
-  Widget _row(LifecycleMilestone milestone, DateFormat dateFormat, DateTime today) {
+  Widget _row(
+    LifecycleMilestone milestone,
+    DateFormat dateFormat,
+    DateTime today,
+  ) {
     final day = DateTime(
       milestone.effectiveDate.year,
       milestone.effectiveDate.month,
@@ -350,7 +376,9 @@ class PlanningTimeline extends StatelessWidget {
               style: GoogleFonts.poppins(
                 fontSize: 12,
                 fontWeight: isKey ? FontWeight.w700 : FontWeight.w500,
-                color: daysUntil < 0 ? KalroColors.textMuted : KalroColors.textDark,
+                color: daysUntil < 0
+                    ? KalroColors.textMuted
+                    : KalroColors.textDark,
               ),
             ),
           ),
@@ -359,7 +387,7 @@ class PlanningTimeline extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  planning.planningTitle(milestone),
+                  planning.planningTitle(milestone).tr,
                   style: GoogleFonts.poppins(
                     fontSize: 13,
                     fontWeight: isKey ? FontWeight.w600 : FontWeight.w500,
@@ -368,14 +396,20 @@ class PlanningTimeline extends StatelessWidget {
                 SizedBox(height: 2),
                 Text(
                   [
-                    if (range != null) 'Typically $range',
-                    if (milestone.daysVsTypical != null && milestone.daysVsTypical != 0)
+                    if (range != null) 'Typically $range'.tr,
+                    if (milestone.daysVsTypical != null &&
+                        milestone.daysVsTypical != 0)
                       milestone.daysVsTypical! > 0
                           ? '+${milestone.daysVsTypical}d with this weather / feeding'
-                          : '${milestone.daysVsTypical}d with this weather / feeding',
-                    planning.prepNote(milestone, cycle.species),
+                                .tr
+                          : '${milestone.daysVsTypical}d with this weather / feeding'
+                                .tr,
+                    planning.prepNote(milestone, cycle.species).tr,
                   ].join(' · '),
-                  style: GoogleFonts.poppins(fontSize: 11, color: KalroColors.textMuted),
+                  style: GoogleFonts.poppins(
+                    fontSize: 11,
+                    color: KalroColors.textMuted,
+                  ),
                 ),
               ],
             ),

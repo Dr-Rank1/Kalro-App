@@ -36,13 +36,19 @@ class AppLocalizationsSw extends AppLocalizations {
   String get getStarted => 'Anza Sasa';
 
   @override
-  String get navHome => 'Nyumbani';
+  String get navHome => 'Leo';
 
   @override
   String get navBatches => 'Makundi';
 
   @override
-  String get navProfile => 'Profaili';
+  String get navPlan => 'Panga';
+
+  @override
+  String get navFarm => 'Shamba';
+
+  @override
+  String get navProfile => 'Wewe';
 
   @override
   String get dashboardLiveLarvae => 'Mabuu Hai';
@@ -56,10 +62,10 @@ class AppLocalizationsSw extends AppLocalizations {
   String get dashboardSurvivalRate => 'Kiwango cha Kuishi';
 
   @override
-  String get dashboardExpectedYield => 'Matarajio ya Mavuno';
+  String get dashboardExpectedYield => 'Mavuno';
 
   @override
-  String get dashboardYieldSub => 'Kadirio la vifukofuko';
+  String get dashboardYieldSub => 'Vifukofuko vilivyorekodiwa';
 
   @override
   String get dashboardNeedsAttention => 'Inahitaji Uangalizi';

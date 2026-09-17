@@ -38,7 +38,10 @@ class KalroInventoryCard extends StatelessWidget {
           SizedBox(height: 6),
           Text(
             value,
-            style: GoogleFonts.poppins(fontSize: 13, color: KalroColors.textMuted),
+            style: GoogleFonts.poppins(
+              fontSize: 13,
+              color: KalroColors.textMuted,
+            ),
           ),
         ],
       ),

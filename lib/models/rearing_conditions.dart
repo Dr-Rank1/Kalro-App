@@ -1,4 +1,5 @@
 import '../constants/environment_thresholds.dart';
+import '../l10n/translator.dart';
 import 'species.dart';
 
 /// Weather and feeding state used to stretch or compress remaining stages.
@@ -82,10 +83,13 @@ enum RearingScenario {
     'A few days without enough leaf this week',
   );
 
-  const RearingScenario(this.label, this.detail);
+  const RearingScenario(this._label, this._detail);
 
-  final String label;
-  final String detail;
+  final String _label;
+  final String _detail;
+
+  String get label => _label.tr;
+  String get detail => _detail.tr;
 
   RearingConditions conditionsFor(Species species) {
     final band = EnvironmentThresholds.forSpecies(species);

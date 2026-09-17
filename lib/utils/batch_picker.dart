@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../models/batch.dart';
 
+import 'package:kalro/l10n/translator.dart';
+
 Future<void> pickBatch({
   required BuildContext context,
   required List<Batch> batches,
@@ -14,13 +16,13 @@ Future<void> pickBatch({
     if (onCreateBatch != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Create a batch first to $action'),
-          action: SnackBarAction(label: 'Create', onPressed: onCreateBatch),
+          content: Text('Create a batch first to $action'.tr),
+          action: SnackBarAction(label: 'Create'.tr, onPressed: onCreateBatch),
         ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Create a batch first to $action')),
+        SnackBar(content: Text('Create a batch first to $action'.tr)),
       );
     }
     return;
@@ -42,13 +44,15 @@ Future<void> pickBatch({
             Padding(
               padding: const EdgeInsets.all(16),
               child: Text(
-                'Select batch',
+                'Select batch'.tr,
                 style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
               ),
             ),
             ...batches.map(
               (batch) => ListTile(
-                title: Text('${batch.species.label} · ${batch.eggCount} larvae'),
+                title: Text(
+                  '${batch.species.label} · ${batch.eggCount} larvae',
+                ),
                 subtitle: Text(batch.status.label),
                 onTap: () {
                   Navigator.pop(context);

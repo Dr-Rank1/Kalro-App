@@ -13,23 +13,29 @@ class ReportChartService {
   final BatchMetricsService _metricsService;
   static const _trendDays = 14;
 
-  Future<ReportChartData> load(AppRepositories repositories) async {
+  Future<ReportChartData> load(
+    AppRepositories repositories, {
+    int days = _trendDays,
+    String? batchId,
+  }) async {
     final batches = await repositories.batches.getAll();
     final feedLogs = await repositories.feedLogs.getAll();
     final mortalityLogs = await repositories.mortalityLogs.getAll();
     final harvests = await repositories.cocoonHarvests.getAll();
     final dateFormat = DateFormat.MMMd();
     final today = _dateOnly(DateTime.now());
+    final range = days <= 0 ? _trendDays : days;
 
     final feedByDay = <DateTime, double>{};
     final mortalityByDay = <DateTime, int>{};
-    for (var i = _trendDays - 1; i >= 0; i--) {
+    for (var i = range - 1; i >= 0; i--) {
       final day = today.subtract(Duration(days: i));
       feedByDay[day] = 0;
       mortalityByDay[day] = 0;
     }
 
     for (final log in feedLogs) {
+      if (batchId != null && log.batchId != batchId) continue;
       final day = _dateOnly(log.recordedAt);
       if (feedByDay.containsKey(day)) {
         feedByDay[day] = feedByDay[day]! + log.quantityGrams;
@@ -37,6 +43,7 @@ class ReportChartService {
     }
 
     for (final log in mortalityLogs) {
+      if (batchId != null && log.batchId != batchId) continue;
       final day = _dateOnly(log.recordedAt);
       if (mortalityByDay.containsKey(day)) {
         mortalityByDay[day] = mortalityByDay[day]! + log.count;
@@ -48,6 +55,7 @@ class ReportChartService {
     final comparisons = <BatchComparisonRow>[];
 
     for (final batch in batches) {
+      if (batchId != null && batch.id != batchId) continue;
       if (batch.status == BatchStatus.closed) continue;
 
       final mortality = mortalityLogs

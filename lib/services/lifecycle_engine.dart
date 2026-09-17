@@ -92,10 +92,9 @@ class LifecycleEngine {
 
     LifecycleMilestone? current;
     for (final milestone in milestones) {
-      if (!milestone.effectiveDate.isAfter(today)) {
-        current = milestone;
-      } else {
-        break;
+      current = milestone;
+      if (!milestone.effectiveDate.isBefore(today)) {
+        return milestone;
       }
     }
     return current;
@@ -190,6 +189,7 @@ class LifecycleEngine {
       'spinning' => MilestoneType.spinning,
       'cocoon_maturation' || 'cocoon_harvest' => MilestoneType.cocoonHarvest,
       'moth_emergence' => MilestoneType.mothEmergence,
+      _ when stageKey.startsWith('moult') => MilestoneType.moult,
       _ when stageKey.startsWith('instar') => MilestoneType.instar,
       _ => MilestoneType.moult,
     };

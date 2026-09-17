@@ -31,17 +31,27 @@ class RecordEmptyState extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Icon(icon, size: 40, color: KalroColors.headerGreen.withValues(alpha: 0.65)),
+          Icon(
+            icon,
+            size: 40,
+            color: KalroColors.headerGreen.withValues(alpha: 0.65),
+          ),
           SizedBox(height: 10),
           Text(
             title,
-            style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 15),
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.w600,
+              fontSize: 15,
+            ),
           ),
           SizedBox(height: 6),
           Text(
             message,
             textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(fontSize: 13, color: KalroColors.textMuted),
+            style: GoogleFonts.poppins(
+              fontSize: 13,
+              color: KalroColors.textMuted,
+            ),
           ),
           if (actionLabel != null && onAction != null) ...[
             SizedBox(height: 16),

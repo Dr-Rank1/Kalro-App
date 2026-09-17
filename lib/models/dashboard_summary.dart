@@ -37,6 +37,14 @@ class DashboardSummary {
     required this.harvestCount,
     this.observationsByBatch = const {},
     this.conditionsByBatch = const {},
+    this.liveCountByBatch = const {},
+    this.suggestedFeedTodayGrams = 0,
+    this.leafNeedTodayKg = 0,
+    this.mulberryStockKg = 0,
+    this.eriHostStockKg = 0,
+    this.harvestWindowOpen = false,
+    this.fedTodayByBatch = const {},
+    this.deathsTodayByBatch = const {},
   });
 
   final String displayName;
@@ -55,6 +63,14 @@ class DashboardSummary {
   final int harvestCount;
   final Map<String, Map<String, DateTime>> observationsByBatch;
   final Map<String, RearingConditions> conditionsByBatch;
+  final Map<String, int> liveCountByBatch;
+  final double suggestedFeedTodayGrams;
+  final double leafNeedTodayKg;
+  final double mulberryStockKg;
+  final double eriHostStockKg;
+  final bool harvestWindowOpen;
+  final Map<String, bool> fedTodayByBatch;
+  final Map<String, int> deathsTodayByBatch;
 
   int get upcomingThisWeekCount =>
       upcomingMilestones.where((item) => item.daysUntil >= 0 && item.daysUntil <= 7).length;

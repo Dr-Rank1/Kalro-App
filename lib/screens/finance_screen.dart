@@ -41,7 +41,10 @@ class FinanceScreen extends StatelessWidget {
                 labelColor: KalroColors.headerGreen,
                 unselectedLabelColor: KalroColors.textMuted,
                 indicatorColor: KalroColors.headerGreen,
-                labelStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 13),
+                labelStyle: GoogleFonts.poppins(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
                 tabs: [
                   Tab(text: 'Payments'),
                   Tab(text: 'Purchases'),

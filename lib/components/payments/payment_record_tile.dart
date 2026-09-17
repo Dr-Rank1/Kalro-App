@@ -7,6 +7,8 @@ import '../../models/payment_direction.dart';
 import '../../models/payment_record.dart';
 import '../../theme/kalro_colors.dart';
 
+import 'package:kalro/l10n/translator.dart';
+
 class PaymentRecordTile extends StatelessWidget {
   PaymentRecordTile({
     super.key,
@@ -24,7 +26,9 @@ class PaymentRecordTile extends StatelessWidget {
     final currency = KalroFormatters.currency;
     final dateFormat = DateFormat('MMM d, yyyy');
     final isReceivable = record.direction == PaymentDirection.receivable;
-    final amountColor = isReceivable ? KalroColors.primaryGreen : KalroColors.accentBrown;
+    final amountColor = isReceivable
+        ? KalroColors.primaryGreen
+        : KalroColors.accentBrown;
     final prefix = isReceivable ? '+' : '-';
 
     return Container(
@@ -58,15 +62,24 @@ class PaymentRecordTile extends StatelessWidget {
               children: [
                 Text(
                   record.counterparty,
-                  style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 14),
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
                 ),
                 Text(
                   record.description,
-                  style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    color: KalroColors.textMuted,
+                  ),
                 ),
                 Text(
                   '${dateFormat.format(record.recordedAt)} · ${record.status.label}',
-                  style: GoogleFonts.poppins(fontSize: 11, color: KalroColors.textLight),
+                  style: GoogleFonts.poppins(
+                    fontSize: 11,
+                    color: KalroColors.textLight,
+                  ),
                 ),
               ],
             ),
@@ -91,7 +104,7 @@ class PaymentRecordTile extends StatelessWidget {
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
                   child: Text(
-                    'Mark settled',
+                    'Mark settled'.tr,
                     style: GoogleFonts.poppins(
                       fontSize: 11,
                       color: KalroColors.primaryGreen,

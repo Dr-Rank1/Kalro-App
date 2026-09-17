@@ -52,7 +52,8 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     _auth = widget.authRepository ?? AuthRepository();
-    _sessionService = widget.sessionService ?? SessionService(authRepository: _auth);
+    _sessionService =
+        widget.sessionService ?? SessionService(authRepository: _auth);
     _prepareFarm();
   }
 
@@ -87,25 +88,17 @@ class _LoginScreenState extends State<LoginScreen> {
         orgName: orgName,
         adminUsername: adminUsername,
         adminDisplayName: displayName,
-        adminPin: '1234',
+        adminPin: '',
       );
       await _sessionService.ensureFarmFromPreferences(
         orgName: orgName,
         adminUsername: adminUsername,
         adminDisplayName: displayName,
-        adminPin: '1234',
+        adminPin: '',
       );
 
       final farms = await _auth.listFarms();
       final primaryFarm = AuthRepository.resolvePrimaryFarm(farms, orgName);
-      if (primaryFarm != null) {
-        await _auth.ensureManagerAccount(
-          farmId: primaryFarm.id,
-          adminUsername: adminUsername,
-          adminDisplayName: displayName,
-          adminPin: '1234',
-        );
-      }
       if (!mounted) return;
       setState(() {
         _farms = farms;
@@ -187,7 +180,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           SizedBox(height: 10),
           Text(
-            'Kalro Sericulture',
+            'Kalro Sericulture'.tr,
             style: GoogleFonts.poppins(
               color: Colors.white,
               fontSize: 20,
@@ -216,8 +209,8 @@ class _LoginScreenState extends State<LoginScreen> {
       child: _preparing
           ? Center(child: CircularProgressIndicator())
           : _farms.isEmpty
-              ? _buildNoFarmState()
-              : _buildLoginForm(),
+          ? _buildNoFarmState()
+          : _buildLoginForm(),
     );
   }
 
@@ -228,17 +221,27 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.cloud_off_outlined, size: 40, color: KalroColors.textMuted),
+            Icon(
+              Icons.cloud_off_outlined,
+              size: 40,
+              color: KalroColors.textMuted,
+            ),
             SizedBox(height: 12),
             Text(
-              'Setup required',
-              style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
+              'Setup required'.tr,
+              style: GoogleFonts.poppins(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             SizedBox(height: 8),
             Text(
-              _errorMessage ?? 'Complete app setup first.',
+              _errorMessage?.tr ?? 'Complete app setup first.'.tr,
               textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(fontSize: 13, color: KalroColors.textMuted),
+              style: GoogleFonts.poppins(
+                fontSize: 13,
+                color: KalroColors.textMuted,
+              ),
             ),
             SizedBox(height: 20),
             KalroPrimaryButton(label: 'Retry'.tr, onPressed: _prepareFarm),
@@ -260,18 +263,27 @@ class _LoginScreenState extends State<LoginScreen> {
               _buildAdvancedSection(),
               SizedBox(height: 20),
             ],
+            Text(
+              'Sign in with the login name and PIN you set for this farm.'.tr,
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                color: KalroColors.textMuted,
+                height: 1.4,
+              ),
+            ),
+            SizedBox(height: 20),
             TextFormField(
               controller: _usernameController,
               textInputAction: TextInputAction.next,
               autocorrect: false,
               decoration: InputDecoration(
-                labelText: 'Username',
+                labelText: 'Username'.tr,
                 filled: true,
                 fillColor: Colors.white,
               ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'Enter your username';
+                  return 'Enter your username'.tr;
                 }
                 return null;
               },
@@ -283,17 +295,21 @@ class _LoginScreenState extends State<LoginScreen> {
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               decoration: InputDecoration(
-                labelText: 'PIN',
+                labelText: 'PIN'.tr,
                 filled: true,
                 fillColor: Colors.white,
                 suffixIcon: IconButton(
-                  icon: Icon(_obscurePin ? Icons.visibility_outlined : Icons.visibility_off_outlined),
+                  icon: Icon(
+                    _obscurePin
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
+                  ),
                   onPressed: () => setState(() => _obscurePin = !_obscurePin),
                 ),
               ),
               validator: (value) {
                 if (value == null || value.trim().length < 4) {
-                  return 'PIN must be at least 4 digits';
+                  return 'PIN must be at least 4 digits'.tr;
                 }
                 return null;
               },
@@ -302,13 +318,16 @@ class _LoginScreenState extends State<LoginScreen> {
             if (_errorMessage != null) ...[
               SizedBox(height: 14),
               Text(
-                _errorMessage!,
-                style: GoogleFonts.poppins(fontSize: 13, color: Colors.red.shade700),
+                _errorMessage!.tr,
+                style: GoogleFonts.poppins(
+                  fontSize: 13,
+                  color: Colors.red.shade700,
+                ),
               ),
             ],
             SizedBox(height: 24),
             KalroPrimaryButton(
-              label: _loading ? 'Signing in...' : 'Sign in',
+              label: _loading ? 'Signing in...'.tr : 'Sign in'.tr,
               onPressed: _loading ? null : _login,
             ),
           ],
@@ -331,33 +350,38 @@ class _LoginScreenState extends State<LoginScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Farm details',
-            style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600),
+            'Farm details'.tr,
+            style: GoogleFonts.poppins(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           SizedBox(height: 8),
           if (_farms.length > 1)
             DropdownButtonFormField<FarmProfile>(
               initialValue: _selectedFarm,
               decoration: InputDecoration(
-                labelText: 'Farm',
+                labelText: 'Farm'.tr,
                 isDense: true,
                 filled: true,
                 fillColor: Colors.white,
               ),
               items: _farms
-                  .map((f) => DropdownMenuItem(value: f, child: Text(f.orgName)))
+                  .map(
+                    (f) => DropdownMenuItem(value: f, child: Text(f.orgName)),
+                  )
                   .toList(),
               onChanged: (value) => setState(() => _selectedFarm = value),
             )
           else
-            Text(
-              farm.orgName,
-              style: GoogleFonts.poppins(fontSize: 13),
-            ),
+            Text(farm.orgName, style: GoogleFonts.poppins(fontSize: 13)),
           SizedBox(height: 4),
           Text(
-            'Sync code ${farm.syncCode}',
-            style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
+            'Sync code ${farm.syncCode}'.tr,
+            style: GoogleFonts.poppins(
+              fontSize: 12,
+              color: KalroColors.textMuted,
+            ),
           ),
         ],
       ),

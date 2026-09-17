@@ -15,8 +15,8 @@ class BatchMetricsPanel extends StatelessWidget {
     final survivalColor = metrics.survivalRatePercent >= 80
         ? KalroColors.headerGreen
         : metrics.survivalRatePercent >= 60
-            ? Colors.orange
-            : Colors.red;
+        ? Colors.orange
+        : Colors.red;
 
     return Container(
       padding: EdgeInsets.all(16),
@@ -27,10 +27,7 @@ class BatchMetricsPanel extends StatelessWidget {
       ),
       child: Row(
         children: [
-          _MetricCell(
-            label: 'Live larvae'.tr,
-            value: '${metrics.liveCount}',
-          ),
+          _MetricCell(label: 'Live larvae'.tr, value: '${metrics.liveCount}'),
           _MetricCell(
             label: 'Mortality'.tr,
             value: '${metrics.totalMortality}',

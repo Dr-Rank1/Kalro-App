@@ -66,6 +66,54 @@ class CsvExportService {
     return buffer.toString();
   }
 
+  String exportCycle({
+    required Batch batch,
+    required List<FeedLog> feedLogs,
+    required List<MortalityLog> mortalityLogs,
+    required List<EnvironmentLog> environmentLogs,
+    required List<CocoonHarvest> harvests,
+  }) {
+    final buffer = StringBuffer();
+    buffer.writeln('Kalro cycle export');
+    buffer.writeln('species,${batch.species.label}');
+    buffer.writeln('started,${batch.startDate.toIso8601String()}');
+    buffer.writeln('eggs,${batch.eggCount}');
+    buffer.writeln('status,${batch.status.name}');
+    buffer.writeln();
+    buffer.writeln('Feed');
+    buffer.writeln('recordedAt,feedType,grams,stage');
+    for (final log in feedLogs.where((l) => l.batchId == batch.id)) {
+      buffer.writeln(
+        '${log.recordedAt.toIso8601String()},${_escape(log.feedType)},${log.quantityGrams},${_escape(log.feedingStage ?? '')}',
+      );
+    }
+    buffer.writeln();
+    buffer.writeln('Mortality');
+    buffer.writeln('recordedAt,count,disease,isolated,photo');
+    for (final log in mortalityLogs.where((l) => l.batchId == batch.id)) {
+      buffer.writeln(
+        '${log.recordedAt.toIso8601String()},${log.count},${_escape(log.disease ?? '')},${log.isolated},${_escape(log.photoPath ?? '')}',
+      );
+    }
+    buffer.writeln();
+    buffer.writeln('House');
+    buffer.writeln('recordedAt,tempC,humidity,notes');
+    for (final log in environmentLogs.where((l) => l.batchId == batch.id)) {
+      buffer.writeln(
+        '${log.recordedAt.toIso8601String()},${log.temperatureCelsius},${log.humidityPercent},${_escape(log.notes ?? '')}',
+      );
+    }
+    buffer.writeln();
+    buffer.writeln('Harvest');
+    buffer.writeln('date,count,weightGrams,defective');
+    for (final h in harvests.where((h) => h.batchId == batch.id)) {
+      buffer.writeln(
+        '${h.harvestDate.toIso8601String()},${h.cocoonCount},${h.totalWeightGrams},${h.defectiveCount}',
+      );
+    }
+    return buffer.toString();
+  }
+
   String _batchRow(Batch batch) {
     return [
       batch.id,

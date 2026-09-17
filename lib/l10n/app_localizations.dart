@@ -149,7 +149,7 @@ abstract class AppLocalizations {
   /// No description provided for @navHome.
   ///
   /// In en, this message translates to:
-  /// **'Home'**
+  /// **'Today'**
   String get navHome;
 
   /// No description provided for @navBatches.
@@ -158,10 +158,22 @@ abstract class AppLocalizations {
   /// **'Batches'**
   String get navBatches;
 
+  /// No description provided for @navPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan'**
+  String get navPlan;
+
+  /// No description provided for @navFarm.
+  ///
+  /// In en, this message translates to:
+  /// **'Farm'**
+  String get navFarm;
+
   /// No description provided for @navProfile.
   ///
   /// In en, this message translates to:
-  /// **'Profile'**
+  /// **'You'**
   String get navProfile;
 
   /// No description provided for @dashboardLiveLarvae.
@@ -185,13 +197,13 @@ abstract class AppLocalizations {
   /// No description provided for @dashboardExpectedYield.
   ///
   /// In en, this message translates to:
-  /// **'Expected Yield'**
+  /// **'Harvested'**
   String get dashboardExpectedYield;
 
   /// No description provided for @dashboardYieldSub.
   ///
   /// In en, this message translates to:
-  /// **'Estimated cocoon'**
+  /// **'Logged cocoons'**
   String get dashboardYieldSub;
 
   /// No description provided for @dashboardNeedsAttention.

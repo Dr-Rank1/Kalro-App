@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -12,10 +14,12 @@ class RecordLogTile extends StatelessWidget {
     this.subtitle,
     this.meta,
     this.note,
+    this.imagePath,
     this.iconColor = KalroColors.primaryGreen,
     this.iconBackground,
     this.borderColor,
     this.onDelete,
+    this.onImageTap,
   });
 
   final IconData icon;
@@ -23,10 +27,12 @@ class RecordLogTile extends StatelessWidget {
   final String? subtitle;
   final String? meta;
   final String? note;
+  final String? imagePath;
   final Color iconColor;
   final Color? iconBackground;
   final Color? borderColor;
   final VoidCallback? onDelete;
+  final VoidCallback? onImageTap;
 
   @override
   Widget build(BuildContext context) {
@@ -57,20 +63,29 @@ class RecordLogTile extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 14),
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
                 ),
                 if (subtitle != null && subtitle!.isNotEmpty) ...[
                   SizedBox(height: 2),
                   Text(
                     subtitle!,
-                    style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      color: KalroColors.textMuted,
+                    ),
                   ),
                 ],
                 if (meta != null) ...[
                   SizedBox(height: 2),
                   Text(
                     meta!,
-                    style: GoogleFonts.poppins(fontSize: 11, color: KalroColors.textLight),
+                    style: GoogleFonts.poppins(
+                      fontSize: 11,
+                      color: KalroColors.textLight,
+                    ),
                   ),
                 ],
                 if (note != null && note!.trim().isNotEmpty) ...[
@@ -86,6 +101,24 @@ class RecordLogTile extends StatelessWidget {
                     ),
                   ),
                 ],
+                if (imagePath != null && imagePath!.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: GestureDetector(
+                      onTap: onImageTap,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.file(
+                          File(imagePath!),
+                          height: 72,
+                          width: 72,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const SizedBox.shrink(),
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),

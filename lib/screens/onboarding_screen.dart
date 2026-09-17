@@ -30,12 +30,12 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
-  UserRole? _role;
+  UserRole? _role = UserRole.swr;
   final _nameController = TextEditingController(text: 'Farmer');
   final _orgController = TextEditingController(text: 'Kalro Sericulture Farm');
   final _usernameController = TextEditingController(text: 'admin');
-  final _pinController = TextEditingController(text: '1234');
-  final _confirmPinController = TextEditingController(text: '1234');
+  final _pinController = TextEditingController();
+  final _confirmPinController = TextEditingController();
   var _saving = false;
 
   static const _roles = [
@@ -57,9 +57,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Future<void> _finish() async {
     if (_role == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please choose your role'.tr)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Please choose your role'.tr)));
       return;
     }
 
@@ -71,9 +71,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     }
 
     if (_pinController.text.trim() != _confirmPinController.text.trim()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('PINs do not match'.tr)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('PINs do not match'.tr)));
       return;
     }
 
@@ -101,20 +101,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
       final farmDir = await widget.authRepository.farmDirectory(farm.id);
       await widget.sessionService.saveSession(
-        UserSession(
-          farm: farm,
-          user: user,
-          farmDirectoryPath: farmDir.path,
-        ),
+        UserSession(farm: farm, user: user, farmDirectoryPath: farmDir.path),
       );
 
       if (!mounted) return;
       widget.onComplete();
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Setup failed: $error'.tr)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Setup failed: $error'.tr)));
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -133,7 +129,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: Column(
                 children: [
                   Text(
-                    'Kalro Sericulture',
+                    'Kalro Sericulture'.tr,
                     style: GoogleFonts.poppins(
                       color: Colors.white,
                       fontSize: 22,
@@ -142,8 +138,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                   SizedBox(height: 4),
                   Text(
-                    'Eri & Bombyx mori rearing management',
-                    style: GoogleFonts.poppins(color: Colors.white70, fontSize: 13),
+                    'Eri & Bombyx mori rearing management'.tr,
+                    style: GoogleFonts.poppins(
+                      color: Colors.white70,
+                      fontSize: 13,
+                    ),
                   ),
                 ],
               ),
@@ -161,10 +160,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Image.asset('assets/images/kalro_app_icon.png', height: 100),
+                      Image.asset(
+                        'assets/images/kalro_app_icon.png',
+                        height: 100,
+                      ),
                       SizedBox(height: 20),
                       Text(
-                        'Set up your farm profile',
+                        'Set up your farm profile'.tr,
                         textAlign: TextAlign.center,
                         style: GoogleFonts.poppins(
                           fontSize: 18,
@@ -174,49 +176,63 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ),
                       SizedBox(height: 8),
                       Text(
-                        'English · Kenya (KES)',
+                        'Create your farm, then we will show you the five tabs: Today, Batches, Plan, Farm, and You.'
+                            .tr,
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.poppins(fontSize: 13, color: KalroColors.textMuted),
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          color: KalroColors.textMuted,
+                        ),
                       ),
                       SizedBox(height: 24),
                       TextFormField(
                         controller: _nameController,
-                        decoration: InputDecoration(labelText: 'Your name'),
+                        decoration: InputDecoration(labelText: 'Your name'.tr),
                         enabled: !_saving,
                       ),
                       SizedBox(height: 16),
                       TextFormField(
                         controller: _orgController,
-                        decoration: InputDecoration(labelText: 'Farm / organization'),
+                        decoration: InputDecoration(
+                          labelText: 'Farm / organization'.tr,
+                        ),
                         enabled: !_saving,
                       ),
                       SizedBox(height: 16),
                       TextFormField(
                         controller: _usernameController,
-                        decoration: InputDecoration(labelText: 'Admin username'),
+                        decoration: InputDecoration(labelText: 'Login name'.tr),
                         enabled: !_saving,
                       ),
                       SizedBox(height: 16),
                       TextFormField(
                         controller: _pinController,
-                        decoration: InputDecoration(labelText: 'PIN (4+ digits)'),
+                        decoration: InputDecoration(
+                          labelText: 'PIN (4+ digits)'.tr,
+                        ),
                         obscureText: true,
                         keyboardType: TextInputType.number,
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
                         enabled: !_saving,
                       ),
                       SizedBox(height: 16),
                       TextFormField(
                         controller: _confirmPinController,
-                        decoration: InputDecoration(labelText: 'Confirm PIN'),
+                        decoration: InputDecoration(
+                          labelText: 'Confirm PIN'.tr,
+                        ),
                         obscureText: true,
                         keyboardType: TextInputType.number,
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
                         enabled: !_saving,
                       ),
                       SizedBox(height: 24),
                       Text(
-                        'Your role',
+                        'Your role'.tr,
                         style: GoogleFonts.poppins(
                           fontWeight: FontWeight.w600,
                           color: KalroColors.textDark,
@@ -231,20 +247,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         crossAxisSpacing: 12,
                         childAspectRatio: 0.85,
                         children: _roles.map((entry) {
-                          final (role, label, icon) = entry;
+                          final (role, _, icon) = entry;
                           return OptionGridCard(
-                            primaryLabel: label,
+                            primaryLabel: role.label,
                             secondaryLabel: '',
                             icon: icon,
                             aspectRatio: 0.85,
                             selected: _role == role,
-                            onTap: _saving ? () {} : () => setState(() => _role = role),
+                            onTap: _saving
+                                ? () {}
+                                : () => setState(() => _role = role),
                           );
                         }).toList(),
                       ),
                       SizedBox(height: 28),
                       KalroPrimaryButton(
-                        label: _saving ? 'Setting up...' : 'Get started',
+                        label: _saving ? 'Setting up...'.tr : 'Get started'.tr,
                         onPressed: _saving ? null : _finish,
                       ),
                     ],

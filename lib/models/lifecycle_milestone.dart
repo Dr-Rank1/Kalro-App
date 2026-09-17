@@ -1,3 +1,5 @@
+import '../l10n/translator.dart';
+
 enum MilestoneType {
   hatch('Hatch'),
   instar('Instar'),
@@ -7,9 +9,11 @@ enum MilestoneType {
   cocoonHarvest('Cocoon harvest'),
   mothEmergence('Moth emergence');
 
-  const MilestoneType(this.label);
+  const MilestoneType(this._label);
 
-  final String label;
+  final String _label;
+
+  String get label => _label.tr;
 }
 
 class LifecycleMilestone {
@@ -44,12 +48,14 @@ class LifecycleMilestone {
     return expected.difference(typical).inDays;
   }
 
-  bool get isPast => expectedDate.isBefore(DateTime.now());
+  bool get isPast {
+    final now = DateTime.now();
+    return effectiveDate.isBefore(DateTime(now.year, now.month, now.day));
+  }
 
   bool get isToday {
     final now = DateTime.now();
-    return expectedDate.year == now.year &&
-        expectedDate.month == now.month &&
-        expectedDate.day == now.day;
+    final day = effectiveDate;
+    return day.year == now.year && day.month == now.month && day.day == now.day;
   }
 }

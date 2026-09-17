@@ -1,8 +1,12 @@
+import '../l10n/translator.dart';
+
 enum PaymentStatus {
   pending('Pending'),
   settled('Settled');
 
-  const PaymentStatus(this.label);
+  const PaymentStatus(this._label);
 
-  final String label;
+  final String _label;
+
+  String get label => _label.tr;
 }

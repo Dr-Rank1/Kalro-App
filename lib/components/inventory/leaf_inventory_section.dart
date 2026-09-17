@@ -3,16 +3,25 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../models/leaf_inventory.dart';
+import '../../services/app_repositories.dart';
 import '../../services/leaf_inventory_repository.dart';
+import '../../services/leaf_ledger_service.dart';
 import '../../theme/kalro_colors.dart';
 import '../buttons/kalro_primary_button.dart';
 import '../cards/kalro_section_header.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class LeafInventorySection extends StatefulWidget {
-  LeafInventorySection({super.key, required this.repository});
+  LeafInventorySection({
+    super.key,
+    required this.repository,
+    this.farmRepositories,
+    this.onChanged,
+  });
 
   final LeafInventoryRepository repository;
+  final AppRepositories? farmRepositories;
+  final VoidCallback? onChanged;
 
   @override
   State<LeafInventorySection> createState() => _LeafInventorySectionState();
@@ -38,7 +47,7 @@ class _LeafInventorySectionState extends State<LeafInventorySection> {
     final mulberry = TextEditingController(text: current.mulberryKg.toString());
     final castor = TextEditingController(text: current.castorKg.toString());
     final kesseru = TextEditingController(text: current.kesseruKg.toString());
-    
+
     if (!mounted) return;
 
     final saved = await showModalBottomSheet<bool>(
@@ -61,42 +70,58 @@ class _LeafInventorySectionState extends State<LeafInventorySection> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                'Leaf stock (kg)',
-                style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
+                'Leaf stock (kg)'.tr,
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               SizedBox(height: 16),
               TextField(
                 controller: mulberry,
-                decoration: InputDecoration(labelText: 'Mulberry (kg)'),
+                decoration: InputDecoration(labelText: 'Mulberry (kg)'.tr),
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
-                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                ],
               ),
               SizedBox(height: 12),
               TextField(
                 controller: castor,
-                decoration: InputDecoration(labelText: 'Castor (kg)'),
+                decoration: InputDecoration(labelText: 'Castor (kg)'.tr),
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
-                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                ],
               ),
               SizedBox(height: 12),
               TextField(
                 controller: kesseru,
-                decoration: InputDecoration(labelText: 'Kesseru (kg)'),
+                decoration: InputDecoration(labelText: 'Kesseru (kg)'.tr),
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
-                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                ],
               ),
               SizedBox(height: 20),
               KalroPrimaryButton(
                 label: 'Save leaf stock'.tr,
                 onPressed: () async {
-                  await widget.repository.save(
-                    LeafInventory(
-                      mulberryKg: double.tryParse(mulberry.text.trim()) ?? 0,
-                      castorKg: double.tryParse(castor.text.trim()) ?? 0,
-                      kesseruKg: double.tryParse(kesseru.text.trim()) ?? 0,
-                      updatedAt: DateTime.now(),
-                    ),
+                  final next = LeafInventory(
+                    mulberryKg: double.tryParse(mulberry.text.trim()) ?? 0,
+                    castorKg: double.tryParse(castor.text.trim()) ?? 0,
+                    kesseruKg: double.tryParse(kesseru.text.trim()) ?? 0,
+                    updatedAt: DateTime.now(),
                   );
+                  await widget.repository.save(next);
+                  final farm = widget.farmRepositories;
+                  if (farm != null) {
+                    await const LeafLedgerService().recordStockAdjust(
+                      repositories: farm,
+                      previous: current,
+                      next: next,
+                    );
+                  }
                   if (context.mounted) Navigator.of(context).pop(true);
                 },
               ),
@@ -110,7 +135,10 @@ class _LeafInventorySectionState extends State<LeafInventorySection> {
     castor.dispose();
     kesseru.dispose();
 
-    if (saved == true) _reload();
+    if (saved == true) {
+      _reload();
+      widget.onChanged?.call();
+    }
   }
 
   @override
@@ -120,7 +148,7 @@ class _LeafInventorySectionState extends State<LeafInventorySection> {
       children: [
         Row(
           children: [
-            Expanded(child: KalroSectionHeader(title: 'Leaf inventory')),
+            Expanded(child: KalroSectionHeader(title: 'Leaf inventory'.tr)),
             TextButton(onPressed: _edit, child: Text('Edit'.tr)),
           ],
         ),
@@ -140,7 +168,10 @@ class _LeafInventorySectionState extends State<LeafInventorySection> {
                 'Mulberry: ${inventory.mulberryKg.toStringAsFixed(1)} kg · '
                 'Castor: ${inventory.castorKg.toStringAsFixed(1)} kg · '
                 'Kesseru: ${inventory.kesseruKg.toStringAsFixed(1)} kg',
-                style: GoogleFonts.poppins(fontSize: 13, color: KalroColors.textMuted),
+                style: GoogleFonts.poppins(
+                  fontSize: 13,
+                  color: KalroColors.textMuted,
+                ),
               ),
             );
           },

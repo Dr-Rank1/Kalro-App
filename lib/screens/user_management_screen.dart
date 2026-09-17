@@ -12,11 +12,7 @@ import '../theme/kalro_colors.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class UserManagementScreen extends StatefulWidget {
-  UserManagementScreen({
-    super.key,
-    required this.session,
-    this.authRepository,
-  });
+  UserManagementScreen({super.key, required this.session, this.authRepository});
 
   final UserSession session;
   final AuthRepository? authRepository;
@@ -62,17 +58,19 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                   children: [
                     TextField(
                       controller: usernameController,
-                      decoration: InputDecoration(labelText: 'Username'),
+                      decoration: InputDecoration(labelText: 'Username'.tr),
                     ),
                     SizedBox(height: 12),
                     TextField(
                       controller: nameController,
-                      decoration: InputDecoration(labelText: 'Display name'),
+                      decoration: InputDecoration(labelText: 'Display name'.tr),
                     ),
                     SizedBox(height: 12),
                     TextField(
                       controller: pinController,
-                      decoration: InputDecoration(labelText: 'PIN (4+ digits)'),
+                      decoration: InputDecoration(
+                        labelText: 'PIN (4+ digits)'.tr,
+                      ),
                       obscureText: true,
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -80,14 +78,18 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                     SizedBox(height: 12),
                     DropdownButtonFormField<AccountPermission>(
                       initialValue: permission,
-                      decoration: InputDecoration(labelText: 'Permission'),
+                      decoration: InputDecoration(labelText: 'Permission'.tr),
                       items: AccountPermission.values
                           .map(
-                            (p) => DropdownMenuItem(value: p, child: Text(p.label)),
+                            (p) => DropdownMenuItem(
+                              value: p,
+                              child: Text(p.label),
+                            ),
                           )
                           .toList(),
                       onChanged: (value) {
-                        if (value != null) setModalState(() => permission = value);
+                        if (value != null)
+                          setModalState(() => permission = value);
                       },
                     ),
                     SizedBox(height: 12),
@@ -96,7 +98,10 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                 ),
               ),
               actions: [
-                TextButton(onPressed: () => Navigator.pop(context, false), child: Text('Cancel'.tr)),
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: Text('Cancel'.tr),
+                ),
                 TextButton(
                   onPressed: () async {
                     final pin = pinController.text.trim();
@@ -116,9 +121,9 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                       if (context.mounted) Navigator.pop(context, true);
                     } catch (error) {
                       if (!context.mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('$error'.tr)),
-                      );
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text('$error'.tr)));
                     }
                   },
                   child: Text('Save'.tr),
@@ -145,13 +150,16 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
         title: Text('Reset PIN for ${user.displayName}'.tr),
         content: TextField(
           controller: pinController,
-          decoration: InputDecoration(labelText: 'New PIN (4+ digits)'),
+          decoration: InputDecoration(labelText: 'New PIN (4+ digits)'.tr),
           obscureText: true,
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: Text('Cancel'.tr)),
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('Cancel'.tr),
+          ),
           TextButton(
             onPressed: () {
               if (pinController.text.trim().length >= 4) {
@@ -187,12 +195,16 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                 children: [
                   DropdownButtonFormField<AccountPermission>(
                     initialValue: permission,
-                    decoration: InputDecoration(labelText: 'Permission'),
+                    decoration: InputDecoration(labelText: 'Permission'.tr),
                     items: AccountPermission.values
-                        .map((p) => DropdownMenuItem(value: p, child: Text(p.label)))
+                        .map(
+                          (p) =>
+                              DropdownMenuItem(value: p, child: Text(p.label)),
+                        )
                         .toList(),
                     onChanged: (value) {
-                      if (value != null) setModalState(() => permission = value);
+                      if (value != null)
+                        setModalState(() => permission = value);
                     },
                   ),
                   SizedBox(height: 12),
@@ -200,7 +212,10 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                 ],
               ),
               actions: [
-                TextButton(onPressed: () => Navigator.pop(context, false), child: Text('Cancel'.tr)),
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: Text('Cancel'.tr),
+                ),
                 TextButton(
                   onPressed: () => Navigator.pop(context, true),
                   child: Text('Save'.tr),
@@ -224,10 +239,14 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
       builder: (context) => AlertDialog(
         title: Text('Remove ${user.displayName}?'.tr),
         content: Text(
-          'This deactivates the account. They will no longer be able to sign in.',
+          'This deactivates the account. They will no longer be able to sign in.'
+              .tr,
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: Text('Cancel'.tr)),
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('Cancel'.tr),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             child: Text('Remove'.tr),
@@ -267,8 +286,14 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                 },
               ),
               ListTile(
-                leading: Icon(Icons.person_remove_outlined, color: Colors.red.shade700),
-                title: Text('Remove user', style: TextStyle(color: Colors.red.shade700)),
+                leading: Icon(
+                  Icons.person_remove_outlined,
+                  color: Colors.red.shade700,
+                ),
+                title: Text(
+                  'Remove user'.tr,
+                  style: TextStyle(color: Colors.red.shade700),
+                ),
                 onTap: () {
                   Navigator.pop(context);
                   _deactivateUser(user);
@@ -304,20 +329,30 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.people_outline, size: 48, color: KalroColors.textMuted),
+                    Icon(
+                      Icons.people_outline,
+                      size: 48,
+                      color: KalroColors.textMuted,
+                    ),
                     SizedBox(height: 12),
                     Text(
-                      'No team members yet',
+                      'No team members yet'.tr,
                       style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
                     ),
                     SizedBox(height: 8),
                     Text(
-                      'Add caretakers or viewers to share farm access.',
+                      'Add caretakers or viewers to share farm access.'.tr,
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(fontSize: 13, color: KalroColors.textMuted),
+                      style: GoogleFonts.poppins(
+                        fontSize: 13,
+                        color: KalroColors.textMuted,
+                      ),
                     ),
                     SizedBox(height: 20),
-                    KalroPrimaryButton(label: 'Add user'.tr, onPressed: _addUser),
+                    KalroPrimaryButton(
+                      label: 'Add user'.tr,
+                      onPressed: _addUser,
+                    ),
                   ],
                 ),
               ),
@@ -335,8 +370,14 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                 child: Row(
                   children: [
                     CircleAvatar(
-                      backgroundColor: user.permission.badgeColor.withValues(alpha: 0.15),
-                      child: Icon(user.permission.icon, color: user.permission.badgeColor, size: 20),
+                      backgroundColor: user.permission.badgeColor.withValues(
+                        alpha: 0.15,
+                      ),
+                      child: Icon(
+                        user.permission.icon,
+                        color: user.permission.badgeColor,
+                        size: 20,
+                      ),
                     ),
                     SizedBox(width: 12),
                     Expanded(
@@ -348,12 +389,14 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                               Expanded(
                                 child: Text(
                                   user.displayName,
-                                  style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                                  style: GoogleFonts.poppins(
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
                               if (isSelf)
                                 Text(
-                                  'You',
+                                  'You'.tr,
                                   style: GoogleFonts.poppins(
                                     fontSize: 11,
                                     color: KalroColors.textMuted,
@@ -363,10 +406,16 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                           ),
                           Text(
                             '@${user.username}',
-                            style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              color: KalroColors.textMuted,
+                            ),
                           ),
                           SizedBox(height: 6),
-                          PermissionBadge(permission: user.permission, compact: true),
+                          PermissionBadge(
+                            permission: user.permission,
+                            compact: true,
+                          ),
                         ],
                       ),
                     ),

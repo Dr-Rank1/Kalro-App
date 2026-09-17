@@ -1,14 +1,18 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../l10n/translator.dart';
+
 enum UserRole {
   asr('Adopted Seed Rearer'),
   rsp('Registered Seed Producer'),
   crc('Rearing Support Unit'),
   swr('Silkworm Rearer');
 
-  const UserRole(this.label);
+  const UserRole(this._label);
 
-  final String label;
+  final String _label;
+
+  String get label => _label.tr;
 }
 
 class UserPreferences {

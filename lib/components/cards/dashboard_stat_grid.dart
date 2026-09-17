@@ -35,9 +35,21 @@ class DashboardStatGrid extends StatelessWidget {
     final currency = KalroFormatters.currency;
     return [
       DashboardStat(Icons.show_chart, 'Total Sales', currency.format(0)),
-      DashboardStat(Icons.shopping_bag_outlined, 'Total Purchase', currency.format(0)),
-      DashboardStat(Icons.savings_outlined, 'Total Received', currency.format(0)),
-      DashboardStat(Icons.credit_card_outlined, 'Total Paid', currency.format(0)),
+      DashboardStat(
+        Icons.shopping_bag_outlined,
+        'Total Purchase',
+        currency.format(0),
+      ),
+      DashboardStat(
+        Icons.savings_outlined,
+        'Total Received',
+        currency.format(0),
+      ),
+      DashboardStat(
+        Icons.credit_card_outlined,
+        'Total Paid',
+        currency.format(0),
+      ),
     ];
   }
 
@@ -66,7 +78,6 @@ class DashboardStatGrid extends StatelessWidget {
       ),
     ];
   }
-
 }
 
 class DashboardStat {

@@ -71,6 +71,24 @@ void main() {
     expect(summary.activeBatches, 1);
     expect(summary.bombyxLarvae, 150);
     expect(summary.totalFeedGrams, 800);
+
+    final thisBatch = await reportsService.load(
+      repositories: repositories,
+      userPreferences: UserPreferences(),
+      rangeDays: 7,
+      batchId: batch.id,
+    );
+    expect(thisBatch.totalFeedGrams, 800);
+    expect(thisBatch.totalBatches, 1);
+
+    final emptyWindow = await reportsService.load(
+      repositories: repositories,
+      userPreferences: UserPreferences(),
+      rangeDays: 7,
+      batchId: 'missing',
+    );
+    expect(emptyWindow.totalBatches, 0);
+    expect(emptyWindow.totalFeedGrams, 0);
     expect(summary.totalReceivable, 3000);
     expect(summary.purchaseSpend, 1200);
     expect(summary.purchaseOrderCount, 1);

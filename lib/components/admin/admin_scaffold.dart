@@ -56,11 +56,7 @@ class AdminPageScaffold extends StatelessWidget {
 }
 
 class AdminSectionHeader extends StatelessWidget {
-  AdminSectionHeader({
-    super.key,
-    required this.title,
-    this.subtitle,
-  });
+  AdminSectionHeader({super.key, required this.title, this.subtitle});
 
   final String title;
   final String? subtitle;
@@ -82,7 +78,10 @@ class AdminSectionHeader extends StatelessWidget {
           SizedBox(height: 4),
           Text(
             subtitle!,
-            style: GoogleFonts.poppins(fontSize: 13, color: KalroColors.textMuted),
+            style: GoogleFonts.poppins(
+              fontSize: 13,
+              color: KalroColors.textMuted,
+            ),
           ),
         ],
       ],
@@ -167,13 +166,18 @@ class AdminHubTile extends StatelessWidget {
                       title,
                       style: GoogleFonts.poppins(
                         fontWeight: FontWeight.w600,
-                        color: enabled ? KalroColors.textDark : KalroColors.textMuted,
+                        color: enabled
+                            ? KalroColors.textDark
+                            : KalroColors.textMuted,
                       ),
                     ),
                     SizedBox(height: 2),
                     Text(
                       subtitle,
-                      style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        color: KalroColors.textMuted,
+                      ),
                     ),
                   ],
                 ),
@@ -181,7 +185,9 @@ class AdminHubTile extends StatelessWidget {
               trailing ??
                   Icon(
                     Icons.chevron_right,
-                    color: enabled ? KalroColors.textMuted : KalroColors.divider,
+                    color: enabled
+                        ? KalroColors.textMuted
+                        : KalroColors.divider,
                   ),
             ],
           ),
@@ -225,7 +231,10 @@ class AdminStatChip extends StatelessWidget {
             ),
             Text(
               label,
-              style: GoogleFonts.poppins(fontSize: 11, color: KalroColors.textMuted),
+              style: GoogleFonts.poppins(
+                fontSize: 11,
+                color: KalroColors.textMuted,
+              ),
             ),
           ],
         ),

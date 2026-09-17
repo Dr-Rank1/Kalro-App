@@ -1,3 +1,5 @@
+import '../l10n/translator.dart';
+
 enum BatchStatus {
   active('Active'),
   mounting('Mounting'),
@@ -5,7 +7,9 @@ enum BatchStatus {
   harvested('Harvested'),
   closed('Closed');
 
-  const BatchStatus(this.label);
+  const BatchStatus(this._label);
 
-  final String label;
+  final String _label;
+
+  String get label => _label.tr;
 }

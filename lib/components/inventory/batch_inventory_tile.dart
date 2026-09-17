@@ -6,11 +6,7 @@ import '../../models/batch.dart';
 import '../../theme/kalro_colors.dart';
 
 class BatchInventoryTile extends StatelessWidget {
-  BatchInventoryTile({
-    super.key,
-    required this.batch,
-    required this.onTap,
-  });
+  BatchInventoryTile({super.key, required this.batch, required this.onTap});
 
   final Batch batch;
   final VoidCallback onTap;
@@ -41,7 +37,11 @@ class BatchInventoryTile extends StatelessWidget {
                   color: KalroColors.peach.withValues(alpha: 0.35),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(Icons.eco_outlined, color: KalroColors.primaryGreen, size: 20),
+                child: Icon(
+                  Icons.eco_outlined,
+                  color: KalroColors.primaryGreen,
+                  size: 20,
+                ),
               ),
               SizedBox(width: 12),
               Expanded(
@@ -50,11 +50,17 @@ class BatchInventoryTile extends StatelessWidget {
                   children: [
                     Text(
                       '${batch.species.label} · ${batch.eggCount} larvae',
-                      style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 14),
+                      style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
                     ),
                     Text(
                       'Started ${dateFormat.format(batch.startDate)} · ${batch.status.label}',
-                      style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        color: KalroColors.textMuted,
+                      ),
                     ),
                   ],
                 ),

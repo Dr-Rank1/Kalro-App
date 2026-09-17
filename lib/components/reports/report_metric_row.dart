@@ -34,7 +34,10 @@ class ReportMetricRow extends StatelessWidget {
           Expanded(
             child: Text(
               label,
-              style: GoogleFonts.poppins(fontSize: 14, color: KalroColors.textDark),
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                color: KalroColors.textDark,
+              ),
             ),
           ),
           Text(
@@ -52,11 +55,7 @@ class ReportMetricRow extends StatelessWidget {
 }
 
 class ReportSectionCard extends StatelessWidget {
-  ReportSectionCard({
-    super.key,
-    required this.title,
-    required this.children,
-  });
+  ReportSectionCard({super.key, required this.title, required this.children});
 
   final String title;
   final List<Widget> children;

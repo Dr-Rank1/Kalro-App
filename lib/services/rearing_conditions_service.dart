@@ -63,7 +63,8 @@ class RearingConditionsService {
       missed = windowDays - fedDays.length;
       if (missed < 0) missed = 0;
 
-      final suggested = _feedingSchedule.suggestedDailyFeedGrams(batch) * windowDays;
+      final suggested =
+          _feedingSchedule.suggestedDailyFeedGrams(batch, now: today) * windowDays;
       if (suggested > 0 && weekGrams > 0) {
         feedRatio = weekGrams / suggested;
       }

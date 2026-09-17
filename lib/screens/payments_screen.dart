@@ -47,7 +47,8 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
   Future<void> _openRecordPayment() async {
     final created = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
-        builder: (_) => RecordPaymentScreen(repository: widget.repositories.payments),
+        builder: (_) =>
+            RecordPaymentScreen(repository: widget.repositories.payments),
       ),
     );
     if (created == true) _reload();
@@ -89,7 +90,9 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                     if (widget.showToolbar) ...[
                       KalroToolbar(
                         title: 'Payments'.tr,
-                        subtitle: 'Track receivables, payables, and settlement history.'.tr,
+                        subtitle:
+                            'Track receivables, payables, and settlement history.'
+                                .tr,
                       ),
                       SizedBox(height: 24),
                     ],
@@ -111,13 +114,15 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                       icon: Icons.schedule,
                     ),
                     SizedBox(height: 24),
-                    KalroSectionHeader(title: 'Recent Activity'),
+                    KalroSectionHeader(title: 'Recent Activity'.tr),
                     SizedBox(height: 12),
                     if (summary.isEmpty)
                       EmptyStateCard(
                         title: 'No payments recorded yet'.tr,
-                        message: 'Log cocoon sales, seed purchases, and other transactions.',
-                        actionLabel: 'Record Payment',
+                        message:
+                            'Log cocoon sales, seed purchases, and other transactions.'
+                                .tr,
+                        actionLabel: 'Record Payment'.tr,
                         onAction: widget.readOnly ? () {} : _openRecordPayment,
                         icon: Icons.payments_outlined,
                       )
@@ -128,7 +133,9 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                           onSettle: widget.readOnly || !record.isPending
                               ? null
                               : () => _settleRecord(record.id),
-                          onDelete: widget.readOnly ? null : () => _deleteRecord(record.id),
+                          onDelete: widget.readOnly
+                              ? null
+                              : () => _deleteRecord(record.id),
                         ),
                       ),
                   ],

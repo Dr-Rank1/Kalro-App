@@ -94,7 +94,7 @@ class _RecordPaymentScreenState extends State<RecordPaymentScreen> {
               children: [
                 DropdownButtonFormField<PaymentDirection>(
                   initialValue: _direction,
-                  decoration: InputDecoration(labelText: 'Payment type'),
+                  decoration: InputDecoration(labelText: 'Payment type'.tr),
                   items: PaymentDirection.values
                       .map(
                         (direction) => DropdownMenuItem(
@@ -113,7 +113,7 @@ class _RecordPaymentScreenState extends State<RecordPaymentScreen> {
                 TextFormField(
                   controller: _counterpartyController,
                   decoration: InputDecoration(
-                    labelText: 'Counterparty',
+                    labelText: 'Counterparty'.tr,
                     hintText: 'Buyer, supplier, or center name'.tr,
                   ),
                   validator: (value) {
@@ -127,7 +127,7 @@ class _RecordPaymentScreenState extends State<RecordPaymentScreen> {
                 TextFormField(
                   controller: _descriptionController,
                   decoration: InputDecoration(
-                    labelText: 'Description',
+                    labelText: 'Description'.tr,
                     hintText: 'Cocoon sale, seed purchase, etc.'.tr,
                   ),
                   validator: (value) {
@@ -141,16 +141,19 @@ class _RecordPaymentScreenState extends State<RecordPaymentScreen> {
                 TextFormField(
                   controller: _amountController,
                   decoration: InputDecoration(
-                    labelText: 'Amount (KSh)',
+                    labelText: 'Amount (KSh)'.tr,
                     prefixText: 'KSh ',
                   ),
                   keyboardType: TextInputType.numberWithOptions(decimal: true),
                   inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
+                    FilteringTextInputFormatter.allow(
+                      RegExp(r'^\d*\.?\d{0,2}'),
+                    ),
                   ],
                   validator: (value) {
                     final parsed = double.tryParse(value?.trim() ?? '');
-                    if (parsed == null || parsed <= 0) return 'Enter a valid amount';
+                    if (parsed == null || parsed <= 0)
+                      return 'Enter a valid amount';
                     return null;
                   },
                 ),
@@ -164,7 +167,7 @@ class _RecordPaymentScreenState extends State<RecordPaymentScreen> {
                 SizedBox(height: 16),
                 TextFormField(
                   controller: _notesController,
-                  decoration: InputDecoration(labelText: 'Notes (optional)'),
+                  decoration: InputDecoration(labelText: 'Notes (optional)'.tr),
                   maxLines: 2,
                 ),
                 SizedBox(height: 24),

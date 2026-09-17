@@ -9,6 +9,7 @@ class MortalityLog {
     this.treatment,
     this.notes,
     this.isolated = false,
+    this.photoPath,
   });
 
   final String id;
@@ -20,6 +21,7 @@ class MortalityLog {
   final String? treatment;
   final String? notes;
   final bool isolated;
+  final String? photoPath;
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -31,6 +33,7 @@ class MortalityLog {
         'treatment': treatment,
         'notes': notes,
         'isolated': isolated,
+        'photoPath': photoPath,
       };
 
   factory MortalityLog.fromJson(Map<String, dynamic> json) => MortalityLog(
@@ -43,5 +46,6 @@ class MortalityLog {
         treatment: json['treatment'] as String?,
         notes: json['notes'] as String?,
         isolated: json['isolated'] as bool? ?? false,
+        photoPath: json['photoPath'] as String?,
       );
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import 'package:kalro/l10n/translator.dart';
 Future<bool> confirmDeleteRecord(
   BuildContext context, {
   required String what,
@@ -8,11 +9,11 @@ Future<bool> confirmDeleteRecord(
   final confirmed = await showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
-      title: const Text('Delete record?'),
+      title: Text('Delete record?'.tr),
       content: Text('Remove this $what? This cannot be undone.'),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-        TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Delete')),
+        TextButton(onPressed: () => Navigator.pop(context, false), child: Text('Cancel'.tr)),
+        TextButton(onPressed: () => Navigator.pop(context, true), child: Text('Delete'.tr)),
       ],
     ),
   );

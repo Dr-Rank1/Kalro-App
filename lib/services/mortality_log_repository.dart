@@ -37,6 +37,7 @@ class MortalityLogRepository {
     String? treatment,
     String? notes,
     bool isolated = false,
+    String? photoPath,
   }) async {
     final log = MortalityLog(
       id: _uuid.v4(),
@@ -48,6 +49,7 @@ class MortalityLogRepository {
       treatment: treatment?.trim().isEmpty == true ? null : treatment?.trim(),
       notes: notes?.trim().isEmpty == true ? null : notes?.trim(),
       isolated: isolated,
+      photoPath: photoPath,
     );
 
     final logs = await getAll();

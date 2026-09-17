@@ -23,8 +23,8 @@ void main() {
     );
   }
 
-  test('Bombyx profile matches spec stage count', () {
-    expect(LifecycleProfiles.bombyx.stages.length, 10);
+  test('Bombyx profile matches field calendar stage count', () {
+    expect(LifecycleProfiles.bombyx.stages.length, 14);
   });
 
   test('predict returns milestones in chronological order', () {

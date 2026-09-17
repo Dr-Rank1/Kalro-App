@@ -72,6 +72,20 @@ class PlannedCycle {
   String? get summaryReason =>
       adjustment.reasons.isEmpty ? null : adjustment.reasons.first;
 
+  /// Inclusive harvest window ending on [harvest].
+  DateTime? get harvestWindowStart {
+    final end = harvest?.effectiveDate;
+    if (end == null) return null;
+    final stage = LifecycleProfiles.forSpecies(species).byKey(harvest!.stageKey);
+    final days = stage?.harvestWindowDays ?? 1;
+    return _dateOnly(end).subtract(Duration(days: days - 1));
+  }
+
+  DateTime? get harvestWindowEnd {
+    final end = harvest?.effectiveDate;
+    return end == null ? null : _dateOnly(end);
+  }
+
   String? typicalRangeFor(LifecycleMilestone milestone) {
     final profile = LifecycleProfiles.forSpecies(species);
     for (final stage in profile.stages) {
@@ -148,18 +162,24 @@ class LifecyclePlanningService {
         milestone.type == MilestoneType.spinning ||
         milestone.type == MilestoneType.cocoonHarvest ||
         milestone.type == MilestoneType.mothEmergence ||
+        milestone.stageKey == 'moult4' ||
         milestone.instarNumber == 5;
   }
 
   String planningTitle(LifecycleMilestone milestone) {
     return switch (milestone.stageKey) {
       'incubation' => 'Egg hatch',
-      'instar1' => '1st moult',
-      'instar2' => '2nd moult',
-      'instar3' => '3rd moult',
-      'instar4' => '4th moult',
+      'instar1' => '1st instar feeding',
+      'moult1' => '1st moult — stop feeding',
+      'instar2' => '2nd instar feeding',
+      'moult2' => '2nd moult — stop feeding',
+      'instar3' => '3rd instar feeding',
+      'moult3' => '3rd moult — stop feeding',
+      'instar4' => '4th instar feeding',
+      'moult4' => '4th moult — stop feeding',
       'instar5' => 'Mature larvae (5th instar)',
       'cocoon_maturation' => 'Cocoon harvest window',
+      'cocoon_harvest' => 'Cocoon harvest window',
       'moth_emergence' => 'Moth emergence (cocoons hatch)',
       _ => milestone.label,
     };
@@ -169,25 +189,29 @@ class LifecyclePlanningService {
     final leaf = species == Species.eri ? 'castor or kesseru' : 'mulberry';
     return switch (milestone.stageKey) {
       'incubation' =>
-        'Eggs hatch. Prepare young-age trays and tender chopped $leaf leaf.',
-      'instar1' => '1st moult. Keep density low and feed tender leaf often.',
-      'instar2' => '2nd moult. Continue frequent feeding and watch humidity.',
-      'instar3' => '3rd moult. Give larvae more space; leaf demand starts to rise.',
-      'instar4' =>
-        '4th moult. Increase $leaf supply — late instars eat most of the crop.',
+        'Eggs hatch. Brush larvae onto the bed. Prepare tender chopped $leaf leaf.',
+      'instar1' => 'Feed often. Keep density low. Watch for the first moult.',
+      'moult1' => 'Stop feeding. Watch the first moult, then resume tender leaf.',
+      'instar2' => 'Feed, clean the bed, and watch humidity and disease.',
+      'moult2' => 'Stop feeding. Observe the second moult.',
+      'instar3' => 'Give larvae more space; $leaf demand starts to rise.',
+      'moult3' => 'Stop feeding. Observe the third moult.',
+      'instar4' => 'Heavy feeding and spacing. Late instars eat most of the crop.',
+      'moult4' => 'Stop feeding. Prepare for the final instar.',
       'instar5' => species == Species.bombyx
-          ? 'Peak feeding. Prepare mountages; keep a full $leaf supply.'
-          : 'Peak feeding on $leaf. Prepare quiet spinning sites.',
+          ? 'Peak feeding. Watch spinning signs. Prepare mountages.'
+          : 'Peak feeding on $leaf. Day 1 is a light morning feed, then full.',
       'mounting' =>
-        'Mount larvae on chandrika or mountages. Keep the house quiet.',
-      'spinning' =>
-        'Cocoon spinning. Dim light, stable temperature, do not disturb.',
+        'Stop feeding. Mount larvae on chandrika or mountages. Keep the house quiet.',
+      'spinning' => species == Species.eri
+          ? 'Keep feeding until every larva has spun. Dim light, do not disturb.'
+          : 'Cocoon spinning. Dim light, stable temperature, do not disturb.',
       'cocoon_maturation' =>
-        'Cocoons are maturing. Plan harvest in this window for silk quality.',
+        'Harvest window. Pick mature cocoons over these days for silk quality.',
       'cocoon_harvest' =>
-        'Harvest cocoons. Sort defectives and record count and weight.',
+        'Cocoon measurements and harvest. Sort defectives and record weight.',
       'moth_emergence' =>
-        'Moths emerge from cocoons. For seed: prepare pairing trays. For silk: harvest before this date.',
+        'Moths emerge. For seed: prepare pairing trays. For silk: harvest before this date.',
       _ => 'Check the batch and mark the stage when you observe it.',
     };
   }

@@ -7,6 +7,7 @@ import 'batch_metrics_service.dart';
 import 'feeding_schedule_service.dart';
 import 'lifecycle_engine.dart';
 import 'rearing_conditions_service.dart';
+import 'rearing_day_service.dart';
 import 'user_preferences.dart';
 
 class DashboardService {
@@ -16,19 +17,22 @@ class DashboardService {
     AlertService? alertService,
     FeedingScheduleService? feedingScheduleService,
     RearingConditionsService? conditionsService,
+    RearingDayService? rearingDayService,
   })  : _lifecycleEngine = lifecycleEngine ?? const LifecycleEngine(),
         _metricsService = metricsService ?? const BatchMetricsService(),
         _alertService = alertService ?? const AlertService(),
         _feedingScheduleService =
             feedingScheduleService ?? const FeedingScheduleService(),
         _conditionsService =
-            conditionsService ?? const RearingConditionsService();
+            conditionsService ?? const RearingConditionsService(),
+        _rearingDay = rearingDayService ?? const RearingDayService();
 
   final LifecycleEngine _lifecycleEngine;
   final BatchMetricsService _metricsService;
   final AlertService _alertService;
   final FeedingScheduleService _feedingScheduleService;
   final RearingConditionsService _conditionsService;
+  final RearingDayService _rearingDay;
 
   Future<DashboardSummary> load({
     required AppRepositories repositories,
@@ -52,6 +56,7 @@ class DashboardService {
     var survivalSum = 0.0;
     var survivalSamples = 0;
 
+    final liveCountByBatch = <String, int>{};
     for (final batch in active) {
       totalLarvae += batch.eggCount;
       final mortality = mortalityLogs
@@ -59,6 +64,7 @@ class DashboardService {
           .fold<int>(0, (sum, l) => sum + l.count);
       final metrics = _metricsService.compute(batch, mortality);
       liveLarvae += metrics.liveCount;
+      liveCountByBatch[batch.id] = metrics.liveCount;
       if (batch.eggCount > 0) {
         survivalSum += metrics.survivalRatePercent;
         survivalSamples++;
@@ -131,7 +137,41 @@ class DashboardService {
     final todayTasks = _feedingScheduleService.buildTasks(
       activeBatches: active,
       feedLogs: feedLogs,
+      mortalityLogs: mortalityLogs,
+      observationsByBatch: observationsByBatch,
+      conditionsByBatch: conditionsByBatch,
+      liveCountByBatch: liveCountByBatch,
     );
+
+    var suggestedFeedTodayGrams = 0.0;
+    var leafNeedTodayKg = 0.0;
+    var harvestWindowOpen = false;
+    for (final batch in active) {
+      final plan = _rearingDay.planFor(
+        batch,
+        observedStageDates: observationsByBatch[batch.id],
+        conditions: conditionsByBatch[batch.id],
+        liveCount: liveCountByBatch[batch.id],
+        now: today,
+      );
+      if (plan == null) continue;
+      suggestedFeedTodayGrams += plan.suggestedGrams;
+      leafNeedTodayKg += plan.suggestedGrams / 1000;
+      if (plan.isHarvestWork) harvestWindowOpen = true;
+    }
+
+    final fedTodayByBatch = <String, bool>{};
+    final deathsTodayByBatch = <String, int>{};
+    for (final batch in active) {
+      fedTodayByBatch[batch.id] = feedLogs.any(
+        (l) => l.batchId == batch.id && _dateOnly(l.recordedAt) == today,
+      );
+      deathsTodayByBatch[batch.id] = mortalityLogs
+          .where((l) => l.batchId == batch.id && _dateOnly(l.recordedAt) == today)
+          .fold<int>(0, (sum, l) => sum + l.count);
+    }
+
+    final leaf = await repositories.leafInventory.get();
 
     return DashboardSummary(
       displayName: displayName,
@@ -140,7 +180,7 @@ class DashboardService {
       totalLarvae: totalLarvae,
       liveLarvae: liveLarvae,
       averageSurvivalPercent:
-          survivalSamples > 0 ? survivalSum / survivalSamples : 100,
+          survivalSamples > 0 ? survivalSum / survivalSamples : 0,
       feedTodayGrams: feedTodayGrams,
       feedTotalGrams: feedTotalGrams,
       upcomingMilestones: upcoming,
@@ -151,6 +191,14 @@ class DashboardService {
       harvestCount: harvests.length,
       observationsByBatch: observationsByBatch,
       conditionsByBatch: conditionsByBatch,
+      liveCountByBatch: liveCountByBatch,
+      suggestedFeedTodayGrams: suggestedFeedTodayGrams,
+      leafNeedTodayKg: leafNeedTodayKg,
+      mulberryStockKg: leaf.mulberryKg,
+      eriHostStockKg: leaf.castorKg + leaf.kesseruKg,
+      harvestWindowOpen: harvestWindowOpen,
+      fedTodayByBatch: fedTodayByBatch,
+      deathsTodayByBatch: deathsTodayByBatch,
     );
   }
 

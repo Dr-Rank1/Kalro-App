@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../components/components.dart';
+import '../l10n/app_localizations.dart';
 import '../models/batch.dart';
 import '../models/batch_status.dart';
+import '../models/cycle_memory.dart';
 import '../models/rearing_conditions.dart';
+import '../models/species.dart';
 import '../services/app_repositories.dart';
+import '../services/batch_metrics_service.dart';
+import '../services/cycle_memory_service.dart';
 import '../services/lifecycle_engine.dart';
 import '../services/rearing_conditions_service.dart';
 import '../theme/kalro_colors.dart';
-import '../l10n/app_localizations.dart';
 import 'batch_detail_screen.dart';
 import 'create_batch_screen.dart';
 import 'package:kalro/l10n/translator.dart';
@@ -33,8 +37,9 @@ class BatchesScreen extends StatefulWidget {
   State<BatchesScreen> createState() => _BatchesScreenState();
 }
 
-class _BatchesScreenState extends State<BatchesScreen> {
+enum _BatchWindow { all, thisWeek, thisMonth }
 
+class _BatchesScreenState extends State<BatchesScreen> {
   @override
   void didUpdateWidget(covariant BatchesScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -45,7 +50,12 @@ class _BatchesScreenState extends State<BatchesScreen> {
 
   final _lifecycleEngine = LifecycleEngine();
   static const _conditionsService = RearingConditionsService();
+  static const _metrics = BatchMetricsService();
+  static const _memory = CycleMemoryService();
   late Future<_BatchesBundle> _batchesFuture;
+  Species? _speciesFilter;
+  _BatchWindow _window = _BatchWindow.all;
+  String _query = '';
 
   @override
   void initState() {
@@ -63,35 +73,117 @@ class _BatchesScreenState extends State<BatchesScreen> {
     final batches = await widget.repositories.batches.getAll();
     final environmentLogs = await widget.repositories.environmentLogs.getAll();
     final feedLogs = await widget.repositories.feedLogs.getAll();
+    final mortalityLogs = await widget.repositories.mortalityLogs.getAll();
+    final harvests = await widget.repositories.cocoonHarvests.getAll();
+    final purchases = await widget.repositories.purchaseOrders.getAll();
+    final prices = await widget.repositories.inventorySettings.get();
     final observations = <String, Map<String, DateTime>>{};
     final conditions = <String, RearingConditions>{};
-    await Future.wait(batches.map((batch) async {
-      observations[batch.id] =
-          await widget.repositories.milestoneObservations.stageDatesForBatch(batch.id);
-      conditions[batch.id] = _conditionsService.fromLogs(
+    await Future.wait(
+      batches.map((batch) async {
+        observations[batch.id] = await widget.repositories.milestoneObservations
+            .stageDatesForBatch(batch.id);
+        conditions[batch.id] = _conditionsService.fromLogs(
+          batch: batch,
+          environmentLogs: environmentLogs,
+          feedLogs: feedLogs,
+        );
+      }),
+    );
+
+    final today = DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+    );
+    final liveByBatch = <String, int>{};
+    final fedToday = <String, bool>{};
+    final survival = <String, double>{};
+    for (final batch in batches) {
+      final deaths = mortalityLogs
+          .where((e) => e.batchId == batch.id)
+          .fold<int>(0, (sum, e) => sum + e.count);
+      final metrics = _metrics.compute(batch, deaths);
+      liveByBatch[batch.id] = metrics.liveCount;
+      survival[batch.id] = metrics.survivalRatePercent;
+      fedToday[batch.id] = feedLogs.any((e) {
+        if (e.batchId != batch.id) return false;
+        final at = DateTime(e.recordedAt.year, e.recordedAt.month, e.recordedAt.day);
+        return at == today;
+      });
+    }
+
+    final memories = <String, CycleMemory>{};
+    for (final batch in batches.where(_isClosed)) {
+      memories[batch.id] = _memory.build(
         batch: batch,
-        environmentLogs: environmentLogs,
         feedLogs: feedLogs,
+        mortalityLogs: mortalityLogs,
+        harvests: harvests,
+        purchases: purchases,
+        prices: prices,
+        observedStageDates: observations[batch.id],
       );
-    }));
+    }
+
     return _BatchesBundle(
       batches: batches,
       observations: observations,
       conditions: conditions,
+      liveByBatch: liveByBatch,
+      fedToday: fedToday,
+      survival: survival,
+      memories: memories,
     );
   }
 
+  bool _isClosed(Batch batch) =>
+      batch.status == BatchStatus.closed ||
+      batch.status == BatchStatus.harvested;
+
   List<Batch> _active(List<Batch> batches) =>
-      batches.where((b) => b.status != BatchStatus.closed).toList();
+      batches.where((b) => !_isClosed(b)).toList();
 
   List<Batch> _closed(List<Batch> batches) =>
-      batches.where((b) => b.status == BatchStatus.closed).toList();
+      batches.where(_isClosed).toList()
+        ..sort((a, b) => b.startDate.compareTo(a.startDate));
 
-  Future<void> _openCreateBatch() async {
+  bool _matches(Batch batch) {
+    if (_speciesFilter != null && batch.species != _speciesFilter) return false;
+    final now = DateTime.now();
+    switch (_window) {
+      case _BatchWindow.all:
+        break;
+      case _BatchWindow.thisWeek:
+        if (now.difference(batch.startDate).inDays > 7) return false;
+      case _BatchWindow.thisMonth:
+        if (batch.startDate.year != now.year ||
+            batch.startDate.month != now.month) {
+          return false;
+        }
+    }
+    final q = _query.trim().toLowerCase();
+    if (q.isEmpty) return true;
+    final hay = [
+      batch.species.label,
+      batch.location,
+      batch.caretaker,
+      batch.strain,
+      batch.eggSource,
+      '${batch.eggCount}',
+    ].whereType<String>().join(' ').toLowerCase();
+    return hay.contains(q);
+  }
+
+  Future<void> _openCreateBatch({Batch? copyFrom}) async {
     if (!widget.canEdit) return;
     final created = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
-        builder: (_) => CreateBatchScreen(repository: widget.repositories.batches),
+        builder: (_) => CreateBatchScreen(
+          repository: widget.repositories.batches,
+          producers: widget.repositories.producers,
+          copyFrom: copyFrom,
+        ),
       ),
     );
     if (created == true) {
@@ -101,10 +193,9 @@ class _BatchesScreenState extends State<BatchesScreen> {
   }
 
   Future<void> _openBatch(String batchId) async {
-    await Navigator.of(context).pushNamed(
-      BatchDetailScreen.routeName,
-      arguments: batchId,
-    );
+    await Navigator.of(
+      context,
+    ).pushNamed(BatchDetailScreen.routeName, arguments: batchId);
     _reload();
     widget.onBatchChanged();
   }
@@ -121,73 +212,178 @@ class _BatchesScreenState extends State<BatchesScreen> {
             child: FutureBuilder<_BatchesBundle>(
               future: _batchesFuture,
               builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                if (snapshot.connectionState == ConnectionState.waiting &&
+                    !snapshot.hasData) {
+                  return const Center(child: CircularProgressIndicator());
                 }
 
                 final bundle = snapshot.data;
                 final all = bundle?.batches ?? [];
-                final active = _active(all);
-                final closed = _closed(all);
+                final active = _active(all).where(_matches).toList();
+                final closed = _closed(all).where(_matches).toList();
+                final unfilteredActive = _active(all);
+                final unfilteredClosed = _closed(all);
 
                 return ListView(
-                  padding: EdgeInsets.fromLTRB(20, 20, 20, 88),
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 88),
                   children: [
                     KalroToolbar(
                       title: l10n?.batchesTitle ?? 'Batches',
-                      subtitle: l10n?.batchesSubtitle ?? 'Create cycles and log feeding, health, and harvest.',
+                      subtitle:
+                          l10n?.batchesSubtitle ??
+                          'Create cycles and log feeding, health, and harvest.',
                     ),
-                    SizedBox(height: 16),
-                    RecordSummaryBar(
-                      items: [
-                        RecordSummaryItem(label: l10n?.batchesActiveCount ?? 'Active', value: '${active.length}'),
-                        RecordSummaryItem(label: l10n?.batchesClosedCount ?? 'Closed', value: '${closed.length}'),
-                        RecordSummaryItem(label: l10n?.batchesTotalCount ?? 'Total', value: '${all.length}'),
+                    const SizedBox(height: 16),
+                    TextField(
+                      onChanged: (value) => setState(() => _query = value),
+                      decoration: InputDecoration(
+                        hintText: 'Search name, house, caretaker'.tr,
+                        prefixIcon: const Icon(Icons.search),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        _FilterChip(
+                          label: 'All'.tr,
+                          selected: _speciesFilter == null,
+                          onTap: () => setState(() => _speciesFilter = null),
+                        ),
+                        _FilterChip(
+                          label: Species.bombyx.label,
+                          selected: _speciesFilter == Species.bombyx,
+                          onTap: () => setState(() {
+                            _speciesFilter = _speciesFilter == Species.bombyx
+                                ? null
+                                : Species.bombyx;
+                          }),
+                        ),
+                        _FilterChip(
+                          label: Species.eri.label,
+                          selected: _speciesFilter == Species.eri,
+                          onTap: () => setState(() {
+                            _speciesFilter = _speciesFilter == Species.eri
+                                ? null
+                                : Species.eri;
+                          }),
+                        ),
+                        _FilterChip(
+                          label: 'This week'.tr,
+                          selected: _window == _BatchWindow.thisWeek,
+                          onTap: () => setState(() {
+                            _window = _window == _BatchWindow.thisWeek
+                                ? _BatchWindow.all
+                                : _BatchWindow.thisWeek;
+                          }),
+                        ),
+                        _FilterChip(
+                          label: 'This month'.tr,
+                          selected: _window == _BatchWindow.thisMonth,
+                          onTap: () => setState(() {
+                            _window = _window == _BatchWindow.thisMonth
+                                ? _BatchWindow.all
+                                : _BatchWindow.thisMonth;
+                          }),
+                        ),
                       ],
                     ),
-                    SizedBox(height: 24),
+                    const SizedBox(height: 16),
+                    RecordSummaryBar(
+                      items: [
+                        RecordSummaryItem(
+                          label: l10n?.batchesActiveCount ?? 'Active',
+                          value: '${unfilteredActive.length}',
+                        ),
+                        RecordSummaryItem(
+                          label: l10n?.batchesClosedCount ?? 'Closed',
+                          value: '${unfilteredClosed.length}',
+                        ),
+                        RecordSummaryItem(
+                          label: l10n?.batchesTotalCount ?? 'Total',
+                          value: '${all.length}',
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
                     KalroSectionHeader(
                       title: l10n?.batchesActiveHeader ?? 'Active batches',
-                      subtitle: active.isEmpty ? null : '${active.length} ${l10n?.batchesInProgress ?? "in progress"}',
+                      subtitle: active.isEmpty
+                          ? null
+                          : '${active.length} ${l10n?.batchesInProgress ?? "in progress"}',
                     ),
-                    SizedBox(height: 10),
-                    if (active.isEmpty)
+                    const SizedBox(height: 10),
+                    if (active.isEmpty && closed.isEmpty && (unfilteredActive.isNotEmpty || unfilteredClosed.isNotEmpty))
+                      RecordEmptyState(
+                        icon: Icons.search_off_outlined,
+                        title: 'No lots match this filter'.tr,
+                        message:
+                            'Try All, another species, or clear the search.'.tr,
+                      )
+                    else if (unfilteredActive.isEmpty)
                       RecordEmptyState(
                         icon: Icons.layers_outlined,
                         title: l10n?.batchesNoActive ?? 'No active batches',
-                        message: widget.canEdit ? (l10n?.batchesNoActiveDesc ?? 'Start a rearing cycle to plan milestones and record daily work.') : (l10n?.batchesNoActiveDescViewer ?? 'No batches are running right now.'),
-                        actionLabel: widget.canEdit ? (l10n?.batchesCreateAction ?? 'Create batch') : null,
+                        message: widget.canEdit
+                            ? (l10n?.batchesNoActiveDesc ??
+                                  'Start a rearing cycle to plan milestones and record daily work.')
+                            : (l10n?.batchesNoActiveDescViewer ??
+                                  'No batches are running right now.'),
+                        actionLabel: widget.canEdit
+                            ? (l10n?.batchesCreateAction ?? 'Create batch')
+                            : null,
                         onAction: widget.canEdit ? _openCreateBatch : null,
+                      )
+                    else if (active.isEmpty)
+                      RecordEmptyState(
+                        icon: Icons.search_off_outlined,
+                        title: 'No lots match this filter'.tr,
+                        message:
+                            'Try All, another species, or clear the search.'.tr,
                       )
                     else
                       ...active.map(
                         (batch) => Padding(
-                          padding: EdgeInsets.only(bottom: 10),
+                          padding: const EdgeInsets.only(bottom: 10),
                           child: BatchHorizontalCard(
                             batch: batch,
                             lifecycleEngine: _lifecycleEngine,
                             observedStageDates: bundle?.observations[batch.id],
                             conditions: bundle?.conditions[batch.id],
+                            liveCount: bundle?.liveByBatch[batch.id],
+                            fedToday: bundle?.fedToday[batch.id],
+                            survivalPercent: bundle?.survival[batch.id],
                             onTap: () => _openBatch(batch.id),
                           ),
                         ),
                       ),
                     if (closed.isNotEmpty) ...[
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       KalroSectionHeader(
                         title: l10n?.batchesClosedHeader ?? 'Closed batches',
-                        subtitle: '${closed.length} ${l10n?.batchesArchived ?? "archived"}'.tr,
+                        subtitle: 'Harvest, survival, and cost per kg'.tr,
                       ),
-                      SizedBox(height: 10),
-                      ...closed.map(
-                        (batch) => Padding(
-                          padding: EdgeInsets.only(bottom: 10),
-                          child: _ClosedBatchTile(
-                            batch: batch,
-                            onTap: () => _openBatch(batch.id),
+                      const SizedBox(height: 10),
+                      ...closed.map((batch) {
+                        final memory = bundle?.memories[batch.id];
+                        if (memory == null) {
+                          return const SizedBox.shrink();
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: CycleMemoryCard(
+                            memory: memory,
+                            showMoney: true,
+                            onOpen: () => _openBatch(batch.id),
+                            onStartLikeThis: widget.canEdit
+                                ? () => _openCreateBatch(copyFrom: batch)
+                                : null,
                           ),
-                        ),
-                      ),
+                        );
+                      }),
                     ],
                   ],
                 );
@@ -205,67 +401,55 @@ class _BatchesBundle {
     required this.batches,
     required this.observations,
     required this.conditions,
+    required this.liveByBatch,
+    required this.fedToday,
+    required this.survival,
+    required this.memories,
   });
 
   final List<Batch> batches;
   final Map<String, Map<String, DateTime>> observations;
   final Map<String, RearingConditions> conditions;
+  final Map<String, int> liveByBatch;
+  final Map<String, bool> fedToday;
+  final Map<String, double> survival;
+  final Map<String, CycleMemory> memories;
 }
 
-class _ClosedBatchTile extends StatelessWidget {
-  const _ClosedBatchTile({required this.batch, required this.onTap});
+class _FilterChip extends StatelessWidget {
+  const _FilterChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
 
-  final Batch batch;
+  final String label;
+  final bool selected;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
     return Material(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(12),
+      color: selected ? KalroColors.headerGreen : Colors.white,
+      borderRadius: BorderRadius.circular(20),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Ink(
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: KalroColors.divider),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: selected ? KalroColors.headerGreen : KalroColors.divider,
+            ),
           ),
-          padding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          child: Row(
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: KalroColors.background,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(
-                  batch.species.name == 'eri' ? Icons.eco_outlined : Icons.flutter_dash,
-                  size: 22,
-                  color: KalroColors.textMuted,
-                ),
-              ),
-              SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      batch.species.label,
-                      style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 14),
-                    ),
-                    Text(
-                      '${AppLocalizations.of(context)?.batchesClosedLabel ?? "Closed"} · ${batch.eggCount} ${AppLocalizations.of(context)?.batchesLarvaeLabel ?? "larvae"}',
-                      style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
-                    ),
-                  ],
-                ),
-              ),
-              Icon(Icons.chevron_right, color: KalroColors.textLight, size: 20),
-            ],
+          child: Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: selected ? Colors.white : KalroColors.textDark,
+            ),
           ),
         ),
       ),

@@ -20,7 +20,7 @@ class KalroSpeciesDropdown extends StatelessWidget {
     return DropdownButtonFormField<Species>(
       initialValue: value,
       decoration: InputDecoration(
-        labelText: 'Species',
+        labelText: 'Species'.tr,
         border: OutlineInputBorder(),
       ),
       items: Species.values

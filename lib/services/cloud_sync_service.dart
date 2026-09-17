@@ -68,6 +68,12 @@ class CloudSyncService {
     try {
       final backupFile = await _backupService.exportBackup(repositories);
       final payload = await backupFile.readAsString();
+      DateTime? snapshotExportedAt;
+      try {
+        final decoded = jsonDecode(payload) as Map<String, dynamic>;
+        final raw = decoded['exportedAt'];
+        if (raw is String) snapshotExportedAt = DateTime.tryParse(raw);
+      } catch (_) {}
 
       final localFile = await _localSnapshotFile(farm.syncCode);
       await FileUtils.atomicWriteAsString(localFile, payload);
@@ -87,7 +93,11 @@ class CloudSyncService {
         }
       }
 
-      await _updateFarmSyncMetadata(farm, uploadedAt: DateTime.now());
+      await _updateFarmSyncMetadata(
+        farm,
+        uploadedAt: DateTime.now(),
+        snapshotExportedAt: snapshotExportedAt,
+      );
 
       return SyncResult(
         success: true,
@@ -105,6 +115,7 @@ class CloudSyncService {
     required AppRepositories repositories,
     required FarmProfile farm,
     String? serverUrl,
+    bool overwriteNewerLocal = false,
   }) async {
     try {
       String payload;
@@ -138,6 +149,24 @@ class CloudSyncService {
         );
       }
 
+      DateTime? remoteExportedAt;
+      final exportedRaw = decoded['exportedAt'];
+      if (exportedRaw is String) {
+        remoteExportedAt = DateTime.tryParse(exportedRaw);
+      }
+      final localMeta = await loadSyncMeta(farm);
+      if (!overwriteNewerLocal &&
+          localMeta.lastSnapshotExportedAt != null &&
+          remoteExportedAt != null &&
+          localMeta.lastSnapshotExportedAt!.isAfter(remoteExportedAt.add(const Duration(seconds: 2)))) {
+        return SyncResult(
+          success: false,
+          wouldOverwriteNewerLocal: true,
+          message:
+              'This phone already uploaded a newer snapshot. Download anyway only if you mean to replace it.',
+        );
+      }
+
       final tempDir = await repositories.storageDirectory();
       final tempFile = File('${tempDir.path}/kalro_cloud_restore.json');
       await FileUtils.atomicWriteAsString(tempFile, payload);
@@ -161,6 +190,7 @@ class CloudSyncService {
     FarmProfile farm, {
     DateTime? uploadedAt,
     DateTime? downloadedAt,
+    DateTime? snapshotExportedAt,
   }) async {
     final dir = await _authRepository.farmDirectory(farm.id);
     final metaFile = File('${dir.path}/sync_meta.json');
@@ -174,6 +204,9 @@ class CloudSyncService {
     if (downloadedAt != null) {
       meta['lastDownloadedAt'] = downloadedAt.toIso8601String();
     }
+    if (snapshotExportedAt != null) {
+      meta['lastSnapshotExportedAt'] = snapshotExportedAt.toIso8601String();
+    }
     await FileUtils.atomicWriteAsString(metaFile, jsonEncode(meta));
   }
 
@@ -182,6 +215,7 @@ class CloudSyncService {
     final metaFile = File('${dir.path}/sync_meta.json');
     DateTime? uploaded;
     DateTime? downloaded;
+    DateTime? snapshotExported;
     String? serverUrl;
 
     if (await metaFile.exists()) {
@@ -192,6 +226,9 @@ class CloudSyncService {
       if (meta['lastDownloadedAt'] != null) {
         downloaded = DateTime.parse(meta['lastDownloadedAt'] as String);
       }
+      if (meta['lastSnapshotExportedAt'] != null) {
+        snapshotExported = DateTime.parse(meta['lastSnapshotExportedAt'] as String);
+      }
       serverUrl = meta['serverUrl'] as String?;
     }
 
@@ -200,6 +237,7 @@ class CloudSyncService {
       serverUrl: serverUrl,
       lastUploadedAt: uploaded,
       lastDownloadedAt: downloaded,
+      lastSnapshotExportedAt: snapshotExported,
     );
   }
 

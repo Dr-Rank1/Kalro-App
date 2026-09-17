@@ -18,4 +18,18 @@ abstract final class KalroColors {
   static const navInactive = Color(0xFFAAAAAA);
   static const navActive = Color(0xFF214641);
   static const buttonGreen = Color(0xFF1A332B);
+  static const leaf = Color(0xFF3D7A54);
+  static const rest = Color(0xFFC46B3A);
+  static const harvest = Color(0xFF914D2B);
+  static const success = Color(0xFF2E7D57);
+  static const danger = Color(0xFFB42318);
+  static const info = Color(0xFF2B6CB0);
+
+  static List<BoxShadow> get softShadow => const [
+        BoxShadow(
+          color: Color(0x14000000),
+          blurRadius: 20,
+          offset: Offset(0, 8),
+        ),
+      ];
 }

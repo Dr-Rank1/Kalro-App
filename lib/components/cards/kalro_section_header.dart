@@ -29,7 +29,10 @@ class KalroSectionHeader extends StatelessWidget {
             if (subtitle != null)
               Text(
                 subtitle!,
-                style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
+                style: GoogleFonts.poppins(
+                  fontSize: 12,
+                  color: KalroColors.textMuted,
+                ),
               ),
           ],
         ),

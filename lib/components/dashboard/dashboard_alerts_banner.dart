@@ -3,13 +3,10 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../models/batch_alert.dart';
 import '../../theme/kalro_colors.dart';
+import '../../l10n/translator.dart';
 
 class DashboardAlertsBanner extends StatelessWidget {
-  DashboardAlertsBanner({
-    super.key,
-    required this.alerts,
-    this.onAlertTap,
-  });
+  DashboardAlertsBanner({super.key, required this.alerts, this.onAlertTap});
 
   final List<BatchAlert> alerts;
   final void Function(BatchAlert alert)? onAlertTap;
@@ -23,11 +20,6 @@ class DashboardAlertsBanner extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          'Alerts',
-          style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
-        ),
-        SizedBox(height: 8),
         ...top.map((alert) {
           final color = switch (alert.severity) {
             BatchAlertSeverity.critical => Colors.red.shade50,
@@ -48,14 +40,24 @@ class DashboardAlertsBanner extends StatelessWidget {
               side: BorderSide(color: KalroColors.divider),
             ),
             child: ListTile(
-              leading: Icon(Icons.notifications_active, color: iconColor, size: 22),
+              leading: Icon(
+                Icons.notifications_active,
+                color: iconColor,
+                size: 22,
+              ),
               title: Text(
-                alert.title,
-                style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 14),
+                alert.title.tr,
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
               ),
               subtitle: Text(
-                alert.message,
-                style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
+                alert.message.tr,
+                style: GoogleFonts.poppins(
+                  fontSize: 12,
+                  color: KalroColors.textMuted,
+                ),
               ),
               onTap: onAlertTap == null ? null : () => onAlertTap!(alert),
             ),

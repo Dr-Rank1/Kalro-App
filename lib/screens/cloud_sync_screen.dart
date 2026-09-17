@@ -50,7 +50,9 @@ class _CloudSyncScreenState extends State<CloudSyncScreen> {
 
   void _reload() {
     setState(() {
-      _settingsFuture = _sync.loadSyncMeta(widget.session.farm).then((settings) {
+      _settingsFuture = _sync.loadSyncMeta(widget.session.farm).then((
+        settings,
+      ) {
         _serverController.text = settings.serverUrl ?? '';
         return settings;
       });
@@ -72,7 +74,9 @@ class _CloudSyncScreenState extends State<CloudSyncScreen> {
         serverUrl: _serverController.text,
       );
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result.message)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(result.message)));
     } finally {
       if (mounted) {
         setState(() => _busy = false);
@@ -87,11 +91,17 @@ class _CloudSyncScreenState extends State<CloudSyncScreen> {
       builder: (context) => AlertDialog(
         title: Text('Download cloud data?'.tr),
         content: Text(
-          'This replaces local farm data with the cloud snapshot. Continue?',
+          'This replaces local farm data with the cloud snapshot. Continue?'.tr,
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: Text('Cancel'.tr)),
-          TextButton(onPressed: () => Navigator.pop(context, true), child: Text('Download'.tr)),
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('Cancel'.tr),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text('Download'.tr),
+          ),
         ],
       ),
     );
@@ -100,13 +110,48 @@ class _CloudSyncScreenState extends State<CloudSyncScreen> {
     setState(() => _busy = true);
     try {
       await _saveServerUrl();
-      final result = await _sync.download(
+      var result = await _sync.download(
         repositories: widget.repositories,
         farm: widget.session.farm,
         serverUrl: _serverController.text,
       );
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result.message)));
+      if (result.wouldOverwriteNewerLocal) {
+        final replace = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Newer data on this phone'.tr),
+            content: Text(
+              'This phone already uploaded a newer snapshot. Replace it with the cloud copy?'
+                  .tr,
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text('Cancel'.tr),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text('Replace'.tr),
+              ),
+            ],
+          ),
+        );
+        if (replace == true) {
+          result = await _sync.download(
+            repositories: widget.repositories,
+            farm: widget.session.farm,
+            serverUrl: _serverController.text,
+            overwriteNewerLocal: true,
+          );
+        } else {
+          return;
+        }
+      }
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(result.message)));
       if (result.success) widget.onDataChanged?.call();
     } finally {
       if (mounted) {
@@ -126,7 +171,8 @@ class _CloudSyncScreenState extends State<CloudSyncScreen> {
         future: _settingsFuture,
         builder: (context, snapshot) {
           final settings = snapshot.data;
-          if (settings == null && snapshot.connectionState != ConnectionState.done) {
+          if (settings == null &&
+              snapshot.connectionState != ConnectionState.done) {
             return Center(child: CircularProgressIndicator());
           }
 
@@ -144,12 +190,17 @@ class _CloudSyncScreenState extends State<CloudSyncScreen> {
                     Expanded(
                       child: Text(
                         widget.session.farm.syncCode,
-                        style: GoogleFonts.poppins(fontSize: 32, fontWeight: FontWeight.w700),
+                        style: GoogleFonts.poppins(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                     IconButton(
                       onPressed: () {
-                        Clipboard.setData(ClipboardData(text: widget.session.farm.syncCode));
+                        Clipboard.setData(
+                          ClipboardData(text: widget.session.farm.syncCode),
+                        );
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Sync code copied'.tr)),
                         );
@@ -168,36 +219,50 @@ class _CloudSyncScreenState extends State<CloudSyncScreen> {
               TextField(
                 controller: _serverController,
                 decoration: InputDecoration(
-                  labelText: 'Server URL',
-                  hintText: 'https://your-server.example.com/api'.tr,
+                  labelText: 'Server URL'.tr,
+                  hintText: 'https://your-server.example.com/api',
                 ),
                 enabled: !_busy,
               ),
               SizedBox(height: 8),
               Text(
-                'Leave empty to use the built-in local cloud folder on this device.',
-                style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
+                'Leave empty to use the built-in local cloud folder on this device.'
+                    .tr,
+                style: GoogleFonts.poppins(
+                  fontSize: 12,
+                  color: KalroColors.textMuted,
+                ),
               ),
               if (settings != null &&
-                  (settings.lastUploadedAt != null || settings.lastDownloadedAt != null)) ...[
+                  (settings.lastUploadedAt != null ||
+                      settings.lastDownloadedAt != null)) ...[
                 SizedBox(height: 20),
                 AdminInfoCard(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Sync history', style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+                      Text(
+                        'Sync history'.tr,
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                      ),
                       if (settings.lastUploadedAt != null) ...[
                         SizedBox(height: 8),
                         Text(
                           'Last upload: ${dateFormat.format(settings.lastUploadedAt!)}',
-                          style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            color: KalroColors.textMuted,
+                          ),
                         ),
                       ],
                       if (settings.lastDownloadedAt != null) ...[
                         SizedBox(height: 4),
                         Text(
                           'Last download: ${dateFormat.format(settings.lastDownloadedAt!)}',
-                          style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            color: KalroColors.textMuted,
+                          ),
                         ),
                       ],
                     ],
@@ -207,11 +272,15 @@ class _CloudSyncScreenState extends State<CloudSyncScreen> {
               SizedBox(height: 24),
               KalroPrimaryButton(
                 label: _busy ? 'Uploading...' : 'Upload to cloud',
-                onPressed: _busy || settings == null ? null : () => _upload(settings),
+                onPressed: _busy || settings == null
+                    ? null
+                    : () => _upload(settings),
               ),
               SizedBox(height: 12),
               OutlinedButton(
-                onPressed: _busy || settings == null ? null : () => _download(settings),
+                onPressed: _busy || settings == null
+                    ? null
+                    : () => _download(settings),
                 style: OutlinedButton.styleFrom(
                   minimumSize: Size.fromHeight(48),
                   side: BorderSide(color: KalroColors.headerGreen),

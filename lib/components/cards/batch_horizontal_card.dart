@@ -5,7 +5,9 @@ import 'package:intl/intl.dart';
 import '../../models/batch.dart';
 import '../../models/rearing_conditions.dart';
 import '../../services/lifecycle_engine.dart';
+import '../../services/rearing_day_service.dart';
 import '../../theme/kalro_colors.dart';
+import '../../l10n/translator.dart';
 
 /// Compact row tile for an active rearing batch.
 class BatchHorizontalCard extends StatelessWidget {
@@ -16,6 +18,9 @@ class BatchHorizontalCard extends StatelessWidget {
     required this.onTap,
     this.observedStageDates,
     this.conditions,
+    this.liveCount,
+    this.fedToday,
+    this.survivalPercent,
   });
 
   final Batch batch;
@@ -23,9 +28,17 @@ class BatchHorizontalCard extends StatelessWidget {
   final VoidCallback onTap;
   final Map<String, DateTime>? observedStageDates;
   final RearingConditions? conditions;
+  final int? liveCount;
+  final bool? fedToday;
+  final double? survivalPercent;
 
   @override
   Widget build(BuildContext context) {
+    final plan = RearingDayService().planFor(
+      batch,
+      observedStageDates: observedStageDates,
+      conditions: conditions,
+    );
     final next = lifecycleEngine.nextMilestone(
       batch,
       observedStageDates: observedStageDates,
@@ -37,18 +50,20 @@ class BatchHorizontalCard extends StatelessWidget {
       conditions: conditions,
     );
     final dateFormat = DateFormat.MMMd();
-    final stageLabel = current?.label ?? 'Starting';
-    final daysRunning = DateTime.now().difference(batch.startDate).inDays + 1;
+    final stageLabel = plan?.actionTitle ?? current?.label.tr ?? 'Starting'.tr;
+    final daysRunning =
+        plan?.cycleDay ?? DateTime.now().difference(batch.startDate).inDays + 1;
+    final accent = plan?.isHarvestWork == true
+        ? KalroColors.harvest
+        : plan?.stopFeeding == true
+        ? KalroColors.rest
+        : KalroColors.primaryGreen;
 
-    final detail = next != null
-        ? [
-            '$stageLabel · Next ${next.label} ${dateFormat.format(next.expectedDate)}',
-            if (next.daysVsTypical != null && next.daysVsTypical != 0)
-              next.daysVsTypical! > 0
-                  ? '+${next.daysVsTypical}d'
-                  : '${next.daysVsTypical}d',
-          ].join(' ')
-        : '$stageLabel · Day $daysRunning';
+    final detail =
+        plan?.feedLabel ??
+        (next != null
+            ? '$stageLabel · ${Translator.fill('Next {label} {date}', {'label': next.label, 'date': dateFormat.format(next.expectedDate)})}'
+            : '$stageLabel · ${Translator.fill('Day {n}', {'n': '$daysRunning'})}');
 
     return Material(
       color: Colors.white,
@@ -65,16 +80,18 @@ class BatchHorizontalCard extends StatelessWidget {
           child: Row(
             children: [
               Container(
-                width: 44,
-                height: 44,
+                width: 48,
+                height: 48,
                 decoration: BoxDecoration(
-                  color: KalroColors.headerGreen.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
+                  color: accent.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(14),
                 ),
                 child: Icon(
-                  batch.species.name == 'eri' ? Icons.eco_outlined : Icons.flutter_dash,
+                  batch.species.name == 'eri'
+                      ? Icons.eco_outlined
+                      : Icons.spa_outlined,
                   size: 22,
-                  color: KalroColors.primaryGreen,
+                  color: accent,
                 ),
               ),
               SizedBox(width: 12),
@@ -86,14 +103,47 @@ class BatchHorizontalCard extends StatelessWidget {
                       batch.species.label,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 14),
+                      style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                      ),
                     ),
                     SizedBox(height: 2),
                     Text(
-                      detail,
+                      [
+                        if (liveCount != null) Translator.fill('{n} live', {'n': '$liveCount'}),
+                        if (survivalPercent != null)
+                          '${survivalPercent!.toStringAsFixed(0)}%',
+                        '$stageLabel · ${Translator.fill('day {d} of {n}', {
+                          'd': '$daysRunning',
+                          'n': '${plan?.cycleLengthDays ?? daysRunning}',
+                        })}',
+                      ].join(' · '),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        color: KalroColors.textMuted,
+                      ),
+                    ),
+                    Text(
+                      [
+                        if (plan?.isHarvestWork == true)
+                          'Harvest'.tr
+                        else if (plan?.stopFeeding == true)
+                          'Rest day'.tr
+                        else if (fedToday == true)
+                          'Fed today'.tr
+                        else if (fedToday == false && (plan?.suggestedGrams ?? 0) > 0)
+                          'Needs feed'.tr,
+                        detail,
+                      ].where((s) => s.isNotEmpty).join(' · '),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        color: KalroColors.textMuted,
+                      ),
                     ),
                   ],
                 ),

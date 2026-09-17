@@ -6,6 +6,7 @@ import 'environment_log_repository.dart';
 import 'feed_log_repository.dart';
 import 'inventory_settings_repository.dart';
 import 'leaf_inventory_repository.dart';
+import 'leaf_movement_repository.dart';
 import 'milestone_observation_repository.dart';
 import 'mortality_log_repository.dart';
 import 'payment_repository.dart';
@@ -24,6 +25,8 @@ class AppRepositories {
         milestoneObservations =
             MilestoneObservationRepository(storageDirectory: storageDirectory),
         leafInventory = LeafInventoryRepository(storageDirectory: storageDirectory),
+        leafMovements =
+            LeafMovementRepository(storageDirectory: storageDirectory),
         payments = PaymentRepository(storageDirectory: storageDirectory),
         producers = ProducerRepository(storageDirectory: storageDirectory),
         purchaseOrders = PurchaseOrderRepository(storageDirectory: storageDirectory),
@@ -36,6 +39,7 @@ class AppRepositories {
   final CocoonHarvestRepository cocoonHarvests;
   final MilestoneObservationRepository milestoneObservations;
   final LeafInventoryRepository leafInventory;
+  final LeafMovementRepository leafMovements;
   final PaymentRepository payments;
   final ProducerRepository producers;
   final PurchaseOrderRepository purchaseOrders;
@@ -51,6 +55,7 @@ class AppRepositories {
     cocoonHarvests.invalidateCache();
     milestoneObservations.invalidateCache();
     leafInventory.invalidateCache();
+    leafMovements.invalidateCache();
     payments.invalidateCache();
     producers.invalidateCache();
     purchaseOrders.invalidateCache();

@@ -58,4 +58,29 @@ void main() {
     expect(download.success, isTrue, reason: download.message);
     expect(await repositories.batches.getAll(), hasLength(1));
   });
+
+  test('refuses to overwrite a newer local snapshot unless asked', () async {
+    final farm = (await auth.listFarms()).single;
+    final upload = await sync.upload(repositories: repositories, farm: farm);
+    expect(upload.success, isTrue, reason: upload.message);
+
+    final metaFile = File('${farmDir.path}/sync_meta.json');
+    final meta = {
+      'lastSnapshotExportedAt': DateTime.now().add(const Duration(days: 2)).toIso8601String(),
+    };
+    await metaFile.writeAsString(
+      '{"lastSnapshotExportedAt":"${meta['lastSnapshotExportedAt']}"}',
+    );
+
+    final blocked = await sync.download(repositories: repositories, farm: farm);
+    expect(blocked.success, isFalse);
+    expect(blocked.wouldOverwriteNewerLocal, isTrue);
+
+    final forced = await sync.download(
+      repositories: repositories,
+      farm: farm,
+      overwriteNewerLocal: true,
+    );
+    expect(forced.success, isTrue, reason: forced.message);
+  });
 }

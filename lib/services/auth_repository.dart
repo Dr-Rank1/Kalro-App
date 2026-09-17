@@ -188,6 +188,10 @@ class AuthRepository {
     required String adminDisplayName,
     required String adminPin,
   }) async {
+    if (adminPin.trim().isEmpty) {
+      await ensureAdminUsernameAlias(farmId);
+      return;
+    }
     final normalized = adminUsername.trim().toLowerCase();
     final admin = await findAdminUser(farmId);
     if (admin == null) {

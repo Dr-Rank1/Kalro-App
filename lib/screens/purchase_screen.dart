@@ -105,7 +105,8 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                     if (widget.showToolbar) ...[
                       KalroToolbar(
                         title: 'Purchase'.tr,
-                        subtitle: 'Find KALRO seed suppliers and rearing support.'.tr,
+                        subtitle:
+                            'Find KALRO seed suppliers and rearing support.'.tr,
                       ),
                       SizedBox(height: 24),
                     ],
@@ -129,7 +130,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                       ],
                     ),
                     SizedBox(height: 24),
-                    KalroSectionHeader(title: 'Producers'),
+                    KalroSectionHeader(title: 'Producers'.tr),
                     SizedBox(height: 12),
                     ...summary.producers.map(
                       (producer) => Padding(
@@ -137,19 +138,23 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                         child: ProducerListingCard(
                           title: producer.name,
                           subtitle: producer.type.label,
-                          detail: _producerDetail(producer).isEmpty ? null : _producerDetail(producer),
+                          detail: _producerDetail(producer).isEmpty
+                              ? null
+                              : _producerDetail(producer),
                           onAction: () => _openCreatePurchase(producer),
                         ),
                       ),
                     ),
                     SizedBox(height: 12),
-                    KalroSectionHeader(title: 'Recent Purchases'),
+                    KalroSectionHeader(title: 'Recent Purchases'.tr),
                     SizedBox(height: 12),
                     if (summary.recentOrders.isEmpty)
                       EmptyStateCard(
                         title: 'No purchases yet'.tr,
-                        message: 'Tap Purchase on a producer to log seed or chawki orders.',
-                        actionLabel: 'Add Producer',
+                        message:
+                            'Tap Purchase on a producer to log seed or chawki orders.'
+                                .tr,
+                        actionLabel: 'Add Producer'.tr,
                         onAction: _openAddProducer,
                         icon: Icons.add_shopping_cart_outlined,
                       )

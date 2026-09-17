@@ -3,13 +3,10 @@ import 'package:intl/intl.dart';
 
 import '../../models/lifecycle_milestone.dart';
 import '../../theme/kalro_colors.dart';
+import '../../l10n/translator.dart';
 
 class MilestoneTimeline extends StatelessWidget {
-  MilestoneTimeline({
-    super.key,
-    required this.milestones,
-    this.onMarkObserved,
-  });
+  MilestoneTimeline({super.key, required this.milestones, this.onMarkObserved});
 
   final List<LifecycleMilestone> milestones;
   final void Function(LifecycleMilestone milestone)? onMarkObserved;
@@ -35,23 +32,24 @@ class MilestoneTimeline extends StatelessWidget {
           final icon = milestone.isObserved
               ? Icons.check_circle
               : milestone.isToday
-                  ? Icons.today
-                  : milestone.isPast
-                      ? Icons.check_circle_outline
-                      : Icons.radio_button_unchecked;
+              ? Icons.today
+              : milestone.isPast
+              ? Icons.check_circle_outline
+              : Icons.radio_button_unchecked;
           final iconColor = milestone.isObserved
               ? colorScheme.primary
               : milestone.isToday
-                  ? colorScheme.primary
-                  : milestone.isPast
-                      ? colorScheme.outline
-                      : colorScheme.onSurfaceVariant;
+              ? colorScheme.primary
+              : milestone.isPast
+              ? colorScheme.outline
+              : colorScheme.onSurfaceVariant;
 
           final dateLabel = milestone.isObserved
               ? 'Observed ${dateFormat.format(milestone.observedDate!)}'
               : [
                   dateFormat.format(milestone.expectedDate),
-                  if (milestone.daysVsTypical != null && milestone.daysVsTypical != 0)
+                  if (milestone.daysVsTypical != null &&
+                      milestone.daysVsTypical != 0)
                     milestone.daysVsTypical! > 0
                         ? '+${milestone.daysVsTypical}d vs typical'
                         : '${milestone.daysVsTypical}d vs typical',
@@ -59,12 +57,12 @@ class MilestoneTimeline extends StatelessWidget {
 
           return ListTile(
             leading: Icon(icon, color: iconColor),
-            title: Text(milestone.label),
-            subtitle: Text(dateLabel),
+            title: Text(milestone.label.tr),
+            subtitle: Text(dateLabel.tr),
             trailing: onMarkObserved != null && milestone.stageKey != null
                 ? TextButton(
                     onPressed: () => onMarkObserved!(milestone),
-                    child: Text(milestone.isObserved ? 'Update' : 'Mark'),
+                    child: Text(milestone.isObserved ? 'Update'.tr : 'Mark'.tr),
                   )
                 : null,
           );

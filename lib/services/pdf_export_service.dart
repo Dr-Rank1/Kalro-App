@@ -5,6 +5,11 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
+import '../models/batch.dart';
+import '../models/cocoon_harvest.dart';
+import '../models/environment_log.dart';
+import '../models/feed_log.dart';
+import '../models/mortality_log.dart';
 import '../models/report_chart_data.dart';
 import 'app_repositories.dart';
 import 'report_chart_service.dart';
@@ -81,6 +86,100 @@ class PdfExportService {
 
     final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
     final file = File('${exportsDir.path}/kalro_report_$timestamp.pdf');
+    await file.writeAsBytes(await doc.save());
+    return file;
+  }
+
+  Future<File> exportCycleReport({
+    required Batch batch,
+    required List<FeedLog> feedLogs,
+    required List<MortalityLog> mortalityLogs,
+    required List<EnvironmentLog> environmentLogs,
+    required List<CocoonHarvest> harvests,
+  }) async {
+    final dateFormat = DateFormat('d MMM yyyy');
+    final feed = feedLogs.where((l) => l.batchId == batch.id).toList();
+    final deaths = mortalityLogs.where((l) => l.batchId == batch.id).toList();
+    final house = environmentLogs.where((l) => l.batchId == batch.id).toList();
+    final cocoons = harvests.where((h) => h.batchId == batch.id).toList();
+    final feedTotal = feed.fold<double>(0, (sum, log) => sum + log.quantityGrams);
+    final deathTotal = deaths.fold<int>(0, (sum, log) => sum + log.count);
+    final harvestTotal = cocoons.fold<double>(0, (sum, h) => sum + h.totalWeightGrams);
+
+    final doc = pw.Document();
+    doc.addPage(
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4,
+        build: (context) => [
+          pw.Text(
+            '${batch.species.label} cycle',
+            style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold),
+          ),
+          pw.SizedBox(height: 4),
+          pw.Text(
+            'Started ${dateFormat.format(batch.startDate)} · ${batch.eggCount} eggs · ${batch.status.name}',
+            style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey700),
+          ),
+          pw.SizedBox(height: 16),
+          _metricTable([
+            ['Feed logged', _formatGrams(feedTotal)],
+            ['Deaths logged', '$deathTotal'],
+            ['Live (start − deaths)', '${(batch.eggCount - deathTotal).clamp(0, batch.eggCount)}'],
+            ['House readings', '${house.length}'],
+            ['Harvest weight', harvestTotal > 0 ? _formatGrams(harvestTotal) : '—'],
+          ]),
+          pw.SizedBox(height: 16),
+          pw.Text('Feed logs', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+          pw.SizedBox(height: 6),
+          if (feed.isEmpty)
+            pw.Text('None')
+          else
+            pw.TableHelper.fromTextArray(
+              headers: ['When', 'Type', 'Grams', 'Stage'],
+              data: feed
+                  .map(
+                    (log) => [
+                      dateFormat.format(log.recordedAt),
+                      log.feedType,
+                      '${log.quantityGrams.round()}',
+                      log.feedingStage ?? '',
+                    ],
+                  )
+                  .toList(),
+              headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 9),
+              cellStyle: const pw.TextStyle(fontSize: 9),
+            ),
+          pw.SizedBox(height: 12),
+          pw.Text('Mortality', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+          pw.SizedBox(height: 6),
+          if (deaths.isEmpty)
+            pw.Text('None logged')
+          else
+            pw.TableHelper.fromTextArray(
+              headers: ['When', 'Count', 'Disease'],
+              data: deaths
+                  .map(
+                    (log) => [
+                      dateFormat.format(log.recordedAt),
+                      '${log.count}',
+                      log.disease ?? '',
+                    ],
+                  )
+                  .toList(),
+              headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 9),
+              cellStyle: const pw.TextStyle(fontSize: 9),
+            ),
+        ],
+      ),
+    );
+
+    final directory = await getApplicationDocumentsDirectory();
+    final exportsDir = Directory('${directory.path}/kalro_exports');
+    if (!await exportsDir.exists()) {
+      await exportsDir.create(recursive: true);
+    }
+    final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
+    final file = File('${exportsDir.path}/kalro_cycle_${batch.species.name}_$timestamp.pdf');
     await file.writeAsBytes(await doc.save());
     return file;
   }

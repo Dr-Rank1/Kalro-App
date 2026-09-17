@@ -36,11 +36,7 @@ class BatchStatusChips extends StatelessWidget {
 }
 
 class BatchInfoPanel extends StatelessWidget {
-  BatchInfoPanel({
-    super.key,
-    required this.batch,
-    required this.rows,
-  });
+  BatchInfoPanel({super.key, required this.batch, required this.rows});
 
   final Batch batch;
   final List<BatchInfoRow> rows;
@@ -59,7 +55,10 @@ class BatchInfoPanel extends StatelessWidget {
         children: [
           Text(
             '${batch.species.label} batch',
-            style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
+            style: GoogleFonts.poppins(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           SizedBox(height: 12),
           ...rows.map(
@@ -72,11 +71,17 @@ class BatchInfoPanel extends StatelessWidget {
                     width: 130,
                     child: Text(
                       row.label,
-                      style: GoogleFonts.poppins(fontSize: 13, color: KalroColors.textMuted),
+                      style: GoogleFonts.poppins(
+                        fontSize: 13,
+                        color: KalroColors.textMuted,
+                      ),
                     ),
                   ),
                   Expanded(
-                    child: Text(row.value, style: GoogleFonts.poppins(fontSize: 13)),
+                    child: Text(
+                      row.value,
+                      style: GoogleFonts.poppins(fontSize: 13),
+                    ),
                   ),
                 ],
               ),

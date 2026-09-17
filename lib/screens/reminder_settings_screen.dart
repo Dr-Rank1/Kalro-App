@@ -94,16 +94,23 @@ class _ReminderSettingsScreenState extends State<ReminderSettingsScreen> {
                       contentPadding: EdgeInsets.zero,
                       title: Text('Enable reminders'.tr),
                       value: settings.enabled,
-                      onChanged: (value) => _save(settings.copyWith(enabled: value)),
+                      onChanged: (value) async {
+                        if (value) await _notifications.requestPermission();
+                        await _save(settings.copyWith(enabled: value));
+                      },
                     ),
                     Divider(height: 1),
                     ListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: Text('Daily feeding reminder'.tr),
-                      subtitle: Text(_formatTime(settings)),
+                      title: Text('Daily rearing reminder'.tr),
+                      subtitle: Text(
+                        '${_formatTime(settings)} · ${'today’s feed, rest, or harvest'.tr}',
+                      ),
                       trailing: Icon(Icons.schedule),
                       enabled: settings.enabled,
-                      onTap: settings.enabled ? () => _pickTime(settings) : null,
+                      onTap: settings.enabled
+                          ? () => _pickTime(settings)
+                          : null,
                     ),
                     Divider(height: 1),
                     SwitchListTile(
@@ -112,7 +119,9 @@ class _ReminderSettingsScreenState extends State<ReminderSettingsScreen> {
                       subtitle: Text('Hatch, moult, and harvest dates'.tr),
                       value: settings.milestoneReminders,
                       onChanged: settings.enabled
-                          ? (value) => _save(settings.copyWith(milestoneReminders: value))
+                          ? (value) => _save(
+                              settings.copyWith(milestoneReminders: value),
+                            )
                           : null,
                     ),
                   ],
@@ -124,12 +133,19 @@ class _ReminderSettingsScreenState extends State<ReminderSettingsScreen> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.smartphone_outlined, color: KalroColors.headerGreen),
+                      Icon(
+                        Icons.smartphone_outlined,
+                        color: KalroColors.headerGreen,
+                      ),
                       SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          'Push notifications work on Android and iOS. On this device, use Home tab alerts instead.',
-                          style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
+                          'Push notifications work on Android and iOS. On this device, use Home tab alerts instead.'
+                              .tr,
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            color: KalroColors.textMuted,
+                          ),
                         ),
                       ),
                     ],

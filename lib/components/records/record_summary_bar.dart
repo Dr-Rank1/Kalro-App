@@ -48,7 +48,10 @@ class RecordSummaryBar extends StatelessWidget {
                   Text(
                     items[i].label,
                     textAlign: TextAlign.center,
-                    style: GoogleFonts.poppins(fontSize: 10, color: KalroColors.textMuted),
+                    style: GoogleFonts.poppins(
+                      fontSize: 10,
+                      color: KalroColors.textMuted,
+                    ),
                   ),
                 ],
               ),

@@ -35,11 +35,17 @@ class PaymentSummaryCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: GoogleFonts.poppins(fontSize: 13, color: KalroColors.textMuted),
+                  style: GoogleFonts.poppins(
+                    fontSize: 13,
+                    color: KalroColors.textMuted,
+                  ),
                 ),
                 Text(
                   value,
-                  style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
+                  style: GoogleFonts.poppins(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ],
             ),

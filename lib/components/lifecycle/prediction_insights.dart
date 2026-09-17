@@ -124,7 +124,9 @@ class PredictionConditionsBanner extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            logged ? 'Logged conditions affecting dates' : 'How this scenario moves dates',
+            logged
+                ? 'Logged conditions affecting dates'
+                : 'How this scenario moves dates',
             style: GoogleFonts.poppins(
               fontSize: 13,
               fontWeight: FontWeight.w600,
@@ -135,7 +137,10 @@ class PredictionConditionsBanner extends StatelessWidget {
             SizedBox(height: 4),
             Text(
               snapshot!,
-              style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textDark),
+              style: GoogleFonts.poppins(
+                fontSize: 12,
+                color: KalroColors.textDark,
+              ),
             ),
           ],
           if (headline != null) ...[
@@ -158,13 +163,20 @@ class PredictionConditionsBanner extends StatelessWidget {
                 children: [
                   Padding(
                     padding: EdgeInsets.only(top: 3),
-                    child: Icon(Icons.circle, size: 6, color: KalroColors.accentBrown),
+                    child: Icon(
+                      Icons.circle,
+                      size: 6,
+                      color: KalroColors.accentBrown,
+                    ),
                   ),
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       reason,
-                      style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textDark),
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        color: KalroColors.textDark,
+                      ),
                     ),
                   ),
                 ],
@@ -207,21 +219,27 @@ class LifecyclePlanHomeCard extends StatelessWidget {
         onTap: onOpenPlanner,
         borderRadius: BorderRadius.circular(12),
         child: Container(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: KalroColors.headerGreen.withValues(alpha: 0.25)),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: KalroColors.softShadow,
+            border: Border.all(
+              color: KalroColors.headerGreen.withValues(alpha: 0.12),
+            ),
           ),
           child: Row(
             children: [
               Container(
-                width: 44,
-                height: 44,
+                width: 48,
+                height: 48,
                 decoration: BoxDecoration(
                   color: KalroColors.headerGreen.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(14),
                 ),
-                child: Icon(Icons.auto_graph_outlined, color: KalroColors.headerGreen),
+                child: const Icon(
+                  Icons.auto_graph_outlined,
+                  color: KalroColors.headerGreen,
+                ),
               ),
               SizedBox(width: 12),
               Expanded(
@@ -229,18 +247,22 @@ class LifecyclePlanHomeCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Lifecycle plan',
+                      'Lifecycle planner'.tr,
                       style: GoogleFonts.poppins(
                         fontSize: 15,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                     SizedBox(height: 2),
                     Text(
                       nextLabel == null
                           ? 'See hatch, harvest, and moth dates. Test cool weather, heat, or short leaf.'
+                                .tr
                           : '$nextLabel · $nextWhen',
-                      style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        color: KalroColors.textMuted,
+                      ),
                     ),
                     if (conditionNote != null) ...[
                       SizedBox(height: 4),

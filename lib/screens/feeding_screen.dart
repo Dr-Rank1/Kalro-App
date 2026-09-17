@@ -7,11 +7,7 @@ import '../services/app_repositories.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class FeedingScreen extends StatefulWidget {
-  FeedingScreen({
-    super.key,
-    required this.repositories,
-    required this.canEdit,
-  });
+  FeedingScreen({super.key, required this.repositories, required this.canEdit});
 
   final AppRepositories repositories;
   final bool canEdit;
@@ -33,10 +29,15 @@ class _FeedingScreenState extends State<FeedingScreen> {
   void _reload() {
     setState(() {
       _batchesFuture = widget.repositories.batches.getAll().then((all) {
-        final active = all.where((b) => b.status != BatchStatus.closed).toList();
+        final active = all
+            .where((b) => b.status != BatchStatus.closed)
+            .toList();
         if (_selectedBatch != null) {
-          final stillExists = active.where((b) => b.id == _selectedBatch!.id).isNotEmpty;
-          if (!stillExists) _selectedBatch = active.isNotEmpty ? active.first : null;
+          final stillExists = active
+              .where((b) => b.id == _selectedBatch!.id)
+              .isNotEmpty;
+          if (!stillExists)
+            _selectedBatch = active.isNotEmpty ? active.first : null;
         } else if (active.isNotEmpty) {
           _selectedBatch = active.first;
         }
@@ -72,26 +73,28 @@ class _FeedingScreenState extends State<FeedingScreen> {
                     RecordEmptyState(
                       icon: Icons.layers_outlined,
                       title: 'No active batches'.tr,
-                      message: 'Start a rearing cycle to log feeding.',
+                      message: 'Start a rearing cycle to log feeding.'.tr,
                     )
                   else ...[
                     InputDecorator(
-                      decoration: InputDecoration(labelText: 'Select Batch'),
+                      decoration: InputDecoration(labelText: 'Select Batch'.tr),
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<Batch>(
-                      value: _selectedBatch,
-                      isExpanded: true,
-                      
-                      items: activeBatches.map((b) {
-                        return DropdownMenuItem(
-                          value: b,
-                          child: Text('${b.species.label} - ${b.eggCount} larvae'.tr),
-                        );
-                      }).toList(),
-                      onChanged: (val) {
-                        setState(() => _selectedBatch = val);
-                      },
-                    ),
+                          value: _selectedBatch,
+                          isExpanded: true,
+
+                          items: activeBatches.map((b) {
+                            return DropdownMenuItem(
+                              value: b,
+                              child: Text(
+                                '${b.species.label} - ${b.eggCount} larvae'.tr,
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (val) {
+                            setState(() => _selectedBatch = val);
+                          },
+                        ),
                       ),
                     ),
                     SizedBox(height: 24),
@@ -99,6 +102,8 @@ class _FeedingScreenState extends State<FeedingScreen> {
                       FeedLogSection(
                         batchId: _selectedBatch!.id,
                         repository: widget.repositories.feedLogs,
+                        farmRepositories: widget.repositories,
+                        species: _selectedBatch!.species,
                       ),
                   ],
                 ],

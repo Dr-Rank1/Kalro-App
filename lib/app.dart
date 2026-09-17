@@ -110,22 +110,14 @@ class _KalroAppState extends State<KalroApp> {
         orgName: orgName,
         adminUsername: adminUsername,
         adminDisplayName: displayName,
-        adminPin: '1234',
+        adminPin: '',
       );
-      final farm = await widget.sessionService.ensureFarmFromPreferences(
+      await widget.sessionService.ensureFarmFromPreferences(
         orgName: orgName,
         adminUsername: adminUsername,
         adminDisplayName: displayName,
-        adminPin: '1234',
+        adminPin: '',
       );
-      if (farm != null) {
-        await widget.authRepository.ensureManagerAccount(
-          farmId: farm.id,
-          adminUsername: adminUsername,
-          adminDisplayName: displayName,
-          adminPin: '1234',
-        );
-      }
       final session = await widget.sessionService.loadSession();
       if (session != null) {
         _session = session;

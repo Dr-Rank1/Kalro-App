@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
 import '../components/components.dart';
 import '../models/batch.dart';
@@ -14,7 +15,10 @@ import '../services/permission_service.dart';
 import '../services/user_preferences.dart';
 import '../theme/kalro_colors.dart';
 import 'reminder_settings_screen.dart';
+import 'data_management_screen.dart';
+import 'cloud_sync_screen.dart';
 import '../l10n/app_localizations.dart';
+import '../services/cloud_sync_service.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class FarmerProfileScreen extends StatefulWidget {
@@ -45,24 +49,40 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
   Future<_ProfileData>? _dataFuture;
   String _selectedLanguage = 'en';
   AppUser? _currentUser;
+  UserRole _role = UserRole.swr;
+  DateTime? _lastBackup;
 
   @override
   void initState() {
     super.initState();
     _dataFuture = _loadData();
     _loadLanguage();
+    widget.userPreferences.getRole().then((role) {
+      if (mounted) setState(() => _role = role);
+    });
+    CloudSyncService().loadSyncMeta(widget.session.farm).then((meta) {
+      if (mounted) {
+        setState(() {
+          _lastBackup = meta.lastUploadedAt ?? meta.lastSnapshotExportedAt;
+        });
+      }
+    });
   }
 
   Future<_ProfileData> _loadData() async {
     final allBatches = await widget.repositories.batches.getAll();
     final allHarvests = await widget.repositories.cocoonHarvests.getAll();
-    final harvestedBatches = allBatches.where((b) => b.status == BatchStatus.harvested).toList();
+    final harvestedBatches = allBatches
+        .where((b) => b.status == BatchStatus.harvested)
+        .toList();
     return _ProfileData(harvestedBatches, allHarvests);
   }
 
   Future<void> _loadLanguage() async {
     final lang = await widget.userPreferences.getLanguage();
-    if (lang != null && (lang.toLowerCase().startsWith('sw') || lang.toLowerCase() == 'swahili')) {
+    if (lang != null &&
+        (lang.toLowerCase().startsWith('sw') ||
+            lang.toLowerCase() == 'swahili')) {
       setState(() => _selectedLanguage = 'sw');
     } else {
       setState(() => _selectedLanguage = 'en');
@@ -79,22 +99,28 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
     final saved = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(l10n?.profileEditName ?? 'Edit Name'),
+        title: Text(l10n?.profileEditName ?? 'Edit Name'.tr),
         content: TextField(
           controller: nameController,
-          decoration: InputDecoration(labelText: 'Display name'),
+          decoration: InputDecoration(labelText: 'Display name'.tr),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: Text('Cancel'.tr)),
-          TextButton(onPressed: () => Navigator.pop(context, true), child: Text('Save'.tr)),
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('Cancel'.tr),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text('Save'.tr),
+          ),
         ],
       ),
     );
     if (saved != true || !mounted) return;
-    
+
     final updatedUser = user.copyWith(displayName: nameController.text);
     await AuthRepository().updateUser(updatedUser);
-    
+
     setState(() {
       _currentUser = updatedUser;
     });
@@ -129,15 +155,17 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
             final data = snapshot.data;
             final harvestedBatches = data?.harvestedBatches ?? [];
             final harvests = data?.harvests ?? [];
-            
+
             // Calculate Stats
             final totalCycles = harvestedBatches.length;
             double totalYield = 0;
             double totalSurvival = 0;
             int survivalCount = 0;
-            
+
             for (var batch in harvestedBatches) {
-              final batchHarvests = harvests.where((h) => h.batchId == batch.id).toList();
+              final batchHarvests = harvests
+                  .where((h) => h.batchId == batch.id)
+                  .toList();
               if (batchHarvests.isNotEmpty) {
                 final h = batchHarvests.first;
                 totalYield += (h.totalWeightGrams / 1000.0);
@@ -147,8 +175,10 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                 }
               }
             }
-            
-            final avgSurvival = survivalCount > 0 ? (totalSurvival / survivalCount * 100) : 0.0;
+
+            final avgSurvival = survivalCount > 0
+                ? (totalSurvival / survivalCount * 100)
+                : 0.0;
 
             return ListView(
               padding: EdgeInsets.fromLTRB(20, 20, 20, 88),
@@ -174,7 +204,8 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                         children: [
                           CircleAvatar(
                             radius: 36,
-                            backgroundColor: KalroColors.primaryGreen.withValues(alpha: 0.15),
+                            backgroundColor: KalroColors.primaryGreen
+                                .withValues(alpha: 0.15),
                             child: Text(
                               _initials(user.displayName),
                               style: GoogleFonts.poppins(
@@ -206,13 +237,18 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                                 ),
                                 SizedBox(height: 4),
                                 Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
                                   decoration: BoxDecoration(
-                                    color: KalroColors.primaryGreen.withValues(alpha: 0.2),
+                                    color: KalroColors.primaryGreen.withValues(
+                                      alpha: 0.2,
+                                    ),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Text(
-                                    widget.session.farm.orgName,
+                                    '${widget.session.farm.orgName} · ${_role.label}',
                                     style: GoogleFonts.poppins(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w600,
@@ -225,7 +261,10 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                           ),
                           IconButton(
                             onPressed: _editName,
-                            icon: Icon(Icons.edit_outlined, color: KalroColors.primaryGreen),
+                            icon: Icon(
+                              Icons.edit_outlined,
+                              color: KalroColors.primaryGreen,
+                            ),
                           ),
                         ],
                       ),
@@ -236,23 +275,35 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                           Expanded(
                             child: _StatItem(
                               value: '$totalCycles',
-                              label: l10n?.profileTotalCycles ?? 'Total Cycles',
+                              label:
+                                  l10n?.profileTotalCycles ?? 'Total Cycles'.tr,
                               icon: Icons.loop,
                             ),
                           ),
-                          Container(width: 1, height: 40, color: KalroColors.divider),
+                          Container(
+                            width: 1,
+                            height: 40,
+                            color: KalroColors.divider,
+                          ),
                           Expanded(
                             child: _StatItem(
                               value: '${totalYield.toStringAsFixed(1)} kg',
-                              label: l10n?.profileLifetimeYield ?? 'Lifetime Yield',
+                              label:
+                                  l10n?.profileLifetimeYield ??
+                                  'Lifetime Yield'.tr,
                               icon: Icons.scale_outlined,
                             ),
                           ),
-                          Container(width: 1, height: 40, color: KalroColors.divider),
+                          Container(
+                            width: 1,
+                            height: 40,
+                            color: KalroColors.divider,
+                          ),
                           Expanded(
                             child: _StatItem(
                               value: '${avgSurvival.toStringAsFixed(1)}%',
-                              label: l10n?.profileAvgSurvival ?? 'Avg Survival',
+                              label:
+                                  l10n?.profileAvgSurvival ?? 'Avg Survival'.tr,
                               icon: Icons.health_and_safety_outlined,
                             ),
                           ),
@@ -261,12 +312,12 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                     ],
                   ),
                 ),
-                
+
                 SizedBox(height: 24),
-                
+
                 // Settings & Tools
                 Text(
-                  'Settings & Tools',
+                  'You'.tr,
                   style: GoogleFonts.poppins(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -274,22 +325,28 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                   ),
                 ),
                 SizedBox(height: 12),
-                
+
                 // Language Card
                 _ProfileCardTile(
                   icon: Icons.language,
-                  title: l10n?.profileLanguage ?? 'Language',
+                  title: l10n?.profileLanguage ?? 'Language'.tr,
                   trailing: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
                       value: _selectedLanguage,
                       items: [
                         DropdownMenuItem(
                           value: 'en',
-                          child: Text(l10n?.profileEnglish ?? 'English', style: GoogleFonts.poppins()),
+                          child: Text(
+                            l10n?.profileEnglish ?? 'English'.tr,
+                            style: GoogleFonts.poppins(),
+                          ),
                         ),
                         DropdownMenuItem(
                           value: 'sw',
-                          child: Text(l10n?.profileSwahili ?? 'Swahili', style: GoogleFonts.poppins()),
+                          child: Text(
+                            l10n?.profileSwahili ?? 'Swahili'.tr,
+                            style: GoogleFonts.poppins(),
+                          ),
                         ),
                       ],
                       onChanged: (val) {
@@ -303,40 +360,61 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                 if (_canEdit) ...[
                   _ProfileCardTile(
                     icon: Icons.notifications_outlined,
-                    title: l10n?.profileMyReminders ?? 'My reminders',
+                    title: l10n?.profileMyReminders ?? 'My reminders'.tr,
                     onTap: _openReminders,
                   ),
                   SizedBox(height: 12),
                 ],
 
-                // Backup Card
                 _ProfileCardTile(
                   icon: Icons.cloud_upload_outlined,
-                  title: l10n?.profileDataBackup ?? 'Data & Backup',
-                  subtitle: l10n?.profileBackupDesc ?? 'Secure your data locally',
-                  trailing: ElevatedButton(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(l10n?.profileBackupDesc ?? 'Backup successful')),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: KalroColors.primaryGreen.withValues(alpha: 0.2),
-                      foregroundColor: KalroColors.primaryGreen,
-                      elevation: 0,
-                    ),
-                    child: Text(l10n?.profileBackupNow ?? 'Backup'),
-                  ),
+                  title: l10n?.profileDataBackup ?? 'Data & Backup'.tr,
+                  subtitle:
+                      l10n?.profileBackupDesc ?? 'Secure your data locally'.tr,
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => DataManagementScreen(
+                          repositories: widget.repositories,
+                          session: widget.session,
+                          onDataChanged: () =>
+                              setState(() => _dataFuture = _loadData()),
+                        ),
+                      ),
+                    );
+                  },
                 ),
                 SizedBox(height: 12),
 
                 _ProfileCardTile(
-                  icon: Icons.menu_book_outlined,
-                  title: l10n?.profileKnowledgeBase ?? 'Kalro Knowledge Base',
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Field guides coming soon'.tr)),
+                  icon: Icons.cloud_sync_outlined,
+                  title: 'Send to CRC'.tr,
+                  subtitle: _lastBackup == null
+                      ? 'No cloud backup yet'.tr
+                      : Translator.fill('Last backup {date}', {
+                          'date': DateFormat.yMMMd(Translator.dateLocale)
+                              .add_jm()
+                              .format(_lastBackup!),
+                        }),
+                  onTap: () async {
+                    await Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => CloudSyncScreen(
+                          session: widget.session,
+                          repositories: widget.repositories,
+                          onDataChanged: () =>
+                              setState(() => _dataFuture = _loadData()),
+                        ),
+                      ),
                     );
+                    final meta = await CloudSyncService()
+                        .loadSyncMeta(widget.session.farm);
+                    if (mounted) {
+                      setState(() {
+                        _lastBackup =
+                            meta.lastUploadedAt ?? meta.lastSnapshotExportedAt;
+                      });
+                    }
                   },
                 ),
                 SizedBox(height: 12),
@@ -344,7 +422,7 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                 if (widget.onLogout != null)
                   _ProfileCardTile(
                     icon: Icons.logout,
-                    title: l10n?.profileSignOut ?? 'Sign out',
+                    title: l10n?.profileSignOut ?? 'Sign out'.tr,
                     iconColor: Colors.redAccent,
                     textColor: Colors.redAccent,
                     onTap: widget.onLogout!,
@@ -361,7 +439,8 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
     final parts = name.trim().split(RegExp(r'\s+'));
     if (parts.isEmpty || parts.first.isEmpty) return '?';
     if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
-    return '${parts.first.substring(0, 1)}${parts.last.substring(0, 1)}'.toUpperCase();
+    return '${parts.first.substring(0, 1)}${parts.last.substring(0, 1)}'
+        .toUpperCase();
   }
 }
 
@@ -370,7 +449,11 @@ class _StatItem extends StatelessWidget {
   final String label;
   final IconData icon;
 
-  const _StatItem({required this.value, required this.label, required this.icon});
+  const _StatItem({
+    required this.value,
+    required this.label,
+    required this.icon,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -420,24 +503,18 @@ class _ProfileCardTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 4,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(16),
+      clipBehavior: Clip.antiAlias,
       child: ListTile(
-        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         leading: Container(
-          padding: EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: (iconColor ?? KalroColors.primaryGreen).withValues(alpha: 0.1),
+            color: (iconColor ?? KalroColors.primaryGreen).withValues(
+              alpha: 0.1,
+            ),
             shape: BoxShape.circle,
           ),
           child: Icon(icon, color: iconColor ?? KalroColors.primaryGreen),
@@ -450,16 +527,24 @@ class _ProfileCardTile extends StatelessWidget {
           ),
         ),
         subtitle: subtitle != null
-            ? Text(subtitle!, style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted))
+            ? Text(
+                subtitle!,
+                style: GoogleFonts.poppins(
+                  fontSize: 12,
+                  color: KalroColors.textMuted,
+                ),
+              )
             : null,
-        trailing: trailing ?? (onTap != null ? Icon(Icons.chevron_right, color: KalroColors.textMuted) : null),
+        trailing:
+            trailing ??
+            (onTap != null
+                ? const Icon(Icons.chevron_right, color: KalroColors.textMuted)
+                : null),
         onTap: onTap,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
     );
   }
 }
-
 
 class _ProfileData {
   final List<Batch> harvestedBatches;

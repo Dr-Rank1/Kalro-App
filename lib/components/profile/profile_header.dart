@@ -26,7 +26,11 @@ class ProfileHeader extends StatelessWidget {
             CircleAvatar(
               radius: 36,
               backgroundColor: KalroColors.peach,
-              child: Image.asset('assets/images/kalro_app_icon.png', width: 56, height: 56),
+              child: Image.asset(
+                'assets/images/kalro_app_icon.png',
+                width: 56,
+                height: 56,
+              ),
             ),
             if (onEditAvatar != null)
               Positioned(
@@ -50,15 +54,24 @@ class ProfileHeader extends StatelessWidget {
             children: [
               Text(
                 orgName,
-                style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               Text(
                 displayName,
-                style: GoogleFonts.poppins(fontSize: 14, color: KalroColors.textMuted),
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  color: KalroColors.textMuted,
+                ),
               ),
               Text(
                 userId,
-                style: GoogleFonts.poppins(fontSize: 13, color: KalroColors.textLight),
+                style: GoogleFonts.poppins(
+                  fontSize: 13,
+                  color: KalroColors.textLight,
+                ),
               ),
             ],
           ),
