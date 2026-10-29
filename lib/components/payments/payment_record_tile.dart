@@ -10,7 +10,7 @@ import '../../theme/kalro_colors.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class PaymentRecordTile extends StatelessWidget {
-  PaymentRecordTile({
+  const PaymentRecordTile({
     super.key,
     required this.record,
     this.onSettle,

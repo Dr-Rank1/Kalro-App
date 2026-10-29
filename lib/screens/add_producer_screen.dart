@@ -7,7 +7,7 @@ import '../theme/kalro_colors.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class AddProducerScreen extends StatefulWidget {
-  AddProducerScreen({super.key, required this.repositories});
+  const AddProducerScreen({super.key, required this.repositories});
 
   final AppRepositories repositories;
 
@@ -104,8 +104,9 @@ class _AddProducerScreenState extends State<AddProducerScreen> {
                   controller: _nameController,
                   decoration: InputDecoration(labelText: 'Name'.tr),
                   validator: (value) {
-                    if (value == null || value.trim().isEmpty)
+                    if (value == null || value.trim().isEmpty) {
                       return 'Enter a name';
+                    }
                     return null;
                   },
                 ),

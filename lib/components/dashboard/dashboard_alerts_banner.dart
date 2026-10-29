@@ -6,7 +6,7 @@ import '../../theme/kalro_colors.dart';
 import '../../l10n/translator.dart';
 
 class DashboardAlertsBanner extends StatelessWidget {
-  DashboardAlertsBanner({super.key, required this.alerts, this.onAlertTap});
+  const DashboardAlertsBanner({super.key, required this.alerts, this.onAlertTap});
 
   final List<BatchAlert> alerts;
   final void Function(BatchAlert alert)? onAlertTap;

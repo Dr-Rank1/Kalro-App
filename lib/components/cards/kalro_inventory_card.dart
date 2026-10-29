@@ -5,7 +5,7 @@ import '../../theme/kalro_colors.dart';
 import 'kalro_outline_card.dart';
 
 class KalroInventoryCard extends StatelessWidget {
-  KalroInventoryCard({
+  const KalroInventoryCard({
     super.key,
     required this.icon,
     required this.title,

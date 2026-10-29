@@ -1,7 +1,9 @@
-import '../utils/file_utils.dart';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:crypto/crypto.dart';
+
+import '../utils/file_utils.dart';
 import 'app_repositories.dart';
 
 /// Exports and restores farm data as a single JSON file for CRC / sharing.
@@ -30,6 +32,15 @@ class BackupService {
 
     if (payload['version'] != version) {
       throw FormatException('Unsupported backup version: ${payload['version']}');
+    }
+
+    if (payload['checksum'] is String) {
+      final expected = payload['checksum'] as String;
+      final actual =
+          sha256.convert(utf8.encode(jsonEncode(payload['data']))).toString();
+      if (expected != actual) {
+        throw const FormatException('Corrupted backup: checksum mismatch');
+      }
     }
 
     final data = payload['data'] as Map<String, dynamic>;
@@ -80,30 +91,35 @@ class BackupService {
   }
 
   Future<Map<String, dynamic>> _collectPayload(AppRepositories repositories) async {
+    final data = <String, dynamic>{
+      'batches': (await repositories.batches.getAll()).map((b) => b.toJson()).toList(),
+      'feedLogs': (await repositories.feedLogs.getAll()).map((l) => l.toJson()).toList(),
+      'mortalityLogs':
+          (await repositories.mortalityLogs.getAll()).map((l) => l.toJson()).toList(),
+      'environmentLogs':
+          (await repositories.environmentLogs.getAll()).map((l) => l.toJson()).toList(),
+      'cocoonHarvests':
+          (await repositories.cocoonHarvests.getAll()).map((h) => h.toJson()).toList(),
+      'milestoneObservations': (await repositories.milestoneObservations.getAll())
+          .map((o) => o.toJson())
+          .toList(),
+      'payments': (await repositories.payments.getAll()).map((p) => p.toJson()).toList(),
+      'producers': (await repositories.producers.getAll()).map((p) => p.toJson()).toList(),
+      'purchaseOrders':
+          (await repositories.purchaseOrders.getAll()).map((o) => o.toJson()).toList(),
+      'inventorySettings': (await repositories.inventorySettings.get()).toJson(),
+      'leafInventory': (await repositories.leafInventory.get()).toJson(),
+      'leafMovements':
+          (await repositories.leafMovements.getAll()).map((m) => m.toJson()).toList(),
+    };
+
+    final checksum = sha256.convert(utf8.encode(jsonEncode(data))).toString();
+
     return {
       'version': version,
       'exportedAt': DateTime.now().toIso8601String(),
-      'data': {
-        'batches': (await repositories.batches.getAll()).map((b) => b.toJson()).toList(),
-        'feedLogs': (await repositories.feedLogs.getAll()).map((l) => l.toJson()).toList(),
-        'mortalityLogs':
-            (await repositories.mortalityLogs.getAll()).map((l) => l.toJson()).toList(),
-        'environmentLogs':
-            (await repositories.environmentLogs.getAll()).map((l) => l.toJson()).toList(),
-        'cocoonHarvests':
-            (await repositories.cocoonHarvests.getAll()).map((h) => h.toJson()).toList(),
-        'milestoneObservations': (await repositories.milestoneObservations.getAll())
-            .map((o) => o.toJson())
-            .toList(),
-        'payments': (await repositories.payments.getAll()).map((p) => p.toJson()).toList(),
-        'producers': (await repositories.producers.getAll()).map((p) => p.toJson()).toList(),
-        'purchaseOrders':
-            (await repositories.purchaseOrders.getAll()).map((o) => o.toJson()).toList(),
-        'inventorySettings': (await repositories.inventorySettings.get()).toJson(),
-        'leafInventory': (await repositories.leafInventory.get()).toJson(),
-        'leafMovements':
-            (await repositories.leafMovements.getAll()).map((m) => m.toJson()).toList(),
-      },
+      'checksum': checksum,
+      'data': data,
     };
   }
 

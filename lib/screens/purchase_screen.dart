@@ -13,7 +13,7 @@ import 'create_purchase_screen.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class PurchaseScreen extends StatefulWidget {
-  PurchaseScreen({
+  const PurchaseScreen({
     super.key,
     required this.repositories,
     required this.userPreferences,

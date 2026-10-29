@@ -42,7 +42,7 @@ class MortalityPhotoGallery extends StatelessWidget {
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: photos.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 8),
+            separatorBuilder: (_, _) => const SizedBox(width: 8),
             itemBuilder: (context, index) {
               final item = photos[index];
               return GestureDetector(
@@ -56,7 +56,7 @@ class MortalityPhotoGallery extends StatelessWidget {
                         width: 108,
                         height: 108,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(
+                        errorBuilder: (_, _, _) => Container(
                           width: 108,
                           height: 108,
                           color: KalroColors.divider,
@@ -111,7 +111,7 @@ Future<void> openMortalityPhoto(BuildContext context, MortalityPhotoItem item) {
                   child: Image.file(
                     File(item.log.photoPath!),
                     fit: BoxFit.contain,
-                    errorBuilder: (_, __, ___) => const Icon(Icons.broken_image_outlined, color: Colors.white),
+                    errorBuilder: (_, _, _) => const Icon(Icons.broken_image_outlined, color: Colors.white),
                   ),
                 ),
               ),

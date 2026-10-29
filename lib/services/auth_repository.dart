@@ -2,6 +2,7 @@ import '../utils/file_utils.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'package:path/path.dart' as p;
 
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
@@ -24,10 +25,7 @@ class AuthRepository {
   /// Uses this farm's folder when [UserSession.farmDirectoryPath] is
   /// `{farmsRoot}/{farmId}` so PIN and photo writes stay on the signed-in farm.
   static AuthRepository forSession(UserSession session) {
-    final parts = session.farmDirectoryPath
-        .split(Platform.pathSeparator)
-        .where((part) => part.isNotEmpty);
-    final folderName = parts.isEmpty ? '' : parts.last;
+    final folderName = p.basename(session.farmDirectoryPath);
     if (folderName == session.farm.id) {
       return AuthRepository(
         farmsRootDirectory: Directory(session.farmDirectoryPath).parent,
@@ -78,7 +76,7 @@ class AuthRepository {
     final farms = <FarmProfile>[];
     await for (final entity in root.list()) {
       if (entity is! Directory) continue;
-      final farm = await getFarm(entity.path.split(Platform.pathSeparator).last);
+      final farm = await getFarm(p.basename(entity.path));
       if (farm != null) farms.add(farm);
     }
     farms.sort((a, b) => a.createdAt.compareTo(b.createdAt));

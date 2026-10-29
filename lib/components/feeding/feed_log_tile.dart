@@ -7,7 +7,7 @@ import '../records/record_log_tile.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class FeedLogTile extends StatelessWidget {
-  FeedLogTile({super.key, required this.log, this.onDelete});
+  const FeedLogTile({super.key, required this.log, this.onDelete});
 
   final FeedLog log;
   final VoidCallback? onDelete;

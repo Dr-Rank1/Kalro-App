@@ -15,6 +15,7 @@ class FarmStore {
   final Directory? _directory;
   Database? _db;
   static var _sqliteReady = false;
+  static final Map<String, Database> _databases = {};
 
   static const fileName = 'kalro.db';
   static const _metaKey = '_meta';
@@ -119,8 +120,22 @@ class FarmStore {
   }
 
   Future<void> close() async {
-    _db?.dispose();
+    final dir = await directory();
+    final path = p.canonicalize(p.join(dir.path, fileName));
+    final db = _databases.remove(path) ?? _db;
+    try {
+      db?.dispose();
+    } catch (_) {}
     _db = null;
+  }
+
+  static Future<void> closeAll() async {
+    for (final db in _databases.values) {
+      try {
+        db.dispose();
+      } catch (_) {}
+    }
+    _databases.clear();
   }
 
   Future<Database> _database() async {
@@ -130,7 +145,11 @@ class FarmStore {
     if (!dir.existsSync()) {
       dir.createSync(recursive: true);
     }
-    final path = p.join(dir.path, fileName);
+    final path = p.canonicalize(p.join(dir.path, fileName));
+    if (_databases.containsKey(path)) {
+      _db = _databases[path];
+      return _db!;
+    }
     final db = sqlite3.open(path);
     db.execute('PRAGMA journal_mode=WAL');
     db.execute('PRAGMA synchronous=NORMAL');
@@ -143,6 +162,7 @@ class FarmStore {
         PRIMARY KEY (collection, id)
       )
     ''');
+    db.execute('CREATE INDEX IF NOT EXISTS idx_records_collection ON records(collection);');
     db.execute('''
       CREATE TABLE IF NOT EXISTS singletons (
         name TEXT NOT NULL PRIMARY KEY,
@@ -150,6 +170,7 @@ class FarmStore {
       )
     ''');
     _db = db;
+    _databases[path] = db;
     _migrateLegacyJson(dir, db);
     return db;
   }

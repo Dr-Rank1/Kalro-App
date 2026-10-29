@@ -11,7 +11,7 @@ class RecordSummaryItem {
 }
 
 class RecordSummaryBar extends StatelessWidget {
-  RecordSummaryBar({super.key, required this.items});
+  const RecordSummaryBar({super.key, required this.items});
 
   final List<RecordSummaryItem> items;
 

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../../theme/kalro_colors.dart';
 
 class KalroBackground extends StatelessWidget {
-  KalroBackground({super.key, required this.child});
+  const KalroBackground({super.key, required this.child});
 
   final Widget child;
 

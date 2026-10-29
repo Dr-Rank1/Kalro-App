@@ -8,7 +8,7 @@ import '../theme/kalro_colors.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class RecordPaymentScreen extends StatefulWidget {
-  RecordPaymentScreen({super.key, required this.repository});
+  const RecordPaymentScreen({super.key, required this.repository});
 
   final PaymentRepository repository;
 
@@ -152,8 +152,9 @@ class _RecordPaymentScreenState extends State<RecordPaymentScreen> {
                   ],
                   validator: (value) {
                     final parsed = double.tryParse(value?.trim() ?? '');
-                    if (parsed == null || parsed <= 0)
+                    if (parsed == null || parsed <= 0) {
                       return 'Enter a valid amount';
+                    }
                     return null;
                   },
                 ),

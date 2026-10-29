@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../theme/kalro_colors.dart';
 
 class PaymentSummaryCard extends StatelessWidget {
-  PaymentSummaryCard({
+  const PaymentSummaryCard({
     super.key,
     required this.title,
     required this.value,

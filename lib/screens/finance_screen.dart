@@ -10,7 +10,7 @@ import 'purchase_screen.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class FinanceScreen extends StatelessWidget {
-  FinanceScreen({
+  const FinanceScreen({
     super.key,
     required this.repositories,
     required this.userPreferences,

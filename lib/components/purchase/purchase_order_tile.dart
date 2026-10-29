@@ -7,7 +7,7 @@ import '../../models/purchase_order.dart';
 import '../../theme/kalro_colors.dart';
 
 class PurchaseOrderTile extends StatelessWidget {
-  PurchaseOrderTile({super.key, required this.order, this.onDelete});
+  const PurchaseOrderTile({super.key, required this.order, this.onDelete});
 
   final PurchaseOrder order;
   final VoidCallback? onDelete;

@@ -6,7 +6,7 @@ import '../../theme/kalro_colors.dart';
 import '../../l10n/translator.dart';
 
 class MilestoneTimeline extends StatelessWidget {
-  MilestoneTimeline({super.key, required this.milestones, this.onMarkObserved});
+  const MilestoneTimeline({super.key, required this.milestones, this.onMarkObserved});
 
   final List<LifecycleMilestone> milestones;
   final void Function(LifecycleMilestone milestone)? onMarkObserved;

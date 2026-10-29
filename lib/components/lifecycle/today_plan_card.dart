@@ -210,8 +210,7 @@ class TodayPlanCard extends StatelessWidget {
                     icon: Icons.event_outlined,
                     color: KalroColors.harvest,
                     label:
-                        'Harvest'.tr +
-                        ' ${dateFormat.format(plan.harvestWindowStart!)} – ${dateFormat.format(plan.harvestWindowEnd!)}',
+                        '${'Harvest'.tr} ${dateFormat.format(plan.harvestWindowStart!)} – ${dateFormat.format(plan.harvestWindowEnd!)}',
                   ),
                 ],
                 if (plan.leafKgToHarvest != null &&

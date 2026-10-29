@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../theme/kalro_colors.dart';
 
 class StockSplitRow extends StatelessWidget {
-  StockSplitRow({
+  const StockSplitRow({
     super.key,
     required this.leftTitle,
     required this.leftValue,

@@ -16,7 +16,7 @@ import '../records/record_summary_bar.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class EnvironmentLogSection extends StatefulWidget {
-  EnvironmentLogSection({
+  const EnvironmentLogSection({
     super.key,
     required this.batch,
     required this.repository,
@@ -47,8 +47,9 @@ class _EnvironmentLogSectionState extends State<EnvironmentLogSection> {
   }
 
   Future<void> _deleteLog(EnvironmentLog log) async {
-    if (!await confirmDeleteRecord(context, what: 'environment reading'))
+    if (!await confirmDeleteRecord(context, what: 'environment reading')) {
       return;
+    }
     await widget.repository.delete(log.id);
     _reload();
     widget.onChanged?.call();

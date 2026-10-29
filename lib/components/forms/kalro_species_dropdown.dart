@@ -4,7 +4,7 @@ import '../../models/species.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class KalroSpeciesDropdown extends StatelessWidget {
-  KalroSpeciesDropdown({
+  const KalroSpeciesDropdown({
     super.key,
     required this.value,
     required this.onChanged,

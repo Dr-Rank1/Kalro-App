@@ -12,7 +12,7 @@ import '../cards/kalro_section_header.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class LeafInventorySection extends StatefulWidget {
-  LeafInventorySection({
+  const LeafInventorySection({
     super.key,
     required this.repository,
     this.farmRepositories,

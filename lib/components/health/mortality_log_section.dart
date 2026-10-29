@@ -17,7 +17,7 @@ import 'photo_gallery.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class MortalityLogSection extends StatefulWidget {
-  MortalityLogSection({
+  const MortalityLogSection({
     super.key,
     required this.batchId,
     required this.repository,

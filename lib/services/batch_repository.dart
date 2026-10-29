@@ -95,4 +95,6 @@ class BatchRepository {
   }
 
   void invalidateCache() => _cache = null;
+
+  Future<void> close() => _store.close();
 }

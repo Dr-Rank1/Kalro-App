@@ -14,7 +14,7 @@ import '../theme/kalro_colors.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class CreateBatchScreen extends StatefulWidget {
-  CreateBatchScreen({
+  const CreateBatchScreen({
     super.key,
     required this.repository,
     this.producers,
@@ -218,8 +218,9 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   validator: (value) {
                     final parsed = int.tryParse(value?.trim() ?? '');
-                    if (parsed == null || parsed <= 0)
+                    if (parsed == null || parsed <= 0) {
                       return 'Enter a valid count';
+                    }
                     return null;
                   },
                 ),

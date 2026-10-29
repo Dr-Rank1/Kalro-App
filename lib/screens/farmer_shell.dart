@@ -21,7 +21,7 @@ import 'package:kalro/l10n/translator.dart';
 
 /// Main farmer navigation: Today, Batches, Plan, Farm, You.
 class FarmerShell extends StatefulWidget {
-  FarmerShell({
+  const FarmerShell({
     super.key,
     required this.repositories,
     required this.userPreferences,

@@ -6,7 +6,7 @@ import '../../theme/kalro_colors.dart';
 import '../../l10n/translator.dart';
 
 class DashboardTodayTasks extends StatelessWidget {
-  DashboardTodayTasks({super.key, required this.tasks, this.onTaskTap});
+  const DashboardTodayTasks({super.key, required this.tasks, this.onTaskTap});
 
   final List<TodayTask> tasks;
   final void Function(TodayTask task)? onTaskTap;

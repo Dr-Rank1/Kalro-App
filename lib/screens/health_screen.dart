@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 
 import '../components/components.dart';
+import '../components/health/disease_diagnostic_sheet.dart';
 import '../models/batch.dart';
 import '../models/batch_status.dart';
 import '../models/mortality_log.dart';
 import '../services/app_repositories.dart';
+import '../theme/kalro_colors.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class HealthScreen extends StatefulWidget {
-  HealthScreen({super.key, required this.repositories, required this.canEdit});
+  const HealthScreen({super.key, required this.repositories, required this.canEdit});
 
   final AppRepositories repositories;
   final bool canEdit;
@@ -89,6 +91,14 @@ class _HealthScreenState extends State<HealthScreen> {
                     title: 'Health & Mortality'.tr,
                     subtitle:
                         'Record losses, disease photos, and house conditions.'.tr,
+                    trailing: IconButton(
+                      tooltip: 'Disease Diagnostic Guide'.tr,
+                      icon: const Icon(
+                        Icons.medical_services_outlined,
+                        color: KalroColors.accentGold,
+                      ),
+                      onPressed: () => DiseaseDiagnosticSheet.show(context),
+                    ),
                   ),
                   const SizedBox(height: 24),
                   if (activeBatches.isEmpty)

@@ -5,7 +5,7 @@ import '../../theme/kalro_colors.dart';
 import '../buttons/kalro_primary_button.dart';
 
 class ProducerListingCard extends StatelessWidget {
-  ProducerListingCard({
+  const ProducerListingCard({
     super.key,
     required this.title,
     required this.subtitle,

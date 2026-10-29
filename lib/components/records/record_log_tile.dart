@@ -7,7 +7,7 @@ import '../../theme/kalro_colors.dart';
 
 /// Unified row tile for batch activity records (feeding, mortality, etc.).
 class RecordLogTile extends StatelessWidget {
-  RecordLogTile({
+  const RecordLogTile({
     super.key,
     required this.icon,
     required this.title,

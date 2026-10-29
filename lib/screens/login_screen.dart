@@ -11,7 +11,7 @@ import '../theme/kalro_colors.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class LoginScreen extends StatefulWidget {
-  LoginScreen({
+  const LoginScreen({
     super.key,
     required this.onLoggedIn,
     this.authRepository,
@@ -38,6 +38,8 @@ class _LoginScreenState extends State<LoginScreen> {
   List<FarmProfile> _farms = [];
   var _preparing = true;
   var _loading = false;
+  var _failedAttempts = 0;
+  DateTime? _lockoutUntil;
   var _showAdvanced = false;
   var _logoTapCount = 0;
   String? _errorMessage;
@@ -120,6 +122,12 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
+    if (_lockoutUntil != null && DateTime.now().isBefore(_lockoutUntil!)) {
+      final waitSec = _lockoutUntil!.difference(DateTime.now()).inSeconds + 1;
+      setState(() => _errorMessage = 'Too many attempts. Please wait ${waitSec}s.'.tr);
+      return;
+    }
+
     if (!_formKey.currentState!.validate()) return;
 
     setState(() {
@@ -136,9 +144,20 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (login == null) {
-        if (mounted) setState(() => _errorMessage = 'Wrong username or PIN.');
+        _failedAttempts++;
+        if (_failedAttempts >= 5) {
+          _lockoutUntil = DateTime.now().add(const Duration(seconds: 30));
+          _failedAttempts = 0;
+          if (mounted) {
+            setState(() => _errorMessage = 'Too many attempts. Locked out for 30s.'.tr);
+          }
+          return;
+        }
+        if (mounted) setState(() => _errorMessage = 'Wrong username or PIN.'.tr);
         return;
       }
+
+      _failedAttempts = 0;
 
       final farmDir = await _auth.farmDirectory(login.farm.id);
       final session = UserSession(

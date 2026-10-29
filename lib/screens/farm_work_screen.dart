@@ -20,7 +20,7 @@ import 'package:kalro/l10n/translator.dart';
 
 /// Daily logs and farm tools with live numbers on each row.
 class FarmWorkScreen extends StatefulWidget {
-  FarmWorkScreen({
+  const FarmWorkScreen({
     super.key,
     required this.repositories,
     required this.userPreferences,

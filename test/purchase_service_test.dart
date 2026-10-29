@@ -1,3 +1,4 @@
+import 'package:kalro/services/farm_store.dart';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -19,6 +20,7 @@ void main() {
   });
 
   tearDown(() async {
+    await FarmStore.closeAll();
     if (tempDir.existsSync()) {
       await tempDir.delete(recursive: true);
     }

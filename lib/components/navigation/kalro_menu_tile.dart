@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../theme/kalro_colors.dart';
 
 class KalroMenuTile extends StatelessWidget {
-  KalroMenuTile({
+  const KalroMenuTile({
     super.key,
     required this.icon,
     required this.title,

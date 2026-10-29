@@ -30,7 +30,7 @@ import 'user_management_screen.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class FarmerProfileScreen extends StatefulWidget {
-  FarmerProfileScreen({
+  const FarmerProfileScreen({
     super.key,
     required this.repositories,
     required this.userPreferences,

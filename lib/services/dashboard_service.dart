@@ -127,13 +127,6 @@ class DashboardService {
       return a.batch.species.label.compareTo(b.batch.species.label);
     });
 
-    final alerts = _alertService.evaluate(
-      batches: batches,
-      mortalityLogs: mortalityLogs,
-      environmentLogs: environmentLogs,
-      feedLogs: feedLogs,
-    );
-
     final todayTasks = _feedingScheduleService.buildTasks(
       activeBatches: active,
       feedLogs: feedLogs,
@@ -142,6 +135,10 @@ class DashboardService {
       conditionsByBatch: conditionsByBatch,
       liveCountByBatch: liveCountByBatch,
     );
+
+    final leaf = await repositories.leafInventory.get();
+    final mulberryStockKg = leaf.mulberryKg;
+    final eriHostStockKg = leaf.castorKg + leaf.kesseruKg;
 
     var suggestedFeedTodayGrams = 0.0;
     var leafNeedTodayKg = 0.0;
@@ -160,6 +157,16 @@ class DashboardService {
       if (plan.isHarvestWork) harvestWindowOpen = true;
     }
 
+    final alerts = _alertService.evaluate(
+      batches: batches,
+      mortalityLogs: mortalityLogs,
+      environmentLogs: environmentLogs,
+      feedLogs: feedLogs,
+      leafNeedTodayKg: leafNeedTodayKg,
+      mulberryStockKg: mulberryStockKg,
+      eriHostStockKg: eriHostStockKg,
+    );
+
     final fedTodayByBatch = <String, bool>{};
     final deathsTodayByBatch = <String, int>{};
     for (final batch in active) {
@@ -170,8 +177,6 @@ class DashboardService {
           .where((l) => l.batchId == batch.id && _dateOnly(l.recordedAt) == today)
           .fold<int>(0, (sum, l) => sum + l.count);
     }
-
-    final leaf = await repositories.leafInventory.get();
 
     return DashboardSummary(
       displayName: displayName,
@@ -194,8 +199,8 @@ class DashboardService {
       liveCountByBatch: liveCountByBatch,
       suggestedFeedTodayGrams: suggestedFeedTodayGrams,
       leafNeedTodayKg: leafNeedTodayKg,
-      mulberryStockKg: leaf.mulberryKg,
-      eriHostStockKg: leaf.castorKg + leaf.kesseruKg,
+      mulberryStockKg: mulberryStockKg,
+      eriHostStockKg: eriHostStockKg,
       harvestWindowOpen: harvestWindowOpen,
       fedTodayByBatch: fedTodayByBatch,
       deathsTodayByBatch: deathsTodayByBatch,

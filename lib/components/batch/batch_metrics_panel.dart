@@ -6,7 +6,7 @@ import '../../theme/kalro_colors.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class BatchMetricsPanel extends StatelessWidget {
-  BatchMetricsPanel({super.key, required this.metrics});
+  const BatchMetricsPanel({super.key, required this.metrics});
 
   final BatchMetrics metrics;
 

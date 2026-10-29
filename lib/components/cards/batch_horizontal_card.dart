@@ -11,7 +11,7 @@ import '../../l10n/translator.dart';
 
 /// Compact row tile for an active rearing batch.
 class BatchHorizontalCard extends StatelessWidget {
-  BatchHorizontalCard({
+  const BatchHorizontalCard({
     super.key,
     required this.batch,
     required this.lifecycleEngine,

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../theme/kalro_colors.dart';
 
 class KalroOutlineCard extends StatelessWidget {
-  KalroOutlineCard({
+  const KalroOutlineCard({
     super.key,
     required this.child,
     this.onTap,

@@ -12,7 +12,7 @@ import '../theme/kalro_colors.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class OnboardingScreen extends StatefulWidget {
-  OnboardingScreen({
+  const OnboardingScreen({
     super.key,
     required this.userPreferences,
     required this.authRepository,
@@ -37,6 +37,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final _pinController = TextEditingController();
   final _confirmPinController = TextEditingController();
   var _saving = false;
+  String _language = 'English';
 
   static const _roles = [
     (UserRole.asr, 'Adopted Seed Rearer', Icons.egg_outlined),
@@ -92,7 +93,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       );
 
       await widget.userPreferences.completeOnboarding(
-        language: 'English',
+        language: _language,
         role: _role!,
         name: _nameController.text,
         orgName: _orgController.text,
@@ -160,10 +161,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Image.asset(
-                        'assets/images/kalro_app_icon.png',
-                        height: 100,
-                      ),
+                      Image.asset('assets/images/kalro_app_icon.png', height: 100),
+                      const SizedBox(height: 16),
+                      Row(mainAxisAlignment: MainAxisAlignment.center, children: [ChoiceChip(label: const Text('English'), selected: _language == 'English', onSelected: (sel) { if (sel) setState(() { _language = 'English'; Translator.currentLanguage = 'en'; }); }), const SizedBox(width: 12), ChoiceChip(label: const Text('Kiswahili'), selected: _language == 'Kiswahili', onSelected: (sel) { if (sel) setState(() { _language = 'Kiswahili'; Translator.currentLanguage = 'sw'; }); })]),
                       SizedBox(height: 20),
                       Text(
                         'Set up your farm profile'.tr,

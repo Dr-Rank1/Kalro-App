@@ -4,6 +4,7 @@ import '../models/batch_alert.dart';
 import '../models/batch_status.dart';
 import '../models/environment_log.dart';
 import '../models/feed_log.dart';
+import '../models/lifecycle_milestone.dart';
 import '../models/mortality_log.dart';
 import 'batch_metrics_service.dart';
 import 'lifecycle_engine.dart';
@@ -26,6 +27,9 @@ class AlertService {
     required List<MortalityLog> mortalityLogs,
     required List<EnvironmentLog> environmentLogs,
     required List<FeedLog> feedLogs,
+    double? leafNeedTodayKg,
+    double? mulberryStockKg,
+    double? eriHostStockKg,
   }) {
     final alerts = <BatchAlert>[];
     final active = batches.where((b) => b.status != BatchStatus.closed);
@@ -101,7 +105,7 @@ class AlertService {
 
       if (!_fedToday(batch.id, feedLogs)) {
         final current = _lifecycleEngine.currentStage(batch);
-        if (current != null && current.instarNumber != null) {
+        if (current != null && current.instarNumber != null && current.type == MilestoneType.instar) {
           alerts.add(
             BatchAlert(
               type: BatchAlertType.feeding,
@@ -112,6 +116,21 @@ class AlertService {
             ),
           );
         }
+      }
+    }
+
+    if (leafNeedTodayKg != null && leafNeedTodayKg > 0) {
+      final totalStock = (mulberryStockKg ?? 0) + (eriHostStockKg ?? 0);
+      if (totalStock < leafNeedTodayKg) {
+        alerts.add(
+          BatchAlert(
+            type: BatchAlertType.feeding,
+            severity: BatchAlertSeverity.warning,
+            title: 'Low leaf stock',
+            message:
+                'Only ${totalStock.toStringAsFixed(1)} kg leaf in stock; today requires ${leafNeedTodayKg.toStringAsFixed(1)} kg.',
+          ),
+        );
       }
     }
 

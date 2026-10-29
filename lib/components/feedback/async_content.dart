@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class AsyncContent<T> extends StatelessWidget {
-  AsyncContent({
+  const AsyncContent({
     super.key,
     required this.future,
     required this.builder,

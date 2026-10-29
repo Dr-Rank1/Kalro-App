@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'kalro_background.dart';
 
 class KalroPage extends StatelessWidget {
-  KalroPage({
+  const KalroPage({
     super.key,
     required this.child,
     this.padding = const EdgeInsets.fromLTRB(16, 16, 16, 24),

@@ -35,11 +35,15 @@ class CocoonAnalyticsService {
       }
     }
 
-    final goodCount = cocoonCount - defectiveCount;
+    final goodCount = (cocoonCount - defectiveCount).clamp(0, cocoonCount);
     final avgWeight = cocoonCount > 0 ? totalWeight / cocoonCount : 0.0;
     final defectRate =
         cocoonCount > 0 ? (defectiveCount / cocoonCount) * 100 : 0.0;
-    final shellRatio = shellSamples > 0 ? (shellWeight / shellSamples) : null;
+    double? shellRatio;
+    if (shellSamples > 0 && avgWeight > 0) {
+      final avgShellWeight = shellWeight / shellSamples;
+      shellRatio = ((avgShellWeight / avgWeight) * 100).clamp(0.0, 100.0);
+    }
     final survival =
         batch.eggCount > 0 ? (goodCount / batch.eggCount) * 100 : 0.0;
     final yieldPer100 =

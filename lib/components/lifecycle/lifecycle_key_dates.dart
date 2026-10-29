@@ -9,7 +9,7 @@ import 'package:kalro/l10n/translator.dart';
 
 /// Compact hatch / spinning / harvest / moth dates for planning.
 class LifecycleKeyDatesCard extends StatelessWidget {
-  LifecycleKeyDatesCard({super.key, required this.cycle, this.footnote});
+  const LifecycleKeyDatesCard({super.key, required this.cycle, this.footnote});
 
   final PlannedCycle cycle;
   final String? footnote;
@@ -174,7 +174,7 @@ class _KeyDate {
 
 /// Typical vs predicted dates for hatch, harvest, and moths.
 class PredictionOutcomeCard extends StatelessWidget {
-  PredictionOutcomeCard({super.key, required this.cycle});
+  const PredictionOutcomeCard({super.key, required this.cycle});
 
   final PlannedCycle cycle;
 
@@ -319,7 +319,7 @@ class PredictionOutcomeCard extends StatelessWidget {
 }
 
 class PlanningTimeline extends StatelessWidget {
-  PlanningTimeline({super.key, required this.cycle, required this.planning});
+  const PlanningTimeline({super.key, required this.cycle, required this.planning});
 
   final PlannedCycle cycle;
   final LifecyclePlanningService planning;

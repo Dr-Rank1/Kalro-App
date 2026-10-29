@@ -13,7 +13,7 @@ import '../theme/kalro_colors.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class FarmSettingsScreen extends StatefulWidget {
-  FarmSettingsScreen({
+  const FarmSettingsScreen({
     super.key,
     required this.session,
     this.authRepository,

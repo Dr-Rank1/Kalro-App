@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../theme/kalro_colors.dart';
 
 class KalroDateRow extends StatelessWidget {
-  KalroDateRow({
+  const KalroDateRow({
     super.key,
     required this.label,
     required this.date,

@@ -12,7 +12,7 @@ import '../theme/kalro_colors.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class CloudSyncScreen extends StatefulWidget {
-  CloudSyncScreen({
+  const CloudSyncScreen({
     super.key,
     required this.session,
     required this.repositories,

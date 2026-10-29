@@ -5,7 +5,7 @@ import '../../theme/kalro_colors.dart';
 import '../buttons/kalro_primary_button.dart';
 
 class RecordEmptyState extends StatelessWidget {
-  RecordEmptyState({
+  const RecordEmptyState({
     super.key,
     required this.icon,
     required this.title,

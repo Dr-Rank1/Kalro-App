@@ -7,7 +7,7 @@ import '../l10n/app_localizations.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class WalkthroughScreen extends StatefulWidget {
-  WalkthroughScreen({super.key, required this.onComplete});
+  const WalkthroughScreen({super.key, required this.onComplete});
 
   final VoidCallback onComplete;
 
@@ -62,6 +62,14 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
                 .tr,
         icon: Icons.agriculture_outlined,
         tabLabel: 'Bottom tab: Farm'.tr,
+      ),
+      _Slide(
+        title: 'You'.tr,
+        description:
+            'Manage your farm profile, team PINs, PDF reports, cloud backup, and language preferences in one secure place.'
+                .tr,
+        icon: Icons.person_outline,
+        tabLabel: 'Bottom tab: You'.tr,
       ),
     ];
 

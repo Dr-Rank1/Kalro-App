@@ -16,7 +16,7 @@ import 'create_batch_screen.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class LifecyclePlannerScreen extends StatefulWidget {
-  LifecyclePlannerScreen({
+  const LifecyclePlannerScreen({
     super.key,
     required this.repositories,
     this.canEdit = true,

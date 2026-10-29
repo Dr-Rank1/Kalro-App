@@ -12,7 +12,7 @@ import '../theme/kalro_colors.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class UserManagementScreen extends StatefulWidget {
-  UserManagementScreen({super.key, required this.session, this.authRepository});
+  const UserManagementScreen({super.key, required this.session, this.authRepository});
 
   final UserSession session;
   final AuthRepository? authRepository;
@@ -88,8 +88,9 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                           )
                           .toList(),
                       onChanged: (value) {
-                        if (value != null)
+                        if (value != null) {
                           setModalState(() => permission = value);
+                        }
                       },
                     ),
                     SizedBox(height: 12),
@@ -203,8 +204,9 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                         )
                         .toList(),
                     onChanged: (value) {
-                      if (value != null)
+                      if (value != null) {
                         setModalState(() => permission = value);
+                      }
                     },
                   ),
                   SizedBox(height: 12),

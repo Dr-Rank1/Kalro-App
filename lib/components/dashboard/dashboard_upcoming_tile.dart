@@ -7,7 +7,7 @@ import '../../theme/kalro_colors.dart';
 import '../../l10n/translator.dart';
 
 class DashboardUpcomingTile extends StatelessWidget {
-  DashboardUpcomingTile({super.key, required this.item, required this.onTap});
+  const DashboardUpcomingTile({super.key, required this.item, required this.onTap});
 
   final UpcomingMilestoneItem item;
   final VoidCallback onTap;

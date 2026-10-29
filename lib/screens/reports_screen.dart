@@ -17,6 +17,7 @@ import '../services/reports_service.dart';
 import '../services/user_preferences.dart';
 import '../theme/kalro_colors.dart';
 import 'package:kalro/l10n/translator.dart';
+import 'package:share_plus/share_plus.dart';
 
 class _ReportsBundle {
   const _ReportsBundle({required this.summary, required this.charts});
@@ -26,7 +27,7 @@ class _ReportsBundle {
 }
 
 class ReportsScreen extends StatefulWidget {
-  ReportsScreen({
+  const ReportsScreen({
     super.key,
     required this.repositories,
     required this.userPreferences,
@@ -158,9 +159,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
         harvests: await widget.repositories.cocoonHarvests.getAll(),
       );
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Cycle PDF saved to ${file.path}'.tr)),
-      );
+      await SharePlus.instance.share(ShareParams(files: [XFile(file.path, mimeType: 'application/pdf')], text: 'KALRO Sericulture Report'.tr));
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Cycle PDF exported successfully'.tr)));
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(
@@ -179,9 +180,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
         userPreferences: widget.userPreferences,
       );
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('PDF saved to ${file.path}'.tr)));
+      await SharePlus.instance.share(ShareParams(files: [XFile(file.path, mimeType: 'application/pdf')], text: 'KALRO Sericulture Farm Report'.tr));
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Farm report PDF exported successfully'.tr)));
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(

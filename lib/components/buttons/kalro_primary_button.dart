@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class KalroPrimaryButton extends StatelessWidget {
-  KalroPrimaryButton({
+  const KalroPrimaryButton({
     super.key,
     required this.label,
     this.onPressed,

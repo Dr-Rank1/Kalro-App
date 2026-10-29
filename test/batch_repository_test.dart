@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kalro/models/species.dart';
 import 'package:kalro/services/batch_repository.dart';
+import 'package:kalro/services/farm_store.dart';
 import 'package:uuid/uuid.dart';
 
 void main() {
@@ -20,6 +21,7 @@ void main() {
   });
 
   tearDown(() async {
+    await FarmStore.closeAll();
     if (tempDir.existsSync()) {
       await tempDir.delete(recursive: true);
     }

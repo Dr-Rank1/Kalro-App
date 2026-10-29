@@ -8,7 +8,7 @@ import '../../l10n/app_localizations.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class FarmKpiCards extends StatelessWidget {
-  FarmKpiCards({super.key, required this.summary});
+  const FarmKpiCards({super.key, required this.summary});
 
   final DashboardSummary summary;
 

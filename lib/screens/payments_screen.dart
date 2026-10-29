@@ -11,7 +11,7 @@ import 'record_payment_screen.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class PaymentsScreen extends StatefulWidget {
-  PaymentsScreen({
+  const PaymentsScreen({
     super.key,
     required this.repositories,
     required this.userPreferences,

@@ -11,7 +11,7 @@ import '../theme/kalro_colors.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  EditProfileScreen({
+  const EditProfileScreen({
     super.key,
     required this.session,
     required this.userPreferences,

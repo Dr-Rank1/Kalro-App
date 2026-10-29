@@ -7,7 +7,7 @@ import '../../theme/kalro_colors.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class FeedTrendChart extends StatelessWidget {
-  FeedTrendChart({super.key, required this.points});
+  const FeedTrendChart({super.key, required this.points});
 
   final List<ChartPoint> points;
 
@@ -54,8 +54,9 @@ class FeedTrendChart extends StatelessWidget {
                 interval: 2,
                 getTitlesWidget: (value, meta) {
                   final index = value.toInt();
-                  if (index < 0 || index >= points.length)
+                  if (index < 0 || index >= points.length) {
                     return SizedBox.shrink();
+                  }
                   return Padding(
                     padding: EdgeInsets.only(top: 6),
                     child: Text(
@@ -94,7 +95,7 @@ class FeedTrendChart extends StatelessWidget {
 }
 
 class MortalityTrendChart extends StatelessWidget {
-  MortalityTrendChart({super.key, required this.points});
+  const MortalityTrendChart({super.key, required this.points});
 
   final List<ChartPoint> points;
 
@@ -140,8 +141,9 @@ class MortalityTrendChart extends StatelessWidget {
                 interval: 2,
                 getTitlesWidget: (value, meta) {
                   final index = value.toInt();
-                  if (index < 0 || index >= points.length)
+                  if (index < 0 || index >= points.length) {
                     return SizedBox.shrink();
+                  }
                   return Padding(
                     padding: EdgeInsets.only(top: 6),
                     child: Text(
@@ -180,7 +182,7 @@ class MortalityTrendChart extends StatelessWidget {
 }
 
 class SpeciesSplitChart extends StatelessWidget {
-  SpeciesSplitChart({
+  const SpeciesSplitChart({
     super.key,
     required this.bombyxLarvae,
     required this.eriLarvae,
@@ -259,7 +261,7 @@ class SpeciesSplitChart extends StatelessWidget {
 }
 
 class BatchComparisonTable extends StatelessWidget {
-  BatchComparisonTable({super.key, required this.rows});
+  const BatchComparisonTable({super.key, required this.rows});
 
   final List<BatchComparisonRow> rows;
 

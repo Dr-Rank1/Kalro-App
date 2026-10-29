@@ -7,7 +7,7 @@ import '../../theme/kalro_colors.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class PredictionScenarioBar extends StatelessWidget {
-  PredictionScenarioBar({
+  const PredictionScenarioBar({
     super.key,
     required this.selected,
     required this.onSelected,
@@ -51,7 +51,7 @@ class PredictionScenarioBar extends StatelessWidget {
 }
 
 class PredictionConditionsBanner extends StatelessWidget {
-  PredictionConditionsBanner({
+  const PredictionConditionsBanner({
     super.key,
     required this.adjustment,
     this.logged = false,
@@ -197,7 +197,7 @@ class PredictionConditionsBanner extends StatelessWidget {
 }
 
 class LifecyclePlanHomeCard extends StatelessWidget {
-  LifecyclePlanHomeCard({
+  const LifecyclePlanHomeCard({
     super.key,
     required this.onOpenPlanner,
     this.nextLabel,

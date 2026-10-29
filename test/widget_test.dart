@@ -1,3 +1,4 @@
+import 'package:kalro/services/farm_store.dart';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -22,12 +23,13 @@ void main() {
   });
 
   tearDown(() async {
+    await FarmStore.closeAll();
     if (tempDir.existsSync()) {
       await tempDir.delete(recursive: true);
     }
   });
 
-  Future<void> _flushIo(WidgetTester tester) async {
+  Future<void> flushIo(WidgetTester tester) async {
     await tester.runAsync(() async {
       await Future<void>.delayed(const Duration(milliseconds: 50));
     });
@@ -73,7 +75,7 @@ void main() {
     );
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));
-    await _flushIo(tester);
+    await flushIo(tester);
 
     await tester.tap(
       find.descendant(
@@ -85,7 +87,7 @@ void main() {
 
     var loaded = false;
     for (var i = 0; i < 12; i++) {
-      await _flushIo(tester);
+      await flushIo(tester);
       if (find
           .text('Your farm account, season record, and backup.')
           .evaluate()

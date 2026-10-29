@@ -5,7 +5,7 @@ import '../../models/account_permission.dart';
 import '../../theme/kalro_colors.dart';
 
 class PermissionBadge extends StatelessWidget {
-  PermissionBadge({super.key, required this.permission, this.compact = false});
+  const PermissionBadge({super.key, required this.permission, this.compact = false});
 
   final AccountPermission permission;
   final bool compact;
@@ -46,7 +46,7 @@ class PermissionBadge extends StatelessWidget {
 }
 
 class PermissionDescriptionCard extends StatelessWidget {
-  PermissionDescriptionCard({super.key, required this.permission});
+  const PermissionDescriptionCard({super.key, required this.permission});
 
   final AccountPermission permission;
 

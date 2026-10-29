@@ -19,7 +19,7 @@ import 'package:kalro/l10n/translator.dart';
 
 /// Primary home screen — today's rearing work and active batches.
 class RearingHubScreen extends StatefulWidget {
-  RearingHubScreen({
+  const RearingHubScreen({
     super.key,
     required this.repositories,
     required this.userPreferences,
@@ -253,8 +253,9 @@ class _RearingHubScreenState extends State<RearingHubScreen> {
                         child: DashboardAlertsBanner(
                           alerts: summary.alerts.take(3).toList(),
                           onAlertTap: (alert) {
-                            if (alert.batchId != null)
+                            if (alert.batchId != null) {
                               _openBatch(alert.batchId!);
+                            }
                           },
                         ),
                       ),

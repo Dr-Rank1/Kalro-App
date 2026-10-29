@@ -9,7 +9,7 @@ import '../theme/kalro_colors.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class ReminderSettingsScreen extends StatefulWidget {
-  ReminderSettingsScreen({
+  const ReminderSettingsScreen({
     super.key,
     required this.repositories,
     this.notificationService,

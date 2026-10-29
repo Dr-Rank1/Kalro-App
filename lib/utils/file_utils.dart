@@ -6,8 +6,18 @@ class FileUtils {
   /// This prevents data corruption (e.g. empty or truncated files) if the app
   /// crashes or loses power during the write operation.
   static Future<void> atomicWriteAsString(File file, String contents) async {
-    final tempFile = File('${file.path}.tmp');
+    final tempFile = File('.tmp');
     await tempFile.writeAsString(contents, flush: true);
-    await tempFile.rename(file.path);
+    try {
+      if (Platform.isWindows && await file.exists()) {
+        await file.delete();
+      }
+      await tempFile.rename(file.path);
+    } catch (_) {
+      await tempFile.copy(file.path);
+      try {
+        await tempFile.delete();
+      } catch (_) {}
+    }
   }
 }

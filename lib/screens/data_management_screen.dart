@@ -11,9 +11,10 @@ import '../services/backup_service.dart';
 import '../services/permission_service.dart';
 import '../theme/kalro_colors.dart';
 import 'package:kalro/l10n/translator.dart';
+import 'package:share_plus/share_plus.dart';
 
 class DataManagementScreen extends StatefulWidget {
-  DataManagementScreen({
+  const DataManagementScreen({
     super.key,
     required this.repositories,
     required this.session,
@@ -38,9 +39,9 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
     try {
       final file = await _backupService.exportBackup(widget.repositories);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Backup saved to ${file.path}'.tr)),
-      );
+      await SharePlus.instance.share(ShareParams(files: [XFile(file.path, mimeType: 'application/json')], text: 'KALRO Farm Backup JSON'.tr));
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Backup ready and shared'.tr)));
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(

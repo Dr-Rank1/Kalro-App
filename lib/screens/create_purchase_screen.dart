@@ -10,7 +10,7 @@ import '../theme/kalro_colors.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class CreatePurchaseScreen extends StatefulWidget {
-  CreatePurchaseScreen({
+  const CreatePurchaseScreen({
     super.key,
     required this.repositories,
     required this.producer,
@@ -136,8 +136,9 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                     hintText: 'DFL, eggs, chawki batch'.tr,
                   ),
                   validator: (value) {
-                    if (value == null || value.trim().isEmpty)
+                    if (value == null || value.trim().isEmpty) {
                       return 'Enter what you purchased';
+                    }
                     return null;
                   },
                 ),
@@ -159,8 +160,9 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                         ],
                         validator: (value) {
                           final parsed = double.tryParse(value?.trim() ?? '');
-                          if (parsed == null || parsed <= 0)
+                          if (parsed == null || parsed <= 0) {
                             return 'Enter quantity';
+                          }
                           return null;
                         },
                       ),
@@ -171,8 +173,9 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                         controller: _unitController,
                         decoration: InputDecoration(labelText: 'Unit'.tr),
                         validator: (value) {
-                          if (value == null || value.trim().isEmpty)
+                          if (value == null || value.trim().isEmpty) {
                             return 'Required';
+                          }
                           return null;
                         },
                       ),

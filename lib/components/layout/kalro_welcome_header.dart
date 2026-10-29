@@ -6,7 +6,7 @@ import '../../theme/kalro_colors.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class KalroWelcomeHeader extends StatelessWidget {
-  KalroWelcomeHeader({
+  const KalroWelcomeHeader({
     super.key,
     required this.displayName,
     this.onNotificationsTap,

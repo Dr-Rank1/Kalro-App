@@ -20,7 +20,7 @@ import 'user_management_screen.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class AdminHubScreen extends StatefulWidget {
-  AdminHubScreen({
+  const AdminHubScreen({
     super.key,
     required this.session,
     required this.repositories,

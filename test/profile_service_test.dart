@@ -1,3 +1,4 @@
+import 'package:kalro/services/farm_store.dart';
 import 'dart:convert';
 import 'dart:io';
 
@@ -52,6 +53,7 @@ void main() {
   });
 
   tearDown(() async {
+    await FarmStore.closeAll();
     if (tempDir.existsSync()) await tempDir.delete(recursive: true);
   });
 

@@ -17,7 +17,7 @@ import '../records/record_summary_bar.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class FeedLogSection extends StatefulWidget {
-  FeedLogSection({
+  const FeedLogSection({
     super.key,
     required this.batchId,
     required this.repository,

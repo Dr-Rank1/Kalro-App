@@ -24,6 +24,12 @@ abstract final class KalroColors {
   static const success = Color(0xFF2E7D57);
   static const danger = Color(0xFFB42318);
   static const info = Color(0xFF2B6CB0);
+  static const darkBackground = Color(0xFF101915);
+  static const darkSurface = Color(0xFF172520);
+  static const darkCard = Color(0xFF1E2E28);
+  static const darkText = Color(0xFFECEFF1);
+  static const darkTextMuted = Color(0xFFA0ABA5);
+  static const darkDivider = Color(0xFF2B3D35);
 
   static List<BoxShadow> get softShadow => const [
         BoxShadow(

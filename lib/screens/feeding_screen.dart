@@ -7,7 +7,7 @@ import '../services/app_repositories.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class FeedingScreen extends StatefulWidget {
-  FeedingScreen({super.key, required this.repositories, required this.canEdit});
+  const FeedingScreen({super.key, required this.repositories, required this.canEdit});
 
   final AppRepositories repositories;
   final bool canEdit;
@@ -36,8 +36,9 @@ class _FeedingScreenState extends State<FeedingScreen> {
           final stillExists = active
               .where((b) => b.id == _selectedBatch!.id)
               .isNotEmpty;
-          if (!stillExists)
+          if (!stillExists) {
             _selectedBatch = active.isNotEmpty ? active.first : null;
+          }
         } else if (active.isNotEmpty) {
           _selectedBatch = active.first;
         }

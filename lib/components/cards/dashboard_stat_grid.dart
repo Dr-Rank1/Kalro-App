@@ -6,7 +6,7 @@ import '../../models/dashboard_summary.dart';
 import 'kalro_stat_card.dart';
 
 class DashboardStatGrid extends StatelessWidget {
-  DashboardStatGrid({super.key, required this.stats});
+  const DashboardStatGrid({super.key, required this.stats});
 
   final List<DashboardStat> stats;
 

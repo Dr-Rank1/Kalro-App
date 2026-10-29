@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../theme/kalro_colors.dart';
 
 class KalroToolbar extends StatelessWidget {
-  KalroToolbar({
+  const KalroToolbar({
     super.key,
     required this.title,
     this.onBack,

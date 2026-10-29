@@ -6,7 +6,7 @@ import '../../models/batch_status.dart';
 import '../../theme/kalro_colors.dart';
 
 class BatchStatusChips extends StatelessWidget {
-  BatchStatusChips({
+  const BatchStatusChips({
     super.key,
     required this.current,
     required this.onSelected,
@@ -36,7 +36,7 @@ class BatchStatusChips extends StatelessWidget {
 }
 
 class BatchInfoPanel extends StatelessWidget {
-  BatchInfoPanel({super.key, required this.batch, required this.rows});
+  const BatchInfoPanel({super.key, required this.batch, required this.rows});
 
   final Batch batch;
   final List<BatchInfoRow> rows;

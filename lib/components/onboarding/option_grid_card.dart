@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../theme/kalro_colors.dart';
 
 class OptionGridCard extends StatelessWidget {
-  OptionGridCard({
+  const OptionGridCard({
     super.key,
     required this.primaryLabel,
     required this.secondaryLabel,

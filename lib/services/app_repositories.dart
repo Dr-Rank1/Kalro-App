@@ -86,6 +86,8 @@ class AppRepositories {
 
   Future<Directory> storageDirectory() => batches.storageDirectory();
 
+  Future<void> close() => store.close();
+
   void invalidateCaches() {
     batches.invalidateCache();
     feedLogs.invalidateCache();

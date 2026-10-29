@@ -18,11 +18,13 @@ class ProducerRepository {
 
   Future<List<Producer>> getAll() async {
     _cache ??= await _load();
-    if (_cache!.isEmpty) {
+    final meta = await _store.getSingleton('producers_meta');
+    if (_cache!.isEmpty && meta == null) {
       _cache = _defaultProducers();
       for (final producer in _cache!) {
         await _store.upsert(collection, producer.id, producer.toJson());
       }
+      await _store.putSingleton('producers_meta', {'initialized': true});
     }
     return List.unmodifiable(_cache!);
   }
@@ -94,4 +96,6 @@ class ProducerRepository {
   }
 
   void invalidateCache() => _cache = null;
+
+  Future<void> close() => _store.close();
 }

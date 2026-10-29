@@ -1,3 +1,4 @@
+import 'package:kalro/services/farm_store.dart';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -7,6 +8,7 @@ import 'package:kalro/services/auth_repository.dart';
 import 'package:kalro/services/pin_hasher.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   late Directory tempDir;
   late AuthRepository auth;
 
@@ -16,6 +18,7 @@ void main() {
   });
 
   tearDown(() async {
+    await FarmStore.closeAll();
     if (tempDir.existsSync()) {
       await tempDir.delete(recursive: true);
     }

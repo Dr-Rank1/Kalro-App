@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../theme/kalro_colors.dart';
 
 class AdminPageScaffold extends StatelessWidget {
-  AdminPageScaffold({
+  const AdminPageScaffold({
     super.key,
     required this.title,
     required this.body,
@@ -56,7 +56,7 @@ class AdminPageScaffold extends StatelessWidget {
 }
 
 class AdminSectionHeader extends StatelessWidget {
-  AdminSectionHeader({super.key, required this.title, this.subtitle});
+  const AdminSectionHeader({super.key, required this.title, this.subtitle});
 
   final String title;
   final String? subtitle;
@@ -90,7 +90,7 @@ class AdminSectionHeader extends StatelessWidget {
 }
 
 class AdminInfoCard extends StatelessWidget {
-  AdminInfoCard({
+  const AdminInfoCard({
     super.key,
     required this.child,
     this.padding = const EdgeInsets.all(16),
@@ -115,7 +115,7 @@ class AdminInfoCard extends StatelessWidget {
 }
 
 class AdminHubTile extends StatelessWidget {
-  AdminHubTile({
+  const AdminHubTile({
     super.key,
     required this.icon,
     required this.title,
@@ -198,7 +198,7 @@ class AdminHubTile extends StatelessWidget {
 }
 
 class AdminStatChip extends StatelessWidget {
-  AdminStatChip({
+  const AdminStatChip({
     super.key,
     required this.label,
     required this.value,

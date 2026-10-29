@@ -78,7 +78,7 @@ class CycleMemoryCard extends StatelessWidget {
                   Translator.fill('{kg} kg leaf', {
                     'kg': memory.leafKg.toStringAsFixed(1),
                   }),
-                  if (window != null) window,
+                  ?window,
                 ].join(' · '),
                 style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
               ),

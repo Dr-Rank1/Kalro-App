@@ -11,7 +11,7 @@ import '../../theme/kalro_colors.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class BatchGridCard extends StatelessWidget {
-  BatchGridCard({
+  const BatchGridCard({
     super.key,
     required this.batch,
     required this.engine,

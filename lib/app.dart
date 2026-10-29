@@ -169,6 +169,7 @@ class _KalroAppState extends State<KalroApp> {
 
   Future<void> _onLogout() async {
     await widget.sessionService.clearSession();
+    await _repositories?.close();
     setState(() {
       _session = null;
       _repositories = null;
@@ -222,6 +223,8 @@ class _KalroAppState extends State<KalroApp> {
       title: 'Kalro',
       debugShowCheckedModeBanner: false,
       theme: KalroTheme.light(),
+      darkTheme: KalroTheme.dark(),
+      themeMode: ThemeMode.system,
       locale: _currentLocale,
       localizationsDelegates: [
         AppLocalizations.delegate,

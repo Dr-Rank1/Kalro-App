@@ -20,7 +20,7 @@ import 'package:kalro/l10n/translator.dart';
 
 /// List, create, and open batches for recording and updates.
 class BatchesScreen extends StatefulWidget {
-  BatchesScreen({
+  const BatchesScreen({
     super.key,
     required this.repositories,
     required this.onBatchChanged,

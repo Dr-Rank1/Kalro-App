@@ -6,7 +6,7 @@ import '../../models/batch.dart';
 import '../../theme/kalro_colors.dart';
 
 class BatchInventoryTile extends StatelessWidget {
-  BatchInventoryTile({super.key, required this.batch, required this.onTap});
+  const BatchInventoryTile({super.key, required this.batch, required this.onTap});
 
   final Batch batch;
   final VoidCallback onTap;

@@ -14,7 +14,7 @@ import 'create_batch_screen.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class InventoryScreen extends StatefulWidget {
-  InventoryScreen({
+  const InventoryScreen({
     super.key,
     required this.repositories,
     required this.onBatchChanged,

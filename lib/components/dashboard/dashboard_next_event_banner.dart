@@ -8,7 +8,7 @@ import '../../theme/kalro_colors.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class DashboardNextEventBanner extends StatelessWidget {
-  DashboardNextEventBanner({super.key, required this.item, this.onTap});
+  const DashboardNextEventBanner({super.key, required this.item, this.onTap});
 
   final UpcomingMilestoneItem item;
   final VoidCallback? onTap;

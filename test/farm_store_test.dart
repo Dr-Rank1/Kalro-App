@@ -16,6 +16,7 @@ void main() {
   });
 
   tearDown(() async {
+    await FarmStore.closeAll();
     await store.close();
     if (tempDir.existsSync()) await tempDir.delete(recursive: true);
   });

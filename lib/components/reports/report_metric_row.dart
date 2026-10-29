@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../theme/kalro_colors.dart';
 
 class ReportMetricRow extends StatelessWidget {
-  ReportMetricRow({
+  const ReportMetricRow({
     super.key,
     required this.label,
     required this.value,
@@ -55,7 +55,7 @@ class ReportMetricRow extends StatelessWidget {
 }
 
 class ReportSectionCard extends StatelessWidget {
-  ReportSectionCard({super.key, required this.title, required this.children});
+  const ReportSectionCard({super.key, required this.title, required this.children});
 
   final String title;
   final List<Widget> children;
