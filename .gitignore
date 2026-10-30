@@ -46,3 +46,15 @@ gradle-wrapper.jar
 
 # Crashlytics plugin (for Android)
 crashlytics-build.properties
+
+# AI Tooling
+.claude/
+.cursor/
+.cursorrules
+.cursorignore
+.kilo/
+.gemini/
+.copilot/
+.cody/
+.windsurf/
+CLAUDE.md
