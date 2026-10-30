@@ -118,7 +118,11 @@ class _FarmWorkScreenState extends State<FarmWorkScreen> {
                   const SizedBox(height: 16),
                   Text(
                     'Daily records'.tr,
-                    style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w700),
+                    style: GoogleFonts.poppins(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: KalroColors.textDark,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   _WorkTile(
@@ -171,7 +175,11 @@ class _FarmWorkScreenState extends State<FarmWorkScreen> {
                   const SizedBox(height: 18),
                   Text(
                     'Leaf, money & guides'.tr,
-                    style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w700),
+                    style: GoogleFonts.poppins(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: KalroColors.textDark,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   _WorkTile(
@@ -288,7 +296,11 @@ class _WorkTile extends StatelessWidget {
                     children: [
                       Text(
                         title,
-                        style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 14),
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14,
+                          color: KalroColors.textDark,
+                        ),
                       ),
                       Text(
                         subtitle,

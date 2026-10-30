@@ -168,6 +168,7 @@ class _RearingHubScreenState extends State<RearingHubScreen> {
                           style: GoogleFonts.poppins(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
+                            color: KalroColors.textDark,
                           ),
                         ),
                       ),
@@ -344,6 +345,7 @@ class _LeafNeedStrip extends StatelessWidget {
                   style: GoogleFonts.poppins(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
+                    color: KalroColors.textDark,
                   ),
                 ),
                 Text(
@@ -408,6 +410,7 @@ class _GettingStartedCard extends StatelessWidget {
             style: GoogleFonts.poppins(
               fontSize: 18,
               fontWeight: FontWeight.w700,
+              color: KalroColors.textDark,
             ),
           ),
           const SizedBox(height: 6),
@@ -431,7 +434,13 @@ class _GettingStartedCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Bombyx mori · 180 live'.tr, style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
+                Text(
+                  'Bombyx mori · 180 live'.tr,
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.w700,
+                    color: KalroColors.textDark,
+                  ),
+                ),
                 Text('5th instar · Full ration · ~120 g'.tr, style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted)),
               ],
             ),
@@ -470,7 +479,10 @@ class _GettingStartedCard extends StatelessWidget {
                 ),
                 child: Text(
                   'Open Plan'.tr,
-                  style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
@@ -531,7 +543,10 @@ class _StartStep extends StatelessWidget {
                     children: [
                       Text(
                         title,
-                        style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w600,
+                          color: KalroColors.textDark,
+                        ),
                       ),
                       Text(
                         subtitle,

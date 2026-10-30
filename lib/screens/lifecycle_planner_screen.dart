@@ -292,7 +292,11 @@ class _LifecyclePlannerScreenState extends State<LifecyclePlannerScreen> {
         SizedBox(height: 16),
         Text(
           'What if conditions change?'.tr,
-          style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600),
+          style: GoogleFonts.poppins(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: KalroColors.textDark,
+          ),
         ),
         SizedBox(height: 4),
         Text(
@@ -463,6 +467,7 @@ class _FarmEventTile extends StatelessWidget {
                   style: GoogleFonts.poppins(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
+                    color: KalroColors.textDark,
                   ),
                 ),
               ],
@@ -478,6 +483,7 @@ class _FarmEventTile extends StatelessWidget {
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
+                    color: KalroColors.textDark,
                   ),
                 ),
                 SizedBox(height: 2),

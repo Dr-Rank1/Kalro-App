@@ -314,7 +314,7 @@ class _LoginScreenState extends State<LoginScreen> {
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               decoration: InputDecoration(
-                labelText: 'PIN'.tr,
+                labelText: 'PIN (optional)'.tr,
                 filled: true,
                 fillColor: Colors.white,
                 suffixIcon: IconButton(
@@ -326,12 +326,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: () => setState(() => _obscurePin = !_obscurePin),
                 ),
               ),
-              validator: (value) {
-                if (value == null || value.trim().length < 4) {
-                  return 'PIN must be at least 4 digits'.tr;
-                }
-                return null;
-              },
+              validator: (value) => null,
               onFieldSubmitted: (_) => _loading ? null : _login(),
             ),
             if (_errorMessage != null) ...[

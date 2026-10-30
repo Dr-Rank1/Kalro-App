@@ -251,6 +251,7 @@ class LifecyclePlanHomeCard extends StatelessWidget {
                       style: GoogleFonts.poppins(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
+                        color: KalroColors.textDark,
                       ),
                     ),
                     SizedBox(height: 2),

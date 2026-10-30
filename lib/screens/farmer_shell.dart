@@ -301,7 +301,10 @@ class _QuickAddTile extends StatelessWidget {
                     children: [
                       Text(
                         title,
-                        style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w600,
+                          color: KalroColors.textDark,
+                        ),
                       ),
                       Text(
                         subtitle,

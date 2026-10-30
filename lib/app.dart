@@ -223,8 +223,8 @@ class _KalroAppState extends State<KalroApp> {
       title: 'Kalro',
       debugShowCheckedModeBanner: false,
       theme: KalroTheme.light(),
-      darkTheme: KalroTheme.dark(),
-      themeMode: ThemeMode.system,
+      darkTheme: KalroTheme.light(),
+      themeMode: ThemeMode.light,
       locale: _currentLocale,
       localizationsDelegates: [
         AppLocalizations.delegate,

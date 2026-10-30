@@ -323,6 +323,7 @@ class _LeafDemandCard extends StatelessWidget {
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w700,
                     fontSize: 16,
+                    color: KalroColors.textDark,
                   ),
                 ),
               ),
@@ -373,6 +374,7 @@ class _LeafBar extends StatelessWidget {
                 style: GoogleFonts.poppins(
                   fontWeight: FontWeight.w600,
                   fontSize: 13,
+                  color: KalroColors.textDark,
                 ),
               ),
             ),

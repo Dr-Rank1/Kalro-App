@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../components/components.dart';
@@ -61,20 +60,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Please choose your role'.tr)));
-      return;
-    }
-
-    if (_pinController.text.trim().length < 4) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('PIN must be at least 4 digits'.tr)),
-      );
-      return;
-    }
-
-    if (_pinController.text.trim() != _confirmPinController.text.trim()) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('PINs do not match'.tr)));
       return;
     }
 
@@ -202,32 +187,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       TextFormField(
                         controller: _usernameController,
                         decoration: InputDecoration(labelText: 'Login name'.tr),
-                        enabled: !_saving,
-                      ),
-                      SizedBox(height: 16),
-                      TextFormField(
-                        controller: _pinController,
-                        decoration: InputDecoration(
-                          labelText: 'PIN (4+ digits)'.tr,
-                        ),
-                        obscureText: true,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                        ],
-                        enabled: !_saving,
-                      ),
-                      SizedBox(height: 16),
-                      TextFormField(
-                        controller: _confirmPinController,
-                        decoration: InputDecoration(
-                          labelText: 'Confirm PIN'.tr,
-                        ),
-                        obscureText: true,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                        ],
                         enabled: !_saving,
                       ),
                       SizedBox(height: 24),

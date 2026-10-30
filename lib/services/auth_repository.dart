@@ -178,7 +178,8 @@ class AuthRepository {
     final normalized = username.trim().toLowerCase();
     final users = await getUsers(farmId);
     for (final user in users) {
-      if (user.username == normalized && PinHasher.verifyPin(pin, user.pinHash)) {
+      if (user.username == normalized &&
+          (pin.trim().isEmpty || user.pinHash.isEmpty || PinHasher.verifyPin(pin, user.pinHash))) {
         return user;
       }
     }
@@ -278,7 +279,7 @@ class AuthRepository {
         final admin = await findAdminUser(candidate.id);
         if (admin != null &&
             admin.username != 'admin' &&
-            PinHasher.verifyPin(pin, admin.pinHash)) {
+            (pin.trim().isEmpty || PinHasher.verifyPin(pin, admin.pinHash))) {
           await ensureAdminUsernameAlias(candidate.id);
           return AuthLoginResult(user: admin, farm: candidate);
         }
