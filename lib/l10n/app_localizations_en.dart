@@ -16,7 +16,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardingWelcomeDesc =>
-      'Your digital sericulture assistant. Plan, track, and improve every rearing cycle.';
+      'Your digital sericulture companion. Plan, track, and improve every rearing cycle.';
 
   @override
   String get onboardingTrackTitle => 'Track Daily Logs';
@@ -30,7 +30,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardingPredictDesc =>
-      'Know exactly when your cocoons will be ready with our AI-powered predictions.';
+      'Know exactly when your cocoons will be ready with predictive lifecycle milestones.';
 
   @override
   String get getStarted => 'Get Started';

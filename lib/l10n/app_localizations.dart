@@ -113,7 +113,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingWelcomeDesc.
   ///
   /// In en, this message translates to:
-  /// **'Your digital sericulture assistant. Plan, track, and improve every rearing cycle.'**
+  /// **'Your digital sericulture companion. Plan, track, and improve every rearing cycle.'**
   String get onboardingWelcomeDesc;
 
   /// No description provided for @onboardingTrackTitle.
@@ -137,7 +137,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingPredictDesc.
   ///
   /// In en, this message translates to:
-  /// **'Know exactly when your cocoons will be ready with our AI-powered predictions.'**
+  /// **'Know exactly when your cocoons will be ready with predictive lifecycle milestones.'**
   String get onboardingPredictDesc;
 
   /// No description provided for @getStarted.

@@ -16,7 +16,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get onboardingWelcomeDesc =>
-      'Msaidizi wako wa kidijitali wa ufugaji hariri. Panga, fuatilia, na uboreshe kila mzunguko.';
+      'Mwongozo wako wa kidijitali wa ufugaji hariri. Panga, fuatilia, na uboreshe kila mzunguko.';
 
   @override
   String get onboardingTrackTitle => 'Fuatilia Rekodi za Kila Siku';
@@ -30,7 +30,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get onboardingPredictDesc =>
-      'Jua haswa wakati vifukofuko vyako (cocoons) vitakuwa tayari kupitia makadirio ya AI.';
+      'Jua haswa wakati vifukofuko vyako (cocoons) vitakuwa tayari kupitia makadirio sahihi ya mzunguko.';
 
   @override
   String get getStarted => 'Anza Sasa';

@@ -3,7 +3,7 @@
 [![Flutter Version](https://img.shields.io/badge/Flutter-3.16+-blue.svg)](https://flutter.dev)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-**Kalro Sericulture** is a comprehensive, offline-first digital farm assistant designed exclusively for Kenyan farmers managing **Eri** and **Bombyx mori** rearing cycles. By bringing modern tracking, AI-powered milestone predictions, and rigorous metric-based logging to the rural edge, Kalro empowers silkworm farmers to maximize yield and eliminate manual logbooks.
+**Kalro Sericulture** is a comprehensive, offline-first digital farm companion designed exclusively for Kenyan farmers managing **Eri** and **Bombyx mori** rearing cycles. By bringing modern tracking, predictive milestone modeling, and rigorous metric-based logging to the rural edge, Kalro empowers silkworm farmers to maximize yield and eliminate manual logbooks.
 
 ---
 
@@ -11,7 +11,7 @@
 
 * **Offline-First Architecture**: Built for rural Kenya. All data is persisted locally via encrypted JSON and can be securely synced to the cloud via Zip exports.
 * **Dual Language Support (i18n)**: Instantly switch between **English** and **Swahili** within the app. No restarts required.
-* **AI Lifecycle Predictions**: Uses algorithmic models to predict the exact date your larvae will transition between instars, begin spinning, and be ready for harvest based on feeding data and temperature logs.
+* **Lifecycle Predictions**: Uses algorithmic models to predict the exact date your larvae will transition between instars, begin spinning, and be ready for harvest based on feeding data and temperature logs.
 * **KPI Dashboard & Analytics**: A beautiful "Command Center" dashboard that visualizes active batches, total live larvae, historical survival rates, and lifetime yield in kilograms.
 * **Metric Logging**: Log leaf consumption (grams/kg), mortality rates, and temperature/humidity. 
 * **Guided Onboarding Walkthrough**: Seamless, educational first-time setup for rural farmers.
