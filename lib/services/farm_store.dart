@@ -54,6 +54,22 @@ class FarmStore {
     ];
   }
 
+  Future<List<Map<String, dynamic>>> getCollectionWhere(
+    String collection, {
+    required String jsonKey,
+    required Object value,
+  }) async {
+    final db = await _database();
+    final rows = db.select(
+      "SELECT json FROM records WHERE collection = ? AND json_extract(json, '\$.' || ?) = ? ORDER BY rowid",
+      [collection, jsonKey, value.toString()],
+    );
+    return [
+      for (final row in rows)
+        jsonDecode(row['json'] as String) as Map<String, dynamic>,
+    ];
+  }
+
   Future<void> upsert(
     String collection,
     String id,
@@ -163,6 +179,7 @@ class FarmStore {
       )
     ''');
     db.execute('CREATE INDEX IF NOT EXISTS idx_records_collection ON records(collection);');
+    db.execute("CREATE INDEX IF NOT EXISTS idx_records_batch ON records(collection, json_extract(json, '\$.batchId'));");
     db.execute('''
       CREATE TABLE IF NOT EXISTS singletons (
         name TEXT NOT NULL PRIMARY KEY,

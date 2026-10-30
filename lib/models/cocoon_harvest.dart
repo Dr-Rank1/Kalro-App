@@ -9,6 +9,13 @@ class CocoonHarvest {
     this.shellWeightGrams,
     this.filamentLengthCm,
     this.moisturePercent,
+    this.doubleCount,
+    this.uziCount,
+    this.stainedCount,
+    this.flimsyCount,
+    this.meltedCount,
+    this.reeledWeightGrams,
+    this.breakCount,
     this.notes,
   });
 
@@ -21,6 +28,13 @@ class CocoonHarvest {
   final double? shellWeightGrams;
   final double? filamentLengthCm;
   final double? moisturePercent;
+  final int? doubleCount;
+  final int? uziCount;
+  final int? stainedCount;
+  final int? flimsyCount;
+  final int? meltedCount;
+  final double? reeledWeightGrams;
+  final int? breakCount;
   final String? notes;
 
   Map<String, dynamic> toJson() => {
@@ -33,6 +47,13 @@ class CocoonHarvest {
         'shellWeightGrams': shellWeightGrams,
         'filamentLengthCm': filamentLengthCm,
         'moisturePercent': moisturePercent,
+        'doubleCount': doubleCount,
+        'uziCount': uziCount,
+        'stainedCount': stainedCount,
+        'flimsyCount': flimsyCount,
+        'meltedCount': meltedCount,
+        'reeledWeightGrams': reeledWeightGrams,
+        'breakCount': breakCount,
         'notes': notes,
       };
 
@@ -52,6 +73,17 @@ class CocoonHarvest {
         moisturePercent: json['moisturePercent'] == null
             ? null
             : (json['moisturePercent'] as num).toDouble(),
+        doubleCount: json['doubleCount'] as int?,
+        uziCount: json['uziCount'] as int?,
+        stainedCount: json['stainedCount'] as int?,
+        flimsyCount: json['flimsyCount'] as int?,
+        meltedCount: json['meltedCount'] as int?,
+        reeledWeightGrams: json['reeeledWeightGrams'] == null
+            ? (json['reeledWeightGrams'] == null
+                ? null
+                : (json['reeledWeightGrams'] as num).toDouble())
+            : (json['reeeledWeightGrams'] as num).toDouble(),
+        breakCount: json['breakCount'] as int?,
         notes: json['notes'] as String?,
       );
 }

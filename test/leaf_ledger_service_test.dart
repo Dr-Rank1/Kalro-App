@@ -64,4 +64,28 @@ void main() {
     expect(rows.where((m) => m.kind == LeafMovementKind.feed), isNotEmpty);
     expect(rows.where((m) => m.kind == LeafMovementKind.adjust), isNotEmpty);
   });
+
+  test('calculateDepletionForecast projects multi-day demand and urgency', () async {
+    final batch = await repositories.batches.create(
+      species: Species.bombyx,
+      startDate: DateTime.now().subtract(const Duration(days: 15)),
+      eggCount: 1000,
+    );
+
+    // 0 stock should be exhausted
+    final zeroForecast = ledger.calculateDepletionForecast(
+      currentStockKg: 0,
+      activeBatches: [batch],
+    );
+    expect(zeroForecast.urgency, DepletionUrgency.exhausted);
+    expect(zeroForecast.daysUntilDepletion, 0);
+
+    // Sufficient stock should be safe
+    final safeForecast = ledger.calculateDepletionForecast(
+      currentStockKg: 50.0,
+      activeBatches: [batch],
+    );
+    expect(safeForecast.urgency, DepletionUrgency.safe);
+    expect(safeForecast.daysUntilDepletion, greaterThanOrEqualTo(7));
+  });
 }

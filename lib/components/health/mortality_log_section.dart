@@ -155,6 +155,8 @@ class _MortalityLogSectionState extends State<MortalityLogSection> {
                           final picked = await ImagePicker().pickImage(
                             source: ImageSource.camera,
                             imageQuality: 70,
+                            maxWidth: 1280,
+                            maxHeight: 1280,
                           );
                           if (picked == null) return;
                           setModalState(() => photoPath = picked.path);

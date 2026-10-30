@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
+import '../../services/audio_guidance_service.dart';
 import '../../services/rearing_day_service.dart';
 import '../../theme/kalro_colors.dart';
 
@@ -129,6 +130,19 @@ class TodayPlanCard extends StatelessWidget {
                         ),
                     ],
                   ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.volume_up_outlined, color: Colors.white, size: 22),
+                  tooltip: 'Read aloud'.tr,
+                  onPressed: () {
+                    AudioGuidanceService().speakTodayPlan(
+                      species: speciesLabel ?? 'Silkworms',
+                      stage: plan.stage.label,
+                      suggestedGrams: plan.suggestedGrams,
+                      isMoult: plan.stage.isMoult,
+                      actionTitle: plan.actionTitle,
+                    );
+                  },
                 ),
                 Text(
                   '${(plan.progress * 100).round()}%',

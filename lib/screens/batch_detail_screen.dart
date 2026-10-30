@@ -15,6 +15,7 @@ import '../models/environment_log.dart';
 import '../services/rearing_conditions_service.dart';
 import '../theme/kalro_colors.dart';
 import '../components/components.dart';
+import '../components/batch/batch_qr_dialog.dart';
 import '../l10n/translator.dart';
 import '../services/rearing_day_service.dart';
 import '../services/cycle_memory_service.dart';
@@ -199,6 +200,13 @@ class _BatchDetailScreenState extends State<BatchDetailScreen> {
                     pinned: true,
                     backgroundColor: KalroColors.headerGreen,
                     title: Text(batch.species.label.tr),
+                    actions: [
+                      IconButton(
+                        icon: const Icon(Icons.qr_code_2_outlined, color: Colors.white),
+                        tooltip: 'Rearing Tray Tag'.tr,
+                        onPressed: () => BatchQrDialog.show(context, batch),
+                      ),
+                    ],
                     flexibleSpace: FlexibleSpaceBar(
                       background: _buildHeroHeader(
                         batch,

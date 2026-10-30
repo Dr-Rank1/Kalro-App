@@ -8,6 +8,14 @@ class CocoonMetrics {
     required this.shellRatioPercent,
     required this.survivalPercent,
     required this.yieldPer100EggsGrams,
+    this.renditta,
+    this.reelabilityPercent,
+    this.commercialGrade = 'Ungraded',
+    this.doubleCount = 0,
+    this.uziCount = 0,
+    this.stainedCount = 0,
+    this.flimsyCount = 0,
+    this.meltedCount = 0,
   });
 
   final int cocoonCount;
@@ -18,4 +26,12 @@ class CocoonMetrics {
   final double? shellRatioPercent;
   final double survivalPercent;
   final double yieldPer100EggsGrams;
+  final double? renditta;
+  final double? reelabilityPercent;
+  final String commercialGrade;
+  final int doubleCount;
+  final int uziCount;
+  final int stainedCount;
+  final int flimsyCount;
+  final int meltedCount;
 }

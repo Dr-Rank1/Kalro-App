@@ -24,8 +24,16 @@ class EnvironmentLogRepository {
   }
 
   Future<List<EnvironmentLog>> getByBatchId(String batchId) async {
-    final logs = await getAll();
-    return logs.where((log) => log.batchId == batchId).toList()
+    if (_cache != null) {
+      return _cache!.where((log) => log.batchId == batchId).toList()
+        ..sort((a, b) => b.recordedAt.compareTo(a.recordedAt));
+    }
+    final rows = await _store.getCollectionWhere(
+      collection,
+      jsonKey: 'batchId',
+      value: batchId,
+    );
+    return [for (final row in rows) EnvironmentLog.fromJson(row)]
       ..sort((a, b) => b.recordedAt.compareTo(a.recordedAt));
   }
 

@@ -11,6 +11,7 @@ import '../models/report_chart_data.dart';
 import '../models/reports_summary.dart';
 import '../services/app_repositories.dart';
 import '../services/csv_export_service.dart';
+import '../services/excel_export_service.dart';
 import '../services/pdf_export_service.dart';
 import '../services/report_chart_service.dart';
 import '../services/reports_service.dart';
@@ -45,8 +46,10 @@ class _ReportsScreenState extends State<ReportsScreen> {
   final _chartService = ReportChartService();
   static const _csvExport = CsvExportService();
   static const _pdfExport = PdfExportService();
+  static const _excelExport = ExcelExportService();
   late Future<_ReportsBundle> _bundleFuture;
   var _exportingPdf = false;
+  var _exportingExcel = false;
   int _rangeDays = 14;
   String? _batchId;
   List<Batch> _batches = [];
@@ -190,6 +193,41 @@ class _ReportsScreenState extends State<ReportsScreen> {
       ).showSnackBar(SnackBar(content: Text('PDF export failed: $error'.tr)));
     } finally {
       if (mounted) setState(() => _exportingPdf = false);
+    }
+  }
+
+  Future<void> _exportExcel() async {
+    setState(() => _exportingExcel = true);
+    try {
+      final orgName = await widget.userPreferences.getOrgName();
+      final file = await _excelExport.exportFarmWorkbook(
+        repositories: widget.repositories,
+        farmName: orgName,
+      );
+      if (!mounted) return;
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [
+            XFile(
+              file.path,
+              mimeType:
+                  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            ),
+          ],
+          text: 'KALRO Sericulture Farm Excel Workbook'.tr,
+        ),
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Farm Excel workbook exported successfully'.tr)),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Excel export failed: $error'.tr)));
+    } finally {
+      if (mounted) setState(() => _exportingExcel = false);
     }
   }
 
@@ -437,6 +475,20 @@ class _ReportsScreenState extends State<ReportsScreen> {
                           ? 'Exporting PDF...'.tr
                           : 'Export PDF report'.tr,
                       onPressed: _exportingPdf ? null : _exportPdf,
+                    ),
+                    SizedBox(height: 12),
+                    OutlinedButton.icon(
+                      onPressed: _exportingExcel ? null : _exportExcel,
+                      icon: Icon(Icons.table_chart_outlined, color: KalroColors.headerGreen),
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: Size.fromHeight(48),
+                        side: BorderSide(color: KalroColors.headerGreen),
+                      ),
+                      label: Text(
+                        _exportingExcel
+                            ? 'Exporting Excel...'.tr
+                            : 'Export Excel (.xlsx) workbook'.tr,
+                      ),
                     ),
                     SizedBox(height: 12),
                     OutlinedButton(

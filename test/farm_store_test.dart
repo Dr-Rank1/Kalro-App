@@ -62,4 +62,15 @@ void main() {
     final rows = await store.getCollection('feed_logs');
     expect(rows.map((r) => r['id']), ['b', 'c']);
   });
+
+  test('getCollectionWhere filters using json_extract indexed queries', () async {
+    await store.upsert('feed_logs', 'log-1', {'id': 'log-1', 'batchId': 'b1', 'kg': 5});
+    await store.upsert('feed_logs', 'log-2', {'id': 'log-2', 'batchId': 'b2', 'kg': 10});
+    await store.upsert('feed_logs', 'log-3', {'id': 'log-3', 'batchId': 'b1', 'kg': 15});
+
+    final b1Rows = await store.getCollectionWhere('feed_logs', jsonKey: 'batchId', value: 'b1');
+    expect(b1Rows, hasLength(2));
+    expect(b1Rows.map((r) => r['id']), containsAll(['log-1', 'log-3']));
+    expect(b1Rows.map((r) => r['id']), isNot(contains('log-2')));
+  });
 }

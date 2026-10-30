@@ -24,8 +24,16 @@ class CocoonHarvestRepository {
   }
 
   Future<List<CocoonHarvest>> getByBatchId(String batchId) async {
-    final harvests = await getAll();
-    return harvests.where((h) => h.batchId == batchId).toList()
+    if (_cache != null) {
+      return _cache!.where((h) => h.batchId == batchId).toList()
+        ..sort((a, b) => b.harvestDate.compareTo(a.harvestDate));
+    }
+    final rows = await _store.getCollectionWhere(
+      collection,
+      jsonKey: 'batchId',
+      value: batchId,
+    );
+    return [for (final row in rows) CocoonHarvest.fromJson(row)]
       ..sort((a, b) => b.harvestDate.compareTo(a.harvestDate));
   }
 
@@ -38,6 +46,13 @@ class CocoonHarvestRepository {
     double? shellWeightGrams,
     double? filamentLengthCm,
     double? moisturePercent,
+    int? doubleCount,
+    int? uziCount,
+    int? stainedCount,
+    int? flimsyCount,
+    int? meltedCount,
+    double? reeledWeightGrams,
+    int? breakCount,
     String? notes,
   }) async {
     final harvest = CocoonHarvest(
@@ -50,6 +65,13 @@ class CocoonHarvestRepository {
       shellWeightGrams: shellWeightGrams,
       filamentLengthCm: filamentLengthCm,
       moisturePercent: moisturePercent,
+      doubleCount: doubleCount,
+      uziCount: uziCount,
+      stainedCount: stainedCount,
+      flimsyCount: flimsyCount,
+      meltedCount: meltedCount,
+      reeledWeightGrams: reeledWeightGrams,
+      breakCount: breakCount,
       notes: notes?.trim().isEmpty == true ? null : notes?.trim(),
     );
 

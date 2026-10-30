@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../utils/kalro_formatters.dart';
 
+import '../components/cards/leaf_depletion_card.dart';
 import '../components/components.dart';
+import '../models/batch_status.dart';
 import '../models/inventory_summary.dart';
 import '../services/app_repositories.dart';
 import '../services/inventory_service.dart';
@@ -232,6 +234,15 @@ class _InventoryScreenState extends State<InventoryScreen> {
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                         color: KalroColors.textDark,
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    LeafDepletionCard(
+                      forecast: const LeafLedgerService().calculateDepletionForecast(
+                        currentStockKg: summary.leafStockKg,
+                        activeBatches: summary.batches
+                            .where((b) => b.status == BatchStatus.active)
+                            .toList(),
                       ),
                     ),
                     SizedBox(height: 16),
