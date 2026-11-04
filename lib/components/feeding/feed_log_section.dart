@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../constants/feed_skip_reasons.dart';
 import '../../models/feed_log.dart';
 import '../../models/species.dart';
 import '../../services/app_repositories.dart';
@@ -76,94 +77,180 @@ class _FeedLogSectionState extends State<FeedLogSection> {
     final stageController = TextEditingController();
     final notesController = TextEditingController();
 
+    var isSkipping = false;
+    var selectedReason = FeedSkipReasons.options.first.label;
+
     final saved = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.white,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            left: 20,
-            right: 20,
-            top: 20,
-            bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                'Log feeding'.tr,
-                style: GoogleFonts.poppins(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (modalContext, setModal) {
+            return Padding(
+              padding: EdgeInsets.only(
+                left: 20,
+                right: 20,
+                top: 20,
+                bottom: MediaQuery.of(modalContext).viewInsets.bottom + 20,
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      'Log feeding'.tr,
+                      style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    SegmentedButton<bool>(
+                      segments: [
+                        ButtonSegment(
+                          value: false,
+                          icon: const Icon(Icons.eco_outlined, size: 18),
+                          label: Text('Feed larvae'.tr),
+                        ),
+                        ButtonSegment(
+                          value: true,
+                          icon: const Icon(Icons.pause_circle_outline, size: 18),
+                          label: Text('Did not feed (Skip)'.tr),
+                        ),
+                      ],
+                      selected: {isSkipping},
+                      onSelectionChanged: (set) {
+                        setModal(() => isSkipping = set.first);
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    if (isSkipping) ...[
+                      Text(
+                        'Reason for not feeding'.tr,
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 6,
+                        children: FeedSkipReasons.options.map((opt) {
+                          final selected = selectedReason == opt.label;
+                          return ChoiceChip(
+                            avatar: Icon(opt.icon, size: 16),
+                            label: Text(opt.label.tr),
+                            selected: selected,
+                            onSelected: (_) {
+                              setModal(() => selectedReason = opt.label);
+                            },
+                            selectedColor: KalroColors.peach,
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        FeedSkipReasons.byLabelOrId(selectedReason).description.tr,
+                        style: GoogleFonts.poppins(
+                          fontSize: 11,
+                          fontStyle: FontStyle.italic,
+                          color: KalroColors.textMuted,
+                        ),
+                      ),
+                    ] else ...[
+                      TextField(
+                        controller: feedController,
+                        decoration: InputDecoration(labelText: 'Feed type'.tr),
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: quantityController,
+                        decoration: InputDecoration(labelText: 'Quantity (grams)'.tr),
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                        ],
+                      ),
+                    ],
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: stageController,
+                      decoration: InputDecoration(
+                        labelText: 'Feeding stage (optional)'.tr,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: notesController,
+                      decoration: InputDecoration(labelText: 'Notes (optional)'.tr),
+                      maxLines: 2,
+                    ),
+                    const SizedBox(height: 20),
+                    KalroPrimaryButton(
+                      label: isSkipping
+                          ? 'Record skipped feed'.tr
+                          : 'Save feeding log'.tr,
+                      onPressed: () async {
+                        if (isSkipping) {
+                          await widget.repository.create(
+                            batchId: widget.batchId,
+                            recordedAt: DateTime.now(),
+                            feedType: 'Skipped',
+                            quantityGrams: 0,
+                            feedingStage: stageController.text,
+                            notes: notesController.text,
+                            isSkipped: true,
+                            skipReason: selectedReason,
+                          );
+                          if (sheetContext.mounted) {
+                            Navigator.of(sheetContext).pop(true);
+                          }
+                          return;
+                        }
+
+                        final quantity = double.tryParse(
+                          quantityController.text.trim(),
+                        );
+                        if (feedController.text.trim().isEmpty ||
+                            quantity == null ||
+                            quantity <= 0) {
+                          return;
+                        }
+                        await widget.repository.create(
+                          batchId: widget.batchId,
+                          recordedAt: DateTime.now(),
+                          feedType: feedController.text,
+                          quantityGrams: quantity,
+                          feedingStage: stageController.text,
+                          notes: notesController.text,
+                          isSkipped: false,
+                        );
+                        final farm = widget.farmRepositories;
+                        final species = widget.species;
+                        if (farm != null && species != null) {
+                          await const FloorLogService().deductLeafKg(
+                            repositories: farm,
+                            species: species,
+                            kg: quantity / 1000,
+                            batchId: widget.batchId,
+                          );
+                        }
+                        if (sheetContext.mounted) {
+                          Navigator.of(sheetContext).pop(true);
+                        }
+                      },
+                    ),
+                  ],
                 ),
               ),
-              SizedBox(height: 16),
-              TextField(
-                controller: feedController,
-                decoration: InputDecoration(labelText: 'Feed type'.tr),
-              ),
-              SizedBox(height: 12),
-              TextField(
-                controller: quantityController,
-                decoration: InputDecoration(labelText: 'Quantity (grams)'.tr),
-                keyboardType: TextInputType.number,
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
-                ],
-              ),
-              SizedBox(height: 12),
-              TextField(
-                controller: stageController,
-                decoration: InputDecoration(
-                  labelText: 'Feeding stage (optional)'.tr,
-                ),
-              ),
-              SizedBox(height: 12),
-              TextField(
-                controller: notesController,
-                decoration: InputDecoration(labelText: 'Notes (optional)'.tr),
-                maxLines: 2,
-              ),
-              SizedBox(height: 20),
-              KalroPrimaryButton(
-                label: 'Save feeding log'.tr,
-                onPressed: () async {
-                  final quantity = double.tryParse(
-                    quantityController.text.trim(),
-                  );
-                  if (feedController.text.trim().isEmpty ||
-                      quantity == null ||
-                      quantity <= 0) {
-                    return;
-                  }
-                  await widget.repository.create(
-                    batchId: widget.batchId,
-                    recordedAt: DateTime.now(),
-                    feedType: feedController.text,
-                    quantityGrams: quantity,
-                    feedingStage: stageController.text,
-                    notes: notesController.text,
-                  );
-                  final farm = widget.farmRepositories;
-                  final species = widget.species;
-                  if (farm != null && species != null) {
-                    await const FloorLogService().deductLeafKg(
-                      repositories: farm,
-                      species: species,
-                      kg: quantity / 1000,
-                      batchId: widget.batchId,
-                    );
-                  }
-                  if (context.mounted) Navigator.of(context).pop(true);
-                },
-              ),
-            ],
-          ),
+            );
+          },
         );
       },
     );
@@ -174,8 +261,23 @@ class _FeedLogSectionState extends State<FeedLogSection> {
     notesController.dispose();
 
     if (saved == true) {
-      _reload();
-      widget.onChanged?.call();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              isSkipping
+                  ? '⏸ Recorded non-feeding: $selectedReason'.tr
+                  : '✓ Feeding logged successfully'.tr,
+            ),
+            backgroundColor:
+                isSkipping ? KalroColors.harvest : KalroColors.headerGreen,
+          ),
+        );
+      }
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _reload();
+        widget.onChanged?.call();
+      });
     }
   }
 
@@ -237,11 +339,12 @@ class _FeedLogSectionState extends State<FeedLogSection> {
               );
             }
 
-            final total = logs.fold<double>(
+            final total = logs.where((l) => !l.wasSkipped).fold<double>(
               0,
               (sum, log) => sum + log.quantityGrams,
             );
-            final latest = logs.first;
+            final skippedCount = logs.where((l) => l.wasSkipped).length;
+            final latestNonSkipped = logs.where((l) => !l.wasSkipped).toList();
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -255,20 +358,35 @@ class _FeedLogSectionState extends State<FeedLogSection> {
                       label: 'Entries'.tr,
                       value: '${logs.length}',
                     ),
-                    RecordSummaryItem(
-                      label: 'Latest'.tr,
-                      value: formatGrams(latest.quantityGrams),
-                    ),
+                    if (skippedCount > 0)
+                      RecordSummaryItem(
+                        label: 'Skipped'.tr,
+                        value: '$skippedCount',
+                      )
+                    else if (latestNonSkipped.isNotEmpty)
+                      RecordSummaryItem(
+                        label: 'Latest'.tr,
+                        value: formatGrams(latestNonSkipped.first.quantityGrams),
+                      ),
                   ],
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 ...logs.map(
                   (log) => RecordLogTile(
-                    icon: Icons.restaurant_outlined,
-                    iconColor: KalroColors.primaryGreen,
-                    iconBackground: KalroColors.peach.withValues(alpha: 0.35),
-                    title: '${formatGrams(log.quantityGrams)} · ${log.feedType}'
-                        .tr,
+                    icon: log.wasSkipped
+                        ? Icons.pause_circle_outline
+                        : Icons.restaurant_outlined,
+                    iconColor: log.wasSkipped
+                        ? KalroColors.harvest
+                        : KalroColors.primaryGreen,
+                    iconBackground: log.wasSkipped
+                        ? KalroColors.peach.withValues(alpha: 0.5)
+                        : KalroColors.peach.withValues(alpha: 0.35),
+                    title: log.wasSkipped
+                        ? Translator.fill('Skipped · {reason}', {
+                            'reason': (log.skipReason ?? 'Did not feed').tr,
+                          })
+                        : '${formatGrams(log.quantityGrams)} · ${log.feedType}'.tr,
                     subtitle: log.feedingStage?.trim().isNotEmpty == true
                         ? log.feedingStage
                         : null,

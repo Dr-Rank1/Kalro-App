@@ -67,4 +67,19 @@ void main() {
     await repository.delete(batch.id);
     expect(await repository.getAll(), isEmpty);
   });
+
+  test('batch supports custom batchTag and displayTag', () async {
+    final batch = await repository.create(
+      species: Species.bombyx,
+      startDate: DateTime(2026, 11, 4),
+      eggCount: 400,
+      batchTag: 'BATCH-2026-11-BOM-01',
+    );
+
+    expect(batch.batchTag, 'BATCH-2026-11-BOM-01');
+    expect(batch.displayTag, 'BATCH-2026-11-BOM-01');
+
+    final fetched = await repository.getById(batch.id);
+    expect(fetched?.batchTag, 'BATCH-2026-11-BOM-01');
+  });
 }

@@ -15,6 +15,9 @@ class TodayBatchWorkCard extends StatelessWidget {
     required this.plan,
     required this.liveCount,
     required this.fedToday,
+    this.fedGramsToday,
+    this.skippedToday = false,
+    this.skipReason,
     required this.repositories,
     required this.onOpen,
     required this.onChanged,
@@ -27,6 +30,9 @@ class TodayBatchWorkCard extends StatelessWidget {
   final RearingDayPlan plan;
   final int liveCount;
   final bool fedToday;
+  final double? fedGramsToday;
+  final bool skippedToday;
+  final String? skipReason;
   final AppRepositories repositories;
   final VoidCallback onOpen;
   final VoidCallback onChanged;
@@ -37,19 +43,32 @@ class TodayBatchWorkCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final harvest = plan.isHarvestWork;
-    final rest = plan.stopFeeding;
-    final accent = harvest
-        ? KalroColors.harvest
-        : rest
-            ? KalroColors.rest
-            : KalroColors.leaf;
-    final status = harvest
-        ? 'Harvest'.tr
-        : rest
-            ? 'Rest day'.tr
-            : fedToday
-                ? 'Fed today'.tr
-                : 'Needs feed'.tr;
+    final Color accent;
+    final String status;
+    final IconData icon;
+
+    if (harvest) {
+      accent = KalroColors.harvest;
+      status = 'Harvest'.tr;
+      icon = Icons.inventory_2_outlined;
+    } else if (fedToday) {
+      accent = KalroColors.headerGreen;
+      status = fedGramsToday != null && fedGramsToday! > 0
+          ? Translator.fill('✓ Fed {g} g', {'g': '${fedGramsToday!.round()}'})
+          : '✓ Fed today'.tr;
+      icon = Icons.check_circle_rounded;
+    } else if (skippedToday) {
+      accent = KalroColors.harvest;
+      status = Translator.fill('⏸ Skipped ({r})', {
+        'r': (skipReason ?? 'Rest').tr,
+      });
+      icon = Icons.pause_circle_outline;
+    } else {
+      // Default: Feed larvae!
+      accent = KalroColors.leaf;
+      status = 'Feed larvae'.tr;
+      icon = Icons.eco_outlined;
+    }
 
     return Material(
       color: Colors.white,
@@ -75,27 +94,54 @@ class TodayBatchWorkCard extends StatelessWidget {
                     Row(
                       children: [
                         Expanded(
-                          child: Text(
-                            batch.species.label,
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 15,
-                            ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                batch.species.label,
+                                style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              if (batch.batchTag != null && batch.batchTag!.isNotEmpty)
+                                Text(
+                                  batch.batchTag!,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    color: KalroColors.textMuted,
+                                  ),
+                                ),
+                            ],
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
-                            color: accent.withValues(alpha: 0.12),
+                            color: fedToday
+                                ? KalroColors.headerGreen.withValues(alpha: 0.12)
+                                : accent.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          child: Text(
-                            status,
-                            style: GoogleFonts.poppins(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                              color: accent,
-                            ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                icon,
+                                size: 13,
+                                color: fedToday ? KalroColors.headerGreen : accent,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                status,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  color: fedToday ? KalroColors.headerGreen : accent,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
@@ -141,6 +187,10 @@ class TodayBatchWorkCard extends StatelessWidget {
                         repositories: repositories,
                         onChanged: onChanged,
                         canEdit: canEdit,
+                        fedToday: fedToday,
+                        fedGramsToday: fedGramsToday,
+                        skippedToday: skippedToday,
+                        skipReason: skipReason,
                       ),
                     ],
                   ],

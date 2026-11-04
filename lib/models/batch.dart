@@ -15,6 +15,7 @@ class Batch {
     this.feedMaterial,
     this.eggSource,
     this.rearingType,
+    this.batchTag,
   });
 
   final String id;
@@ -29,6 +30,10 @@ class Batch {
   final String? feedMaterial;
   final String? eggSource;
   final String? rearingType;
+  final String? batchTag;
+
+  String get displayTag =>
+      batchTag?.trim().isNotEmpty == true ? batchTag! : 'BATCH-${startDate.year}-${species == Species.bombyx ? "BOM" : "ERI"}-${id.length >= 4 ? id.substring(0, 4).toUpperCase() : id.toUpperCase()}';
 
   Batch copyWith({
     Species? species,
@@ -41,6 +46,7 @@ class Batch {
     String? feedMaterial,
     String? eggSource,
     String? rearingType,
+    String? batchTag,
   }) {
     return Batch(
       id: id,
@@ -55,6 +61,7 @@ class Batch {
       feedMaterial: feedMaterial ?? this.feedMaterial,
       eggSource: eggSource ?? this.eggSource,
       rearingType: rearingType ?? this.rearingType,
+      batchTag: batchTag ?? this.batchTag,
     );
   }
 
@@ -72,6 +79,7 @@ class Batch {
       'feedMaterial': feedMaterial,
       'eggSource': eggSource,
       'rearingType': rearingType,
+      'batchTag': batchTag,
     };
   }
 
@@ -89,6 +97,7 @@ class Batch {
       feedMaterial: json['feedMaterial'] as String?,
       eggSource: json['eggSource'] as String?,
       rearingType: json['rearingType'] as String?,
+      batchTag: json['batchTag'] as String?,
     );
   }
 }

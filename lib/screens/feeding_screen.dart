@@ -4,6 +4,9 @@ import '../components/components.dart';
 import '../models/batch.dart';
 import '../models/batch_status.dart';
 import '../services/app_repositories.dart';
+import '../services/floor_log_service.dart';
+import '../services/rearing_day_service.dart';
+import '../theme/kalro_colors.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class FeedingScreen extends StatefulWidget {
@@ -19,6 +22,7 @@ class FeedingScreen extends StatefulWidget {
 class _FeedingScreenState extends State<FeedingScreen> {
   late Future<List<Batch>> _batchesFuture;
   Batch? _selectedBatch;
+  static const _rearingDay = RearingDayService();
 
   @override
   void initState() {
@@ -98,13 +102,85 @@ class _FeedingScreenState extends State<FeedingScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 24),
+                    const SizedBox(height: 16),
                     if (_selectedBatch != null)
-                      FeedLogSection(
-                        batchId: _selectedBatch!.id,
-                        repository: widget.repositories.feedLogs,
-                        farmRepositories: widget.repositories,
-                        species: _selectedBatch!.species,
+                      Builder(
+                        builder: (context) {
+                          final batch = _selectedBatch!;
+                          final plan = _rearingDay.planFor(batch);
+                          final isRest = plan != null && (plan.stopFeeding || plan.suggestedGrams <= 0);
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              if (plan != null)
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  margin: const EdgeInsets.only(bottom: 16),
+                                  decoration: BoxDecoration(
+                                    color: isRest
+                                        ? KalroColors.peach.withValues(alpha: 0.6)
+                                        : KalroColors.headerGreen.withValues(alpha: 0.08),
+                                    borderRadius: BorderRadius.circular(14),
+                                    border: Border.all(
+                                      color: isRest
+                                          ? KalroColors.harvest.withValues(alpha: 0.3)
+                                          : KalroColors.headerGreen.withValues(alpha: 0.2),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Icon(
+                                        isRest
+                                            ? Icons.pause_circle_outline
+                                            : Icons.eco_outlined,
+                                        color: isRest
+                                            ? KalroColors.harvest
+                                            : KalroColors.headerGreen,
+                                        size: 22,
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              '${plan.stage.label} · ${plan.actionTitle}'.tr,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w700,
+                                                fontSize: 13,
+                                                color: isRest
+                                                    ? KalroColors.textDark
+                                                    : KalroColors.headerGreen,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 3),
+                                            Text(
+                                              plan.feedLabel,
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: KalroColors.textMuted,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              FeedLogSection(
+                                batchId: batch.id,
+                                repository: widget.repositories.feedLogs,
+                                farmRepositories: widget.repositories,
+                                species: batch.species,
+                                defaultFeedType: FloorLogService.defaultFeedType(batch),
+                                feedHint: plan?.feedLabel,
+                                suggestedGrams: plan?.suggestedGrams,
+                              ),
+                            ],
+                          );
+                        },
                       ),
                   ],
                 ],

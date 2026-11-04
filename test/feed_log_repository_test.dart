@@ -63,4 +63,27 @@ void main() {
     await repository.delete(log.id);
     expect(await repository.getByBatchId('batch-1'), isEmpty);
   });
+
+  test('record and retrieve skipped feed logs with reason', () async {
+    final skippedLog = await repository.create(
+      batchId: 'batch-3',
+      recordedAt: DateTime.now(),
+      feedType: 'Skipped',
+      quantityGrams: 0,
+      isSkipped: true,
+      skipReason: 'Moult rest',
+      notes: 'Worms inactive and shedding cuticle',
+    );
+
+    expect(skippedLog.isSkipped, isTrue);
+    expect(skippedLog.wasSkipped, isTrue);
+    expect(skippedLog.quantityGrams, 0.0);
+    expect(skippedLog.skipReason, 'Moult rest');
+
+    final logs = await repository.getByBatchId('batch-3');
+    expect(logs.length, 1);
+    expect(logs.first.wasSkipped, isTrue);
+    expect(logs.first.skipReason, 'Moult rest');
+    expect(await repository.totalQuantityForBatch('batch-3'), 0.0);
+  });
 }

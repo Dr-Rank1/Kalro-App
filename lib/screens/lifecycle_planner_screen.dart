@@ -120,6 +120,7 @@ class _LifecyclePlannerScreenState extends State<LifecyclePlannerScreen> {
         builder: (_) => CreateBatchScreen(
           repository: widget.repositories.batches,
           producers: widget.repositories.producers,
+          farmRepositories: widget.repositories,
           initialSpecies: _species,
           initialStartDate: _startDate,
         ),

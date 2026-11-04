@@ -7,6 +7,8 @@ class FeedLog {
     required this.quantityGrams,
     this.feedingStage,
     this.notes,
+    this.isSkipped = false,
+    this.skipReason,
   });
 
   final String id;
@@ -16,6 +18,11 @@ class FeedLog {
   final double quantityGrams;
   final String? feedingStage;
   final String? notes;
+  final bool isSkipped;
+  final String? skipReason;
+
+  bool get wasSkipped =>
+      isSkipped || (quantityGrams <= 0 && skipReason != null && skipReason!.isNotEmpty);
 
   Map<String, dynamic> toJson() {
     return {
@@ -26,18 +33,27 @@ class FeedLog {
       'quantityGrams': quantityGrams,
       'feedingStage': feedingStage,
       'notes': notes,
+      'isSkipped': isSkipped,
+      'skipReason': skipReason,
     };
   }
 
   factory FeedLog.fromJson(Map<String, dynamic> json) {
+    final quantity = (json['quantityGrams'] as num).toDouble();
+    final isExplicitSkipped = json['isSkipped'] as bool?;
+    final reason = json['skipReason'] as String?;
+    final skipped = isExplicitSkipped ?? (quantity <= 0 && reason != null && reason.isNotEmpty);
+
     return FeedLog(
       id: json['id'] as String,
       batchId: json['batchId'] as String,
       recordedAt: DateTime.parse(json['recordedAt'] as String),
       feedType: json['feedType'] as String,
-      quantityGrams: (json['quantityGrams'] as num).toDouble(),
+      quantityGrams: quantity,
       feedingStage: json['feedingStage'] as String?,
       notes: json['notes'] as String?,
+      isSkipped: skipped,
+      skipReason: reason,
     );
   }
 }

@@ -41,15 +41,19 @@ class FeedLogRepository {
     required double quantityGrams,
     String? feedingStage,
     String? notes,
+    bool isSkipped = false,
+    String? skipReason,
   }) async {
     final log = FeedLog(
       id: _uuid.v4(),
       batchId: batchId,
       recordedAt: recordedAt,
       feedType: feedType.trim(),
-      quantityGrams: quantityGrams,
+      quantityGrams: isSkipped ? 0.0 : quantityGrams,
       feedingStage: feedingStage?.trim().isEmpty == true ? null : feedingStage?.trim(),
       notes: notes?.trim().isEmpty == true ? null : notes?.trim(),
+      isSkipped: isSkipped,
+      skipReason: skipReason?.trim().isEmpty == true ? null : skipReason?.trim(),
     );
 
     final logs = await getAll();

@@ -44,6 +44,9 @@ class DashboardSummary {
     this.eriHostStockKg = 0,
     this.harvestWindowOpen = false,
     this.fedTodayByBatch = const {},
+    this.fedTodayGramsByBatch = const {},
+    this.skippedTodayByBatch = const {},
+    this.skipReasonTodayByBatch = const {},
     this.deathsTodayByBatch = const {},
   });
 
@@ -70,6 +73,9 @@ class DashboardSummary {
   final double eriHostStockKg;
   final bool harvestWindowOpen;
   final Map<String, bool> fedTodayByBatch;
+  final Map<String, double> fedTodayGramsByBatch;
+  final Map<String, bool> skippedTodayByBatch;
+  final Map<String, String?> skipReasonTodayByBatch;
   final Map<String, int> deathsTodayByBatch;
 
   int get upcomingThisWeekCount =>

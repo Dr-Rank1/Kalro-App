@@ -90,4 +90,69 @@ void main() {
     expect(logs.single.temperatureCelsius, 32);
     expect(logs.single.humidityPercent, 90);
   });
+
+  test('logSkippedFeed creates a skipped entry with reason without deducting leaf', () async {
+    final batch = await repositories.batches.create(
+      species: Species.bombyx,
+      startDate: DateTime.now().subtract(const Duration(days: 14)),
+      eggCount: 400,
+    );
+    await repositories.leafInventory.save(
+      LeafInventory(
+        mulberryKg: 10,
+        castorKg: 0,
+        kesseruKg: 0,
+        updatedAt: DateTime.now(),
+      ),
+    );
+
+    await floor.logSkippedFeed(
+      repositories: repositories,
+      batch: batch,
+      reason: 'Moult rest',
+      feedingStage: '1st moult',
+      notes: 'All larvae quiescent',
+    );
+
+    final feeds = await repositories.feedLogs.getByBatchId(batch.id);
+    expect(feeds.length, 1);
+    expect(feeds.first.wasSkipped, isTrue);
+    expect(feeds.first.quantityGrams, 0.0);
+    expect(feeds.first.skipReason, 'Moult rest');
+
+    final stock = await repositories.leafInventory.get();
+    expect(stock.mulberryKg, 10.0); // No leaf deducted
+  });
+
+  test('logCustomFeed records custom grams and deducts leaf correctly', () async {
+    final batch = await repositories.batches.create(
+      species: Species.bombyx,
+      startDate: DateTime.now().subtract(const Duration(days: 14)),
+      eggCount: 400,
+    );
+    await repositories.leafInventory.save(
+      LeafInventory(
+        mulberryKg: 10,
+        castorKg: 0,
+        kesseruKg: 0,
+        updatedAt: DateTime.now(),
+      ),
+    );
+
+    await floor.logCustomFeed(
+      repositories: repositories,
+      batch: batch,
+      quantityGrams: 250,
+      feedType: 'Mulberry',
+      feedingStage: '2nd instar',
+    );
+
+    final feeds = await repositories.feedLogs.getByBatchId(batch.id);
+    expect(feeds.length, 1);
+    expect(feeds.first.wasSkipped, isFalse);
+    expect(feeds.first.quantityGrams, 250.0);
+
+    final stock = await repositories.leafInventory.get();
+    expect(stock.mulberryKg, 9.75); // 10.0 - 0.25kg
+  });
 }

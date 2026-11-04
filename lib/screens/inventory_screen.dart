@@ -54,6 +54,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
             CreateBatchScreen(
               repository: widget.repositories.batches,
               producers: widget.repositories.producers,
+              farmRepositories: widget.repositories,
             ),
       ),
     );

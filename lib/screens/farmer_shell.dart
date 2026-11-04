@@ -120,6 +120,7 @@ class _FarmerShellState extends State<FarmerShell> {
                         builder: (_) => CreateBatchScreen(
                           repository: widget.repositories.batches,
                           producers: widget.repositories.producers,
+                          farmRepositories: widget.repositories,
                         ),
                       ),
                     ).then((_) => _reloadAll());

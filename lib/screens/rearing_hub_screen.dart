@@ -184,7 +184,14 @@ class _RearingHubScreenState extends State<RearingHubScreen> {
                             liveCount:
                                 summary.liveCountByBatch[batch.id] ??
                                 batch.eggCount,
-                            fedToday: summary.fedTodayByBatch[batch.id] ?? false,
+                            fedToday:
+                                summary.fedTodayByBatch[batch.id] ?? false,
+                            fedGramsToday:
+                                summary.fedTodayGramsByBatch[batch.id],
+                            skippedToday:
+                                summary.skippedTodayByBatch[batch.id] ?? false,
+                            skipReason:
+                                summary.skipReasonTodayByBatch[batch.id],
                             repositories: widget.repositories,
                             canEdit: widget.canEdit,
                             onOpen: () => _openBatch(batch.id),
@@ -276,6 +283,7 @@ class _RearingHubScreenState extends State<RearingHubScreen> {
                                       builder: (_) => CreateBatchScreen(
                                         repository: widget.repositories.batches,
                                         producers: widget.repositories.producers,
+                                        farmRepositories: widget.repositories,
                                       ),
                                     ),
                                   );

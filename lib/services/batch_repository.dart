@@ -43,6 +43,7 @@ class BatchRepository {
     String? feedMaterial,
     String? eggSource,
     String? rearingType,
+    String? batchTag,
   }) async {
     final batch = Batch(
       id: _uuid.v4(),
@@ -59,6 +60,7 @@ class BatchRepository {
       eggSource: eggSource?.trim().isEmpty == true ? null : eggSource?.trim(),
       rearingType:
           rearingType?.trim().isEmpty == true ? null : rearingType?.trim(),
+      batchTag: batchTag?.trim().isEmpty == true ? null : batchTag?.trim(),
     );
 
     final batches = await getAll();

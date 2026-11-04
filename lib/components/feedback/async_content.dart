@@ -20,17 +20,17 @@ class AsyncContent<T> extends StatelessWidget {
     return FutureBuilder<T>(
       future: future,
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return loading ?? Center(child: CircularProgressIndicator());
-        }
         if (snapshot.hasError) {
           return errorBuilder?.call(context, snapshot.error!) ??
               Center(child: Text('Something went wrong: ${snapshot.error}'.tr));
         }
-        if (!snapshot.hasData) {
-          return SizedBox.shrink();
+        if (snapshot.hasData) {
+          return builder(context, snapshot.data as T);
         }
-        return builder(context, snapshot.data as T);
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return loading ?? const Center(child: CircularProgressIndicator());
+        }
+        return const SizedBox.shrink();
       },
     );
   }

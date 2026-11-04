@@ -398,6 +398,7 @@ class _BatchDetailScreenState extends State<BatchDetailScreen> {
                                 builder: (_) => CreateBatchScreen(
                                   repository: widget.repositories.batches,
                                   producers: widget.repositories.producers,
+                                  farmRepositories: widget.repositories,
                                   copyFrom: batch,
                                 ),
                               ),

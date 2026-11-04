@@ -47,6 +47,57 @@ class FloorLogService {
     return true;
   }
 
+  Future<void> logCustomFeed({
+    required AppRepositories repositories,
+    required Batch batch,
+    required double quantityGrams,
+    String? feedType,
+    String? feedingStage,
+    String? notes,
+  }) async {
+    final type = feedType?.trim().isNotEmpty == true
+        ? feedType!.trim()
+        : defaultFeedType(batch);
+    await repositories.feedLogs.create(
+      batchId: batch.id,
+      recordedAt: DateTime.now(),
+      feedType: type,
+      quantityGrams: quantityGrams,
+      feedingStage: feedingStage,
+      notes: notes,
+      isSkipped: false,
+    );
+    if (quantityGrams > 0) {
+      await deductLeafKg(
+        repositories: repositories,
+        species: batch.species,
+        kg: quantityGrams / 1000,
+        batchId: batch.id,
+      );
+    }
+  }
+
+  Future<void> logSkippedFeed({
+    required AppRepositories repositories,
+    required Batch batch,
+    required String reason,
+    String? feedingStage,
+    String? notes,
+  }) async {
+    await repositories.feedLogs.create(
+      batchId: batch.id,
+      recordedAt: DateTime.now(),
+      feedType: 'Skipped',
+      quantityGrams: 0,
+      feedingStage: feedingStage,
+      notes: notes?.trim().isNotEmpty == true
+          ? '$reason - ${notes!.trim()}'
+          : reason,
+      isSkipped: true,
+      skipReason: reason,
+    );
+  }
+
   Future<void> logDeaths({
     required AppRepositories repositories,
     required String batchId,

@@ -168,11 +168,27 @@ class DashboardService {
     );
 
     final fedTodayByBatch = <String, bool>{};
+    final fedTodayGramsByBatch = <String, double>{};
+    final skippedTodayByBatch = <String, bool>{};
+    final skipReasonTodayByBatch = <String, String?>{};
     final deathsTodayByBatch = <String, int>{};
     for (final batch in active) {
-      fedTodayByBatch[batch.id] = feedLogs.any(
-        (l) => l.batchId == batch.id && _dateOnly(l.recordedAt) == today,
+      final todayFeeds = feedLogs
+          .where((l) => l.batchId == batch.id && _dateOnly(l.recordedAt) == today)
+          .toList();
+      final actualFeeds = todayFeeds.where((l) => !l.isSkipped).toList();
+      final skippedFeeds = todayFeeds.where((l) => l.isSkipped).toList();
+
+      fedTodayByBatch[batch.id] = actualFeeds.isNotEmpty;
+      fedTodayGramsByBatch[batch.id] = actualFeeds.fold<double>(
+        0,
+        (sum, l) => sum + l.quantityGrams,
       );
+      skippedTodayByBatch[batch.id] =
+          actualFeeds.isEmpty && skippedFeeds.isNotEmpty;
+      skipReasonTodayByBatch[batch.id] =
+          skippedFeeds.isNotEmpty ? skippedFeeds.last.skipReason : null;
+
       deathsTodayByBatch[batch.id] = mortalityLogs
           .where((l) => l.batchId == batch.id && _dateOnly(l.recordedAt) == today)
           .fold<int>(0, (sum, l) => sum + l.count);
@@ -203,6 +219,9 @@ class DashboardService {
       eriHostStockKg: eriHostStockKg,
       harvestWindowOpen: harvestWindowOpen,
       fedTodayByBatch: fedTodayByBatch,
+      fedTodayGramsByBatch: fedTodayGramsByBatch,
+      skippedTodayByBatch: skippedTodayByBatch,
+      skipReasonTodayByBatch: skipReasonTodayByBatch,
       deathsTodayByBatch: deathsTodayByBatch,
     );
   }

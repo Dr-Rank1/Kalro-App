@@ -204,6 +204,7 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
             CreateBatchScreen(
               repository: widget.repositories.batches,
               producers: widget.repositories.producers,
+              farmRepositories: widget.repositories,
             ),
       ),
     );
@@ -336,6 +337,7 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                                 screen: CreateBatchScreen(
                                   repository: widget.repositories.batches,
                                   producers: widget.repositories.producers,
+                                  farmRepositories: widget.repositories,
                                   copyFrom: summary.lastCycle!.batch,
                                 ),
                               )
