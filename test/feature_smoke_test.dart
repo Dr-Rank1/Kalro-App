@@ -14,6 +14,7 @@ import 'package:kalro/screens/inventory_screen.dart';
 import 'package:kalro/screens/onboarding_screen.dart';
 import 'package:kalro/screens/reports_screen.dart';
 import 'package:kalro/services/app_repositories.dart';
+import 'package:kalro/services/farm_store.dart';
 import 'package:kalro/services/user_preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -32,6 +33,7 @@ void main() {
   });
 
   tearDown(() async {
+    await FarmStore.closeAll();
     if (tempDir.existsSync()) await tempDir.delete(recursive: true);
   });
 

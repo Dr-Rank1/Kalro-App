@@ -1,6 +1,8 @@
 import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kalro/utils/file_utils.dart';
+import 'package:path/path.dart' as p;
 
 void main() {
   group('FileUtils.atomicWriteAsString', () {
@@ -17,7 +19,7 @@ void main() {
     });
 
     test('writes content safely and creates missing parent directories', () async {
-      final targetFile = File('${tempDir.path}/nested/dir/data.json');
+      final targetFile = File(p.join(tempDir.path, 'nested', 'dir', 'data.json'));
       const testContent = '{"status":"ok","value":42}';
 
       await FileUtils.atomicWriteAsString(targetFile, testContent);
@@ -27,7 +29,7 @@ void main() {
     });
 
     test('overwrites existing file contents without leaving temp files behind', () async {
-      final targetFile = File('${tempDir.path}/data.txt');
+      final targetFile = File(p.join(tempDir.path, 'data.txt'));
       await targetFile.writeAsString('initial');
 
       await FileUtils.atomicWriteAsString(targetFile, 'updated content');
@@ -36,7 +38,7 @@ void main() {
 
       final files = await tempDir.list().toList();
       expect(files.length, equals(1));
-      expect(files.first.path, equals(targetFile.path));
+      expect(p.normalize(files.first.path), equals(p.normalize(targetFile.path)));
     });
   });
 }
