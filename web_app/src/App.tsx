@@ -8,8 +8,9 @@ import { FarmToolsView } from './components/FarmToolsView';
 import { ProfileView } from './components/ProfileView';
 import { QuickLogModal } from './components/QuickLogModal';
 import { QrCodeModal } from './components/QrCodeModal';
+import { ReportExportModal } from './components/ReportExportModal';
+import { downloadSingleBatchPdf } from './utils/pdfGenerator';
 import { storage } from './storage';
-import { Language } from './translations';
 import {
   Batch,
   CocoonHarvest,
@@ -21,15 +22,15 @@ import {
   MortalityLog,
   PaymentRecord,
 } from './types';
-import { CheckCircle2 } from 'lucide-react';
 
 export function App() {
   // Initialize storage defaults if empty
   storage.initDefaults();
 
-  const [theme, setTheme] = useState<'light' | 'dark'>(storage.getTheme());
-  const [lang, setLang] = useState<Language>(storage.getLang());
-  const [activeTab, setActiveTab] = useState<NavTab>('today');
+  const initialBatches = storage.getBatches();
+  const [activeTab, setActiveTab] = useState<NavTab>(() => {
+    return initialBatches.length === 0 ? 'batches' : 'today';
+  });
 
   // Application Data State
   const [profile, setProfile] = useState<FarmProfile>(storage.getProfile());
@@ -50,6 +51,7 @@ export function App() {
   }>({ open: false });
 
   const [qrModalBatch, setQrModalBatch] = useState<Batch | null>(null);
+  const [reportModalOpen, setReportModalOpen] = useState(false);
 
   // Toast Notification
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -61,22 +63,10 @@ export function App() {
     }, 3500);
   };
 
-  // Sync theme to document element
+  // Lock to clean light theme
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    storage.saveTheme(theme);
-  }, [theme]);
-
-  // Sync language
-  const handleToggleLang = () => {
-    const next = lang === 'en' ? 'sw' : 'en';
-    setLang(next);
-    storage.saveLang(next);
-  };
-
-  const handleToggleTheme = () => {
-    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
-  };
+    document.documentElement.removeAttribute('data-theme');
+  }, []);
 
   // Refresh all state from storage
   const reloadAll = () => {
@@ -184,11 +174,11 @@ export function App() {
     return result;
   };
 
-  // Demo Data Reset
-  const handleResetDemoData = () => {
-    storage.resetToDemoData();
+  // Clear All Station Records
+  const handleClearAllRecords = () => {
+    storage.clearAll();
     reloadAll();
-    showToast('Reset to demo farm data.');
+    showToast('All station records cleared.');
   };
 
   const activeBatchesCount = batches.filter((b) => b.status === 'active').length;
@@ -198,18 +188,16 @@ export function App() {
       {/* Header */}
       <Header
         profile={profile}
-        lang={lang}
-        theme={theme}
         activeBatchesCount={activeBatchesCount}
-        onToggleTheme={handleToggleTheme}
-        onToggleLang={handleToggleLang}
+        onOpenQuickLog={() => setQuickLogState({ open: true })}
+        onOpenReportModal={() => setReportModalOpen(true)}
       />
 
       {/* Navigation */}
       <Navigation
         activeTab={activeTab}
         onSelectTab={setActiveTab}
-        lang={lang}
+        activeBatchesCount={activeBatchesCount}
       />
 
       {/* Main Views Container */}
@@ -222,9 +210,19 @@ export function App() {
             envLogs={envLogs}
             harvests={harvests}
             inventory={inventory}
-            lang={lang}
             onOpenQuickLog={(batchId, type) => setQuickLogState({ open: true, batchId, type })}
             onSelectTab={(tab) => setActiveTab(tab as NavTab)}
+            onExportBatchPdf={(b) => {
+              downloadSingleBatchPdf({
+                batch: b,
+                profile,
+                feedLogs,
+                mortalityLogs,
+                envLogs,
+                harvests,
+              });
+              showToast(`Lot dossier for "${b.displayTag || b.batchTag || b.id}" exported as PDF.`);
+            }}
           />
         )}
 
@@ -234,18 +232,19 @@ export function App() {
             feedLogs={feedLogs}
             mortalityLogs={mortalityLogs}
             harvests={harvests}
-            lang={lang}
+            profile={profile}
+            envLogs={envLogs}
             onAddBatch={handleAddBatch}
             onUpdateBatch={handleUpdateBatch}
             onOpenQuickLog={(batchId, type) => setQuickLogState({ open: true, batchId, type })}
             onOpenQr={(b) => setQrModalBatch(b)}
+            onToast={showToast}
           />
         )}
 
         {activeTab === 'plan' && (
           <PlanView
             batches={batches}
-            lang={lang}
           />
         )}
 
@@ -258,7 +257,6 @@ export function App() {
             inventory={inventory}
             leafMovements={leafMovements}
             payments={payments}
-            lang={lang}
             onAddFeedLog={handleAddFeed}
             onAddMortalityLog={handleAddMortality}
             onAddHarvest={handleAddHarvest}
@@ -266,6 +264,7 @@ export function App() {
             onAddPayment={handleAddPayment}
             onExportCsv={handleExportCsv}
             onExportBackup={handleExportBackup}
+            onOpenReportModal={() => setReportModalOpen(true)}
           />
         )}
 
@@ -275,11 +274,10 @@ export function App() {
             batches={batches}
             harvests={harvests}
             payments={payments}
-            lang={lang}
             onUpdateProfile={handleUpdateProfile}
             onExportBackup={handleExportBackup}
             onImportBackup={handleImportBackup}
-            onResetDemoData={handleResetDemoData}
+            onClearAllRecords={handleClearAllRecords}
           />
         )}
       </main>
@@ -290,7 +288,6 @@ export function App() {
           batches={batches}
           initialBatchId={quickLogState.batchId}
           defaultType={quickLogState.type}
-          lang={lang}
           onClose={() => setQuickLogState({ open: false })}
           onSaveFeed={handleAddFeed}
           onSaveMortality={handleAddMortality}
@@ -307,10 +304,24 @@ export function App() {
         />
       )}
 
+      {/* Official Station PDF Report & Print Modal */}
+      <ReportExportModal
+        isOpen={reportModalOpen}
+        onClose={() => setReportModalOpen(false)}
+        profile={profile}
+        batches={batches}
+        feedLogs={feedLogs}
+        mortalityLogs={mortalityLogs}
+        envLogs={envLogs}
+        harvests={harvests}
+        inventory={inventory}
+        leafMovements={leafMovements}
+        payments={payments}
+      />
+
       {/* Toast Notification */}
       {toastMessage && (
         <div className="toast-notice">
-          <CheckCircle2 size={18} color="#7fe3cf" />
           <span>{toastMessage}</span>
         </div>
       )}

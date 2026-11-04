@@ -1,70 +1,68 @@
 import React from 'react';
-import { Moon, Sun, Globe, ShieldCheck } from 'lucide-react';
-import { Language, TRANSLATIONS } from '../translations';
 import { FarmProfile } from '../types';
+import { FileText, PlusCircle } from 'lucide-react';
 
 interface HeaderProps {
   profile: FarmProfile;
-  lang: Language;
-  theme: 'light' | 'dark';
   activeBatchesCount: number;
-  onToggleTheme: () => void;
-  onToggleLang: () => void;
+  onOpenQuickLog: () => void;
+  onOpenReportModal: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   profile,
-  lang,
-  theme,
   activeBatchesCount,
-  onToggleTheme,
-  onToggleLang,
+  onOpenQuickLog,
+  onOpenReportModal,
 }) => {
-  const t = TRANSLATIONS[lang];
-
   return (
     <header className="main-header">
       <div className="header-inner">
+        {/* Brand Section */}
         <div className="brand-section">
-          <img
-            src="/kalro_app_icon.png"
-            alt="KALRO Sericulture Logo"
-            className="brand-logo"
-            onError={(e) => {
-              // fallback if not found
-              (e.target as HTMLImageElement).src = '/favicon.png';
-            }}
-          />
+          <div className="brand-logo-container">
+            <img
+              src="/kalro_app_icon.png"
+              alt="KALRO Logo"
+              className="brand-logo"
+              onError={(e) => {
+                (e.target as HTMLElement).style.display = 'none';
+              }}
+            />
+          </div>
           <div className="brand-text">
-            <h1>{t.appName}</h1>
-            <p>{profile.orgName} • {profile.county} County</p>
+            <h1>KALRO Sericulture</h1>
+            <p className="truncate">
+              {profile.orgName} • {profile.county} County
+            </p>
           </div>
         </div>
 
+        {/* Functional Header Actions - Clean, purposeful tools */}
         <div className="header-controls">
-          <div className="header-pill">
-            <ShieldCheck size={14} color="#7fe3cf" />
-            <span>{activeBatchesCount} {t.activeBatches}</span>
-          </div>
+          {activeBatchesCount > 0 && (
+            <div className="header-batch-pill" title="Batches currently in active rearing">
+              <span className="tabular-nums font-bold">{activeBatchesCount}</span>
+              <span style={{ marginLeft: '5px' }}>Active {activeBatchesCount === 1 ? 'Lot' : 'Lots'}</span>
+            </div>
+          )}
 
           <button
-            onClick={onToggleLang}
-            className="header-btn"
-            title="Switch Language (English / Kiswahili)"
+            onClick={onOpenReportModal}
+            className="btn-header-secondary"
+            title="Generate and export official station PDF report"
           >
-            <Globe size={15} style={{ marginRight: '6px' }} />
-            <span>{lang === 'en' ? 'Kiswahili' : 'English'}</span>
+            <FileText size={14} style={{ marginRight: '6px' }} />
+            <span>Export Report (PDF)</span>
           </button>
 
           <button
-            onClick={onToggleTheme}
-            className="header-btn"
-            title={theme === 'dark' ? 'Switch to Day Mode' : 'Switch to Night Rearing Mode'}
+            onClick={onOpenQuickLog}
+            className="header-action-btn"
+            title="Log feeding, loss, rearing climate, or cocoon harvest"
           >
-            {theme === 'dark' ? <Sun size={15} color="#FFD54F" /> : <Moon size={15} />}
-            <span style={{ marginLeft: '6px' }}>
-              {theme === 'dark' ? 'Day' : 'Night'}
-            </span>
+            <PlusCircle size={14} style={{ marginRight: '6px' }} />
+            <span>Quick Log</span>
           </button>
         </div>
       </div>

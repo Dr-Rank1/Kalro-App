@@ -57,7 +57,6 @@ export const TRANSLATIONS = {
     tabHarvest: 'Harvest & Reeling',
     tabLeaf: 'Leaf Ledger',
     tabFinance: 'Finance & Sales',
-    tabGuide: 'Field Guide',
     tabReports: 'Reports & Export',
     
     // Species
@@ -94,7 +93,7 @@ export const TRANSLATIONS = {
     houseCount: 'Rearing Houses',
     syncCode: 'Sync Code',
     manager: 'Farm Manager',
-    demoDataReset: 'Load Sample Data (Demo)',
+    clearData: 'Clear Station Records',
     
     // Modals & form fields
     selectBatch: 'Select Batch',
@@ -174,7 +173,6 @@ export const TRANSLATIONS = {
     tabHarvest: 'Mavuno na Ubora',
     tabLeaf: 'Daftari la Majani',
     tabFinance: 'Fedha na Mauzo',
-    tabGuide: 'Mwongozo wa Shamba',
     tabReports: 'Ripoti na Takwimu',
     
     // Species
@@ -211,7 +209,7 @@ export const TRANSLATIONS = {
     houseCount: 'Vyumba vya Kufugia',
     syncCode: 'Msimbo wa Usawazishaji',
     manager: 'Msimamizi wa Shamba',
-    demoDataReset: 'Weka Data ya Mfano (Demo)',
+    clearData: 'Futa Data ya Kituo',
     
     // Modals & form fields
     selectBatch: 'Chagua Kundi',

@@ -1,29 +1,34 @@
 import React from 'react';
-import { Calendar, Layers, Activity, Wrench, User } from 'lucide-react';
-import { Language, TRANSLATIONS } from '../translations';
 
 export type NavTab = 'today' | 'batches' | 'plan' | 'farm' | 'you';
 
 interface NavigationProps {
   activeTab: NavTab;
   onSelectTab: (tab: NavTab) => void;
-  lang: Language;
+  activeBatchesCount?: number;
 }
 
 export const Navigation: React.FC<NavigationProps> = ({
   activeTab,
   onSelectTab,
-  lang,
+  activeBatchesCount = 0,
 }) => {
-  const t = TRANSLATIONS[lang];
-
-  const tabs: { key: NavTab; label: string; icon: React.ReactNode }[] = [
-    { key: 'today', label: t.navToday, icon: <Activity size={18} /> },
-    { key: 'batches', label: t.navBatches, icon: <Layers size={18} /> },
-    { key: 'plan', label: t.navPlan, icon: <Calendar size={18} /> },
-    { key: 'farm', label: t.navFarm, icon: <Wrench size={18} /> },
-    { key: 'you', label: t.navYou, icon: <User size={18} /> },
-  ];
+  const tabs: { key: NavTab; label: string; badge?: number }[] =
+    activeBatchesCount === 0
+      ? [
+          { key: 'batches', label: 'Silkworm Batches' },
+          { key: 'today', label: 'Operations Today' },
+          { key: 'plan', label: 'Lifecycle Roadmap' },
+          { key: 'farm', label: 'Agronomy & Tools' },
+          { key: 'you', label: 'Station Profile' },
+        ]
+      : [
+          { key: 'today', label: 'Operations Today' },
+          { key: 'batches', label: 'Silkworm Batches', badge: activeBatchesCount },
+          { key: 'plan', label: 'Lifecycle Roadmap' },
+          { key: 'farm', label: 'Agronomy & Tools' },
+          { key: 'you', label: 'Station Profile' },
+        ];
 
   return (
     <nav className="nav-bar-container">
@@ -34,8 +39,12 @@ export const Navigation: React.FC<NavigationProps> = ({
             onClick={() => onSelectTab(tab.key)}
             className={`nav-tab ${activeTab === tab.key ? 'active' : ''}`}
           >
-            {tab.icon}
             <span>{tab.label}</span>
+            {tab.badge !== undefined && (
+              <span className="tab-badge tabular-nums">
+                {tab.badge}
+              </span>
+            )}
           </button>
         ))}
       </div>

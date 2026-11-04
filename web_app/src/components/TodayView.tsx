@@ -1,16 +1,5 @@
-import React, { useState } from 'react';
-import {
-  AlertTriangle,
-  CheckCircle2,
-  Leaf,
-  Plus,
-  Thermometer,
-  TrendingUp,
-  Clock,
-  Sparkles,
-  Info,
-} from 'lucide-react';
-import { Language, TRANSLATIONS } from '../translations';
+import React from 'react';
+import { FileText } from 'lucide-react';
 import {
   Batch,
   EnvironmentLog,
@@ -35,9 +24,9 @@ interface TodayViewProps {
   envLogs: EnvironmentLog[];
   harvests: CocoonHarvest[];
   inventory: LeafInventory;
-  lang: Language;
   onOpenQuickLog: (batchId?: string, defaultType?: 'feed' | 'mortality' | 'climate' | 'harvest') => void;
   onSelectTab: (tab: 'batches' | 'plan' | 'farm' | 'you') => void;
+  onExportBatchPdf?: (batch: Batch) => void;
 }
 
 export const TodayView: React.FC<TodayViewProps> = ({
@@ -47,11 +36,10 @@ export const TodayView: React.FC<TodayViewProps> = ({
   envLogs,
   harvests,
   inventory,
-  lang,
   onOpenQuickLog,
   onSelectTab,
+  onExportBatchPdf,
 }) => {
-  const t = TRANSLATIONS[lang];
   const activeBatches = batches.filter((b) => b.status === 'active');
 
   // KPI Calculations
@@ -78,43 +66,26 @@ export const TodayView: React.FC<TodayViewProps> = ({
   // Leaf coverage forecast
   const leafCoverage = calculateLeafCoverage(inventory, activeBatches, mortalityLogs);
 
-  // Sensor simulator state
-  const [simulatedReading, setSimulatedReading] = useState<{
-    temp: number;
-    hum: number;
-    syncTime: string;
-  }>({
-    temp: 25.4,
-    hum: 76,
-    syncTime: 'Just now',
-  });
-
-  const handleSyncSensor = () => {
-    // Generate realistic rearing room reading
-    const temp = Number((24.5 + Math.random() * 2.5).toFixed(1));
-    const hum = Math.round(72 + Math.random() * 10);
-    setSimulatedReading({
-      temp,
-      hum,
-      syncTime: 'Just now',
-    });
-  };
+  // Latest microclimate reading from authentic station logs
+  const latestEnv = envLogs.length > 0 ? envLogs[0] : null;
 
   // Check alert conditions
   const alerts: { type: 'warning' | 'critical' | 'info'; message: string; sub?: string }[] = [];
 
-  if (leafCoverage.urgency === 'critical') {
-    alerts.push({
-      type: 'critical',
-      message: `${t.lowLeafWarning}: Only ${leafCoverage.totalStockKg} kg leaf remaining.`,
-      sub: `Estimated ${leafCoverage.daysOfCover} day(s) of cover at current feeding velocity (${leafCoverage.dailyNeedKg} kg/day).`,
-    });
-  } else if (leafCoverage.urgency === 'warning') {
-    alerts.push({
-      type: 'warning',
-      message: `${t.lowLeafWarning}: ${leafCoverage.daysOfCover} days of forage remaining.`,
-      sub: 'Harvest fresh mulberry/castor leaves soon to maintain uninterrupted rations.',
-    });
+  if (activeBatches.length > 0) {
+    if (leafCoverage.urgency === 'critical') {
+      alerts.push({
+        type: 'critical',
+        message: `Critical Forage Deficit: Only ${leafCoverage.totalStockKg.toFixed(1)} kg forage remaining in storage.`,
+        sub: `Estimated ${leafCoverage.daysOfCover} day runway at peak 5th-instar feeding consumption (${leafCoverage.dailyNeedKg.toFixed(1)} kg/day).`,
+      });
+    } else if (leafCoverage.urgency === 'warning') {
+      alerts.push({
+        type: 'warning',
+        message: `Forage Replenishment Notice: ${leafCoverage.daysOfCover} days of forage remaining.`,
+        sub: 'Schedule morning plot harvest of Kanva-2 / S-13 shoots before afternoon heat.',
+      });
+    }
   }
 
   // Check batches in moult
@@ -123,26 +94,25 @@ export const TodayView: React.FC<TodayViewProps> = ({
     if (stage.isMoult) {
       alerts.push({
         type: 'info',
-        message: `${b.displayTag || b.batchTag || b.id}: ${t.moultRestNotice}`,
-        sub: `${stage.name} (${stage.swahiliName}) - Keep rearing bed dry and aerated with lime dusting.`,
+        message: `${b.displayTag || b.batchTag || b.id}: Inactive Moult Period (${stage.name})`,
+        sub: 'Withhold all leaf feed. Dust bed with dry slaked lime and bleaching powder (97:3). Maintain 24-25°C.',
       });
     } else if (!isFedToday(b.id, feedLogs)) {
       alerts.push({
         type: 'warning',
-        message: `${b.displayTag || b.batchTag || b.id}: ${t.noFeedingLogged}`,
+        message: `${b.displayTag || b.batchTag || b.id}: Morning Rations Not Logged`,
         sub: `Requires approx ${getSuggestedDailyFeedGrams(b, getLiveLarvaeCount(b, mortalityLogs), stage)}g fresh forage today.`,
       });
     }
 
-    // Check environment logs
     const latestEnv = envLogs.find((e) => e.batchId === b.id);
     if (latestEnv) {
       const limits = SPECIES_THRESHOLDS[b.species];
       if (latestEnv.temperatureCelsius < limits.minTemp || latestEnv.temperatureCelsius > limits.maxTemp) {
         alerts.push({
           type: 'warning',
-          message: `${b.displayTag || b.id}: ${t.tempStress} (${latestEnv.temperatureCelsius}°C)`,
-          sub: `Optimal range for ${b.species === 'bombyx' ? 'Bombyx' : 'Eri'} is ${limits.minTemp}°C - ${limits.maxTemp}°C.`,
+          message: `${b.displayTag || b.id}: Temperature Deviation (${latestEnv.temperatureCelsius}°C)`,
+          sub: `Standard rearing range for ${b.species === 'bombyx' ? 'Bivoltine Bombyx mori' : 'Eri Silkworm'} is ${limits.minTemp}°C - ${limits.maxTemp}°C.`,
         });
       }
     }
@@ -150,133 +120,90 @@ export const TodayView: React.FC<TodayViewProps> = ({
 
   return (
     <div>
-      {/* Welcome Banner */}
-      <div className="welcome-banner">
-        <div>
-          <h2>{t.welcomeFarmer}</h2>
-          <p>{t.todayOverview}</p>
+      {/* Operational Control Header - Reworked from generic centered hero */}
+      <div className="ops-control-header">
+        <div className="ops-title-group">
+          <h2>Rearing House Operations</h2>
+          <p>Real-time biological monitoring, microclimate compliance, and forage allocation.</p>
         </div>
-        <div className="quick-actions">
+        <div className="ops-actions">
           <button
             onClick={() => onOpenQuickLog(undefined, 'feed')}
-            className="btn-primary"
+            className="btn-accent"
           >
-            <Plus size={16} />
-            <span>{t.logFeed}</span>
+            Log Feeding
           </button>
           <button
             onClick={() => onOpenQuickLog(undefined, 'mortality')}
             className="btn-secondary"
           >
-            <span>{t.logMortality}</span>
+            Record Loss
           </button>
           <button
             onClick={() => onOpenQuickLog(undefined, 'climate')}
             className="btn-secondary"
           >
-            <span>{t.logClimate}</span>
+            Log Climate
           </button>
           <button
             onClick={() => onOpenQuickLog(undefined, 'harvest')}
             className="btn-secondary"
           >
-            <span>{t.logHarvest}</span>
+            Log Harvest
           </button>
         </div>
       </div>
 
-      {/* KPI Cards Grid */}
-      <div className="kpi-grid">
-        <div className="kpi-card">
-          <div className="kpi-icon-wrap green">
-            <TrendingUp size={24} />
-          </div>
-          <div className="kpi-details">
-            <p>{t.liveLarvae}</p>
-            <h3>{totalLiveLarvae.toLocaleString()}</h3>
-            <span style={{ color: 'var(--success)' }}>
-              {activeBatches.length} {t.activeBatches.toLowerCase()}
-            </span>
-          </div>
+      {/* Reworked: Integrated Operational Metric Strip (Border only, zero shadow, tabular numerals) */}
+      <div className="operational-metric-strip">
+        <div className="metric-col">
+          <span className="metric-label">Live Silkworms</span>
+          <span className="metric-number tabular-nums">{totalLiveLarvae.toLocaleString()}</span>
+          <span className="metric-sub">{activeBatches.length} active rearing {activeBatches.length === 1 ? 'lot' : 'lots'}</span>
         </div>
 
-        <div className="kpi-card">
-          <div className="kpi-icon-wrap leaf">
-            <Leaf size={24} />
-          </div>
-          <div className="kpi-details">
-            <p>{t.feedToday}</p>
-            <h3>{(feedTodayGrams / 1000).toFixed(1)} kg</h3>
-            <span style={{ color: 'var(--leaf)' }}>
-              Stock: {leafCoverage.totalStockKg} kg
-            </span>
-          </div>
+        <div className="metric-col">
+          <span className="metric-label">Feed Dispatched Today</span>
+          <span className="metric-number tabular-nums">{(feedTodayGrams / 1000).toFixed(1)} kg</span>
+          <span className="metric-sub">Stored stock: {leafCoverage.totalStockKg.toFixed(1)} kg</span>
         </div>
 
-        <div className="kpi-card">
-          <div className="kpi-icon-wrap amber">
-            <Clock size={24} />
-          </div>
-          <div className="kpi-details">
-            <p>{t.daysCover}</p>
-            <h3>{leafCoverage.daysOfCover} days</h3>
-            <span
-              style={{
-                color:
-                  leafCoverage.urgency === 'critical'
-                    ? 'var(--danger)'
-                    : leafCoverage.urgency === 'warning'
-                    ? 'var(--rest)'
-                    : 'var(--success)',
-              }}
-            >
-              {t[leafCoverage.urgency]}
-            </span>
-          </div>
+        <div className="metric-col">
+          <span className="metric-label">Forage Runway</span>
+          <span className="metric-number tabular-nums">
+            {activeBatches.length > 0 ? `${leafCoverage.daysOfCover} Days` : '--'}
+          </span>
+          <span className="metric-sub" style={{ color: activeBatches.length > 0 && leafCoverage.urgency === 'critical' ? 'var(--status-danger)' : activeBatches.length > 0 && leafCoverage.urgency === 'warning' ? 'var(--status-warning)' : 'var(--status-success)', fontWeight: 600 }}>
+            Buffer: {activeBatches.length > 0 ? leafCoverage.urgency.toUpperCase() : 'NO ACTIVE BATCH'}
+          </span>
         </div>
 
-        <div className="kpi-card">
-          <div className="kpi-icon-wrap gold">
-            <CheckCircle2 size={24} />
-          </div>
-          <div className="kpi-details">
-            <p>{t.avgSurvival}</p>
-            <h3>{avgSurvival.toFixed(1)}%</h3>
-            <span style={{ color: 'var(--accent-gold)' }}>
-              {harvests.length} cycles recorded
-            </span>
-          </div>
+        <div className="metric-col">
+          <span className="metric-label">Average Survival</span>
+          <span className="metric-number tabular-nums">
+            {totalOriginalEggs > 0 ? `${avgSurvival.toFixed(1)}%` : '--'}
+          </span>
+          <span className="metric-sub">{totalOriginalEggs > 0 ? 'Bivoltine hybrid benchmark' : 'Awaiting active rearing'}</span>
         </div>
 
-        <div className="kpi-card">
-          <div className="kpi-icon-wrap green">
-            <Sparkles size={24} />
-          </div>
-          <div className="kpi-details">
-            <p>{t.totalHarvestKg}</p>
-            <h3>{totalHarvestWeightKg.toFixed(1)} kg</h3>
-            <span style={{ color: 'var(--primary-green)' }}>
-              Raw silk grade tracked
-            </span>
-          </div>
+        <div className="metric-col">
+          <span className="metric-label">Total Cocoons Harvested</span>
+          <span className="metric-number tabular-nums">{totalHarvestWeightKg > 0 ? `${totalHarvestWeightKg.toFixed(1)} kg` : '0.0 kg'}</span>
+          <span className="metric-sub">{totalHarvestWeightKg > 0 ? 'Grade A commercial yield' : 'No harvests recorded'}</span>
         </div>
       </div>
 
-      {/* Alerts Section */}
+      {/* Operational Notices Section */}
       {alerts.length > 0 && (
-        <div className="kalro-card" style={{ padding: '1.25rem' }}>
-          <div className="card-header-flex" style={{ marginBottom: '0.85rem' }}>
-            <h3 className="card-title" style={{ fontSize: '1.05rem', color: 'var(--rest)' }}>
-              <AlertTriangle size={18} />
-              <span>{t.alertsTitle}</span>
-            </h3>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-              {alerts.length} action item(s)
+        <div className="kalro-card">
+          <div className="card-header-flex">
+            <h3 className="card-title">Active Station Notices</h3>
+            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+              {alerts.length} action {alerts.length === 1 ? 'item' : 'items'}
             </span>
           </div>
           {alerts.map((alert, idx) => (
             <div key={idx} className={`alert-box ${alert.type}`}>
-              <AlertTriangle size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
               <div>
                 <strong>{alert.message}</strong>
                 {alert.sub && <div style={{ fontSize: '0.78rem', marginTop: '3px' }}>{alert.sub}</div>}
@@ -286,69 +213,78 @@ export const TodayView: React.FC<TodayViewProps> = ({
         </div>
       )}
 
-      {/* Rearing Room Climate & Active Batches Section */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
+      {/* Rearing Room Climate & Forage Breakdown - Border only, clean typography */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem', marginBottom: '1.25rem' }}>
         {/* Rearing Microclimate Card */}
         <div className="kalro-card" style={{ marginBottom: 0 }}>
           <div className="card-header-flex">
-            <h3 className="card-title">
-              <Thermometer size={18} color="var(--primary-green)" />
-              <span>Rearing House Climate</span>
-            </h3>
+            <div>
+              <h3 className="card-title">Rearing House Microclimate</h3>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                House 1 (Bivoltine Bay) Rearing Chamber
+              </p>
+            </div>
             <button
-              onClick={handleSyncSensor}
-              className="btn-accent"
-              style={{ fontSize: '0.75rem', padding: '0.35rem 0.75rem' }}
-              title="Read microclimate sensor"
+              onClick={() => onOpenQuickLog(undefined, 'climate')}
+              className="btn-secondary"
+              style={{ fontSize: '0.75rem', padding: '0.3rem 0.65rem' }}
+              title="Record microclimate thermometer and hygrometer reading"
             >
-              Sync Sensor
+              Log Climate
             </button>
           </div>
 
-          <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', marginBottom: '1rem' }}>
-            <div style={{ flex: 1, padding: '1rem', background: 'var(--background)', borderRadius: 'var(--radius-sm)', textAlign: 'center' }}>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Temperature</div>
-              <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--primary-green)' }}>
-                {simulatedReading.temp}°C
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+            <div style={{ padding: '0.85rem', background: 'var(--bg-subtle)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)', textAlign: 'center' }}>
+              <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Dry Bulb Temp</div>
+              <div className="tabular-nums" style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--primary)', margin: '2px 0' }}>
+                {latestEnv ? `${latestEnv.temperatureCelsius.toFixed(1)}°C` : '--'}
               </div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--success)' }}>Optimal (24 - 28°C)</div>
+              <div style={{ fontSize: '0.72rem', color: latestEnv ? (latestEnv.temperatureCelsius >= 24 && latestEnv.temperatureCelsius <= 26 ? 'var(--status-success)' : 'var(--status-warning)') : 'var(--text-muted)', fontWeight: 600 }}>
+                {latestEnv ? (latestEnv.temperatureCelsius >= 24 && latestEnv.temperatureCelsius <= 26 ? 'Optimal (24.0 - 26.0°C)' : 'Deviation from target') : 'No reading recorded'}
+              </div>
             </div>
 
-            <div style={{ flex: 1, padding: '1rem', background: 'var(--background)', borderRadius: 'var(--radius-sm)', textAlign: 'center' }}>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Humidity</div>
-              <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--info)' }}>
-                {simulatedReading.hum}%
+            <div style={{ padding: '0.85rem', background: 'var(--bg-subtle)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)', textAlign: 'center' }}>
+              <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Relative Humidity</div>
+              <div className="tabular-nums" style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--status-info)', margin: '2px 0' }}>
+                {latestEnv ? `${latestEnv.humidityPercent}%` : '--'}
               </div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--success)' }}>Target (70 - 85%)</div>
+              <div style={{ fontSize: '0.72rem', color: latestEnv ? (latestEnv.humidityPercent >= 70 && latestEnv.humidityPercent <= 80 ? 'var(--status-success)' : 'var(--status-warning)') : 'var(--text-muted)', fontWeight: 600 }}>
+                {latestEnv ? (latestEnv.humidityPercent >= 70 && latestEnv.humidityPercent <= 80 ? 'Target (70 - 80%)' : 'Deviation from target') : 'No reading recorded'}
+              </div>
             </div>
           </div>
 
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', justifyContent: 'space-between' }}>
-            <span>Ventilation: Cross-ventilation open</span>
-            <span>Synced: {simulatedReading.syncTime}</span>
+          <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border-divider)', paddingTop: '0.6rem' }}>
+            <span>Ventilation: {latestEnv?.ventilationStatus ? `${latestEnv.ventilationStatus.toUpperCase()} airflow` : 'Active cross-draft louvers'}</span>
+            <span>Status: {latestEnv ? `Logged ${new Date(latestEnv.recordedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'No readings today'}</span>
           </div>
         </div>
 
-        {/* Quick Stock & Forage Status */}
+        {/* Stock & Forage Status */}
         <div className="kalro-card" style={{ marginBottom: 0 }}>
           <div className="card-header-flex">
-            <h3 className="card-title">
-              <Leaf size={18} color="var(--leaf)" />
-              <span>Forage Inventory Breakdown</span>
-            </h3>
+            <div>
+              <h3 className="card-title">Station Forage Stockpile</h3>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                Harvested reserves in humidified storage
+              </p>
+            </div>
             <button
               onClick={() => onSelectTab('farm')}
-              style={{ background: 'none', border: 'none', color: 'var(--primary-green)', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}
+              className="btn-secondary"
+              style={{ fontSize: '0.75rem', padding: '0.3rem 0.65rem' }}
             >
-              Open Ledger →
+              Open Ledger
             </button>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.25rem' }}>
-                <span>Mulberry (Bombyx)</span>
-                <strong>{inventory.mulberryKg.toFixed(1)} kg</strong>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', marginBottom: '0.25rem' }}>
+                <span>Mulberry Shoots (Kanva-2 & S-13)</span>
+                <strong className="tabular-nums">{inventory.mulberryKg.toFixed(1)} kg</strong>
               </div>
               <div className="progress-bar-bg" style={{ margin: 0 }}>
                 <div
@@ -359,32 +295,32 @@ export const TodayView: React.FC<TodayViewProps> = ({
             </div>
 
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.25rem' }}>
-                <span>Castor (Eri)</span>
-                <strong>{inventory.castorKg.toFixed(1)} kg</strong>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', marginBottom: '0.25rem' }}>
+                <span>Castor Leaves (GRC-1 for Eri)</span>
+                <strong className="tabular-nums">{inventory.castorKg.toFixed(1)} kg</strong>
               </div>
               <div className="progress-bar-bg" style={{ margin: 0 }}>
                 <div
                   className="progress-bar-fill"
                   style={{
                     width: `${Math.min(100, (inventory.castorKg / 100) * 100)}%`,
-                    background: 'var(--rest)',
+                    backgroundColor: 'var(--status-warning)',
                   }}
                 />
               </div>
             </div>
 
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.25rem' }}>
-                <span>Kesseru (Eri Alternative)</span>
-                <strong>{inventory.kesseruKg.toFixed(1)} kg</strong>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', marginBottom: '0.25rem' }}>
+                <span>Kesseru Dry-Season Reserve</span>
+                <strong className="tabular-nums">{inventory.kesseruKg.toFixed(1)} kg</strong>
               </div>
               <div className="progress-bar-bg" style={{ margin: 0 }}>
                 <div
                   className="progress-bar-fill"
                   style={{
                     width: `${Math.min(100, (inventory.kesseruKg / 50) * 100)}%`,
-                    background: 'var(--accent-gold)',
+                    backgroundColor: 'var(--accent-gold)',
                   }}
                 />
               </div>
@@ -396,28 +332,30 @@ export const TodayView: React.FC<TodayViewProps> = ({
       {/* Active Batches Section */}
       <div className="kalro-card">
         <div className="card-header-flex">
-          <h3 className="card-title">
-            <Info size={18} color="var(--primary-green)" />
-            <span>Active Silkworm Batches ({activeBatches.length})</span>
-          </h3>
+          <div>
+            <h3 className="card-title">Active Rearing Lots</h3>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+              Batches currently undergoing feeding, moulting, or spinning
+            </p>
+          </div>
           <button
             onClick={() => onSelectTab('batches')}
-            className="btn-accent"
-            style={{ fontSize: '0.8rem', padding: '0.4rem 0.9rem' }}
+            className="btn-secondary"
+            style={{ fontSize: '0.78rem', padding: '0.35rem 0.85rem' }}
           >
-            Manage All Batches
+            View All Batches
           </button>
         </div>
 
         {activeBatches.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--text-muted)' }}>
-            <p>No active rearing batches currently.</p>
+          <div className="empty-state">
+            <h4>No Active Rearing Batches</h4>
+            <p>All previous rearing cycles are closed. Start a new batch to track chawki rearing and leaf consumption.</p>
             <button
               onClick={() => onSelectTab('batches')}
-              className="btn-accent"
-              style={{ marginTop: '0.85rem' }}
+              className="btn-primary"
             >
-              Start New Cycle
+              Start New Batch Cycle
             </button>
           </div>
         ) : (
@@ -427,26 +365,26 @@ export const TodayView: React.FC<TodayViewProps> = ({
               const stage = getCurrentStage(b);
               const suggestedFeed = getSuggestedDailyFeedGrams(b, live, stage);
               const fed = isFedToday(b.id, feedLogs);
+              const maxDays = b.species === 'bombyx' ? 40 : 39;
               const progressPct = Math.min(
                 100,
-                Math.round((stage.dayStart / (b.species === 'bombyx' ? 40 : 39)) * 100)
+                Math.round((stage.dayStart / maxDays) * 100)
               );
 
               return (
                 <div key={b.id} className="batch-item-card">
                   <div className="batch-tag-row">
                     <span className={`species-badge ${b.species}`}>
-                      {b.species === 'bombyx' ? 'Bombyx Mori' : 'Eri Silkworm'}
+                      {b.species === 'bombyx' ? 'Bombyx mori' : 'Eri Silkworm'}
                     </span>
                     <span className="status-badge active">{stage.name}</span>
                   </div>
 
-                  <h4 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '0.35rem' }}>
+                  <h4 className="truncate" style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.2rem' }}>
                     {b.displayTag || b.batchTag || b.id}
                   </h4>
-                  <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.75rem' }}>
-                    {b.roomName || 'Main Rearing House'} • Day {stage.dayStart} of{' '}
-                    {b.species === 'bombyx' ? '40' : '39'}
+                  <p className="truncate" style={{ fontSize: '0.76rem', color: 'var(--text-muted)', marginBottom: '0.65rem' }}>
+                    {b.roomName || 'Rearing House 1'} • Day {stage.dayStart} of {maxDays}
                   </p>
 
                   <div className="progress-bar-bg">
@@ -458,54 +396,69 @@ export const TodayView: React.FC<TodayViewProps> = ({
                       display: 'grid',
                       gridTemplateColumns: '1fr 1fr',
                       gap: '0.5rem',
-                      fontSize: '0.8rem',
-                      margin: '0.75rem 0',
-                      background: 'var(--background)',
-                      padding: '0.75rem',
+                      fontSize: '0.78rem',
+                      margin: '0.65rem 0',
+                      background: 'var(--bg-subtle)',
+                      border: '1px solid var(--border-subtle)',
+                      padding: '0.65rem',
                       borderRadius: 'var(--radius-sm)',
                     }}
                   >
                     <div>
-                      <div style={{ color: 'var(--text-muted)', fontSize: '0.72rem' }}>Live Larvae</div>
-                      <strong>{live.toLocaleString()}</strong>
+                      <div style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>Live Larvae</div>
+                      <strong className="tabular-nums">{live.toLocaleString()}</strong>
                     </div>
                     <div>
-                      <div style={{ color: 'var(--text-muted)', fontSize: '0.72rem' }}>Daily Target</div>
-                      <strong>{suggestedFeed > 0 ? `${(suggestedFeed / 1000).toFixed(1)} kg` : 'Moult (Rest)'}</strong>
+                      <div style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>Daily Target</div>
+                      <strong className="tabular-nums">
+                        {suggestedFeed > 0 ? `${(suggestedFeed / 1000).toFixed(1)} kg` : 'Moult Fasting'}
+                      </strong>
                     </div>
                     <div>
-                      <div style={{ color: 'var(--text-muted)', fontSize: '0.72rem' }}>Fed Today?</div>
-                      <span style={{ color: fed ? 'var(--success)' : 'var(--danger)', fontWeight: 600 }}>
-                        {fed ? '✓ Logged' : '✗ Pending'}
+                      <div style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>Feed Today</div>
+                      <span
+                        className="tabular-nums"
+                        style={{
+                          color: fed ? 'var(--status-success)' : 'var(--status-danger)',
+                          fontWeight: 600,
+                        }}
+                      >
+                        {fed ? 'Rations Logged' : 'Pending Feed'}
                       </span>
                     </div>
                     <div>
-                      <div style={{ color: 'var(--text-muted)', fontSize: '0.72rem' }}>Rearing Room</div>
-                      <strong>{stage.idealTemp}</strong>
+                      <div style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>Target Temp</div>
+                      <strong className="tabular-nums">{stage.idealTemp}</strong>
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', gap: '0.5rem', marginTop: 'auto' }}>
+                  <div style={{ display: 'flex', gap: '0.4rem', marginTop: 'auto' }}>
                     <button
                       onClick={() => onOpenQuickLog(b.id, 'feed')}
                       className="btn-accent"
-                      style={{ flex: 1, fontSize: '0.78rem', padding: '0.45rem' }}
+                      style={{ flex: 1, fontSize: '0.78rem', padding: '0.4rem' }}
                     >
-                      + Feed
+                      Log Feed
                     </button>
                     <button
                       onClick={() => onOpenQuickLog(b.id, 'mortality')}
                       className="btn-secondary"
-                      style={{
-                        flex: 1,
-                        fontSize: '0.78rem',
-                        padding: '0.45rem',
-                        color: 'var(--text-dark)',
-                        borderColor: 'var(--card-border)',
-                      }}
+                      style={{ flex: 1, fontSize: '0.78rem', padding: '0.4rem' }}
                     >
-                      + Loss
+                      Record Loss
                     </button>
+                    {onExportBatchPdf && (
+                      <button
+                        onClick={() => onExportBatchPdf(b)}
+                        className="btn-secondary"
+                        style={{ padding: '0.4rem 0.6rem', display: 'inline-flex', alignItems: 'center', gap: '3px' }}
+                        title="Download verified PDF report for this batch"
+                        aria-label={`Export PDF dossier for batch ${b.batchTag || b.id}`}
+                      >
+                        <FileText size={13} />
+                        <span style={{ fontSize: '0.72rem', fontWeight: 600 }}>PDF</span>
+                      </button>
+                    )}
                   </div>
                 </div>
               );

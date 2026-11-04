@@ -1,17 +1,13 @@
 import React, { useState } from 'react';
-import { Calendar, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
-import { Language, TRANSLATIONS } from '../translations';
 import { BOMBYX_STAGES, ERI_STAGES } from '../constants';
 import { Batch, MilestoneStage, Species } from '../types';
 import { getCurrentStage, getBatchAgeDays } from '../utils';
 
 interface PlanViewProps {
   batches: Batch[];
-  lang: Language;
 }
 
-export const PlanView: React.FC<PlanViewProps> = ({ batches, lang }) => {
-  const t = TRANSLATIONS[lang];
+export const PlanView: React.FC<PlanViewProps> = ({ batches }) => {
   const [activeSpecies, setActiveSpecies] = useState<Species>('bombyx');
 
   const stages: MilestoneStage[] = activeSpecies === 'bombyx' ? BOMBYX_STAGES : ERI_STAGES;
@@ -19,58 +15,60 @@ export const PlanView: React.FC<PlanViewProps> = ({ batches, lang }) => {
 
   return (
     <div>
-      <div className="card-header-flex" style={{ marginBottom: '1.5rem' }}>
+      <div className="card-header-flex" style={{ marginBottom: '1.25rem' }}>
         <div>
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 700 }}>
-            {t.navPlan} — Sericulture Lifecycle Calendar
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 700 }}>
+            Sericulture Lifecycle Roadmap
           </h2>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-            40-day Bombyx and 39-day Eri biological roadmap, instar schedules, moult rest periods, and climate targets.
+          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+            Official KALRO biological roadmap for 40-day Bivoltine Bombyx mori and 39-day Eri silkworms.
           </p>
         </div>
 
         {/* Species Switcher */}
-        <div style={{ display: 'flex', gap: '0.5rem', background: 'var(--card-white)', padding: '4px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--card-border)' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', background: 'var(--bg-card)', padding: '2px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-card)' }}>
           <button
             onClick={() => setActiveSpecies('bombyx')}
             style={{
-              background: activeSpecies === 'bombyx' ? 'var(--primary-green)' : 'none',
+              background: activeSpecies === 'bombyx' ? 'var(--primary)' : 'transparent',
               color: activeSpecies === 'bombyx' ? '#ffffff' : 'var(--text-muted)',
               border: 'none',
-              padding: '0.45rem 1rem',
-              borderRadius: '6px',
-              fontSize: '0.82rem',
+              padding: '0.4rem 0.95rem',
+              borderRadius: 'var(--radius-sm)',
+              fontSize: '0.8rem',
               fontWeight: 600,
               cursor: 'pointer',
+              transition: 'background-color 0.15s ease',
             }}
           >
-            {t.bombyxLabel}
+            Bombyx mori (Bivoltine)
           </button>
           <button
             onClick={() => setActiveSpecies('eri')}
             style={{
-              background: activeSpecies === 'eri' ? 'var(--primary-green)' : 'none',
+              background: activeSpecies === 'eri' ? 'var(--primary)' : 'transparent',
               color: activeSpecies === 'eri' ? '#ffffff' : 'var(--text-muted)',
               border: 'none',
-              padding: '0.45rem 1rem',
-              borderRadius: '6px',
-              fontSize: '0.82rem',
+              padding: '0.4rem 0.95rem',
+              borderRadius: 'var(--radius-sm)',
+              fontSize: '0.8rem',
               fontWeight: 600,
               cursor: 'pointer',
+              transition: 'background-color 0.15s ease',
             }}
           >
-            {t.eriLabel}
+            Eri Silkworm (Samia)
           </button>
         </div>
       </div>
 
       {/* Active Batches Indicator on Timeline */}
       {activeBatches.length > 0 && (
-        <div className="kalro-card" style={{ padding: '1rem 1.25rem', marginBottom: '1.5rem', background: 'rgba(33, 70, 65, 0.04)' }}>
-          <div style={{ fontWeight: 600, fontSize: '0.85rem', color: 'var(--primary-green)', marginBottom: '0.5rem' }}>
-            Currently Rearing {activeBatches.length} {activeSpecies === 'bombyx' ? 'Bombyx' : 'Eri'} Batch(es):
+        <div className="kalro-card" style={{ padding: '0.85rem 1rem', marginBottom: '1.25rem', background: 'var(--bg-subtle)' }}>
+          <div style={{ fontWeight: 600, fontSize: '0.8rem', color: 'var(--primary)', marginBottom: '0.4rem' }}>
+            Currently Rearing {activeBatches.length} {activeSpecies === 'bombyx' ? 'Bivoltine Bombyx' : 'Eri'} Batch{activeBatches.length === 1 ? '' : 'es'}:
           </div>
-          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
             {activeBatches.map((b) => {
               const age = getBatchAgeDays(b);
               const stage = getCurrentStage(b, age);
@@ -78,18 +76,14 @@ export const PlanView: React.FC<PlanViewProps> = ({ batches, lang }) => {
                 <div
                   key={b.id}
                   style={{
-                    background: 'var(--card-white)',
-                    border: '1px solid var(--primary-green)',
-                    padding: '0.4rem 0.75rem',
+                    background: '#ffffff',
+                    border: '1px solid var(--border-card)',
+                    padding: '0.35rem 0.75rem',
                     borderRadius: 'var(--radius-sm)',
                     fontSize: '0.78rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
                   }}
                 >
-                  <Clock size={14} color="var(--primary-green)" />
-                  <strong>{b.displayTag || b.batchTag}</strong>: Day {age} ({stage.name})
+                  <strong className="truncate">{b.displayTag || b.batchTag}</strong>: Day <span className="tabular-nums">{age}</span> ({stage.name})
                 </div>
               );
             })}
@@ -97,10 +91,9 @@ export const PlanView: React.FC<PlanViewProps> = ({ batches, lang }) => {
         </div>
       )}
 
-      {/* Roadmap Timeline */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      {/* Roadmap Timeline - Border Only, No Shadows */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         {stages.map((stage, idx) => {
-          // Check if any active batch is on this stage
           const matchingBatches = activeBatches.filter((b) => {
             const age = getBatchAgeDays(b);
             return age >= stage.dayStart && age <= stage.dayEnd;
@@ -115,45 +108,43 @@ export const PlanView: React.FC<PlanViewProps> = ({ batches, lang }) => {
               style={{
                 marginBottom: 0,
                 borderLeft: isCurrentForAny
-                  ? '6px solid var(--leaf)'
+                  ? '5px solid var(--primary)'
                   : stage.isMoult
-                  ? '6px solid var(--rest)'
+                  ? '5px solid var(--status-warning)'
                   : stage.isHarvest
-                  ? '6px solid var(--accent-gold)'
-                  : '6px solid var(--card-border)',
-                background: isCurrentForAny ? 'rgba(61, 122, 84, 0.05)' : 'var(--card-white)',
+                  ? '5px solid var(--accent-gold)'
+                  : '5px solid var(--border-card)',
+                backgroundColor: isCurrentForAny ? '#F8FBF9' : '#ffffff',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem' }}>
                 <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.25rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.2rem' }}>
                     <span
+                      className="tabular-nums"
                       style={{
                         background: stage.isMoult
-                          ? 'var(--rest)'
+                          ? 'var(--status-warning)'
                           : stage.isHarvest
                           ? 'var(--accent-gold)'
-                          : 'var(--primary-green)',
+                          : 'var(--primary)',
                         color: '#ffffff',
-                        fontSize: '0.72rem',
+                        fontSize: '0.7rem',
                         fontWeight: 700,
-                        padding: '0.2rem 0.6rem',
-                        borderRadius: 'var(--radius-full)',
+                        padding: '2px 7px',
+                        borderRadius: 'var(--radius-sm)',
                       }}
                     >
                       Day {stage.dayStart}
                       {stage.dayEnd > stage.dayStart ? ` - ${stage.dayEnd}` : ''}
                     </span>
 
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>
+                    <h3 style={{ fontSize: '1rem', fontWeight: 700 }}>
                       {stage.name}
                     </h3>
-                    <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                      ({stage.swahiliName})
-                    </span>
                   </div>
 
-                  <p style={{ fontSize: '0.85rem', color: 'var(--text-dark)', margin: '0.4rem 0 0.6rem' }}>
+                  <p style={{ fontSize: '0.82rem', color: 'var(--text-main)', margin: '0.35rem 0' }}>
                     {stage.leafRecommendation}
                   </p>
                 </div>
@@ -161,18 +152,15 @@ export const PlanView: React.FC<PlanViewProps> = ({ batches, lang }) => {
                 {isCurrentForAny && (
                   <span
                     style={{
-                      background: 'var(--success)',
+                      background: 'var(--status-success)',
                       color: '#ffffff',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      padding: '0.3rem 0.75rem',
-                      borderRadius: 'var(--radius-full)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.35rem',
+                      fontSize: '0.72rem',
+                      fontWeight: 700,
+                      padding: '0.25rem 0.65rem',
+                      borderRadius: 'var(--radius-sm)',
                     }}
                   >
-                    <CheckCircle2 size={14} /> Active Batch Here
+                    Active Rearing Lot Present
                   </span>
                 )}
               </div>
@@ -182,18 +170,19 @@ export const PlanView: React.FC<PlanViewProps> = ({ batches, lang }) => {
                 style={{
                   display: 'flex',
                   gap: '1.5rem',
-                  fontSize: '0.78rem',
+                  fontSize: '0.76rem',
                   color: 'var(--text-muted)',
-                  borderTop: '1px solid var(--divider)',
-                  paddingTop: '0.65rem',
+                  borderTop: '1px solid var(--border-divider)',
+                  paddingTop: '0.5rem',
                   marginTop: '0.5rem',
+                  flexWrap: 'wrap',
                 }}
               >
-                <span>Ideal Temperature: <strong>{stage.idealTemp}</strong></span>
-                <span>Ideal Relative Humidity: <strong>{stage.idealHumidity}</strong></span>
+                <span>Ideal Temp: <strong className="tabular-nums">{stage.idealTemp}</strong></span>
+                <span>Relative Humidity: <strong className="tabular-nums">{stage.idealHumidity}</strong></span>
                 {stage.isMoult && (
-                  <span style={{ color: 'var(--rest)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <AlertCircle size={13} /> Moult Rest: Stop Feeding Completely
+                  <span style={{ color: 'var(--status-warning)', fontWeight: 700 }}>
+                    Moult Fasting: Strictly withhold feeding until 95% head-capsule ecdysis
                   </span>
                 )}
               </div>

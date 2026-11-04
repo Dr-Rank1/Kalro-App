@@ -173,7 +173,16 @@ export function calculateLeafCoverage(
     dailyNeedGrams += getSuggestedDailyFeedGrams(b, live, stage);
   }
 
-  const dailyNeedKg = Math.max(1, dailyNeedGrams / 1000.0);
+  if (activeBatches.length === 0 || dailyNeedGrams === 0) {
+    return {
+      totalStockKg: Number(totalStockKg.toFixed(1)),
+      dailyNeedKg: 0,
+      daysOfCover: 0,
+      urgency: 'adequate',
+    };
+  }
+
+  const dailyNeedKg = Math.max(0.1, dailyNeedGrams / 1000.0);
   const daysOfCover = Math.floor(totalStockKg / dailyNeedKg);
 
   let urgency: 'adequate' | 'warning' | 'critical' = 'adequate';
