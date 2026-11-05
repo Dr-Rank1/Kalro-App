@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { BOMBYX_STAGES, ERI_STAGES } from '../constants';
 import { Batch, MilestoneStage, Species } from '../types';
 import { getCurrentStage, getBatchAgeDays } from '../utils';
+import { StageMilestoneIcon } from './SericultureCardArtwork';
 
 interface PlanViewProps {
   batches: Batch[];
@@ -117,36 +118,41 @@ export const PlanView: React.FC<PlanViewProps> = ({ batches }) => {
                 backgroundColor: isCurrentForAny ? '#F8FBF9' : '#ffffff',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem' }}>
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.2rem' }}>
-                    <span
-                      className="tabular-nums"
-                      style={{
-                        background: stage.isMoult
-                          ? 'var(--status-warning)'
-                          : stage.isHarvest
-                          ? 'var(--accent-gold)'
-                          : 'var(--primary)',
-                        color: '#ffffff',
-                        fontSize: '0.7rem',
-                        fontWeight: 700,
-                        padding: '2px 7px',
-                        borderRadius: 'var(--radius-sm)',
-                      }}
-                    >
-                      Day {stage.dayStart}
-                      {stage.dayEnd > stage.dayStart ? ` - ${stage.dayEnd}` : ''}
-                    </span>
-
-                    <h3 style={{ fontSize: '1rem', fontWeight: 700 }}>
-                      {stage.name}
-                    </h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem' }}>
+                <div style={{ display: 'flex', gap: '0.85rem', alignItems: 'flex-start' }}>
+                  <div className="stage-milestone-wrapper">
+                    <StageMilestoneIcon stageName={stage.name} isMoult={stage.isMoult} isHarvest={stage.isHarvest} />
                   </div>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.2rem' }}>
+                      <span
+                        className="tabular-nums"
+                        style={{
+                          background: stage.isMoult
+                            ? 'var(--status-warning)'
+                            : stage.isHarvest
+                            ? 'var(--accent-gold)'
+                            : 'var(--primary)',
+                          color: '#ffffff',
+                          fontSize: '0.7rem',
+                          fontWeight: 700,
+                          padding: '2px 7px',
+                          borderRadius: 'var(--radius-sm)',
+                        }}
+                      >
+                        Day {stage.dayStart}
+                        {stage.dayEnd > stage.dayStart ? ` - ${stage.dayEnd}` : ''}
+                      </span>
 
-                  <p style={{ fontSize: '0.82rem', color: 'var(--text-main)', margin: '0.35rem 0' }}>
-                    {stage.leafRecommendation}
-                  </p>
+                      <h3 style={{ fontSize: '1rem', fontWeight: 700 }}>
+                        {stage.name}
+                      </h3>
+                    </div>
+
+                    <p style={{ fontSize: '0.82rem', color: 'var(--text-main)', margin: '0.35rem 0' }}>
+                      {stage.leafRecommendation}
+                    </p>
+                  </div>
                 </div>
 
                 {isCurrentForAny && (

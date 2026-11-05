@@ -4,6 +4,7 @@ import { Batch, FeedLog, MortalityLog, CocoonHarvest, FarmProfile, EnvironmentLo
 import { getCurrentStage, getLiveLarvaeCount, formatDate } from '../utils';
 import { BatchRegistrationForm } from './BatchRegistrationForm';
 import { downloadSingleBatchPdf } from '../utils/pdfGenerator';
+import { BombyxBatchCardHeader, EriBatchCardHeader } from './SericultureCardArtwork';
 
 interface BatchesViewProps {
   batches: Batch[];
@@ -162,29 +163,28 @@ export const BatchesView: React.FC<BatchesViewProps> = ({
 
             return (
               <div key={batch.id} className="batch-item-card">
-                <div className="batch-tag-row">
-                  <div className="batch-brand-visual">
-                    {batch.species === 'bombyx' ? (
-                      <svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true">
-                        <circle cx="16" cy="16" r="14" fill="#E8F5E9" />
-                        <path d="M8 18 C7 12, 15 7, 24 8 C23 17, 17 24, 11 23 Z" fill="#2E7D32" opacity="0.85" />
-                        <ellipse cx="18" cy="17" rx="6" ry="4" transform="rotate(-25 18 17)" fill="#FFF9C4" stroke="#FBC02D" strokeWidth="1" />
-                      </svg>
-                    ) : (
-                      <svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true">
-                        <circle cx="16" cy="16" r="14" fill="#FFF3E0" />
-                        <path d="M16 7 L19 12 L24 11 L21 16 L25 20 L20 20 L19 25 L16 21 L13 25 L12 20 L7 20 L11 16 L8 11 L13 12 Z" fill="#E65100" opacity="0.75" />
-                        <ellipse cx="16" cy="17" rx="5" ry="7" transform="rotate(15 16 17)" fill="#F5EBE6" stroke="#BCAAA4" strokeWidth="1" />
-                      </svg>
-                    )}
+                {batch.species === 'bombyx' ? (
+                  <BombyxBatchCardHeader
+                    day={stage.dayStart}
+                    maxDays={maxDays}
+                    stageName={batch.status === 'active' ? stage.name : 'Completed'}
+                  />
+                ) : (
+                  <EriBatchCardHeader
+                    day={stage.dayStart}
+                    maxDays={maxDays}
+                    stageName={batch.status === 'active' ? stage.name : 'Completed'}
+                  />
+                )}
+                <div className="batch-card-inner">
+                  <div className="batch-tag-row">
+                    <span className={`species-badge ${batch.species}`}>
+                      {batch.species === 'bombyx' ? 'Bombyx mori' : 'Eri Silkworm'}
+                    </span>
+                    <span className={`status-badge ${batch.status}`}>
+                      {batch.status === 'active' ? stage.name : 'Completed & Closed'}
+                    </span>
                   </div>
-                  <span className={`species-badge ${batch.species}`}>
-                    {batch.species === 'bombyx' ? 'Bombyx mori (Bivoltine)' : 'Eri Silkworm (Samia)'}
-                  </span>
-                  <span className={`status-badge ${batch.status}`}>
-                    {batch.status === 'active' ? stage.name : 'Completed & Closed'}
-                  </span>
-                </div>
 
                 <h3 className="truncate" style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '0.2rem' }}>
                   {batch.displayTag || batch.batchTag || batch.id}
@@ -269,6 +269,7 @@ export const BatchesView: React.FC<BatchesViewProps> = ({
                   >
                     <QrCode size={14} />
                   </button>
+                </div>
                 </div>
               </div>
             );

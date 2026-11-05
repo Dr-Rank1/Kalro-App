@@ -627,30 +627,116 @@ th,
 .batch-item-card {
   background-color: #ffffff;
   border: 1px solid var(--border-card);
-  border-radius: var(--radius-sm);
-  padding: 1.15rem;
+  border-radius: var(--radius-md);
+  padding: 0;
   display: flex;
   flex-direction: column;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease;
   animation: cardEntrance 0.35s ease-out both;
 }
 
+.batches-grid > *:nth-child(1) { animation-delay: 0.04s; }
+.batches-grid > *:nth-child(2) { animation-delay: 0.08s; }
+.batches-grid > *:nth-child(3) { animation-delay: 0.12s; }
+.batches-grid > *:nth-child(4) { animation-delay: 0.16s; }
+.batches-grid > *:nth-child(5) { animation-delay: 0.20s; }
+.batches-grid > *:nth-child(6) { animation-delay: 0.24s; }
+
 .batch-item-card:hover {
   border-color: var(--primary);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.09), 0 0 0 1px var(--primary);
 }
 
-.batch-brand-visual {
+/* Illustrated Batch Card Header */
+.batch-header-visual {
+  position: relative;
+  width: 100%;
+  height: 62px;
+  overflow: hidden;
   display: flex;
   align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: transform 0.2s ease;
 }
 
-.batch-item-card:hover .batch-brand-visual {
-  transform: scale(1.1);
+.batch-header-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.batch-item-card:hover .batch-header-svg {
+  transform: scale(1.05);
+}
+
+.batch-header-overlay {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0.5rem 0.95rem;
+  color: #ffffff;
+}
+
+.batch-species-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.batch-species-title {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+.batch-cycle-counter {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 500;
+}
+
+.batch-stage-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.live-pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #4ADE80;
+  box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7);
+  animation: pulseGlow 1.8s infinite;
+}
+
+.batch-stage-pill.eri .live-pulse-dot {
+  background: #FB923C;
+  box-shadow: 0 0 0 0 rgba(251, 146, 60, 0.7);
+  animation: pulseGlowAmber 1.8s infinite;
+}
+
+.batch-card-inner {
+  padding: 1rem 1.15rem 1.15rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .batch-tag-row {
@@ -852,32 +938,88 @@ th,
   background: var(--bg-card);
   border: 2px solid var(--border-card);
   border-radius: var(--radius-md);
-  padding: 1rem 1.15rem;
+  padding: 0;
   cursor: pointer;
   text-align: left;
   font-family: inherit;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.25s ease, background-color 0.2s ease;
   display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: 0.9rem;
-  animation: cardEntrance 0.3s ease-out both;
+  flex-direction: column;
+  align-items: stretch;
+  overflow: hidden;
+  animation: cardEntrance 0.35s ease-out both;
+}
+
+.species-banner-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: #f8fafc;
+}
+
+.species-card-illustration {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.species-card-simple:hover .species-card-illustration {
+  transform: scale(1.04);
+}
+
+.species-selected-pill {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #1B5E20;
+  color: #ffffff;
+  border-radius: 20px;
+  padding: 3px 9px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  animation: pillPop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.species-selected-pill.eri {
+  background: #BF360C;
 }
 
 .species-card-simple:hover {
   border-color: var(--primary);
-  background: #F8FAF9;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  background: #ffffff;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.1);
 }
 
 .species-card-simple.selected {
   border-color: var(--primary);
-  background: #F2F7F4;
-  outline: 2px solid var(--primary);
-  outline-offset: -2px;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(46, 125, 50, 0.15);
+  background: #ffffff;
+  outline: none;
+  box-shadow: 0 0 0 2px var(--primary), 0 12px 28px -6px rgba(27, 94, 32, 0.22);
+  transform: translateY(-2px);
+}
+
+.species-card-simple.selected.eri {
+  border-color: #BF360C;
+  box-shadow: 0 0 0 2px #BF360C, 0 12px 28px -6px rgba(191, 54, 12, 0.22);
+}
+
+.species-card-content .species-name {
+  font-weight: 700;
+  font-size: 1.02rem;
+  color: var(--text-main);
+}
+
+.species-card-content .species-sub {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  margin: 0;
 }
 
 .species-card-visual {
@@ -899,7 +1041,65 @@ th,
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.3rem;
+  padding: 0.95rem 1.15rem 1.15rem;
+}
+
+.stage-milestone-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.kalro-card:hover .stage-milestone-wrapper {
+  transform: scale(1.15);
+}
+
+.stage-milestone-svg {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.08));
+}
+
+@keyframes pillPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulseGlow {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7);
+  }
+  70% {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 6px rgba(74, 222, 128, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0);
+  }
+}
+
+@keyframes pulseGlowAmber {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(251, 146, 60, 0.7);
+  }
+  70% {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 6px rgba(251, 146, 60, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(251, 146, 60, 0);
+  }
 }
 
 .species-card-head {
@@ -1058,17 +1258,32 @@ th,
 
 .forecast-item {
   background: #ffffff;
-  border: 1px solid #C7D9CE;
+  border: 1px solid #D1E0D7;
   border-radius: var(--radius-sm);
-  padding: 0.75rem;
+  padding: 0.85rem;
   display: flex;
   flex-direction: column;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.forecast-item:nth-child(1) {
+  border-left: 4px solid #FBC02D;
+}
+
+.forecast-item:nth-child(2) {
+  border-left: 4px solid #2E7D32;
+}
+
+.forecast-item:nth-child(3) {
+  border-left: 4px solid #143D2B;
 }
 
 .forecast-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px -4px rgba(20, 61, 43, 0.12);
+  border-color: var(--primary);
 }
 
 .forecast-item-label {
@@ -1386,7 +1601,30 @@ th,
   height: 100%;
   background-color: var(--primary);
   border-radius: var(--radius-full);
-  transition: width 0.3s ease;
+  transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: barShine 2.5s infinite;
+}
+
+@keyframes barShine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
 /* Form Controls with Complete States */

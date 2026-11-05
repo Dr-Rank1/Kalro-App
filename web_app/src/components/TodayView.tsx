@@ -16,6 +16,7 @@ import {
   isFedToday,
 } from '../utils';
 import { SPECIES_THRESHOLDS } from '../constants';
+import { BombyxBatchCardHeader, EriBatchCardHeader } from './SericultureCardArtwork';
 
 interface TodayViewProps {
   batches: Batch[];
@@ -235,7 +236,12 @@ export const TodayView: React.FC<TodayViewProps> = ({
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-            <div style={{ padding: '0.85rem', background: 'var(--bg-subtle)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)', textAlign: 'center' }}>
+            <div style={{ padding: '0.85rem', background: 'var(--bg-subtle)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--primary)', marginBottom: '3px' }} aria-hidden="true">
+                <path d="M14 4a2 2 0 0 0-4 0v8a4 4 0 1 0 4 0Z" />
+                <path d="M12 12v4" />
+                <circle cx="12" cy="16" r="1.5" fill="currentColor" />
+              </svg>
               <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Dry Bulb Temp</div>
               <div className="tabular-nums" style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--primary)', margin: '2px 0' }}>
                 {latestEnv ? `${latestEnv.temperatureCelsius.toFixed(1)}°C` : '--'}
@@ -245,7 +251,11 @@ export const TodayView: React.FC<TodayViewProps> = ({
               </div>
             </div>
 
-            <div style={{ padding: '0.85rem', background: 'var(--bg-subtle)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)', textAlign: 'center' }}>
+            <div style={{ padding: '0.85rem', background: 'var(--bg-subtle)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--status-info)', marginBottom: '3px' }} aria-hidden="true">
+                <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+                <path d="M12 11a3 3 0 0 0 3 3" opacity="0.6" />
+              </svg>
               <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Relative Humidity</div>
               <div className="tabular-nums" style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--status-info)', margin: '2px 0' }}>
                 {latestEnv ? `${latestEnv.humidityPercent}%` : '--'}
@@ -282,8 +292,11 @@ export const TodayView: React.FC<TodayViewProps> = ({
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', marginBottom: '0.25rem' }}>
-                <span>Mulberry Shoots (Kanva-2 & S-13)</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.82rem', marginBottom: '0.25rem' }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--primary)', display: 'inline-block' }} />
+                  Mulberry Shoots (Kanva-2 & S-13)
+                </span>
                 <strong className="tabular-nums">{inventory.mulberryKg.toFixed(1)} kg</strong>
               </div>
               <div className="progress-bar-bg" style={{ margin: 0 }}>
@@ -295,8 +308,11 @@ export const TodayView: React.FC<TodayViewProps> = ({
             </div>
 
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', marginBottom: '0.25rem' }}>
-                <span>Castor Leaves (GRC-1 for Eri)</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.82rem', marginBottom: '0.25rem' }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--status-warning)', display: 'inline-block' }} />
+                  Castor Leaves (GRC-1 for Eri)
+                </span>
                 <strong className="tabular-nums">{inventory.castorKg.toFixed(1)} kg</strong>
               </div>
               <div className="progress-bar-bg" style={{ margin: 0 }}>
@@ -311,8 +327,11 @@ export const TodayView: React.FC<TodayViewProps> = ({
             </div>
 
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', marginBottom: '0.25rem' }}>
-                <span>Kesseru Dry-Season Reserve</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.82rem', marginBottom: '0.25rem' }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--accent-gold)', display: 'inline-block' }} />
+                  Kesseru Dry-Season Reserve
+                </span>
                 <strong className="tabular-nums">{inventory.kesseruKg.toFixed(1)} kg</strong>
               </div>
               <div className="progress-bar-bg" style={{ margin: 0 }}>
@@ -373,12 +392,18 @@ export const TodayView: React.FC<TodayViewProps> = ({
 
               return (
                 <div key={b.id} className="batch-item-card">
-                  <div className="batch-tag-row">
-                    <span className={`species-badge ${b.species}`}>
-                      {b.species === 'bombyx' ? 'Bombyx mori' : 'Eri Silkworm'}
-                    </span>
-                    <span className="status-badge active">{stage.name}</span>
-                  </div>
+                  {b.species === 'bombyx' ? (
+                    <BombyxBatchCardHeader day={stage.dayStart} maxDays={maxDays} stageName={stage.name} />
+                  ) : (
+                    <EriBatchCardHeader day={stage.dayStart} maxDays={maxDays} stageName={stage.name} />
+                  )}
+                  <div className="batch-card-inner">
+                    <div className="batch-tag-row">
+                      <span className={`species-badge ${b.species}`}>
+                        {b.species === 'bombyx' ? 'Bombyx mori' : 'Eri Silkworm'}
+                      </span>
+                      <span className="status-badge active">{stage.name}</span>
+                    </div>
 
                   <h4 className="truncate" style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.2rem' }}>
                     {b.displayTag || b.batchTag || b.id}
@@ -459,6 +484,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
                         <span style={{ fontSize: '0.72rem', fontWeight: 600 }}>PDF</span>
                       </button>
                     )}
+                  </div>
                   </div>
                 </div>
               );

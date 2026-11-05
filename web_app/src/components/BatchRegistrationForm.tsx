@@ -5,6 +5,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { Batch, Species } from '../types';
+import { BombyxSpeciesBanner, EriSpeciesBanner } from './SericultureCardArtwork';
 
 interface BatchRegistrationFormProps {
   onSuccess: (batch: Batch) => void;
@@ -126,23 +127,19 @@ export const BatchRegistrationForm: React.FC<BatchRegistrationFormProps> = ({
           <button
             type="button"
             onClick={() => handleSpeciesChange('bombyx')}
-            className={`species-card-simple ${isBombyx ? 'selected' : ''}`}
+            className={`species-card-simple ${isBombyx ? 'selected bombyx' : ''}`}
           >
-            <div className="species-card-visual bombyx-visual">
-              <svg viewBox="0 0 48 48" width="44" height="44" className="species-artwork" aria-hidden="true">
-                <circle cx="24" cy="24" r="22" fill="#E8F5E9" />
-                {/* Mulberry Leaf */}
-                <path d="M12 28 C10 18, 22 10, 36 12 C34 26, 26 36, 16 34 Z" fill="#2E7D32" opacity="0.85" />
-                <path d="M14 32 Q24 22 34 14" stroke="#A5D6A7" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-                {/* Golden/White Silk Cocoon */}
-                <ellipse cx="27" cy="26" rx="9" ry="6" transform="rotate(-25 27 26)" fill="#FFF9C4" stroke="#FBC02D" strokeWidth="1.5" />
-                <path d="M22 25 Q27 24 31 27" stroke="#F57F17" strokeWidth="0.8" fill="none" opacity="0.6" />
-              </svg>
+            <div className="species-banner-wrapper">
+              <BombyxSpeciesBanner className="species-card-illustration" />
+              {isBombyx && (
+                <div className="species-selected-pill bombyx">
+                  <CheckCircle2 size={15} /> Selected
+                </div>
+              )}
             </div>
             <div className="species-card-content">
               <div className="species-card-head">
                 <span className="species-name">Bombyx mori (Mulberry)</span>
-                {isBombyx && <CheckCircle2 size={18} className="selected-icon" />}
               </div>
               <p className="species-sub">
                 Bivoltine hybrid (CSR2 × CSR4). Produces uniform reelable white silk. Standard 35-day cycle.
@@ -153,22 +150,19 @@ export const BatchRegistrationForm: React.FC<BatchRegistrationFormProps> = ({
           <button
             type="button"
             onClick={() => handleSpeciesChange('eri')}
-            className={`species-card-simple ${!isBombyx ? 'selected' : ''}`}
+            className={`species-card-simple ${!isBombyx ? 'selected eri' : ''}`}
           >
-            <div className="species-card-visual eri-visual">
-              <svg viewBox="0 0 48 48" width="44" height="44" className="species-artwork" aria-hidden="true">
-                <circle cx="24" cy="24" r="22" fill="#FFF3E0" />
-                {/* Castor Leaf */}
-                <path d="M24 10 L28 18 L36 16 L31 24 L37 30 L29 30 L28 38 L24 32 L20 38 L19 30 L11 30 L17 24 L12 16 L20 18 Z" fill="#E65100" opacity="0.75" />
-                {/* Open-ended Eri Cocoon */}
-                <ellipse cx="24" cy="25" rx="7" ry="10" transform="rotate(15 24 25)" fill="#F5EBE6" stroke="#BCAAA4" strokeWidth="1.5" />
-                <path d="M21 16 Q24 18 26 16" stroke="#8D6E63" strokeWidth="1.2" fill="none" />
-              </svg>
+            <div className="species-banner-wrapper">
+              <EriSpeciesBanner className="species-card-illustration" />
+              {!isBombyx && (
+                <div className="species-selected-pill eri">
+                  <CheckCircle2 size={15} /> Selected
+                </div>
+              )}
             </div>
             <div className="species-card-content">
               <div className="species-card-head">
                 <span className="species-name">Eri Silkworm (Castor)</span>
-                {!isBombyx && <CheckCircle2 size={18} className="selected-icon" />}
               </div>
               <p className="species-sub">
                 Samia ricini fed on Castor or Kesseru. Hardy thermal spun cocoons. 34-day rearing cycle.
