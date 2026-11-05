@@ -177,7 +177,7 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
           {feedLogs.length === 0 ? (
             <div className="empty-state">
               <h4>No Feeding Records Found</h4>
-              <p>There are no recorded feeding sessions. Use the "Quick Log" button to record fresh leaf supplies.</p>
+              <p>There are no recorded feeding sessions. Use the "Log Feed" button to record fresh leaf supplies.</p>
             </div>
           ) : (
             <div className="kalro-table-wrap">
@@ -319,7 +319,7 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
             {mortalityLogs.length === 0 ? (
               <div className="empty-state">
                 <h4>Zero Mortality Records</h4>
-                <p>No larval losses logged. Record any bed-cleaning attrition or dead worms via the Quick Log modal.</p>
+                <p>No larval losses logged. Record any bed-cleaning attrition or dead worms via the loss log.</p>
               </div>
             ) : (
               <div className="kalro-table-wrap">

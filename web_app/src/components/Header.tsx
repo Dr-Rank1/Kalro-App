@@ -1,18 +1,16 @@
 import React from 'react';
 import { FarmProfile } from '../types';
-import { FileText, PlusCircle } from 'lucide-react';
+import { FileText } from 'lucide-react';
 
 interface HeaderProps {
   profile: FarmProfile;
   activeBatchesCount: number;
-  onOpenQuickLog: () => void;
   onOpenReportModal: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   profile,
   activeBatchesCount,
-  onOpenQuickLog,
   onOpenReportModal,
 }) => {
   return (
@@ -54,15 +52,6 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <FileText size={14} style={{ marginRight: '6px' }} />
             <span>Export Report (PDF)</span>
-          </button>
-
-          <button
-            onClick={onOpenQuickLog}
-            className="header-action-btn"
-            title="Log feeding, loss, rearing climate, or cocoon harvest"
-          >
-            <PlusCircle size={14} style={{ marginRight: '6px' }} />
-            <span>Quick Log</span>
           </button>
         </div>
       </div>

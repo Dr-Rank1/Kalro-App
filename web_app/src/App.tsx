@@ -189,7 +189,6 @@ export function App() {
       <Header
         profile={profile}
         activeBatchesCount={activeBatchesCount}
-        onOpenQuickLog={() => setQuickLogState({ open: true })}
         onOpenReportModal={() => setReportModalOpen(true)}
       />
 
