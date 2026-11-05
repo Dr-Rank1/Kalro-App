@@ -80,8 +80,10 @@ class _FeedLogSectionState extends State<FeedLogSection> {
     var isSkipping = false;
     var selectedReason = FeedSkipReasons.options.first.label;
 
+    final messenger = ScaffoldMessenger.maybeOf(context);
     final saved = await showModalBottomSheet<bool>(
       context: context,
+      useRootNavigator: true,
       isScrollControlled: true,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
@@ -261,23 +263,20 @@ class _FeedLogSectionState extends State<FeedLogSection> {
     notesController.dispose();
 
     if (saved == true) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              isSkipping
-                  ? '⏸ Recorded non-feeding: $selectedReason'.tr
-                  : '✓ Feeding logged successfully'.tr,
-            ),
-            backgroundColor:
-                isSkipping ? KalroColors.harvest : KalroColors.headerGreen,
+      messenger?.showSnackBar(
+        SnackBar(
+          content: Text(
+            isSkipping
+                ? '⏸ Recorded non-feeding: $selectedReason'.tr
+                : '✓ Feeding logged successfully'.tr,
           ),
-        );
-      }
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _reload();
-        widget.onChanged?.call();
-      });
+          backgroundColor:
+              isSkipping ? KalroColors.harvest : KalroColors.headerGreen,
+        ),
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 280));
+      _reload();
+      widget.onChanged?.call();
     }
   }
 

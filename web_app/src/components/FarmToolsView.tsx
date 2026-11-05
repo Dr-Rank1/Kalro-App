@@ -523,8 +523,8 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
                     onChange={(e) => setLeafQty(e.target.value === '' ? '' : Number(e.target.value))}
                     className="form-control tabular-nums"
                     placeholder="e.g. 25"
-                    step="0.5"
-                    min="0.5"
+                    step="any"
+                    min="0.1"
                     required
                   />
                 </div>
@@ -673,7 +673,7 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
                     onChange={(e) => setPayAmount(e.target.value === '' ? '' : Number(e.target.value))}
                     className="form-control tabular-nums"
                     placeholder="e.g. 5000"
-                    step="100"
+                    step="any"
                     min="1"
                     required
                   />

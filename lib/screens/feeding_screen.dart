@@ -37,12 +37,10 @@ class _FeedingScreenState extends State<FeedingScreen> {
             .where((b) => b.status != BatchStatus.closed)
             .toList();
         if (_selectedBatch != null) {
-          final stillExists = active
+          final matching = active
               .where((b) => b.id == _selectedBatch!.id)
-              .isNotEmpty;
-          if (!stillExists) {
-            _selectedBatch = active.isNotEmpty ? active.first : null;
-          }
+              .firstOrNull;
+          _selectedBatch = matching ?? (active.isNotEmpty ? active.first : null);
         } else if (active.isNotEmpty) {
           _selectedBatch = active.first;
         }
@@ -60,8 +58,8 @@ class _FeedingScreenState extends State<FeedingScreen> {
           child: FutureBuilder<List<Batch>>(
             future: _batchesFuture,
             builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
+              if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData) {
+                return const Center(child: CircularProgressIndicator());
               }
 
               final activeBatches = snapshot.data ?? [];

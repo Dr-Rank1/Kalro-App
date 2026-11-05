@@ -1,11 +1,8 @@
-import React, { useState, useId } from 'react';
+import React, { useState } from 'react';
 import {
-  Layers,
-  Calendar,
-  Building,
-  DollarSign,
-  Scale,
-  Sparkles,
+  ChevronDown,
+  ChevronUp,
+  CheckCircle2,
 } from 'lucide-react';
 import { Batch, Species } from '../types';
 
@@ -24,9 +21,9 @@ export const BatchRegistrationForm: React.FC<BatchRegistrationFormProps> = ({
 }) => {
   const currentYear = new Date().getFullYear();
 
-  // Helper to generate next sequential tag
-  const getNextTag = (species: Species) => {
-    const prefix = species === 'bombyx' ? 'LOT-BM' : 'LOT-ERI';
+  // Helper to generate sequential lot tag
+  const getNextTag = (spec: Species) => {
+    const prefix = spec === 'bombyx' ? 'LOT-BM' : 'LOT-ERI';
     const matches = existingBatches
       .map((b) => b.batchTag || '')
       .filter((tag) => tag.startsWith(`${prefix}-${currentYear}`))
@@ -42,90 +39,42 @@ export const BatchRegistrationForm: React.FC<BatchRegistrationFormProps> = ({
 
   // State
   const [species, setSpecies] = useState<Species>('bombyx');
-  const [count, setCount] = useState<number>(20000);
+  const [count, setCount] = useState<number | ''>(20000);
   const [startDate, setStartDate] = useState<string>(
     new Date().toISOString().split('T')[0]
   );
   const [lotTag, setLotTag] = useState<string>(() => getNextTag('bombyx'));
-  const [displayTag, setDisplayTag] = useState<string>(
-    'CSR2 × CSR4 Bivoltine White (Standard Box)'
-  );
   const [roomName, setRoomName] = useState<string>('Rearing House 1 - Bay A');
   const [grainageSource, setGrainageSource] = useState<string>(
     'KALRO National Sericulture Research Centre, Thika'
   );
   const [notes, setNotes] = useState<string>('');
-  const [activePreset, setActivePreset] = useState<string>('bivoltine_standard');
+  const [showAdvanced, setShowAdvanced] = useState<boolean>(false);
 
-  const speciesGroupId = useId();
-
-  // Handle preset clicks
-  const applyPreset = (presetKey: string) => {
-    setActivePreset(presetKey);
-    if (presetKey === 'bivoltine_chawki') {
-      setSpecies('bombyx');
-      setCount(10000);
-      setLotTag(getNextTag('bombyx'));
-      setDisplayTag('CSR2 × CSR4 Bivoltine Chawki Unit');
-      setRoomName('Chawki Incubation Chamber');
-      setGrainageSource('KALRO National Sericulture Research Centre, Thika');
-    } else if (presetKey === 'bivoltine_standard') {
-      setSpecies('bombyx');
-      setCount(20000);
-      setLotTag(getNextTag('bombyx'));
-      setDisplayTag('CSR2 × CSR4 Bivoltine Standard (1 Box)');
-      setRoomName('Rearing House 1 - Bay A');
-      setGrainageSource('KALRO National Sericulture Research Centre, Thika');
-    } else if (presetKey === 'bivoltine_commercial') {
-      setSpecies('bombyx');
-      setCount(40000);
-      setLotTag(getNextTag('bombyx'));
-      setDisplayTag('CSR2 × CSR4 Commercial Multi-Rack (2 Boxes)');
-      setRoomName('Rearing House 1 - Commercial Bay');
-      setGrainageSource('KALRO NSRC Thika / ICIPE Seed Unit');
-    } else if (presetKey === 'eri_standard') {
-      setSpecies('eri');
-      setCount(10000);
-      setLotTag(getNextTag('eri'));
-      setDisplayTag('Samia ricini Eri Silkworm Lot');
-      setRoomName('Rearing House 2 - Castor/Kesseru Bay');
-      setGrainageSource('KALRO Sericulture Sub-Centre, Kibos');
-    }
-  };
-
-  // Switch species manually
+  // Switch species
   const handleSpeciesChange = (newSpecies: Species) => {
     setSpecies(newSpecies);
     setLotTag(getNextTag(newSpecies));
     if (newSpecies === 'bombyx') {
-      setDisplayTag('CSR2 × CSR4 Bivoltine Lot');
       setGrainageSource('KALRO National Sericulture Research Centre, Thika');
     } else {
-      setDisplayTag('Samia ricini Eri Silkworm Lot');
       setGrainageSource('KALRO Sericulture Sub-Centre, Kibos');
     }
   };
 
-  // Biological Projections
-  const thousands = count / 1000.0;
+  // Calculations
   const isBombyx = species === 'bombyx';
+  const effectiveCount = typeof count === 'number' && !isNaN(count) && count > 0 ? count : 1;
+  const thousands = effectiveCount / 1000.0;
+  const dflCount = Math.round(effectiveCount / 400);
   const cycleDays = isBombyx ? 35 : 34;
 
-  // Forage Budget (kg)
   const totalForageKg = isBombyx ? Math.round(thousands * 20) : Math.round(thousands * 18);
   const peakDailyFeedKg = isBombyx ? Number((thousands * 1.8).toFixed(1)) : Number((thousands * 1.6).toFixed(1));
-
-  // Bed Space (sq. m)
-  const chawkiBedAreaM2 = Number((thousands * 0.1).toFixed(1));
-  const lateBedAreaM2 = Number((thousands * 1.1).toFixed(1));
-  const mountagesCount = Math.round(thousands * 22.5);
-
-  // Yield & Revenue Projections
   const estYieldKg = isBombyx ? Number((thousands * 1.9).toFixed(1)) : Number((thousands * 1.7).toFixed(1));
-  const indicativePricePerKg = isBombyx ? 850 : 650;
-  const projectedRevenue = Math.round(estYieldKg * indicativePricePerKg);
+  const bedSpaceM2 = Number((thousands * 1.1).toFixed(1));
 
-  // Harvest Date Calculation
+  // Harvest Date
   const startObj = new Date(startDate || new Date().toISOString().split('T')[0]);
   const harvestObj = new Date(startObj);
   harvestObj.setDate(startObj.getDate() + cycleDays);
@@ -135,23 +84,16 @@ export const BatchRegistrationForm: React.FC<BatchRegistrationFormProps> = ({
     year: 'numeric',
   });
 
-  // Spinning Start Calculation
-  const spinningObj = new Date(startObj);
-  spinningObj.setDate(startObj.getDate() + (isBombyx ? 28 : 27));
-  const spinningDateFormatted = spinningObj.toLocaleDateString('en-KE', {
-    month: 'short',
-    day: 'numeric',
-  });
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!count || count <= 0) {
-      alert('Please specify a valid egg / larvae count.');
-      return;
-    }
+    const finalCount = typeof count === 'number' && count > 0 ? count : 400;
+
+    const defaultDisplayName = isBombyx
+      ? `CSR2 × CSR4 Bivoltine (${finalCount.toLocaleString()} eggs)`
+      : `Samia ricini Eri (${finalCount.toLocaleString()} eggs)`;
 
     const compiledNotes = [
-      grainageSource ? `Grainage Seed Provider: ${grainageSource}` : '',
+      grainageSource ? `Seed Source: ${grainageSource}` : '',
       notes ? notes.trim() : '',
     ]
       .filter(Boolean)
@@ -161,10 +103,10 @@ export const BatchRegistrationForm: React.FC<BatchRegistrationFormProps> = ({
       id: `batch-${Date.now()}`,
       species,
       startDate,
-      eggCount: count,
+      eggCount: finalCount,
       status: 'active',
       batchTag: lotTag.trim() || `LOT-${Date.now().toString().slice(-4)}`,
-      displayTag: displayTag.trim() || `${isBombyx ? 'Bombyx mori' : 'Eri'} Lot`,
+      displayTag: defaultDisplayName,
       roomName: roomName.trim() || 'Rearing House',
       notes: compiledNotes,
     };
@@ -173,417 +115,271 @@ export const BatchRegistrationForm: React.FC<BatchRegistrationFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="batch-registration-container">
-      {/* Top Presets Toolbar */}
-      <div className="registration-section">
-        <div className="registration-section-title">
-          <Sparkles size={15} style={{ color: 'var(--accent-gold)' }} />
-          <span>Quick Rearing Scale Presets (1-Click Fill)</span>
-        </div>
-        <div className="presets-container" style={{ marginBottom: 0 }}>
+    <form onSubmit={handleSubmit} className="simple-batch-form">
+      {/* 1. Variety Selection */}
+      <div className="form-card-section">
+        <label className="section-label">
+          <span className="step-num">1</span>
+          <span>Choose Silkworm Variety</span>
+        </label>
+        <div className="species-grid-simple">
           <button
             type="button"
-            onClick={() => applyPreset('bivoltine_standard')}
-            className={`preset-card ${activePreset === 'bivoltine_standard' && count === 20000 && isBombyx ? 'selected' : ''}`}
+            onClick={() => handleSpeciesChange('bombyx')}
+            className={`species-card-simple ${isBombyx ? 'selected' : ''}`}
           >
-            <div className="preset-card-head">
-              <span className="species-badge bombyx">Recommended</span>
-              <span className="tabular-nums font-bold" style={{ fontSize: '0.78rem', color: 'var(--primary)' }}>
-                20,000 DFLs
-              </span>
+            <div className="species-card-visual bombyx-visual">
+              <svg viewBox="0 0 48 48" width="44" height="44" className="species-artwork" aria-hidden="true">
+                <circle cx="24" cy="24" r="22" fill="#E8F5E9" />
+                {/* Mulberry Leaf */}
+                <path d="M12 28 C10 18, 22 10, 36 12 C34 26, 26 36, 16 34 Z" fill="#2E7D32" opacity="0.85" />
+                <path d="M14 32 Q24 22 34 14" stroke="#A5D6A7" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+                {/* Golden/White Silk Cocoon */}
+                <ellipse cx="27" cy="26" rx="9" ry="6" transform="rotate(-25 27 26)" fill="#FFF9C4" stroke="#FBC02D" strokeWidth="1.5" />
+                <path d="M22 25 Q27 24 31 27" stroke="#F57F17" strokeWidth="0.8" fill="none" opacity="0.6" />
+              </svg>
             </div>
-            <h4 className="preset-card-title">Bivoltine Standard (1 Box)</h4>
-            <p className="preset-card-desc">
-              CSR2 × CSR4 hybrid on Kanva-2 / S-13 shoots. ~38 kg green cocoon target.
-            </p>
+            <div className="species-card-content">
+              <div className="species-card-head">
+                <span className="species-name">Bombyx mori (Mulberry)</span>
+                {isBombyx && <CheckCircle2 size={18} className="selected-icon" />}
+              </div>
+              <p className="species-sub">
+                Bivoltine hybrid (CSR2 × CSR4). Produces uniform reelable white silk. Standard 35-day cycle.
+              </p>
+            </div>
           </button>
 
           <button
             type="button"
-            onClick={() => applyPreset('bivoltine_commercial')}
-            className={`preset-card ${activePreset === 'bivoltine_commercial' && count === 40000 && isBombyx ? 'selected' : ''}`}
+            onClick={() => handleSpeciesChange('eri')}
+            className={`species-card-simple ${!isBombyx ? 'selected' : ''}`}
           >
-            <div className="preset-card-head">
-              <span className="species-badge bombyx">Commercial Scale</span>
-              <span className="tabular-nums font-bold" style={{ fontSize: '0.78rem', color: 'var(--primary)' }}>
-                40,000 DFLs
-              </span>
+            <div className="species-card-visual eri-visual">
+              <svg viewBox="0 0 48 48" width="44" height="44" className="species-artwork" aria-hidden="true">
+                <circle cx="24" cy="24" r="22" fill="#FFF3E0" />
+                {/* Castor Leaf */}
+                <path d="M24 10 L28 18 L36 16 L31 24 L37 30 L29 30 L28 38 L24 32 L20 38 L19 30 L11 30 L17 24 L12 16 L20 18 Z" fill="#E65100" opacity="0.75" />
+                {/* Open-ended Eri Cocoon */}
+                <ellipse cx="24" cy="25" rx="7" ry="10" transform="rotate(15 24 25)" fill="#F5EBE6" stroke="#BCAAA4" strokeWidth="1.5" />
+                <path d="M21 16 Q24 18 26 16" stroke="#8D6E63" strokeWidth="1.2" fill="none" />
+              </svg>
             </div>
-            <h4 className="preset-card-title">Commercial Double (2 Boxes)</h4>
-            <p className="preset-card-desc">
-              High-yield multi-rack configuration. Target: 75–80 kg Grade A cocoons.
-            </p>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => applyPreset('eri_standard')}
-            className={`preset-card ${activePreset === 'eri_standard' && count === 10000 && !isBombyx ? 'selected' : ''}`}
-          >
-            <div className="preset-card-head">
-              <span className="species-badge eri">Hardy Wild Silk</span>
-              <span className="tabular-nums font-bold" style={{ fontSize: '0.78rem', color: 'var(--accent-gold)' }}>
-                10,000 DFLs
-              </span>
+            <div className="species-card-content">
+              <div className="species-card-head">
+                <span className="species-name">Eri Silkworm (Castor)</span>
+                {!isBombyx && <CheckCircle2 size={18} className="selected-icon" />}
+              </div>
+              <p className="species-sub">
+                Samia ricini fed on Castor or Kesseru. Hardy thermal spun cocoons. 34-day rearing cycle.
+              </p>
             </div>
-            <h4 className="preset-card-title">Eri Silkworm (Samia ricini)</h4>
-            <p className="preset-card-desc">
-              Castor GRC-1 and Kesseru host. Resilient thermal spun open-ended cocoons.
-            </p>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => applyPreset('bivoltine_chawki')}
-            className={`preset-card ${activePreset === 'bivoltine_chawki' && count === 10000 && isBombyx ? 'selected' : ''}`}
-          >
-            <div className="preset-card-head">
-              <span className="species-badge bombyx">Chawki Starter</span>
-              <span className="tabular-nums font-bold" style={{ fontSize: '0.78rem', color: 'var(--primary)' }}>
-                10,000 DFLs
-              </span>
-            </div>
-            <h4 className="preset-card-title">Chawki Smallholder Lot</h4>
-            <p className="preset-card-desc">
-              Ideal for initial trial rearing, incubator testing, or farmer training.
-            </p>
           </button>
         </div>
       </div>
 
-      {/* Main Form & Live Projections Layout */}
-      <div className="registration-columns">
-        {/* Left Form Inputs */}
-        <div className="registration-form-fields">
-          {/* Section 1: Species Selection */}
-          <div className="form-group">
-            <label className="form-label">Silkworm Species & Strain</label>
-            <div className="species-choice-grid">
-              <div
-                role="radio"
-                tabIndex={0}
-                aria-checked={species === 'bombyx'}
-                aria-labelledby={`${speciesGroupId}-bombyx-title`}
-                aria-describedby={`${speciesGroupId}-bombyx-desc`}
-                onClick={() => handleSpeciesChange('bombyx')}
-                onKeyDown={(e) => {
-                  if (e.key === ' ' || e.key === 'Enter') {
-                    e.preventDefault();
-                    handleSpeciesChange('bombyx');
-                  }
-                }}
-                className={`species-choice-card ${species === 'bombyx' ? 'active' : ''}`}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-                  <span className="species-badge bombyx">Bombyx mori</span>
-                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>40-Day Life Cycle</span>
-                </div>
-                <div id={`${speciesGroupId}-bombyx-title`} style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--text-main)', marginBottom: '0.2rem' }}>
-                  CSR2 × CSR4 Bivoltine White Hybrid
-                </div>
-                <div id={`${speciesGroupId}-bombyx-desc`} style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
-                  Host plant: Mulberry (Kanva-2, S-13). Produces uniform high-tensile reelable commercial silk.
-                </div>
-              </div>
+      {/* 2. Batch Quantity & Timing */}
+      <div className="form-card-section">
+        <label className="section-label">
+          <span className="step-num">2</span>
+          <span>Batch Size & Start Date</span>
+        </label>
 
-              <div
-                role="radio"
-                tabIndex={0}
-                aria-checked={species === 'eri'}
-                aria-labelledby={`${speciesGroupId}-eri-title`}
-                aria-describedby={`${speciesGroupId}-eri-desc`}
-                onClick={() => handleSpeciesChange('eri')}
-                onKeyDown={(e) => {
-                  if (e.key === ' ' || e.key === 'Enter') {
-                    e.preventDefault();
-                    handleSpeciesChange('eri');
-                  }
-                }}
-                className={`species-choice-card ${species === 'eri' ? 'active' : ''}`}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-                  <span className="species-badge eri">Samia ricini</span>
-                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>39-Day Life Cycle</span>
-                </div>
-                <div id={`${speciesGroupId}-eri-title`} style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--text-main)', marginBottom: '0.2rem' }}>
-                  Eri Silkworm (Castor / Kesseru Host)
-                </div>
-                <div id={`${speciesGroupId}-eri-desc`} style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
-                  Host plant: Castor (GRC-1). Robust multivoltine strain with open-ended thermal cocoons.
-                </div>
-              </div>
-            </div>
-          </div>
+        {/* Quick Size Chips */}
+        <div className="size-pills-row">
+          <span className="size-pills-label">Quick presets:</span>
+          {[
+            { label: '10,000 (1/2 Box)', val: 10000 },
+            { label: '20,000 (1 Box)', val: 20000 },
+            { label: '40,000 (2 Boxes)', val: 40000 },
+          ].map((preset) => (
+            <button
+              key={preset.val}
+              type="button"
+              onClick={() => setCount(preset.val)}
+              className={`size-pill ${count === preset.val ? 'active' : ''}`}
+            >
+              {preset.label}
+            </button>
+          ))}
+        </div>
 
-          {/* Section 2: Quantity and Start Date */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.85rem' }}>
-            <div className="form-group">
-              <label className="form-label">
-                Egg / Chawki Quantity (DFLs)
-              </label>
+        <div className="two-col-grid">
+          <div className="input-group">
+            <label className="input-label" htmlFor="eggCountInput">
+              Quantity of Eggs (or Worms)
+            </label>
+            <div className="input-with-hint">
               <input
+                id="eggCountInput"
                 type="number"
                 value={count}
                 onChange={(e) => {
-                  setCount(Math.max(1, parseInt(e.target.value, 10) || 0));
-                  setActivePreset('custom');
+                  const val = e.target.value;
+                  if (val === '') {
+                    setCount('');
+                  } else {
+                    const parsed = parseInt(val, 10);
+                    setCount(isNaN(parsed) ? '' : parsed);
+                  }
                 }}
-                className="form-control tabular-nums"
+                onBlur={() => {
+                  if (count === '' || count <= 0) {
+                    setCount(400);
+                  }
+                }}
+                className="simple-input tabular-nums"
                 min="1"
-                step="1000"
+                step="1"
+                placeholder="e.g. 20000"
                 required
               />
-              <div className="qty-chips-row">
-                {[10000, 20000, 40000, 60000].map((val) => (
-                  <button
-                    key={val}
-                    type="button"
-                    onClick={() => {
-                      setCount(val);
-                      setActivePreset('custom');
-                    }}
-                    className={`qty-chip tabular-nums ${count === val ? 'active' : ''}`}
-                  >
-                    {val.toLocaleString()}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Inoculation / Hatch Date</label>
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="form-control tabular-nums"
-                required
-              />
-              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'block', marginTop: '4px' }}>
-                Day 0 baseline for microclimate & feeding stages
+              <span className="input-sub-hint">
+                ≈ {dflCount} DFLs (Disease-Free Layings @ 400 eggs/DFL)
               </span>
             </div>
           </div>
 
-          {/* Section 3: Lot Identification & Location */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.85rem' }}>
-            <div className="form-group">
-              <label className="form-label">Lot Identifier Code</label>
-              <input
-                type="text"
-                value={lotTag}
-                onChange={(e) => setLotTag(e.target.value)}
-                className="form-control"
-                placeholder="e.g. LOT-BM-2026-01"
-                required
-              />
-              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'block', marginTop: '4px' }}>
-                Used on QR tray barcodes and station log entries
-              </span>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Display Lot Name</label>
-              <input
-                type="text"
-                value={displayTag}
-                onChange={(e) => setDisplayTag(e.target.value)}
-                className="form-control"
-                placeholder="e.g. CSR2 × CSR4 Bivoltine Lot #1"
-                required
-              />
-            </div>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.85rem' }}>
-            <div className="form-group">
-              <label className="form-label">Rearing Chamber / Bay Location</label>
-              <input
-                type="text"
-                value={roomName}
-                onChange={(e) => setRoomName(e.target.value)}
-                className="form-control"
-                placeholder="e.g. Rearing House 1 - Bay A"
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Grainage Seed Source / Certificate</label>
-              <input
-                type="text"
-                value={grainageSource}
-                onChange={(e) => setGrainageSource(e.target.value)}
-                className="form-control"
-                placeholder="e.g. KALRO NSRC Thika Grainage"
-              />
-            </div>
-          </div>
-
-          {/* Optional Notes */}
-          <div className="form-group" style={{ marginBottom: 0 }}>
-            <label className="form-label">Agronomic Notes & Special Protocol Instructions (Optional)</label>
-            <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              className="form-control"
-              rows={2}
-              placeholder="Incubation observations, specific disinfectant batch, disinfection date..."
+          <div className="input-group">
+            <label className="input-label" htmlFor="startDateInput">
+              Start / Hatch Date
+            </label>
+            <input
+              id="startDateInput"
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="simple-input tabular-nums"
+              required
             />
-          </div>
-        </div>
-
-        {/* Right Live Projections & Feasibility Panel */}
-        <div className="registration-projections-panel">
-          <div className="projections-header">
-            <Layers size={16} style={{ color: 'var(--primary)' }} />
-            <h4 style={{ fontSize: '0.88rem', fontWeight: 700, margin: 0 }}>
-              Live Agronomic Projections
-            </h4>
-          </div>
-
-          <div className="projection-items-grid">
-            {/* Projected Yield */}
-            <div className="projection-stat-card highlight">
-              <div className="stat-label">
-                <Scale size={13} style={{ color: 'var(--primary)' }} />
-                <span>Est. Cocoon Yield</span>
-              </div>
-              <div className="stat-number tabular-nums">
-                {estYieldKg.toFixed(1)} kg
-              </div>
-              <div className="stat-sub">
-                Grade A green commercial cocoons (at 85% survival)
-              </div>
-            </div>
-
-            {/* Projected Revenue */}
-            <div className="projection-stat-card">
-              <div className="stat-label">
-                <DollarSign size={13} style={{ color: 'var(--status-success)' }} />
-                <span>Projected Gross Value</span>
-              </div>
-              <div className="stat-number tabular-nums" style={{ color: 'var(--status-success)' }}>
-                KES {projectedRevenue.toLocaleString()}
-              </div>
-              <div className="stat-sub">
-                Calculated at KALRO benchmark KES {indicativePricePerKg}/kg
-              </div>
-            </div>
-
-            {/* Total Forage Need */}
-            <div className="projection-stat-card">
-              <div className="stat-label">
-                <span>Total Forage Demand</span>
-              </div>
-              <div className="stat-number tabular-nums">
-                {totalForageKg.toLocaleString()} kg
-              </div>
-              <div className="stat-sub">
-                Fresh {isBombyx ? 'Mulberry (Kanva-2/S-13)' : 'Castor (GRC-1)'} shoots
-              </div>
-            </div>
-
-            {/* Peak Daily Feed */}
-            <div className="projection-stat-card">
-              <div className="stat-label">
-                <span>Peak 5th Instar Ration</span>
-              </div>
-              <div className="stat-number tabular-nums">
-                {peakDailyFeedKg} kg / day
-              </div>
-              <div className="stat-sub">
-                Day 20 to 26 maximum feeding consumption
-              </div>
-            </div>
-
-            {/* Rearing Bed Area */}
-            <div className="projection-stat-card">
-              <div className="stat-label">
-                <Building size={13} style={{ color: 'var(--text-muted)' }} />
-                <span>Rearing Bed Space</span>
-              </div>
-              <div className="stat-number tabular-nums">
-                {chawkiBedAreaM2}m² → {lateBedAreaM2}m²
-              </div>
-              <div className="stat-sub">
-                Expands 10× from Chawki to 5th Instar
-              </div>
-            </div>
-
-            {/* Mountages Needed */}
-            <div className="projection-stat-card">
-              <div className="stat-label">
-                <span>Mountage Frames</span>
-              </div>
-              <div className="stat-number tabular-nums">
-                ~{mountagesCount} frames
-              </div>
-              <div className="stat-sub">
-                Plastic collapsible or bamboo chandrike
-              </div>
-            </div>
-          </div>
-
-          {/* Rearing Schedule Forecast */}
-          <div className="projection-schedule-card">
-            <div className="schedule-header">
-              <Calendar size={14} style={{ color: 'var(--primary)' }} />
-              <span style={{ fontWeight: 700, fontSize: '0.78rem' }}>Production Milestones</span>
-            </div>
-            <div className="milestones-steps">
-              <div className="milestone-step">
-                <div className="milestone-marker active" />
-                <div className="milestone-content">
-                  <div className="milestone-name">Hatch & Chawki Start</div>
-                  <div className="milestone-date tabular-nums">
-                    {new Date(startDate).toLocaleDateString('en-KE', { month: 'short', day: 'numeric' })}
-                  </div>
-                </div>
-              </div>
-
-              <div className="milestone-step">
-                <div className="milestone-marker" />
-                <div className="milestone-content">
-                  <div className="milestone-name">Mounting & Spinning</div>
-                  <div className="milestone-date tabular-nums">{spinningDateFormatted}</div>
-                </div>
-              </div>
-
-              <div className="milestone-step">
-                <div className="milestone-marker success" />
-                <div className="milestone-content">
-                  <div className="milestone-name font-bold" style={{ color: 'var(--primary)' }}>
-                    Target Cocoon Harvest
-                  </div>
-                  <div className="milestone-date tabular-nums font-bold" style={{ color: 'var(--primary)' }}>
-                    {harvestDateFormatted}
-                  </div>
-                </div>
-              </div>
-            </div>
+            <span className="input-sub-hint">
+              Sets Day 1 for feeding calendars and rearing stages
+            </span>
           </div>
         </div>
       </div>
 
+      {/* 3. Batch Identification & Bay */}
+      <div className="form-card-section">
+        <label className="section-label">
+          <span className="step-num">3</span>
+          <span>Batch Code & Bay Location</span>
+        </label>
+
+        <div className="two-col-grid">
+          <div className="input-group">
+            <label className="input-label" htmlFor="lotTagInput">
+              Batch Code / Tag
+            </label>
+            <input
+              id="lotTagInput"
+              type="text"
+              value={lotTag}
+              onChange={(e) => setLotTag(e.target.value)}
+              className="simple-input"
+              placeholder="e.g. LOT-BM-2026-01"
+              required
+            />
+            <span className="input-sub-hint">Appears on tray tags, QR barcodes, and daily logs</span>
+          </div>
+
+          <div className="input-group">
+            <label className="input-label" htmlFor="roomNameInput">
+              Rearing Chamber / Bay
+            </label>
+            <input
+              id="roomNameInput"
+              type="text"
+              value={roomName}
+              onChange={(e) => setRoomName(e.target.value)}
+              className="simple-input"
+              placeholder="e.g. Rearing House 1 - Bay A"
+              required
+            />
+            <span className="input-sub-hint">Physical room where trays are housed</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Instant Harvest & Feed Forecast Banner */}
+      <div className="forecast-banner">
+        <div className="forecast-banner-header">
+          <span className="forecast-title">Instant Rearing Forecast for this Batch</span>
+        </div>
+        <div className="forecast-grid">
+          <div className="forecast-item">
+            <div className="forecast-item-label">Target Harvest</div>
+            <div className="forecast-item-value tabular-nums">{estYieldKg} kg</div>
+            <div className="forecast-item-sub">Grade A green cocoons (at 85% survival)</div>
+          </div>
+
+          <div className="forecast-item">
+            <div className="forecast-item-label">Total Leaf Demand</div>
+            <div className="forecast-item-value tabular-nums">{totalForageKg} kg</div>
+            <div className="forecast-item-sub">Peak ration: {peakDailyFeedKg} kg/day in 5th instar</div>
+          </div>
+
+          <div className="forecast-item">
+            <div className="forecast-item-label">Harvest Date</div>
+            <div className="forecast-item-value tabular-nums">{harvestDateFormatted}</div>
+            <div className="forecast-item-sub">{cycleDays} days total cycle · Need {bedSpaceM2} m² bed space</div>
+          </div>
+        </div>
+      </div>
+
+      {/* 4. Optional Advanced Details (Collapsed by Default) */}
+      <div className="advanced-toggle-wrapper">
+        <button
+          type="button"
+          onClick={() => setShowAdvanced(!showAdvanced)}
+          className="advanced-toggle-btn"
+        >
+          <span>{showAdvanced ? 'Hide Additional Details' : '+ Add Seed Source & Notes (Optional)'}</span>
+          {showAdvanced ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+        </button>
+
+        {showAdvanced && (
+          <div className="advanced-section-content">
+            <div className="input-group">
+              <label className="input-label" htmlFor="grainageInput">
+                Grainage Seed Producer / Source
+              </label>
+              <input
+                id="grainageInput"
+                type="text"
+                value={grainageSource}
+                onChange={(e) => setGrainageSource(e.target.value)}
+                className="simple-input"
+                placeholder="e.g. KALRO National Sericulture Research Centre, Thika"
+              />
+            </div>
+
+            <div className="input-group" style={{ marginTop: '0.75rem' }}>
+              <label className="input-label" htmlFor="notesInput">
+                Agronomic Notes (Optional)
+              </label>
+              <textarea
+                id="notesInput"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                className="simple-input"
+                rows={2}
+                placeholder="Disinfection details, tray numbers, leaf plot reference..."
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Form Action Controls */}
-      <div className="batch-registration-actions">
+      <div className="simple-form-actions">
         {onCancel && (
-          <button
-            type="button"
-            onClick={onCancel}
-            className="btn-secondary"
-            style={{ padding: '0.65rem 1.25rem', fontSize: '0.86rem' }}
-          >
+          <button type="button" onClick={onCancel} className="btn-secondary simple-btn">
             Cancel
           </button>
         )}
-        <button
-          type="submit"
-          className="btn-accent"
-          style={{ padding: '0.65rem 1.85rem', fontSize: '0.88rem', fontWeight: 700 }}
-        >
-          {isModal ? 'Create & Register Batch' : 'Register Batch & Begin Rearing Cycle →'}
+        <button type="submit" className="btn-primary simple-btn-submit">
+          {isModal ? 'Save & Start Batch' : 'Register Batch & Begin Rearing →'}
         </button>
       </div>
     </form>

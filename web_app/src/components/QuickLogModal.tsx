@@ -336,7 +336,7 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
                     onChange={(e) => setTemp(e.target.value === '' ? '' : Number(e.target.value))}
                     className="form-control tabular-nums"
                     placeholder="e.g. 25.0"
-                    step="0.1"
+                    step="any"
                     min="15"
                     max="40"
                     required
@@ -418,7 +418,7 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
                     onChange={(e) => setShellWeightGrams(e.target.value === '' ? '' : Number(e.target.value))}
                     className="form-control tabular-nums"
                     placeholder="e.g. 38.5"
-                    step="0.1"
+                    step="any"
                   />
                   <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Used to compute commercial Shell Ratio %</span>
                 </div>

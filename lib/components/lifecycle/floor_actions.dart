@@ -96,8 +96,10 @@ class FloorActionsBar extends StatelessWidget {
         ? FeedSkipReasons.moultRest
         : FeedSkipReasons.options.first.label;
 
+    final messenger = ScaffoldMessenger.maybeOf(context);
     final saved = await showModalBottomSheet<bool>(
       context: context,
+      useRootNavigator: true,
       backgroundColor: Colors.white,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
@@ -325,21 +327,18 @@ class FloorActionsBar extends StatelessWidget {
     notesController.dispose();
 
     if (saved == true) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              isSkipping
-                  ? '⏸ Recorded non-feeding: $selectedReason'.tr
-                  : '✓ Feeding logged successfully'.tr,
-            ),
-            backgroundColor: isSkipping ? KalroColors.harvest : KalroColors.headerGreen,
+      messenger?.showSnackBar(
+        SnackBar(
+          content: Text(
+            isSkipping
+                ? '⏸ Recorded non-feeding: $selectedReason'.tr
+                : '✓ Feeding logged successfully'.tr,
           ),
-        );
-      }
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        onChanged();
-      });
+          backgroundColor: isSkipping ? KalroColors.harvest : KalroColors.headerGreen,
+        ),
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 280));
+      onChanged();
     }
   }
 
@@ -347,8 +346,10 @@ class FloorActionsBar extends StatelessWidget {
     var count = 1;
     String? disease;
     String? photoPath;
+    final messenger = ScaffoldMessenger.maybeOf(context);
     final saved = await showModalBottomSheet<bool>(
       context: context,
+      useRootNavigator: true,
       backgroundColor: Colors.white,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
@@ -499,16 +500,20 @@ class FloorActionsBar extends StatelessWidget {
       photoPath: photoPath,
       isolated: DiseaseLibrary.byName(disease)?.seedLotRisk ?? false,
     );
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      onChanged();
-    });
+    messenger?.showSnackBar(
+      SnackBar(content: Text('Logged $count larvae deaths.'.tr)),
+    );
+    await Future<void>.delayed(const Duration(milliseconds: 280));
+    onChanged();
   }
 
   Future<void> _house(BuildContext context) async {
     HouseFeel? temp;
     HouseFeel? wet;
+    final messenger = ScaffoldMessenger.maybeOf(context);
     final saved = await showModalBottomSheet<bool>(
       context: context,
+      useRootNavigator: true,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -639,18 +644,15 @@ class FloorActionsBar extends StatelessWidget {
       batchId: batch.id,
       feel: feel,
     );
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'House logged — Plan dates will shift if it stays like this.'.tr,
-          ),
+    messenger?.showSnackBar(
+      SnackBar(
+        content: Text(
+          'House logged — Plan dates will shift if it stays like this.'.tr,
         ),
-      );
-    }
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      onChanged();
-    });
+      ),
+    );
+    await Future<void>.delayed(const Duration(milliseconds: 280));
+    onChanged();
   }
 
   Widget _chip(String label, bool selected, VoidCallback onTap) {

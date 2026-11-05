@@ -4,13 +4,10 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../components/components.dart';
 import '../models/batch.dart';
-import '../models/leaf_inventory.dart';
 import '../models/producer.dart';
-import '../models/rearing_conditions.dart';
 import '../models/species.dart';
 import '../services/app_repositories.dart';
 import '../services/batch_repository.dart';
-import '../services/lifecycle_planning_service.dart';
 import '../services/producer_repository.dart';
 import '../theme/kalro_colors.dart';
 import 'package:kalro/l10n/translator.dart';
@@ -122,9 +119,6 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
 
   String? _eggSourceName;
   List<Producer> _producerList = [];
-  LeafInventory? _currentInventory;
-  static const _planning = LifecyclePlanningService();
-  RearingScenario _scenario = RearingScenario.typical;
   bool _saving = false;
 
   @override
@@ -152,10 +146,6 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
 
     widget.producers?.getAll().then((list) {
       if (mounted) setState(() => _producerList = list);
-    });
-
-    widget.farmRepositories?.leafInventory.get().then((inv) {
-      if (mounted) setState(() => _currentInventory = inv);
     });
   }
 
@@ -294,12 +284,6 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
     final totalLeafKg = dflCount * leafFactorPerDfl;
     final yieldFactorPerDfl = _species == Species.bombyx ? 0.30 : 0.26;
     final estimatedYieldKg = dflCount * yieldFactorPerDfl;
-    final bedSpaceEarly = (dflCount * 2.5).toStringAsFixed(1);
-    final bedSpaceLate = (dflCount * 22.0).toStringAsFixed(1);
-
-    final currentStock = _species == Species.bombyx
-        ? (_currentInventory?.mulberryKg ?? 0.0)
-        : ((_currentInventory?.castorKg ?? 0.0) + (_currentInventory?.kesseruKg ?? 0.0));
 
     return Scaffold(
       backgroundColor: KalroColors.headerGreen,
@@ -322,216 +306,107 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
           child: Form(
             key: _formKey,
             child: ListView(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
               children: [
-                // Top Intro Card
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: KalroColors.softShadow,
-                    border: Border.all(color: KalroColors.headerGreen.withValues(alpha: 0.15)),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: KalroColors.headerGreen.withValues(alpha: 0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(Icons.layers_outlined, color: KalroColors.headerGreen, size: 24),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Guided Batch Setup'.tr,
-                              style: GoogleFonts.poppins(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w700,
-                                color: KalroColors.textDark,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              'Select breed, starting stage, and quantity for instant leaf & harvest forecast.'
-                                  .tr,
-                              style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                color: KalroColors.textMuted,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                // Species Selection Cards
+                // 1. Variety Choice Cards
                 Text(
-                  '1. Select Breed & Host Plant'.tr,
+                  '1. Silkworm Variety'.tr,
                   style: GoogleFonts.poppins(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: KalroColors.textDark,
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 8),
                 Row(
                   children: [
                     Expanded(
-                      child: _SpeciesSelectCard(
+                      child: _VarietyCard(
                         species: Species.bombyx,
                         title: 'Bombyx mori',
                         subtitle: 'Mulberry Silkworm',
-                        tag: 'Reelable Silk · 38–42d',
-                        host: 'Mulberry leaf',
+                        tag: 'White Reelable · 35d',
                         selected: _species == Species.bombyx,
                         onTap: () => _onSpeciesChanged(Species.bombyx),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 10),
                     Expanded(
-                      child: _SpeciesSelectCard(
+                      child: _VarietyCard(
                         species: Species.eri,
                         title: 'Samia ricini',
                         subtitle: 'Eri Silkworm',
-                        tag: 'Ahimsa / Spun · 45–50d',
-                        host: 'Castor / Kesseru',
+                        tag: 'Ahimsa / Spun · 34d',
                         selected: _species == Species.eri,
                         onTap: () => _onSpeciesChanged(Species.eri),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 18),
 
-                // Starting Stage Selector (Solves the rest-day issue)
+                // 2. Starting Stage (Hatched default)
                 Text(
-                  '2. Starting Lifecycle Stage'.tr,
+                  '2. Starting Stage'.tr,
                   style: GoogleFonts.poppins(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: KalroColors.textDark,
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  'Pick the state of your worms today. If they hatched or you received chawki, feeding starts immediately.'
-                      .tr,
-                  style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
-                ),
-                const SizedBox(height: 10),
-                ...BatchStartingStage.values.map((stage) {
-                  final isSelected = _startingStage == stage;
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: InkWell(
-                      onTap: () => setState(() => _startingStage = stage),
-                      borderRadius: BorderRadius.circular(14),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                        decoration: BoxDecoration(
-                          color: isSelected ? KalroColors.headerGreen.withValues(alpha: 0.08) : Colors.white,
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(
-                            color: isSelected ? KalroColors.headerGreen : Colors.grey.shade300,
-                            width: isSelected ? 2 : 1,
-                          ),
-                          boxShadow: isSelected ? KalroColors.softShadow : null,
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
-                              color: isSelected ? KalroColors.headerGreen : Colors.grey,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    stage.label.tr,
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 13,
-                                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                                      color: isSelected ? KalroColors.headerGreen : KalroColors.textDark,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    stage.description.tr,
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 11,
-                                      color: KalroColors.textMuted,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                }),
-                const SizedBox(height: 16),
-
-                // Batch Tag & Arrival Date
-                Row(
+                const SizedBox(height: 6),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
                   children: [
-                    Expanded(
-                      flex: 3,
-                      child: TextFormField(
-                        controller: _batchTagController,
-                        decoration: InputDecoration(
-                          labelText: 'Batch Code / Tag'.tr,
-                          hintText: 'e.g. BATCH-2026-BOM-01',
-                          suffixIcon: IconButton(
-                            icon: const Icon(Icons.refresh, size: 20),
-                            onPressed: () {
-                              _batchTagController.text = _suggestBatchTag(_species, _startDate);
-                            },
-                          ),
+                    BatchStartingStage.hatchedInstar1,
+                    BatchStartingStage.eggIncubation,
+                    BatchStartingStage.chawkiInstar3,
+                  ].map((stage) {
+                    final isSel = _startingStage == stage;
+                    return ChoiceChip(
+                      label: Text(
+                        stage == BatchStartingStage.hatchedInstar1
+                            ? '1st Instar (Hatched) — Feed today'.tr
+                            : stage == BatchStartingStage.eggIncubation
+                            ? 'Egg Incubation'.tr
+                            : '3rd Instar (Chawki)'.tr,
+                        style: GoogleFonts.poppins(
+                          fontWeight: isSel ? FontWeight.w700 : FontWeight.w500,
+                          fontSize: 12,
                         ),
-                        validator: (v) => v?.trim().isEmpty == true ? 'Enter batch tag' : null,
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      flex: 2,
-                      child: KalroDateRow(
-                        label: 'Arrival / Start'.tr,
-                        date: _startDate,
-                        enabled: !_saving,
-                        onTap: _pickStartDate,
-                      ),
-                    ),
-                  ],
+                      selected: isSel,
+                      selectedColor: KalroColors.headerGreen.withValues(alpha: 0.15),
+                      onSelected: (_) => setState(() => _startingStage = stage),
+                    );
+                  }).toList(),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 18),
 
-                // Quantity: Dual DFL & Egg Count
+                // 3. Batch Size & Presets
                 Text(
-                  '3. Quantity (DFLs & Eggs)'.tr,
+                  '3. Batch Size & Quantity'.tr,
                   style: GoogleFonts.poppins(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: KalroColors.textDark,
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  '1 DFL (Disease-Free Laying) = ~400 eggs. Adjust either field.'.tr,
-                  style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
+                const SizedBox(height: 6),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: [1, 2, 5, 10, 25].map((dfl) {
+                    final isSel = dflCount == dfl;
+                    return ActionChip(
+                      label: Text('$dfl DFL (${dfl * 400})'),
+                      backgroundColor: isSel
+                          ? KalroColors.leaf.withValues(alpha: 0.2)
+                          : Colors.white,
+                      onPressed: () => _setPreset(dfl),
+                    );
+                  }).toList(),
                 ),
                 const SizedBox(height: 10),
                 Row(
@@ -558,8 +433,8 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                           suffixText: 'worms',
                         ),
                         onChanged: _onEggCountChanged,
-                        validator: (value) {
-                          final parsed = int.tryParse(value?.trim() ?? '');
+                        validator: (v) {
+                          final parsed = int.tryParse(v?.trim() ?? '');
                           if (parsed == null || parsed <= 0) {
                             return 'Enter valid count';
                           }
@@ -569,88 +444,93 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 6,
-                  children: [1, 2, 5, 10, 25].map((dfl) {
-                    final isSel = dflCount == dfl;
-                    return ActionChip(
-                      label: Text('$dfl DFL (${dfl * 400})'),
-                      backgroundColor: isSel ? KalroColors.leaf.withValues(alpha: 0.2) : Colors.white,
-                      onPressed: () => _setPreset(dfl),
-                    );
-                  }).toList(),
-                ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 16),
 
-                // Live Forecast & Capacity Preview Card
+                // 4. Start Date & Tag
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 3,
+                      child: TextFormField(
+                        controller: _batchTagController,
+                        decoration: InputDecoration(
+                          labelText: 'Batch Code / Tag'.tr,
+                          suffixIcon: IconButton(
+                            icon: const Icon(Icons.refresh, size: 20),
+                            onPressed: () {
+                              _batchTagController.text =
+                                  _suggestBatchTag(_species, _startDate);
+                            },
+                          ),
+                        ),
+                        validator: (v) =>
+                            v?.trim().isEmpty == true ? 'Enter batch tag' : null,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      flex: 2,
+                      child: KalroDateRow(
+                        label: 'Start Date'.tr,
+                        date: _startDate,
+                        enabled: !_saving,
+                        onTap: _pickStartDate,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 18),
+
+                // 5. Clean Institutional Forecast Card
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: KalroColors.headerGreen.withValues(alpha: 0.25),
+                    ),
                     boxShadow: KalroColors.softShadow,
-                    border: Border.all(color: KalroColors.harvest.withValues(alpha: 0.3)),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Row(
-                        children: [
-                          const Icon(Icons.analytics_outlined, color: KalroColors.harvest, size: 20),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Live Cycle Forecast & Requirements'.tr,
-                            style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                              color: KalroColors.textDark,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _ForecastItem(
-                              label: 'Est. Total Leaf'.tr,
-                              value: '${totalLeafKg.toStringAsFixed(1)} kg',
-                              sub: '${_species == Species.bombyx ? "Mulberry" : "Castor"} needed',
-                              color: KalroColors.leaf,
-                            ),
-                          ),
-                          Expanded(
-                            child: _ForecastItem(
-                              label: 'Expected Cocoons'.tr,
-                              value: '~${estimatedYieldKg.toStringAsFixed(2)} kg',
-                              sub: 'Green cocoon weight',
-                              color: KalroColors.harvest,
-                            ),
-                          ),
-                        ],
+                      Text(
+                        'Instant Rearing Forecast for this Batch'.tr,
+                        style: GoogleFonts.poppins(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: KalroColors.headerGreen,
+                          letterSpacing: 0.3,
+                        ),
                       ),
                       const SizedBox(height: 10),
                       Row(
                         children: [
                           Expanded(
-                            child: _ForecastItem(
-                              label: 'Peak Tray Space'.tr,
-                              value: '$bedSpaceLate sq ft',
-                              sub: 'Chawki needs: $bedSpaceEarly sq ft',
-                              color: KalroColors.info,
+                            child: _ForecastCol(
+                              label: 'Target Harvest'.tr,
+                              val: '~${estimatedYieldKg.toStringAsFixed(1)} kg',
+                              sub: 'Green cocoons',
+                              color: KalroColors.harvest,
                             ),
                           ),
                           Expanded(
-                            child: _ForecastItem(
-                              label: 'Current Farm Stock'.tr,
-                              value: '${currentStock.toStringAsFixed(1)} kg',
-                              sub: currentStock >= (totalLeafKg * 0.1)
-                                  ? 'Stock covers early feeding'
-                                  : 'Low stock — plan harvest',
-                              color: currentStock >= (totalLeafKg * 0.1)
-                                  ? KalroColors.primaryGreen
-                                  : KalroColors.rest,
+                            child: _ForecastCol(
+                              label: 'Total Leaf Demand'.tr,
+                              val: '~${totalLeafKg.round()} kg',
+                              sub: _species == Species.bombyx
+                                  ? 'Mulberry leaf'
+                                  : 'Castor foliage',
+                              color: KalroColors.leaf,
+                            ),
+                          ),
+                          Expanded(
+                            child: _ForecastCol(
+                              label: 'Harvest Window'.tr,
+                              val: '${_startDate.add(Duration(days: _species == Species.bombyx ? 35 : 34)).day}/${_startDate.add(Duration(days: _species == Species.bombyx ? 35 : 34)).month}',
+                              sub: '${_species == Species.bombyx ? 35 : 34} days cycle',
+                              color: KalroColors.headerGreen,
                             ),
                           ),
                         ],
@@ -658,168 +538,102 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
-
-                // Scenario Simulator & Key Dates Timeline
-                Text(
-                  '4. Lifecycle Milestone Timeline'.tr,
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: KalroColors.textDark,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Test how weather and leaf conditions shift key lifecycle dates.'.tr,
-                  style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
-                ),
-                const SizedBox(height: 8),
-                PredictionScenarioBar(
-                  selected: _scenario,
-                  onSelected: (value) {
-                    if (value != null) setState(() => _scenario = value);
-                  },
-                ),
-                const SizedBox(height: 12),
-                Builder(
-                  builder: (context) {
-                    final cycle = _planning.planCycle(
-                      species: _species,
-                      startDate: _effectiveStartDate,
-                      conditions: _scenario.conditionsFor(_species),
-                    );
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        PredictionOutcomeCard(cycle: cycle),
-                        const SizedBox(height: 12),
-                        LifecycleKeyDatesCard(
-                          cycle: cycle,
-                          footnote: cycle.shiftSummary == null
-                              ? Translator.fill('Predicted from typical {species} schedule.', {'species': _species.label})
-                              : 'Projected under environmental adjustment.',
-                        ),
-                      ],
-                    );
-                  },
-                ),
-                const SizedBox(height: 20),
-
-                // Seed Producer & Source
-                Text(
-                  '5. Seed Source & Production Unit'.tr,
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: KalroColors.textDark,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                DropdownButtonFormField<String?>(
-                  key: ValueKey('${_eggSourceName ?? ''}-${_producerList.length}'),
-                  initialValue: _producerList.any((p) => p.name == _eggSourceName)
-                      ? _eggSourceName
-                      : null,
-                  decoration: InputDecoration(
-                    labelText: 'Certified Producer / Station'.tr,
-                  ),
-                  items: [
-                    DropdownMenuItem<String?>(
-                      value: null,
-                      child: Text('KALRO Sericulture Station / Other'.tr),
-                    ),
-                    DropdownMenuItem<String?>(
-                      value: 'KALRO Kibos Sericulture Station',
-                      child: const Text('KALRO Kibos Sericulture Station (Kisumu)'),
-                    ),
-                    DropdownMenuItem<String?>(
-                      value: 'KALRO Alupe Sericulture Center',
-                      child: const Text('KALRO Alupe Sericulture Center (Busia)'),
-                    ),
-                    DropdownMenuItem<String?>(
-                      value: 'KALRO Naivasha Sericulture Unit',
-                      child: const Text('KALRO Naivasha Sericulture Unit'),
-                    ),
-                    ..._producerList.map(
-                      (p) => DropdownMenuItem<String?>(
-                        value: p.name,
-                        child: Text('${p.name} · ${p.type.label}'),
-                      ),
-                    ),
-                  ],
-                  onChanged: (value) {
-                    setState(() {
-                      _eggSourceName = value;
-                      if (value != null && value.isNotEmpty) {
-                        _eggSourceController.text = value;
-                      }
-                    });
-                  },
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _eggSourceController,
-                  decoration: InputDecoration(
-                    labelText: 'Seed Source Details (e.g. Grainage Lot #)'.tr,
-                  ),
-                ),
                 const SizedBox(height: 16),
 
-                // Rearing House & Operational Details
-                Text(
-                  '6. Rearing Unit & Management'.tr,
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: KalroColors.textDark,
+                // 6. Optional Collapsible Details
+                Theme(
+                  data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                  child: ExpansionTile(
+                    title: Text(
+                      '+ Add Seed Source & Room Details (Optional)'.tr,
+                      style: GoogleFonts.poppins(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: KalroColors.textMuted,
+                      ),
+                    ),
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8, bottom: 12),
+                        child: Column(
+                          children: [
+                            DropdownButtonFormField<String?>(
+                              key: ValueKey('${_eggSourceName ?? ''}-${_producerList.length}'),
+                              initialValue: _producerList.any((p) => p.name == _eggSourceName)
+                                  ? _eggSourceName
+                                  : null,
+                              decoration: InputDecoration(
+                                labelText: 'Certified Producer / Station'.tr,
+                              ),
+                              items: [
+                                DropdownMenuItem<String?>(
+                                  value: null,
+                                  child: Text('KALRO Sericulture Station / Other'.tr),
+                                ),
+                                DropdownMenuItem<String?>(
+                                  value: 'KALRO Kibos Sericulture Station',
+                                  child: const Text('KALRO Kibos Sericulture Station (Kisumu)'),
+                                ),
+                                DropdownMenuItem<String?>(
+                                  value: 'KALRO Alupe Sericulture Center',
+                                  child: const Text('KALRO Alupe Sericulture Center (Busia)'),
+                                ),
+                                DropdownMenuItem<String?>(
+                                  value: 'KALRO Naivasha Sericulture Unit',
+                                  child: const Text('KALRO Naivasha Sericulture Unit'),
+                                ),
+                                ..._producerList.map(
+                                  (p) => DropdownMenuItem<String?>(
+                                    value: p.name,
+                                    child: Text('${p.name} · ${p.type.label}'),
+                                  ),
+                                ),
+                              ],
+                              onChanged: (val) {
+                                setState(() {
+                                  _eggSourceName = val;
+                                  if (val != null) _eggSourceController.text = val;
+                                });
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                            TextFormField(
+                              controller: _locationController,
+                              decoration: InputDecoration(
+                                labelText: 'Rearing Chamber / Bay'.tr,
+                                hintText: 'e.g. House 1 - Bay A',
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            TextFormField(
+                              controller: _caretakerController,
+                              decoration: InputDecoration(
+                                labelText: 'Assigned Caretaker / Farmer'.tr,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            TextFormField(
+                              controller: _strainController,
+                              decoration: InputDecoration(
+                                labelText: 'Breed Strain (e.g. CSR2xCSR4)'.tr,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: _locationController,
-                  decoration: InputDecoration(
-                    labelText: 'Rearing House / Room (e.g. Main House Unit 1)'.tr,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _caretakerController,
-                  decoration: InputDecoration(
-                    labelText: 'Assigned Caretaker / Farmer'.tr,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _strainController,
-                  decoration: InputDecoration(
-                    labelText: 'Breed Strain (e.g. ICIPE II, Japanese Bivoltine)'.tr,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _feedController,
-                  decoration: InputDecoration(
-                    labelText: _species == Species.eri
-                        ? 'Feed material (e.g. Castor / Kesseru)'
-                        : 'Feed material (e.g. Mulberry)',
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _rearingTypeController,
-                  decoration: InputDecoration(
-                    labelText: 'Rearing Type (e.g. Shelf rearing, Tray racks, Floor)'.tr,
-                  ),
-                ),
-                const SizedBox(height: 28),
-
-                // Save Primary Button
-                KalroPrimaryButton(
-                  label: _saving ? 'Saving batch...'.tr : 'Create Batch & Start Plan'.tr,
-                  onPressed: _saving ? null : _save,
                 ),
                 const SizedBox(height: 20),
+
+                // 7. Submit Action
+                KalroPrimaryButton(
+                  label: _saving
+                      ? 'Registering batch...'.tr
+                      : 'Register Batch & Start Rearing'.tr,
+                  onPressed: _saving ? null : _save,
+                ),
+                const SizedBox(height: 24),
               ],
             ),
           ),
@@ -829,13 +643,12 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
   }
 }
 
-class _SpeciesSelectCard extends StatelessWidget {
-  const _SpeciesSelectCard({
+class _VarietyCard extends StatelessWidget {
+  const _VarietyCard({
     required this.species,
     required this.title,
     required this.subtitle,
     required this.tag,
-    required this.host,
     required this.selected,
     required this.onTap,
   });
@@ -844,24 +657,26 @@ class _SpeciesSelectCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final String tag;
-  final String host;
   final bool selected;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final borderColor = selected ? KalroColors.headerGreen : Colors.grey.shade300;
-    final bgColor = selected ? KalroColors.headerGreen.withValues(alpha: 0.08) : Colors.white;
-
+    final isBom = species == Species.bombyx;
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(14),
       child: Container(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: borderColor, width: selected ? 2 : 1),
+          color: selected
+              ? KalroColors.headerGreen.withValues(alpha: 0.08)
+              : Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: selected ? KalroColors.headerGreen : Colors.grey.shade300,
+            width: selected ? 2 : 1,
+          ),
           boxShadow: selected ? KalroColors.softShadow : null,
         ),
         child: Column(
@@ -870,41 +685,41 @@ class _SpeciesSelectCard extends StatelessWidget {
             Row(
               children: [
                 Icon(
-                  species == Species.bombyx ? Icons.spa_outlined : Icons.eco_outlined,
+                  isBom ? Icons.spa_outlined : Icons.eco_outlined,
                   color: selected ? KalroColors.headerGreen : KalroColors.textMuted,
-                  size: 22,
+                  size: 20,
                 ),
                 const Spacer(),
                 if (selected)
-                  const Icon(Icons.check_circle, color: KalroColors.headerGreen, size: 20),
+                  const Icon(Icons.check_circle, color: KalroColors.headerGreen, size: 18),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Text(
               title,
               style: GoogleFonts.poppins(
                 fontWeight: FontWeight.w700,
-                fontSize: 14,
+                fontSize: 13,
                 color: selected ? KalroColors.headerGreen : KalroColors.textDark,
               ),
             ),
             Text(
               subtitle,
-              style: GoogleFonts.poppins(fontSize: 11, color: KalroColors.textMuted),
+              style: GoogleFonts.poppins(fontSize: 10, color: KalroColors.textMuted),
             ),
             const SizedBox(height: 6),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
               decoration: BoxDecoration(
                 color: selected
-                    ? KalroColors.leaf.withValues(alpha: 0.2)
+                    ? KalroColors.leaf.withValues(alpha: 0.18)
                     : Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
                 tag,
                 style: GoogleFonts.poppins(
-                  fontSize: 10,
+                  fontSize: 9,
                   fontWeight: FontWeight.w600,
                   color: selected ? KalroColors.headerGreen : KalroColors.textDark,
                 ),
@@ -917,60 +732,46 @@ class _SpeciesSelectCard extends StatelessWidget {
   }
 }
 
-class _ForecastItem extends StatelessWidget {
-  const _ForecastItem({
+class _ForecastCol extends StatelessWidget {
+  const _ForecastCol({
     required this.label,
-    required this.value,
+    required this.val,
     required this.sub,
     required this.color,
   });
 
   final String label;
-  final String value;
+  final String val;
   final String sub;
   final Color color;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      margin: const EdgeInsets.symmetric(horizontal: 4),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: GoogleFonts.poppins(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: KalroColors.textMuted,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.poppins(
+            fontSize: 10,
+            fontWeight: FontWeight.w600,
+            color: KalroColors.textMuted,
           ),
-          const SizedBox(height: 2),
-          Text(
-            value,
-            style: GoogleFonts.poppins(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: color,
-            ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          val,
+          style: GoogleFonts.poppins(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: color,
           ),
-          const SizedBox(height: 2),
-          Text(
-            sub,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.poppins(
-              fontSize: 10,
-              color: KalroColors.textMuted,
-            ),
-          ),
-        ],
-      ),
+        ),
+        Text(
+          sub,
+          style: GoogleFonts.poppins(fontSize: 9, color: KalroColors.textMuted),
+        ),
+      ],
     );
   }
 }
