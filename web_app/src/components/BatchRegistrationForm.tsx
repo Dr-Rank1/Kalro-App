@@ -5,7 +5,6 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { Batch, Species } from '../types';
-import { BombyxSpeciesBanner, EriSpeciesBanner } from './SericultureCardArtwork';
 
 interface BatchRegistrationFormProps {
   onSuccess: (batch: Batch) => void;
@@ -129,17 +128,10 @@ export const BatchRegistrationForm: React.FC<BatchRegistrationFormProps> = ({
             onClick={() => handleSpeciesChange('bombyx')}
             className={`species-card-simple ${isBombyx ? 'selected bombyx' : ''}`}
           >
-            <div className="species-banner-wrapper">
-              <BombyxSpeciesBanner className="species-card-illustration" />
-              {isBombyx && (
-                <div className="species-selected-pill bombyx">
-                  <CheckCircle2 size={15} /> Selected
-                </div>
-              )}
-            </div>
             <div className="species-card-content">
               <div className="species-card-head">
                 <span className="species-name">Bombyx mori (Mulberry)</span>
+                {isBombyx && <CheckCircle2 size={18} className="selected-icon" />}
               </div>
               <p className="species-sub">
                 Bivoltine hybrid (CSR2 × CSR4). Produces uniform reelable white silk. Standard 35-day cycle.
@@ -152,17 +144,10 @@ export const BatchRegistrationForm: React.FC<BatchRegistrationFormProps> = ({
             onClick={() => handleSpeciesChange('eri')}
             className={`species-card-simple ${!isBombyx ? 'selected eri' : ''}`}
           >
-            <div className="species-banner-wrapper">
-              <EriSpeciesBanner className="species-card-illustration" />
-              {!isBombyx && (
-                <div className="species-selected-pill eri">
-                  <CheckCircle2 size={15} /> Selected
-                </div>
-              )}
-            </div>
             <div className="species-card-content">
               <div className="species-card-head">
                 <span className="species-name">Eri Silkworm (Castor)</span>
+                {!isBombyx && <CheckCircle2 size={18} className="selected-icon eri" />}
               </div>
               <p className="species-sub">
                 Samia ricini fed on Castor or Kesseru. Hardy thermal spun cocoons. 34-day rearing cycle.

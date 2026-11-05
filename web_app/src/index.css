@@ -936,86 +936,76 @@ th,
 
 .species-card-simple {
   background: var(--bg-card);
-  border: 2px solid var(--border-card);
+  border: 1px solid var(--border-card);
   border-radius: var(--radius-md);
-  padding: 0;
+  padding: 1.15rem 1.25rem;
   cursor: pointer;
   text-align: left;
   font-family: inherit;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.25s ease, background-color 0.2s ease;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  overflow: hidden;
-  animation: cardEntrance 0.35s ease-out both;
-}
-
-.species-banner-wrapper {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  background: #f8fafc;
-}
-
-.species-card-illustration {
-  width: 100%;
-  height: auto;
-  display: block;
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.species-card-simple:hover .species-card-illustration {
-  transform: scale(1.04);
-}
-
-.species-selected-pill {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  background: #1B5E20;
-  color: #ffffff;
-  border-radius: 20px;
-  padding: 3px 9px;
-  font-size: 0.72rem;
-  font-weight: 700;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-  animation: pillPop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.species-selected-pill.eri {
-  background: #BF360C;
+  animation: cardEntrance 0.3s ease-out both;
 }
 
 .species-card-simple:hover {
   border-color: var(--primary);
-  background: #ffffff;
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.1);
+  background: #F8FAF9;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+}
+
+.species-card-simple:hover.eri {
+  border-color: #BF360C;
+  background: #FFFBF8;
 }
 
 .species-card-simple.selected {
   border-color: var(--primary);
-  background: #ffffff;
-  outline: none;
-  box-shadow: 0 0 0 2px var(--primary), 0 12px 28px -6px rgba(27, 94, 32, 0.22);
-  transform: translateY(-2px);
+  background: #F2F7F4;
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(46, 125, 50, 0.15);
 }
 
 .species-card-simple.selected.eri {
   border-color: #BF360C;
-  box-shadow: 0 0 0 2px #BF360C, 0 12px 28px -6px rgba(191, 54, 12, 0.22);
+  background: #FFF5EE;
+  outline: 2px solid #BF360C;
+  outline-offset: -2px;
+  box-shadow: 0 4px 14px rgba(191, 54, 12, 0.15);
 }
 
-.species-card-content .species-name {
+.species-card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.species-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.species-name {
   font-weight: 700;
-  font-size: 1.02rem;
+  font-size: 1rem;
   color: var(--text-main);
 }
 
-.species-card-content .species-sub {
+.selected-icon {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.selected-icon.eri {
+  color: #BF360C;
+}
+
+.species-sub {
   font-size: 0.8rem;
   color: var(--text-muted);
   line-height: 1.45;
