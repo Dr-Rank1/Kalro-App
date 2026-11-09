@@ -30,9 +30,9 @@ class OnboardingScreen extends StatefulWidget {
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
   UserRole? _role = UserRole.swr;
-  final _nameController = TextEditingController(text: 'Farmer');
-  final _orgController = TextEditingController(text: 'Kalro Sericulture Farm');
-  final _usernameController = TextEditingController(text: 'farmer');
+  final _nameController = TextEditingController();
+  final _orgController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _pinController = TextEditingController();
   final _confirmPinController = TextEditingController();
   var _saving = false;
@@ -56,6 +56,28 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Future<void> _finish() async {
+    final name = _nameController.text.trim();
+    final org = _orgController.text.trim();
+    final username = _usernameController.text.trim();
+
+    if (name.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please enter your name'.tr)),
+      );
+      return;
+    }
+    if (org.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please enter your farm or enterprise name'.tr)),
+      );
+      return;
+    }
+    if (username.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please enter a login username'.tr)),
+      );
+      return;
+    }
     if (_role == null) {
       ScaffoldMessenger.of(
         context,
@@ -66,13 +88,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     setState(() => _saving = true);
     try {
       final farm = await widget.authRepository.createFarm(
-        orgName: _orgController.text,
+        orgName: org,
       );
 
       final user = await widget.authRepository.createUser(
         farmId: farm.id,
-        username: _usernameController.text,
-        displayName: _nameController.text,
+        username: username,
+        displayName: name,
         pin: _pinController.text.trim(),
         permission: AccountPermission.admin,
       );
@@ -80,9 +102,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       await widget.userPreferences.completeOnboarding(
         language: _language,
         role: _role!,
-        name: _nameController.text,
-        orgName: _orgController.text,
-        adminUsername: _usernameController.text,
+        name: name,
+        orgName: org,
+        adminUsername: username,
       );
 
       final farmDir = await widget.authRepository.farmDirectory(farm.id);
@@ -172,7 +194,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       SizedBox(height: 24),
                       TextFormField(
                         controller: _nameController,
-                        decoration: InputDecoration(labelText: 'Your name'.tr),
+                        decoration: InputDecoration(
+                          labelText: 'Your name'.tr,
+                          hintText: 'e.g. Mary Wambua',
+                        ),
                         enabled: !_saving,
                       ),
                       SizedBox(height: 16),
@@ -180,13 +205,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         controller: _orgController,
                         decoration: InputDecoration(
                           labelText: 'Farm / organization'.tr,
+                          hintText: 'e.g. KALRO Machakos Station',
                         ),
                         enabled: !_saving,
                       ),
                       SizedBox(height: 16),
                       TextFormField(
                         controller: _usernameController,
-                        decoration: InputDecoration(labelText: 'Login name'.tr),
+                        decoration: InputDecoration(
+                          labelText: 'Login name'.tr,
+                          hintText: 'e.g. mwambua',
+                        ),
                         enabled: !_saving,
                       ),
                       SizedBox(height: 24),

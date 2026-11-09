@@ -1,13 +1,10 @@
-import React, { useState, useRef } from 'react';
-import { FarmProfile, Batch, CocoonHarvest, PaymentRecord, UserAccount, UserRole } from '../types';
-import { KENYA_COUNTIES, USER_ROLES } from '../constants';
+import React, { useRef, useState } from 'react';
+import { FarmProfile, Batch, CocoonHarvest, PaymentRecord, UserAccount } from '../types';
+import { USER_ROLES } from '../constants';
 import { formatCurrency } from '../utils';
 import {
-  User,
-  Building,
   Phone,
   Mail,
-  MapPin,
   Download,
   Upload,
   Plus,
@@ -15,29 +12,21 @@ import {
   Check,
   Edit2,
   AlertTriangle,
+  UserPlus,
 } from 'lucide-react';
 
 interface ProfileViewProps {
-  profile: FarmProfile;
-  currentUser: UserAccount;
+  profile: FarmProfile | null;
+  currentUser: UserAccount | null;
   allUsers: UserAccount[];
   batches: Batch[];
   harvests: CocoonHarvest[];
   payments: PaymentRecord[];
-  onUpdateProfile: (profile: FarmProfile) => void;
+  onOpenCreateProfile: () => void;
+  onOpenEditProfile: () => void;
   onSwitchUser: (userId: string) => void;
-  onCreateUser: (data: {
-    username: string;
-    role: UserRole;
-    stationName: string;
-    county: string;
-    phone?: string;
-    email?: string;
-    pinCode?: string;
-  }) => void;
   onDeleteUser: (userId: string) => boolean;
   onExportActiveUserBackup: () => void;
-  onExportFullDatabaseBackup: () => void;
   onImportBackup: (jsonStr: string) => Promise<{ success: boolean; message: string }>;
   onClearActiveUserRecords: () => void;
 }
@@ -49,102 +38,16 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   batches,
   harvests,
   payments,
-  onUpdateProfile,
+  onOpenCreateProfile,
+  onOpenEditProfile,
   onSwitchUser,
-  onCreateUser,
   onDeleteUser,
   onExportActiveUserBackup,
   onImportBackup,
   onClearActiveUserRecords,
 }) => {
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [addUserModalOpen, setAddUserModalOpen] = useState(false);
   const [importStatus, setImportStatus] = useState<string | null>(null);
-
-  // Edit Profile Form
-  const [editForm, setEditForm] = useState({
-    managerName: profile.managerName || currentUser.username,
-    role: currentUser.role,
-    orgName: profile.orgName || currentUser.stationName,
-    county: profile.county || currentUser.county,
-    subCounty: profile.subCounty || '',
-    phone: profile.phone || currentUser.phone || '',
-    email: profile.email || currentUser.email || '',
-    houseCount: profile.houseCount || 1,
-    mulberryAcreage: profile.mulberryAcreage || 1.0,
-    syncCode: profile.syncCode || '',
-  });
-
-  // Add User Form
-  const [newUserForm, setNewUserForm] = useState({
-    username: '',
-    role: 'commercial_reeler' as UserRole,
-    stationName: '',
-    county: 'Kiambu',
-    phone: '',
-    email: '',
-  });
-
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleOpenEdit = () => {
-    setEditForm({
-      managerName: profile.managerName || currentUser.username,
-      role: currentUser.role,
-      orgName: profile.orgName || currentUser.stationName,
-      county: profile.county || currentUser.county,
-      subCounty: profile.subCounty || '',
-      phone: profile.phone || currentUser.phone || '',
-      email: profile.email || currentUser.email || '',
-      houseCount: profile.houseCount || 1,
-      mulberryAcreage: profile.mulberryAcreage || 1.0,
-      syncCode: profile.syncCode || '',
-    });
-    setEditModalOpen(true);
-  };
-
-  const handleSaveEdit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onUpdateProfile({
-      ...profile,
-      managerName: editForm.managerName.trim(),
-      managerRole: editForm.role,
-      orgName: editForm.orgName.trim(),
-      county: editForm.county,
-      subCounty: editForm.subCounty.trim(),
-      phone: editForm.phone.trim(),
-      email: editForm.email.trim(),
-      houseCount: Number(editForm.houseCount) || 1,
-      mulberryAcreage: Number(editForm.mulberryAcreage) || 1.0,
-      syncCode: editForm.syncCode.trim() || profile.syncCode,
-      updatedAt: new Date().toISOString(),
-    });
-    setEditModalOpen(false);
-  };
-
-  const handleCreateUserSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newUserForm.username.trim() || !newUserForm.stationName.trim()) return;
-
-    onCreateUser({
-      username: newUserForm.username.trim(),
-      role: newUserForm.role,
-      stationName: newUserForm.stationName.trim(),
-      county: newUserForm.county,
-      phone: newUserForm.phone.trim(),
-      email: newUserForm.email.trim(),
-    });
-
-    setAddUserModalOpen(false);
-    setNewUserForm({
-      username: '',
-      role: 'commercial_reeler',
-      stationName: '',
-      county: 'Kiambu',
-      phone: '',
-      email: '',
-    });
-  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -159,6 +62,50 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
     };
     reader.readAsText(file);
   };
+
+  // Empty State: No profile yet
+  if (!currentUser || !profile) {
+    return (
+      <div className="simple-profile-page">
+        <div className="kalro-card" style={{ padding: '3.5rem 1.5rem', textAlign: 'center' }}>
+          <div style={{ maxWidth: '440px', margin: '0 auto' }}>
+            <div
+              style={{
+                width: '64px',
+                height: '64px',
+                borderRadius: '50%',
+                backgroundColor: 'var(--primary-subtle)',
+                color: 'var(--primary)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 1.25rem',
+              }}
+            >
+              <UserPlus size={32} />
+            </div>
+
+            <h2 style={{ fontSize: '1.35rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.45rem' }}>
+              No Farm Profile Yet
+            </h2>
+
+            <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)', marginBottom: '1.5rem', lineHeight: 1.5 }}>
+              Set up your farmer and farm details to manage rearing cycles, record feed logs, and track cocoon harvests.
+            </p>
+
+            <button
+              onClick={onOpenCreateProfile}
+              className="btn-accent"
+              style={{ padding: '0.6rem 1.4rem', fontSize: '0.9rem' }}
+            >
+              <UserPlus size={16} style={{ marginRight: '8px' }} />
+              Create Farm Profile
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Metrics
   const activeBatchesCount = batches.filter((b) => b.status === 'active').length;
@@ -223,7 +170,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             </div>
           </div>
 
-          <button onClick={handleOpenEdit} className="btn-secondary profile-edit-btn">
+          <button onClick={onOpenEditProfile} className="btn-secondary profile-edit-btn">
             <Edit2 size={13} style={{ marginRight: '5px' }} />
             Edit Profile
           </button>
@@ -304,7 +251,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             </p>
           </div>
           <button
-            onClick={() => setAddUserModalOpen(true)}
+            onClick={onOpenCreateProfile}
             className="btn-accent"
             style={{ fontSize: '0.78rem', padding: '0.35rem 0.75rem' }}
           >
@@ -437,266 +384,6 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           </button>
         </div>
       </div>
-
-      {/* ========================================================================= */}
-      {/* MODAL: EDIT PROFILE                                                       */}
-      {/* ========================================================================= */}
-      {editModalOpen && (
-        <div className="modal-overlay" onClick={() => setEditModalOpen(false)}>
-          <div className="modal-content" style={{ maxWidth: '480px' }} onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3 className="modal-title">Edit Farm Profile</h3>
-              <button onClick={() => setEditModalOpen(false)} className="modal-close-btn">
-                ✕
-              </button>
-            </div>
-
-            <form onSubmit={handleSaveEdit}>
-              <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-                <div className="form-group">
-                  <label className="form-label">Farmer Name *</label>
-                  <input
-                    type="text"
-                    value={editForm.managerName}
-                    onChange={(e) => setEditForm({ ...editForm, managerName: e.target.value })}
-                    className="form-control"
-                    required
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Role</label>
-                  <select
-                    value={editForm.role}
-                    onChange={(e) => setEditForm({ ...editForm, role: e.target.value as UserRole })}
-                    className="form-control"
-                  >
-                    {USER_ROLES.map((r) => (
-                      <option key={r.value} value={r.value}>{r.label}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Farm / Station Name *</label>
-                  <input
-                    type="text"
-                    value={editForm.orgName}
-                    onChange={(e) => setEditForm({ ...editForm, orgName: e.target.value })}
-                    className="form-control"
-                    required
-                  />
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-                  <div className="form-group">
-                    <label className="form-label">County</label>
-                    <select
-                      value={editForm.county}
-                      onChange={(e) => setEditForm({ ...editForm, county: e.target.value })}
-                      className="form-control"
-                    >
-                      {KENYA_COUNTIES.map((c) => (
-                        <option key={c} value={c}>{c}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label">Sub-County</label>
-                    <input
-                      type="text"
-                      value={editForm.subCounty}
-                      onChange={(e) => setEditForm({ ...editForm, subCounty: e.target.value })}
-                      className="form-control"
-                      placeholder="e.g. Central"
-                    />
-                  </div>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-                  <div className="form-group">
-                    <label className="form-label">Phone</label>
-                    <input
-                      type="text"
-                      value={editForm.phone}
-                      onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
-                      className="form-control"
-                      placeholder="+254 7..."
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label">Email</label>
-                    <input
-                      type="email"
-                      value={editForm.email}
-                      onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                      className="form-control"
-                      placeholder="farmer@kalro.org"
-                    />
-                  </div>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-                  <div className="form-group">
-                    <label className="form-label">Rearing Houses</label>
-                    <input
-                      type="number"
-                      min="1"
-                      value={editForm.houseCount}
-                      onChange={(e) => setEditForm({ ...editForm, houseCount: Number(e.target.value) })}
-                      className="form-control tabular-nums"
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label">Mulberry Acres</label>
-                    <input
-                      type="number"
-                      step="0.1"
-                      min="0"
-                      value={editForm.mulberryAcreage}
-                      onChange={(e) => setEditForm({ ...editForm, mulberryAcreage: Number(e.target.value) })}
-                      className="form-control tabular-nums"
-                    />
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Farmer / Sync Code</label>
-                  <input
-                    type="text"
-                    value={editForm.syncCode}
-                    onChange={(e) => setEditForm({ ...editForm, syncCode: e.target.value })}
-                    className="form-control font-mono"
-                  />
-                </div>
-              </div>
-
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  onClick={() => setEditModalOpen(false)}
-                  className="btn-secondary"
-                >
-                  Cancel
-                </button>
-                <button type="submit" className="btn-accent">
-                  Save Changes
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ========================================================================= */}
-      {/* MODAL: ADD PROFILE                                                        */}
-      {/* ========================================================================= */}
-      {addUserModalOpen && (
-        <div className="modal-overlay" onClick={() => setAddUserModalOpen(false)}>
-          <div className="modal-content" style={{ maxWidth: '480px' }} onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3 className="modal-title">Add Farmer Profile</h3>
-              <button onClick={() => setAddUserModalOpen(false)} className="modal-close-btn">
-                ✕
-              </button>
-            </div>
-
-            <form onSubmit={handleCreateUserSubmit}>
-              <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-                <div className="form-group">
-                  <label className="form-label">Farmer Full Name *</label>
-                  <input
-                    type="text"
-                    value={newUserForm.username}
-                    onChange={(e) => setNewUserForm({ ...newUserForm, username: e.target.value })}
-                    className="form-control"
-                    placeholder="e.g. Mary Muthoni"
-                    required
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Role</label>
-                  <select
-                    value={newUserForm.role}
-                    onChange={(e) => setNewUserForm({ ...newUserForm, role: e.target.value as UserRole })}
-                    className="form-control"
-                  >
-                    {USER_ROLES.map((r) => (
-                      <option key={r.value} value={r.value}>{r.label}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Farm / Station Name *</label>
-                  <input
-                    type="text"
-                    value={newUserForm.stationName}
-                    onChange={(e) => setNewUserForm({ ...newUserForm, stationName: e.target.value })}
-                    className="form-control"
-                    placeholder="e.g. Muthoni Sericulture Farm"
-                    required
-                  />
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-                  <div className="form-group">
-                    <label className="form-label">County</label>
-                    <select
-                      value={newUserForm.county}
-                      onChange={(e) => setNewUserForm({ ...newUserForm, county: e.target.value })}
-                      className="form-control"
-                    >
-                      {KENYA_COUNTIES.map((c) => (
-                        <option key={c} value={c}>{c}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label">Phone</label>
-                    <input
-                      type="text"
-                      value={newUserForm.phone}
-                      onChange={(e) => setNewUserForm({ ...newUserForm, phone: e.target.value })}
-                      className="form-control"
-                      placeholder="+254 7..."
-                    />
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Email (Optional)</label>
-                  <input
-                    type="email"
-                    value={newUserForm.email}
-                    onChange={(e) => setNewUserForm({ ...newUserForm, email: e.target.value })}
-                    className="form-control"
-                    placeholder="farmer@example.com"
-                  />
-                </div>
-              </div>
-
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  onClick={() => setAddUserModalOpen(false)}
-                  className="btn-secondary"
-                >
-                  Cancel
-                </button>
-                <button type="submit" className="btn-accent">
-                  Create Profile
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

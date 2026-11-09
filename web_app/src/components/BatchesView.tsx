@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, QrCode, FileText } from 'lucide-react';
+import { X, QrCode, FileText, UserPlus } from 'lucide-react';
 import { Batch, FeedLog, MortalityLog, CocoonHarvest, FarmProfile, EnvironmentLog } from '../types';
 import { getCurrentStage, getLiveLarvaeCount, formatDate } from '../utils';
 import { BatchRegistrationForm } from './BatchRegistrationForm';
@@ -11,13 +11,14 @@ interface BatchesViewProps {
   feedLogs: FeedLog[];
   mortalityLogs: MortalityLog[];
   harvests: CocoonHarvest[];
-  profile: FarmProfile;
+  profile: FarmProfile | null;
   envLogs: EnvironmentLog[];
   onAddBatch: (batch: Batch) => void;
   onUpdateBatch: (batch: Batch) => void;
   onOpenQuickLog: (batchId: string, defaultType?: 'feed' | 'mortality' | 'climate' | 'harvest') => void;
   onOpenQr: (batch: Batch) => void;
   onToast?: (msg: string) => void;
+  onRequireProfile?: () => void;
 }
 
 export const BatchesView: React.FC<BatchesViewProps> = ({
@@ -32,12 +33,25 @@ export const BatchesView: React.FC<BatchesViewProps> = ({
   onOpenQuickLog,
   onOpenQr,
   onToast,
+  onRequireProfile,
 }) => {
   const [filter, setFilter] = useState<'all' | 'active' | 'closed'>('all');
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedBatch, setSelectedBatch] = useState<Batch | null>(null);
 
+  const handleNewBatchClick = () => {
+    if (!profile) {
+      onRequireProfile?.();
+      return;
+    }
+    setShowAddModal(true);
+  };
+
   const handleExportBatchPdf = (batch: Batch) => {
+    if (!profile) {
+      onToast?.('Please set up a farm profile before exporting batch PDFs.');
+      return;
+    }
     try {
       downloadSingleBatchPdf({
         batch,
@@ -111,14 +125,48 @@ export const BatchesView: React.FC<BatchesViewProps> = ({
             ))}
           </div>
 
-          <button onClick={() => setShowAddModal(true)} className="btn-accent">
+          <button onClick={handleNewBatchClick} className="btn-accent">
             New Batch
           </button>
         </div>
       </div>
 
       {/* Direct Batch Creation Station when no batches exist */}
-      {batches.length === 0 ? (
+      {!profile ? (
+        <div className="kalro-card" style={{ padding: '2.5rem 1.5rem', textAlign: 'center', marginBottom: '1.5rem' }}>
+          <div style={{ maxWidth: '440px', margin: '0 auto' }}>
+            <div
+              style={{
+                width: '54px',
+                height: '54px',
+                borderRadius: '50%',
+                backgroundColor: 'var(--primary-subtle)',
+                color: 'var(--primary)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 1rem',
+              }}
+            >
+              <UserPlus size={26} />
+            </div>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.4rem' }}>
+              Set Up Your Farm Profile First
+            </h3>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1.25rem', lineHeight: 1.5 }}>
+              You need a farm profile before creating your first batch so all lot records, feeding schedules, and harvests are properly organized.
+            </p>
+            <button
+              onClick={() => onRequireProfile?.()}
+              className="btn-accent"
+              style={{ padding: '0.55rem 1.35rem', fontSize: '0.88rem' }}
+            >
+              <UserPlus size={15} style={{ marginRight: '6px' }} />
+              Create Farm Profile
+            </button>
+          </div>
+        </div>
+      ) : batches.length === 0 ? (
         <div className="kalro-card" style={{ padding: '1.75rem', marginBottom: '1.5rem' }}>
           <div style={{ borderBottom: '1px solid var(--border-divider)', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
             <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--primary)', marginBottom: '0.25rem' }}>

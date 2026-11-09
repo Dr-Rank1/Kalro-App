@@ -9,6 +9,7 @@ import { ProfileView } from './components/ProfileView';
 import { QuickLogModal } from './components/QuickLogModal';
 import { QrCodeModal } from './components/QrCodeModal';
 import { ReportExportModal } from './components/ReportExportModal';
+import { ProfileFormModal, ProfileFormData } from './components/ProfileFormModal';
 import { downloadSingleBatchPdf } from './utils/pdfGenerator';
 import { storage } from './storage';
 import {
@@ -22,15 +23,23 @@ import {
   MortalityLog,
   PaymentRecord,
   UserAccount,
-  UserRole,
 } from './types';
-import { KENYA_COUNTIES, USER_ROLES } from './constants';
+import { USER_ROLES } from './constants';
+
+const DEFAULT_BLANK_PROFILE: FarmProfile = {
+  id: 'guest-profile',
+  orgName: 'KALRO Sericulture Station',
+  county: 'Kiambu',
+  houseCount: 1,
+  syncCode: 'KALRO-SERI-KBU-001',
+  managerName: 'Farm Lead',
+};
 
 export function App() {
-  // Initialize storage defaults and run any migrations
+  // Initialize storage defaults and clean any legacy demo profiles
   storage.initDefaults();
 
-  const [currentUser, setCurrentUser] = useState<UserAccount>(() => storage.getActiveUser());
+  const [currentUser, setCurrentUser] = useState<UserAccount | null>(() => storage.getActiveUser());
   const [allUsers, setAllUsers] = useState<UserAccount[]>(() => storage.getAllUsers());
 
   const initialBatches = storage.getBatches();
@@ -46,7 +55,7 @@ export function App() {
   });
 
   // Application Data State for active user tenant
-  const [profile, setProfile] = useState<FarmProfile>(() => storage.getProfile());
+  const [profile, setProfile] = useState<FarmProfile | null>(() => storage.getProfile());
   const [batches, setBatches] = useState<Batch[]>(() => storage.getBatches());
   const [feedLogs, setFeedLogs] = useState<FeedLog[]>(() => storage.getFeedLogs());
   const [mortalityLogs, setMortalityLogs] = useState<MortalityLog[]>(() => storage.getMortalityLogs());
@@ -65,18 +74,13 @@ export function App() {
 
   const [qrModalBatch, setQrModalBatch] = useState<Batch | null>(null);
   const [reportModalOpen, setReportModalOpen] = useState(false);
-  const [newUserModalOpen, setNewUserModalOpen] = useState(false);
 
-  // New User Form State (Header quick register)
-  const [newUserData, setNewUserData] = useState({
-    username: '',
-    role: 'commercial_reeler' as UserRole,
-    stationName: '',
-    county: 'Kiambu',
-    phone: '',
-    email: '',
-    pinCode: '',
-  });
+  // Profile Modal State (Create / Edit)
+  const [profileModalState, setProfileModalState] = useState<{
+    open: boolean;
+    mode: 'create' | 'edit';
+    onComplete?: () => void;
+  }>({ open: false, mode: 'create' });
 
   // Toast Notification
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -95,7 +99,8 @@ export function App() {
 
   // Refresh all state from storage for the active tenant
   const reloadAll = () => {
-    setCurrentUser(storage.getActiveUser());
+    const active = storage.getActiveUser();
+    setCurrentUser(active);
     setAllUsers(storage.getAllUsers());
     setProfile(storage.getProfile());
     setBatches(storage.getBatches());
@@ -113,23 +118,10 @@ export function App() {
     storage.setActiveUserId(userId);
     reloadAll();
     const active = storage.getActiveUser();
-    const roleMeta = USER_ROLES.find((r) => r.value === active.role);
-    showToast(`Switched account to ${active.username} (${roleMeta?.label || active.role}).`);
-  };
-
-  // Create New Farmer Profile
-  const handleCreateUser = (data: {
-    username: string;
-    role: UserRole;
-    stationName: string;
-    county: string;
-    phone?: string;
-    email?: string;
-    pinCode?: string;
-  }) => {
-    const newUser = storage.createUserProfile(data);
-    reloadAll();
-    showToast(`Profile "${newUser.username}" registered. Switched to new account.`);
+    if (active) {
+      const roleMeta = USER_ROLES.find((r) => r.value === active.role);
+      showToast(`Switched account to ${active.username} (${roleMeta?.label || active.role}).`);
+    }
   };
 
   // Delete Farmer Profile
@@ -137,11 +129,36 @@ export function App() {
     const success = storage.deleteUserProfile(userId);
     if (success) {
       reloadAll();
-      showToast('Farmer profile and all isolated records permanently deleted.');
-    } else {
-      showToast('Cannot delete the only registered farmer account.');
+      showToast('Profile deleted.');
     }
     return success;
+  };
+
+  // Profile Creation & Editing Dialog Triggers
+  const handleOpenCreateProfile = (onComplete?: () => void) => {
+    setProfileModalState({ open: true, mode: 'create', onComplete });
+  };
+
+  const handleOpenEditProfile = () => {
+    setProfileModalState({ open: true, mode: 'edit' });
+  };
+
+  const handleSaveProfileForm = (data: ProfileFormData) => {
+    if (profileModalState.mode === 'create') {
+      const res = storage.createUserProfile(data);
+      reloadAll();
+      showToast(`Welcome, ${res.user.username}! Farm profile created.`);
+    } else {
+      storage.updateUserProfile(data);
+      reloadAll();
+      showToast('Farm profile updated successfully.');
+    }
+
+    const cb = profileModalState.onComplete;
+    setProfileModalState({ open: false, mode: 'create' });
+    if (cb) {
+      cb();
+    }
   };
 
   // Mutators for Active Tenant
@@ -193,14 +210,12 @@ export function App() {
     showToast(`Payment recorded: KES ${p.amount.toLocaleString()}.`);
   };
 
-  const handleUpdateProfile = (p: FarmProfile) => {
-    storage.saveProfile(p);
-    reloadAll();
-    showToast('Farm profile updated successfully.');
-  };
-
   // CSV Export for Active Tenant
   const handleExportCsv = () => {
+    if (!currentUser) {
+      showToast('No active farm profile to export.');
+      return;
+    }
     const csv = storage.exportBatchesCsv();
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -218,6 +233,10 @@ export function App() {
 
   // Single Farmer JSON Backup Export
   const handleExportActiveUserBackup = async () => {
+    if (!currentUser) {
+      showToast('No active farm profile to export.');
+      return;
+    }
     const jsonStr = await storage.exportActiveUserBackupJson();
     const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -247,7 +266,7 @@ export function App() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    showToast('Full multi-tenant database export downloaded.');
+    showToast('Full backup downloaded.');
   };
 
   // JSON Backup Import
@@ -262,6 +281,7 @@ export function App() {
 
   // Clear Active User Records
   const handleClearActiveUserRecords = () => {
+    if (!currentUser) return;
     storage.clearActiveUserRecords();
     reloadAll();
     showToast(`All records for active farmer "${currentUser.username}" purged.`);
@@ -271,15 +291,22 @@ export function App() {
 
   return (
     <div className="app-container">
-      {/* Header with Multi-Tenant Account Switcher */}
+      {/* Header with Account Switcher or Set Up Button */}
       <Header
         profile={profile}
         currentUser={currentUser}
         allUsers={allUsers}
         activeBatchesCount={activeBatchesCount}
-        onOpenReportModal={() => setReportModalOpen(true)}
+        onOpenReportModal={() => {
+          if (!profile) {
+            showToast('Please set up a farm profile before exporting reports.');
+            handleOpenCreateProfile();
+            return;
+          }
+          setReportModalOpen(true);
+        }}
         onSwitchUser={handleSwitchUser}
-        onOpenNewUserModal={() => setNewUserModalOpen(true)}
+        onOpenNewUserModal={() => handleOpenCreateProfile()}
         onNavigateToProfile={() => setActiveTab('you')}
       />
 
@@ -300,9 +327,20 @@ export function App() {
             envLogs={envLogs}
             harvests={harvests}
             inventory={inventory}
-            onOpenQuickLog={(batchId, type) => setQuickLogState({ open: true, batchId, type })}
+            onOpenQuickLog={(batchId, type) => {
+              if (!profile) {
+                handleOpenCreateProfile();
+                return;
+              }
+              setQuickLogState({ open: true, batchId, type });
+            }}
             onSelectTab={(tab) => setActiveTab(tab as NavTab)}
             onExportBatchPdf={(b) => {
+              if (!profile) {
+                showToast('Please set up a farm profile before exporting PDF.');
+                handleOpenCreateProfile();
+                return;
+              }
               downloadSingleBatchPdf({
                 batch: b,
                 profile,
@@ -326,9 +364,16 @@ export function App() {
             envLogs={envLogs}
             onAddBatch={handleAddBatch}
             onUpdateBatch={handleUpdateBatch}
-            onOpenQuickLog={(batchId, type) => setQuickLogState({ open: true, batchId, type })}
+            onOpenQuickLog={(batchId, type) => {
+              if (!profile) {
+                handleOpenCreateProfile();
+                return;
+              }
+              setQuickLogState({ open: true, batchId, type });
+            }}
             onOpenQr={(b) => setQrModalBatch(b)}
             onToast={showToast}
+            onRequireProfile={() => handleOpenCreateProfile(() => setActiveTab('batches'))}
           />
         )}
 
@@ -354,7 +399,14 @@ export function App() {
             onAddPayment={handleAddPayment}
             onExportCsv={handleExportCsv}
             onExportBackup={handleExportActiveUserBackup}
-            onOpenReportModal={() => setReportModalOpen(true)}
+            onOpenReportModal={() => {
+              if (!profile) {
+                showToast('Please set up a farm profile before exporting reports.');
+                handleOpenCreateProfile();
+                return;
+              }
+              setReportModalOpen(true);
+            }}
           />
         )}
 
@@ -366,12 +418,11 @@ export function App() {
             batches={batches}
             harvests={harvests}
             payments={payments}
-            onUpdateProfile={handleUpdateProfile}
+            onOpenCreateProfile={() => handleOpenCreateProfile()}
+            onOpenEditProfile={handleOpenEditProfile}
             onSwitchUser={handleSwitchUser}
-            onCreateUser={handleCreateUser}
             onDeleteUser={handleDeleteUser}
             onExportActiveUserBackup={handleExportActiveUserBackup}
-            onExportFullDatabaseBackup={handleExportFullDatabaseBackup}
             onImportBackup={handleImportBackup}
             onClearActiveUserRecords={handleClearActiveUserRecords}
           />
@@ -404,7 +455,7 @@ export function App() {
       <ReportExportModal
         isOpen={reportModalOpen}
         onClose={() => setReportModalOpen(false)}
-        profile={profile}
+        profile={profile || DEFAULT_BLANK_PROFILE}
         batches={batches}
         feedLogs={feedLogs}
         mortalityLogs={mortalityLogs}
@@ -415,153 +466,14 @@ export function App() {
         payments={payments}
       />
 
-      {/* Register New Farmer Modal from Header */}
-      {newUserModalOpen && (
-        <div className="modal-overlay" onClick={() => setNewUserModalOpen(false)}>
-          <div className="modal-content" style={{ maxWidth: '500px' }} onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <div>
-                <h3 className="modal-title">Register New Farmer Profile</h3>
-                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                  Creates an independent farmer account on this device.
-                </p>
-              </div>
-              <button onClick={() => setNewUserModalOpen(false)} className="modal-close-btn">
-                ✕
-              </button>
-            </div>
-
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (!newUserData.username.trim() || !newUserData.stationName.trim()) return;
-                handleCreateUser({
-                  username: newUserData.username.trim(),
-                  role: newUserData.role,
-                  stationName: newUserData.stationName.trim(),
-                  county: newUserData.county,
-                  phone: newUserData.phone.trim(),
-                  email: newUserData.email.trim(),
-                  pinCode: newUserData.pinCode.trim() || undefined,
-                });
-                setNewUserModalOpen(false);
-                setNewUserData({
-                  username: '',
-                  role: 'commercial_reeler',
-                  stationName: '',
-                  county: 'Kiambu',
-                  phone: '',
-                  email: '',
-                  pinCode: '',
-                });
-              }}
-            >
-              <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-                <div className="form-group">
-                  <label className="form-label">Farmer / Operator Full Name *</label>
-                  <input
-                    type="text"
-                    value={newUserData.username}
-                    onChange={(e) => setNewUserData({ ...newUserData, username: e.target.value })}
-                    className="form-control"
-                    placeholder="e.g. Mary Muthoni"
-                    required
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Sericulture Role</label>
-                  <select
-                    value={newUserData.role}
-                    onChange={(e) => setNewUserData({ ...newUserData, role: e.target.value as UserRole })}
-                    className="form-control"
-                  >
-                    {USER_ROLES.map((r) => (
-                      <option key={r.value} value={r.value}>{r.label}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Farm / Station Enterprise Name *</label>
-                  <input
-                    type="text"
-                    value={newUserData.stationName}
-                    onChange={(e) => setNewUserData({ ...newUserData, stationName: e.target.value })}
-                    className="form-control"
-                    placeholder="e.g. Muthoni Sericulture Farm"
-                    required
-                  />
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-                  <div className="form-group">
-                    <label className="form-label">County</label>
-                    <select
-                      value={newUserData.county}
-                      onChange={(e) => setNewUserData({ ...newUserData, county: e.target.value })}
-                      className="form-control"
-                    >
-                      {KENYA_COUNTIES.map((c) => (
-                        <option key={c} value={c}>{c}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label">Phone Contact</label>
-                    <input
-                      type="text"
-                      value={newUserData.phone}
-                      onChange={(e) => setNewUserData({ ...newUserData, phone: e.target.value })}
-                      className="form-control"
-                      placeholder="+254 7..."
-                    />
-                  </div>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-                  <div className="form-group">
-                    <label className="form-label">Email (Optional)</label>
-                    <input
-                      type="email"
-                      value={newUserData.email}
-                      onChange={(e) => setNewUserData({ ...newUserData, email: e.target.value })}
-                      className="form-control"
-                      placeholder="mary@example.com"
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label">Security PIN (Optional)</label>
-                    <input
-                      type="password"
-                      maxLength={4}
-                      value={newUserData.pinCode}
-                      onChange={(e) => setNewUserData({ ...newUserData, pinCode: e.target.value })}
-                      className="form-control"
-                      placeholder="4-digit PIN"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  onClick={() => setNewUserModalOpen(false)}
-                  className="btn-secondary"
-                >
-                  Cancel
-                </button>
-                <button type="submit" className="btn-accent">
-                  Create Farmer Profile
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* Improved Farmer Profile Creation & Editing Modal */}
+      <ProfileFormModal
+        isOpen={profileModalState.open}
+        mode={profileModalState.mode}
+        initialData={{ user: currentUser, profile }}
+        onClose={() => setProfileModalState({ open: false, mode: 'create' })}
+        onSave={handleSaveProfileForm}
+      />
 
       {/* Toast Notification */}
       {toastMessage && (

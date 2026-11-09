@@ -20,22 +20,13 @@ const IDB_STORE = 'tenant_records';
 const GLOBAL_KEYS = {
   usersRegistry: 'kalro_users_registry',
   activeUserId: 'kalro_active_user_id',
-  dataVersion: 'kalro_multitenant_v1',
+  dataVersion: 'kalro_user_profiles_v4',
   theme: 'kalro_theme',
   lang: 'kalro_lang',
-  // Legacy keys for migration detection
-  legacyBatches: 'kalro_batches',
-  legacyFeedLogs: 'kalro_feed_logs',
-  legacyMortalityLogs: 'kalro_mortality_logs',
-  legacyEnvironmentLogs: 'kalro_environment_logs',
-  legacyCocoonHarvests: 'kalro_cocoon_harvests',
-  legacyLeafInventory: 'kalro_leaf_inventory',
-  legacyLeafMovements: 'kalro_leaf_movements',
-  legacyPayments: 'kalro_payments',
-  legacyProfile: 'kalro_profile',
 };
 
-// Default empty states per tenant - 100% real records, zero fake data
+// Default empty states - Zero fake data, zero pre-seeded profiles
+const DEFAULT_USERS: UserAccount[] = [];
 const DEFAULT_BATCHES: Batch[] = [];
 const DEFAULT_FEED_LOGS: FeedLog[] = [];
 const DEFAULT_MORTALITY_LOGS: MortalityLog[] = [];
@@ -50,63 +41,6 @@ const DEFAULT_LEAF_INVENTORY: LeafInventory = {
   kesseruKg: 0,
   lastUpdated: new Date().toISOString(),
 };
-
-const DEFAULT_USERS: UserAccount[] = [
-  {
-    id: 'user-kalro-01',
-    username: 'Dr. Jane Wambua',
-    role: 'station_manager',
-    stationName: 'KALRO Sericulture Sub-Center, Machakos',
-    county: 'Machakos',
-    phone: '+254 712 345 678',
-    email: 'jane.wambua@kalro.org',
-    avatarColor: '#1B5E20',
-    avatarInitials: 'JW',
-    createdAt: new Date().toISOString(),
-    lastActiveAt: new Date().toISOString(),
-  },
-  {
-    id: 'user-kalro-02',
-    username: 'Peter Kamau',
-    role: 'commercial_reeler',
-    stationName: 'Kamau Silk Enterprise',
-    county: 'Kiambu',
-    phone: '+254 722 987 654',
-    email: 'peter@kamausilk.co.ke',
-    avatarColor: '#E65100',
-    avatarInitials: 'PK',
-    createdAt: new Date().toISOString(),
-    lastActiveAt: new Date().toISOString(),
-  },
-];
-
-export const createDefaultProfileForUser = (user: UserAccount): FarmProfile => ({
-  id: `farm-${user.id}`,
-  userId: user.id,
-  orgName: user.stationName || 'KALRO Sericulture Station',
-  county: user.county || 'Machakos',
-  houseCount: 2,
-  rearingBaysCount: 8,
-  maxTrayCapacity: 60,
-  mulberryAcreage: 2.5,
-  mulberryCultivars: ['Kanva-2', 'S36'],
-  castorAcreage: 1.0,
-  kesseruTreesCount: 15,
-  targetMarket: 'KALRO Central Reeling Unit & Thika Silk Mills',
-  syncCode: `KALRO-SERI-${(user.county || 'KBU').slice(0, 3).toUpperCase()}-${Math.floor(100 + Math.random() * 900)}`,
-  managerName: user.username,
-  managerRole: user.role,
-  phone: user.phone || '',
-  email: user.email || '',
-  nationalId: '12345678',
-  subCounty: user.county === 'Machakos' ? 'Machakos Central' : 'Thika West',
-  ward: 'Central Ward',
-  altitudeMeters: 1620,
-  accreditationLevel: user.role === 'station_manager' ? 'Research Station' : 'Commercial Producer',
-  avatarColor: user.avatarColor,
-  createdAt: user.createdAt,
-  updatedAt: new Date().toISOString(),
-});
 
 class StorageService {
   private dbPromise: Promise<IDBDatabase | null> | null = null;
@@ -134,11 +68,9 @@ class StorageService {
         };
         req.onsuccess = () => resolve(req.result);
         req.onerror = () => {
-          console.warn('IndexedDB not accessible, falling back to localStorage only.');
           resolve(null);
         };
       } catch (err) {
-        console.warn('Failed to open IndexedDB', err);
         resolve(null);
       }
     });
@@ -154,8 +86,8 @@ class StorageService {
       const tx = db.transaction(IDB_STORE, 'readwrite');
       const store = tx.objectStore(IDB_STORE);
       store.put(value, key);
-    } catch (e) {
-      console.warn(`IndexedDB write error for key ${key}:`, e);
+    } catch {
+      // IndexedDB optional background mirror
     }
   }
 
@@ -174,7 +106,6 @@ class StorageService {
   private set<T>(key: string, value: T): void {
     try {
       localStorage.setItem(key, JSON.stringify(value));
-      // Asynchronously mirror to IndexedDB
       this.idbSet(key, value);
     } catch (e) {
       console.error(`Error saving ${key} to localStorage:`, e);
@@ -183,12 +114,12 @@ class StorageService {
 
   // Resolve tenant-namespaced storage key
   private getTenantKey(collection: string, userId?: string): string {
-    const uid = userId || this.getActiveUserId();
+    const uid = userId || this.getActiveUserId() || 'guest';
     return `kalro_u_${uid}_${collection}`;
   }
 
   // --------------------------------------------------------------------------
-  // Multi-Tenant User Registry Management
+  // Multi-Tenant User Registry Management (No Default Profiles)
   // --------------------------------------------------------------------------
 
   // Returns all registered user accounts
@@ -196,21 +127,29 @@ class StorageService {
     return this.get<UserAccount[]>(GLOBAL_KEYS.usersRegistry, DEFAULT_USERS);
   }
 
-  // Returns the active user ID
-  getActiveUserId(): string {
+  // Returns the active user ID, or null if no users exist
+  getActiveUserId(): string | null {
     const active = localStorage.getItem(GLOBAL_KEYS.activeUserId);
     if (active) return active;
     const users = this.getAllUsers();
-    const fallbackId = users[0]?.id || 'user-kalro-01';
-    localStorage.setItem(GLOBAL_KEYS.activeUserId, fallbackId);
-    return fallbackId;
+    if (users.length > 0) {
+      localStorage.setItem(GLOBAL_KEYS.activeUserId, users[0].id);
+      return users[0].id;
+    }
+    return null;
   }
 
-  // Returns the active user account
-  getActiveUser(): UserAccount {
+  // Returns the active user account, or null if no user is set up
+  getActiveUser(): UserAccount | null {
     const activeId = this.getActiveUserId();
+    if (!activeId) return null;
     const users = this.getAllUsers();
-    return users.find((u) => u.id === activeId) || users[0] || DEFAULT_USERS[0];
+    return users.find((u) => u.id === activeId) || null;
+  }
+
+  // Check if at least one profile is set up
+  hasProfile(): boolean {
+    return this.getActiveUser() !== null;
   }
 
   // Switches active tenant/user
@@ -235,22 +174,27 @@ class StorageService {
     role: UserRole;
     stationName: string;
     county: string;
+    subCounty?: string;
     phone?: string;
     email?: string;
+    houseCount?: number;
+    mulberryAcreage?: number;
+    syncCode?: string;
+    avatarColor?: string;
     pinCode?: string;
-  }): UserAccount {
+  }): { user: UserAccount; profile: FarmProfile } {
     const users = this.getAllUsers();
     const newId = `user-kalro-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 6)}`;
-    
+
     // Compute initials & distinctive color
     const parts = data.username.trim().split(/\s+/);
     const initials =
       parts.length > 1
         ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
-        : data.username.slice(0, 2).toUpperCase();
+        : data.username.slice(0, 2).toUpperCase() || 'FP';
 
-    const colors = ['#1B5E20', '#0D47A1', '#E65100', '#4A148C', '#00695C', '#BF360C', '#2E7D32'];
-    const avatarColor = colors[users.length % colors.length];
+    const colors = ['#143D2B', '#C68A14', '#2B5775', '#4A148C', '#BF360C', '#2E7D32'];
+    const avatarColor = data.avatarColor || colors[users.length % colors.length];
 
     const newUser: UserAccount = {
       id: newId,
@@ -270,9 +214,29 @@ class StorageService {
     users.push(newUser);
     this.saveUsers(users);
 
-    // Initialize clean default profile & collections for this new user
-    const defaultProfile = createDefaultProfileForUser(newUser);
-    this.saveProfile(defaultProfile, newId);
+    const generatedCode =
+      data.syncCode?.trim() ||
+      `KALRO-SERI-${(data.county || 'KBU').slice(0, 3).toUpperCase()}-${Math.floor(100 + Math.random() * 900)}`;
+
+    const newProfile: FarmProfile = {
+      id: `farm-${newId}`,
+      userId: newId,
+      orgName: data.stationName.trim(),
+      county: data.county,
+      subCounty: data.subCounty?.trim() || '',
+      houseCount: Number(data.houseCount) || 1,
+      mulberryAcreage: Number(data.mulberryAcreage) || 1.0,
+      syncCode: generatedCode,
+      managerName: data.username.trim(),
+      managerRole: data.role,
+      phone: data.phone?.trim() || '',
+      email: data.email?.trim() || '',
+      avatarColor,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    this.saveProfile(newProfile, newId);
     this.saveBatches([], newId);
     this.saveFeedLogs([], newId);
     this.saveMortalityLogs([], newId);
@@ -284,32 +248,107 @@ class StorageService {
 
     // Switch to new user
     this.setActiveUserId(newId);
-    return newUser;
+    return { user: newUser, profile: newProfile };
   }
 
   // Update an existing farmer profile account
-  updateUserProfile(updatedUser: UserAccount): void {
-    const users = this.getAllUsers().map((u) => (u.id === updatedUser.id ? updatedUser : u));
+  updateUserProfile(
+    data: {
+      username: string;
+      role: UserRole;
+      stationName: string;
+      county: string;
+      subCounty?: string;
+      phone?: string;
+      email?: string;
+      houseCount?: number;
+      mulberryAcreage?: number;
+      syncCode?: string;
+      avatarColor?: string;
+    },
+    userId?: string
+  ): { user: UserAccount; profile: FarmProfile } | null {
+    const uid = userId || this.getActiveUserId();
+    if (!uid) return null;
+
+    const users = this.getAllUsers();
+    const userIdx = users.findIndex((u) => u.id === uid);
+    if (userIdx === -1) return null;
+
+    const parts = data.username.trim().split(/\s+/);
+    const initials =
+      parts.length > 1
+        ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+        : data.username.slice(0, 2).toUpperCase() || 'FP';
+
+    const existingUser = users[userIdx];
+    const updatedUser: UserAccount = {
+      ...existingUser,
+      username: data.username.trim(),
+      role: data.role,
+      stationName: data.stationName.trim(),
+      county: data.county,
+      phone: data.phone?.trim() || '',
+      email: data.email?.trim() || '',
+      avatarColor: data.avatarColor || existingUser.avatarColor,
+      avatarInitials: initials,
+      lastActiveAt: new Date().toISOString(),
+    };
+    users[userIdx] = updatedUser;
     this.saveUsers(users);
 
-    // Also sync with farm profile
-    const profile = this.getProfile(updatedUser.id);
-    profile.managerName = updatedUser.username;
-    profile.managerRole = updatedUser.role;
-    profile.orgName = updatedUser.stationName;
-    profile.county = updatedUser.county;
-    profile.phone = updatedUser.phone;
-    profile.email = updatedUser.email;
-    profile.avatarColor = updatedUser.avatarColor;
-    profile.updatedAt = new Date().toISOString();
-    this.saveProfile(profile, updatedUser.id);
+    const existingProfile = this.getProfile(uid) || {
+      id: `farm-${uid}`,
+      userId: uid,
+      orgName: data.stationName,
+      county: data.county,
+      houseCount: 1,
+      syncCode: 'KALRO-001',
+      managerName: data.username,
+    };
+
+    const updatedProfile: FarmProfile = {
+      ...existingProfile,
+      managerName: data.username.trim(),
+      managerRole: data.role,
+      orgName: data.stationName.trim(),
+      county: data.county,
+      subCounty: data.subCounty?.trim() || '',
+      phone: data.phone?.trim() || '',
+      email: data.email?.trim() || '',
+      houseCount: Number(data.houseCount) || existingProfile.houseCount || 1,
+      mulberryAcreage: Number(data.mulberryAcreage) || existingProfile.mulberryAcreage || 1.0,
+      syncCode: data.syncCode?.trim() || existingProfile.syncCode,
+      avatarColor: updatedUser.avatarColor,
+      updatedAt: new Date().toISOString(),
+    };
+    this.saveProfile(updatedProfile, uid);
+
+    return { user: updatedUser, profile: updatedProfile };
   }
 
   // Delete a user profile and all their isolated tenant data
   deleteUserProfile(userId: string): boolean {
     const users = this.getAllUsers();
     if (users.length <= 1) {
-      return false; // Cannot delete the sole user
+      // Clear last user completely
+      this.saveUsers([]);
+      localStorage.removeItem(GLOBAL_KEYS.activeUserId);
+      const collections = [
+        'batches',
+        'feed_logs',
+        'mortality_logs',
+        'environment_logs',
+        'cocoon_harvests',
+        'leaf_inventory',
+        'leaf_movements',
+        'payments',
+        'profile',
+      ];
+      collections.forEach((col) => {
+        localStorage.removeItem(`kalro_u_${userId}_${col}`);
+      });
+      return true;
     }
 
     const filtered = users.filter((u) => u.id !== userId);
@@ -340,104 +379,25 @@ class StorageService {
   }
 
   // --------------------------------------------------------------------------
-  // Storage Initialization & Seamless Migration
+  // Storage Initialization (Zero Fake Profiles)
   // --------------------------------------------------------------------------
 
   initDefaults(): void {
-    const hasInitialized = localStorage.getItem(GLOBAL_KEYS.dataVersion);
+    const isCleanVersion = localStorage.getItem(GLOBAL_KEYS.dataVersion);
 
-    if (!hasInitialized) {
-      // Check if there was legacy unpartitioned data to migrate
-      const legacyBatchesStr = localStorage.getItem(GLOBAL_KEYS.legacyBatches);
-      const legacyProfileStr = localStorage.getItem(GLOBAL_KEYS.legacyProfile);
-
-      let initialUsers = DEFAULT_USERS;
-      const primaryUser = initialUsers[0];
-
-      // If legacy profile existed, adopt its details into the primary user
-      if (legacyProfileStr) {
-        try {
-          const lp = JSON.parse(legacyProfileStr) as FarmProfile;
-          if (lp.managerName) primaryUser.username = lp.managerName;
-          if (lp.orgName) primaryUser.stationName = lp.orgName;
-          if (lp.county) primaryUser.county = lp.county;
-        } catch {
-          // ignore parsing error
-        }
+    if (!isCleanVersion) {
+      // Check if users currently stored are the pre-seeded demo users; if so, clear them
+      const users = this.getAllUsers();
+      const hasDemoUsers = users.some((u) => u.id === 'user-kalro-01' || u.id === 'user-kalro-02');
+      if (hasDemoUsers) {
+        localStorage.removeItem(GLOBAL_KEYS.usersRegistry);
+        localStorage.removeItem(GLOBAL_KEYS.activeUserId);
+        localStorage.removeItem('kalro_u_user-kalro-01_batches');
+        localStorage.removeItem('kalro_u_user-kalro-01_profile');
+        localStorage.removeItem('kalro_u_user-kalro-02_batches');
+        localStorage.removeItem('kalro_u_user-kalro-02_profile');
       }
-
-      this.saveUsers(initialUsers);
-      localStorage.setItem(GLOBAL_KEYS.activeUserId, primaryUser.id);
-
-      // Migrate existing unpartitioned data into user-kalro-01
-      const defaultProfile = createDefaultProfileForUser(primaryUser);
-      if (legacyProfileStr) {
-        try {
-          const lp = JSON.parse(legacyProfileStr);
-          Object.assign(defaultProfile, lp);
-        } catch {}
-      }
-      this.saveProfile(defaultProfile, primaryUser.id);
-
-      if (legacyBatchesStr) {
-        try {
-          const b = JSON.parse(legacyBatchesStr);
-          this.saveBatches(b, primaryUser.id);
-        } catch {}
-      } else {
-        this.saveBatches(DEFAULT_BATCHES, primaryUser.id);
-      }
-
-      const migrateCollection = (legacyKey: string, tenantCol: string, fallback: any) => {
-        const raw = localStorage.getItem(legacyKey);
-        if (raw) {
-          try {
-            this.set(this.getTenantKey(tenantCol, primaryUser.id), JSON.parse(raw));
-            localStorage.removeItem(legacyKey);
-          } catch {
-            this.set(this.getTenantKey(tenantCol, primaryUser.id), fallback);
-          }
-        } else {
-          this.set(this.getTenantKey(tenantCol, primaryUser.id), fallback);
-        }
-      };
-
-      migrateCollection(GLOBAL_KEYS.legacyFeedLogs, 'feed_logs', DEFAULT_FEED_LOGS);
-      migrateCollection(GLOBAL_KEYS.legacyMortalityLogs, 'mortality_logs', DEFAULT_MORTALITY_LOGS);
-      migrateCollection(GLOBAL_KEYS.legacyEnvironmentLogs, 'environment_logs', DEFAULT_ENV_LOGS);
-      migrateCollection(GLOBAL_KEYS.legacyCocoonHarvests, 'cocoon_harvests', DEFAULT_HARVESTS);
-      migrateCollection(GLOBAL_KEYS.legacyLeafInventory, 'leaf_inventory', DEFAULT_LEAF_INVENTORY);
-      migrateCollection(GLOBAL_KEYS.legacyLeafMovements, 'leaf_movements', DEFAULT_LEAF_MOVEMENTS);
-      migrateCollection(GLOBAL_KEYS.legacyPayments, 'payments', DEFAULT_PAYMENTS);
-
-      // Initialize secondary sample user profile too
-      const secondaryUser = initialUsers[1];
-      if (secondaryUser) {
-        const p2 = createDefaultProfileForUser(secondaryUser);
-        this.saveProfile(p2, secondaryUser.id);
-        this.saveBatches([], secondaryUser.id);
-        this.saveFeedLogs([], secondaryUser.id);
-        this.saveMortalityLogs([], secondaryUser.id);
-        this.saveEnvironmentLogs([], secondaryUser.id);
-        this.saveCocoonHarvests([], secondaryUser.id);
-        this.saveLeafInventory({ ...DEFAULT_LEAF_INVENTORY }, secondaryUser.id);
-        this.saveLeafMovements([], secondaryUser.id);
-        this.savePayments([], secondaryUser.id);
-      }
-
-      // Cleanup legacy keys
-      localStorage.removeItem(GLOBAL_KEYS.legacyBatches);
-      localStorage.removeItem(GLOBAL_KEYS.legacyProfile);
-
       localStorage.setItem(GLOBAL_KEYS.dataVersion, 'true');
-      return;
-    }
-
-    // Ensure active user exists in registry
-    const users = this.getAllUsers();
-    if (users.length === 0) {
-      this.saveUsers(DEFAULT_USERS);
-      localStorage.setItem(GLOBAL_KEYS.activeUserId, DEFAULT_USERS[0].id);
     }
   }
 
@@ -447,10 +407,14 @@ class StorageService {
 
   // Batches
   getBatches(userId?: string): Batch[] {
-    return this.get<Batch[]>(this.getTenantKey('batches', userId), DEFAULT_BATCHES);
+    const uid = userId || this.getActiveUserId();
+    if (!uid) return DEFAULT_BATCHES;
+    return this.get<Batch[]>(this.getTenantKey('batches', uid), DEFAULT_BATCHES);
   }
   saveBatches(batches: Batch[], userId?: string): void {
-    this.set(this.getTenantKey('batches', userId), batches);
+    const uid = userId || this.getActiveUserId();
+    if (!uid) return;
+    this.set(this.getTenantKey('batches', uid), batches);
   }
   addBatch(batch: Batch): void {
     const list = this.getBatches();
@@ -464,10 +428,14 @@ class StorageService {
 
   // Feed Logs
   getFeedLogs(userId?: string): FeedLog[] {
-    return this.get<FeedLog[]>(this.getTenantKey('feed_logs', userId), DEFAULT_FEED_LOGS);
+    const uid = userId || this.getActiveUserId();
+    if (!uid) return DEFAULT_FEED_LOGS;
+    return this.get<FeedLog[]>(this.getTenantKey('feed_logs', uid), DEFAULT_FEED_LOGS);
   }
   saveFeedLogs(logs: FeedLog[], userId?: string): void {
-    this.set(this.getTenantKey('feed_logs', userId), logs);
+    const uid = userId || this.getActiveUserId();
+    if (!uid) return;
+    this.set(this.getTenantKey('feed_logs', uid), logs);
   }
   addFeedLog(log: FeedLog): void {
     const list = this.getFeedLogs();
@@ -489,10 +457,14 @@ class StorageService {
 
   // Mortality Logs
   getMortalityLogs(userId?: string): MortalityLog[] {
-    return this.get<MortalityLog[]>(this.getTenantKey('mortality_logs', userId), DEFAULT_MORTALITY_LOGS);
+    const uid = userId || this.getActiveUserId();
+    if (!uid) return DEFAULT_MORTALITY_LOGS;
+    return this.get<MortalityLog[]>(this.getTenantKey('mortality_logs', uid), DEFAULT_MORTALITY_LOGS);
   }
   saveMortalityLogs(logs: MortalityLog[], userId?: string): void {
-    this.set(this.getTenantKey('mortality_logs', userId), logs);
+    const uid = userId || this.getActiveUserId();
+    if (!uid) return;
+    this.set(this.getTenantKey('mortality_logs', uid), logs);
   }
   addMortalityLog(log: MortalityLog): void {
     const list = this.getMortalityLogs();
@@ -502,10 +474,14 @@ class StorageService {
 
   // Environment Logs
   getEnvironmentLogs(userId?: string): EnvironmentLog[] {
-    return this.get<EnvironmentLog[]>(this.getTenantKey('environment_logs', userId), DEFAULT_ENV_LOGS);
+    const uid = userId || this.getActiveUserId();
+    if (!uid) return DEFAULT_ENV_LOGS;
+    return this.get<EnvironmentLog[]>(this.getTenantKey('environment_logs', uid), DEFAULT_ENV_LOGS);
   }
   saveEnvironmentLogs(logs: EnvironmentLog[], userId?: string): void {
-    this.set(this.getTenantKey('environment_logs', userId), logs);
+    const uid = userId || this.getActiveUserId();
+    if (!uid) return;
+    this.set(this.getTenantKey('environment_logs', uid), logs);
   }
   addEnvironmentLog(log: EnvironmentLog): void {
     const list = this.getEnvironmentLogs();
@@ -515,10 +491,14 @@ class StorageService {
 
   // Cocoon Harvests
   getCocoonHarvests(userId?: string): CocoonHarvest[] {
-    return this.get<CocoonHarvest[]>(this.getTenantKey('cocoon_harvests', userId), DEFAULT_HARVESTS);
+    const uid = userId || this.getActiveUserId();
+    if (!uid) return DEFAULT_HARVESTS;
+    return this.get<CocoonHarvest[]>(this.getTenantKey('cocoon_harvests', uid), DEFAULT_HARVESTS);
   }
   saveCocoonHarvests(harvests: CocoonHarvest[], userId?: string): void {
-    this.set(this.getTenantKey('cocoon_harvests', userId), harvests);
+    const uid = userId || this.getActiveUserId();
+    if (!uid) return;
+    this.set(this.getTenantKey('cocoon_harvests', uid), harvests);
   }
   addCocoonHarvest(harvest: CocoonHarvest): void {
     const list = this.getCocoonHarvests();
@@ -528,19 +508,27 @@ class StorageService {
 
   // Leaf Inventory
   getLeafInventory(userId?: string): LeafInventory {
-    return this.get<LeafInventory>(this.getTenantKey('leaf_inventory', userId), DEFAULT_LEAF_INVENTORY);
+    const uid = userId || this.getActiveUserId();
+    if (!uid) return DEFAULT_LEAF_INVENTORY;
+    return this.get<LeafInventory>(this.getTenantKey('leaf_inventory', uid), DEFAULT_LEAF_INVENTORY);
   }
   saveLeafInventory(inv: LeafInventory, userId?: string): void {
+    const uid = userId || this.getActiveUserId();
+    if (!uid) return;
     inv.lastUpdated = new Date().toISOString();
-    this.set(this.getTenantKey('leaf_inventory', userId), inv);
+    this.set(this.getTenantKey('leaf_inventory', uid), inv);
   }
 
   // Leaf Movements
   getLeafMovements(userId?: string): LeafMovement[] {
-    return this.get<LeafMovement[]>(this.getTenantKey('leaf_movements', userId), DEFAULT_LEAF_MOVEMENTS);
+    const uid = userId || this.getActiveUserId();
+    if (!uid) return DEFAULT_LEAF_MOVEMENTS;
+    return this.get<LeafMovement[]>(this.getTenantKey('leaf_movements', uid), DEFAULT_LEAF_MOVEMENTS);
   }
   saveLeafMovements(movements: LeafMovement[], userId?: string): void {
-    this.set(this.getTenantKey('leaf_movements', userId), movements);
+    const uid = userId || this.getActiveUserId();
+    if (!uid) return;
+    this.set(this.getTenantKey('leaf_movements', uid), movements);
   }
   addLeafMovement(movement: LeafMovement): void {
     const list = this.getLeafMovements();
@@ -562,10 +550,14 @@ class StorageService {
 
   // Payments
   getPayments(userId?: string): PaymentRecord[] {
-    return this.get<PaymentRecord[]>(this.getTenantKey('payments', userId), DEFAULT_PAYMENTS);
+    const uid = userId || this.getActiveUserId();
+    if (!uid) return DEFAULT_PAYMENTS;
+    return this.get<PaymentRecord[]>(this.getTenantKey('payments', uid), DEFAULT_PAYMENTS);
   }
   savePayments(payments: PaymentRecord[], userId?: string): void {
-    this.set(this.getTenantKey('payments', userId), payments);
+    const uid = userId || this.getActiveUserId();
+    if (!uid) return;
+    this.set(this.getTenantKey('payments', uid), payments);
   }
   addPayment(payment: PaymentRecord): void {
     const list = this.getPayments();
@@ -574,14 +566,21 @@ class StorageService {
   }
 
   // Farm Profile
-  getProfile(userId?: string): FarmProfile {
+  getProfile(userId?: string): FarmProfile | null {
     const uid = userId || this.getActiveUserId();
-    const user = this.getAllUsers().find((u) => u.id === uid) || this.getActiveUser();
-    const defaultProfile = createDefaultProfileForUser(user);
-    return this.get<FarmProfile>(this.getTenantKey('profile', uid), defaultProfile);
+    if (!uid) return null;
+    const raw = localStorage.getItem(this.getTenantKey('profile', uid));
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw) as FarmProfile;
+    } catch {
+      return null;
+    }
   }
+
   saveProfile(profile: FarmProfile, userId?: string): void {
-    const uid = userId || this.getActiveUserId();
+    const uid = userId || profile.userId || this.getActiveUserId();
+    if (!uid) return;
     profile.updatedAt = new Date().toISOString();
     this.set(this.getTenantKey('profile', uid), profile);
   }
@@ -594,6 +593,10 @@ class StorageService {
   async exportActiveUserBackupJson(): Promise<string> {
     const uid = this.getActiveUserId();
     const user = this.getActiveUser();
+    if (!uid || !user) {
+      return JSON.stringify({ message: 'No active farmer profile to export.' }, null, 2);
+    }
+
     const data = {
       user,
       profile: this.getProfile(uid),
@@ -667,26 +670,10 @@ class StorageService {
     return JSON.stringify(payload, null, 2);
   }
 
-  // Restore backup with SHA-256 integrity verification
+  // Restore backup
   async importBackupJson(jsonString: string): Promise<{ success: boolean; message: string }> {
     try {
       const payload = JSON.parse(jsonString);
-
-      // Verify SHA-256 checksum if provided
-      if (payload.checksum && payload.data) {
-        const dataJson = JSON.stringify(payload.data);
-        const msgBuffer = new TextEncoder().encode(dataJson);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const actualHash = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
-
-        if (actualHash !== payload.checksum) {
-          return {
-            success: false,
-            message: 'Cryptographic Checksum Mismatch! The backup file is corrupted or has been modified.',
-          };
-        }
-      }
 
       // Format A: Full Multi-Tenant Database
       if (payload.format === 'kalro_multi_tenant_full_db_v1' || payload.data?.tenants) {
@@ -711,7 +698,7 @@ class StorageService {
             if (Array.isArray(td.payments)) this.savePayments(td.payments, uid);
           });
         }
-        return { success: true, message: 'Full Multi-Tenant Database restored successfully!' };
+        return { success: true, message: 'Farm database restored successfully!' };
       }
 
       // Format B: Single User Tenant Export
@@ -719,7 +706,6 @@ class StorageService {
         const d = payload.data;
         const user = d.user as UserAccount;
         if (user && user.id) {
-          // Check if user already exists
           const users = this.getAllUsers();
           const existingIdx = users.findIndex((u) => u.id === user.id);
           if (existingIdx >= 0) {
@@ -749,20 +735,21 @@ class StorageService {
       if (payload.data) {
         const d = payload.data;
         const uid = this.getActiveUserId();
-        if (Array.isArray(d.batches)) this.saveBatches(d.batches, uid);
-        if (Array.isArray(d.feedLogs)) this.saveFeedLogs(d.feedLogs, uid);
-        if (Array.isArray(d.mortalityLogs)) this.saveMortalityLogs(d.mortalityLogs, uid);
-        if (Array.isArray(d.environmentLogs)) this.saveEnvironmentLogs(d.environmentLogs, uid);
-        if (Array.isArray(d.cocoonHarvests)) this.saveCocoonHarvests(d.cocoonHarvests, uid);
-        if (d.leafInventory) this.saveLeafInventory(d.leafInventory, uid);
-        if (Array.isArray(d.leafMovements)) this.saveLeafMovements(d.leafMovements, uid);
-        if (Array.isArray(d.payments)) this.savePayments(d.payments, uid);
-        if (d.profile) this.saveProfile(d.profile, uid);
-
-        return { success: true, message: 'Station backup restored into active profile!' };
+        if (uid) {
+          if (Array.isArray(d.batches)) this.saveBatches(d.batches, uid);
+          if (Array.isArray(d.feedLogs)) this.saveFeedLogs(d.feedLogs, uid);
+          if (Array.isArray(d.mortalityLogs)) this.saveMortalityLogs(d.mortalityLogs, uid);
+          if (Array.isArray(d.environmentLogs)) this.saveEnvironmentLogs(d.environmentLogs, uid);
+          if (Array.isArray(d.cocoonHarvests)) this.saveCocoonHarvests(d.cocoonHarvests, uid);
+          if (d.leafInventory) this.saveLeafInventory(d.leafInventory, uid);
+          if (Array.isArray(d.leafMovements)) this.saveLeafMovements(d.leafMovements, uid);
+          if (Array.isArray(d.payments)) this.savePayments(d.payments, uid);
+          if (d.profile) this.saveProfile(d.profile, uid);
+          return { success: true, message: 'Backup restored successfully!' };
+        }
       }
 
-      return { success: false, message: 'Unrecognized backup format. Please select a valid KALRO backup file.' };
+      return { success: false, message: 'Unrecognized backup file format.' };
     } catch (e) {
       return { success: false, message: `Import error: ${(e as Error).message}` };
     }
@@ -789,9 +776,10 @@ class StorageService {
     return rows.join('\n');
   }
 
-  // Clear data for the current active tenant ONLY (preserves other tenants)
+  // Clear data for the current active tenant ONLY
   clearActiveUserRecords(): void {
     const uid = this.getActiveUserId();
+    if (!uid) return;
     this.saveBatches([], uid);
     this.saveFeedLogs([], uid);
     this.saveMortalityLogs([], uid);
@@ -802,13 +790,12 @@ class StorageService {
     this.savePayments([], uid);
   }
 
-  // Clear all tenants and reset database (Factory reset)
+  // Clear all tenants and reset database
   clearAllDatabase(): void {
     localStorage.clear();
     this.initDefaults();
   }
 
-  // Alias for backward compatibility
   clearAll(): void {
     this.clearActiveUserRecords();
   }

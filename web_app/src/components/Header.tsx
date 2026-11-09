@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FarmProfile, UserAccount } from '../types';
 import { USER_ROLES } from '../constants';
-import { FileText, ChevronDown, Check, UserPlus, ShieldCheck } from 'lucide-react';
+import { FileText, ChevronDown, Check, UserPlus } from 'lucide-react';
 
 interface HeaderProps {
-  profile: FarmProfile;
-  currentUser: UserAccount;
+  profile: FarmProfile | null;
+  currentUser: UserAccount | null;
   allUsers: UserAccount[];
   activeBatchesCount: number;
   onOpenReportModal: () => void;
@@ -42,7 +42,9 @@ export const Header: React.FC<HeaderProps> = ({
     };
   }, [dropdownOpen]);
 
-  const roleMeta = USER_ROLES.find((r) => r.value === currentUser.role) || USER_ROLES[0];
+  const roleMeta = currentUser
+    ? USER_ROLES.find((r) => r.value === currentUser.role) || USER_ROLES[0]
+    : USER_ROLES[0];
 
   return (
     <header className="main-header">
@@ -62,7 +64,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="brand-text">
             <h1>KALRO Sericulture</h1>
             <p className="truncate">
-              {profile.orgName} • {profile.county} County
+              {profile ? `${profile.orgName} • ${profile.county} County` : 'National Sericulture Research Centre • Kenya'}
             </p>
           </div>
         </div>
@@ -85,111 +87,134 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="hidden-sm">Export Report</span>
           </button>
 
-          {/* Multi-Tenant Farmer Account Switcher Pill */}
-          <div className="tenant-switcher-wrapper" ref={dropdownRef}>
+          {/* User Account Button or Switcher */}
+          {!currentUser ? (
             <button
-              onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="tenant-user-pill"
-              title={`Active Farmer: ${currentUser.username} (${roleMeta.label})`}
-              aria-expanded={dropdownOpen}
+              onClick={onOpenNewUserModal}
+              className="btn-header-accent"
+              title="Set up your farm profile"
             >
-              <div
-                className="tenant-avatar"
-                style={{ backgroundColor: currentUser.avatarColor || 'var(--primary)' }}
-              >
-                {currentUser.avatarInitials || 'KA'}
-              </div>
-              <div className="tenant-user-info">
-                <span className="tenant-user-name">{currentUser.username}</span>
-                <span className="tenant-role-tag" style={{ borderColor: roleMeta.badgeColor, color: roleMeta.badgeColor }}>
-                  {roleMeta.label.split(' ')[0]}
-                </span>
-              </div>
-              <ChevronDown
-                size={14}
-                style={{
-                  color: 'var(--text-muted)',
-                  transform: dropdownOpen ? 'rotate(180deg)' : 'none',
-                  transition: 'transform 0.2s ease',
-                  marginLeft: '2px',
-                }}
-              />
+              <UserPlus size={14} style={{ marginRight: '6px' }} />
+              <span>Set Up Profile</span>
             </button>
-
-            {/* Dropdown Menu */}
-            {dropdownOpen && (
-              <div className="tenant-dropdown-menu">
-                <div className="tenant-dropdown-header">
-                  <div style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-main)' }}>
-                    Signed in as
-                  </div>
-                  <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-                    {currentUser.username} • {roleMeta.label}
-                  </div>
+          ) : (
+            <div className="tenant-switcher-wrapper" ref={dropdownRef}>
+              <button
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="tenant-user-pill"
+                title={`Active Farmer: ${currentUser.username} (${roleMeta.label})`}
+                aria-expanded={dropdownOpen}
+              >
+                <div
+                  className="tenant-avatar"
+                  style={{ backgroundColor: currentUser.avatarColor || 'var(--primary)' }}
+                >
+                  {currentUser.avatarInitials || 'FP'}
                 </div>
+                <div className="tenant-user-info">
+                  <span className="tenant-user-name">{currentUser.username}</span>
+                  <span
+                    className="tenant-role-tag"
+                    style={{ borderColor: roleMeta.badgeColor, color: roleMeta.badgeColor }}
+                  >
+                    {roleMeta.label.split(' ')[0]}
+                  </span>
+                </div>
+                <ChevronDown
+                  size={14}
+                  style={{
+                    color: 'var(--text-muted)',
+                    transform: dropdownOpen ? 'rotate(180deg)' : 'none',
+                    transition: 'transform 0.2s ease',
+                    marginLeft: '2px',
+                  }}
+                />
+              </button>
 
-                <div className="tenant-dropdown-list">
-                  <div style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', padding: '6px 12px 4px', letterSpacing: '0.4px' }}>
-                    Switch Account
+              {/* Dropdown Menu */}
+              {dropdownOpen && (
+                <div className="tenant-dropdown-menu">
+                  <div className="tenant-dropdown-header">
+                    <div style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-main)' }}>
+                      Signed in as
+                    </div>
+                    <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                      {currentUser.username} • {roleMeta.label}
+                    </div>
                   </div>
 
-                  {allUsers.map((user) => {
-                    const isSelected = user.id === currentUser.id;
-                    const uRole = USER_ROLES.find((r) => r.value === user.role) || USER_ROLES[0];
-                    return (
-                      <button
-                        key={user.id}
-                        onClick={() => {
-                          onSwitchUser(user.id);
-                          setDropdownOpen(false);
-                        }}
-                        className={`tenant-account-item ${isSelected ? 'active' : ''}`}
-                      >
-                        <div
-                          className="tenant-avatar-sm"
-                          style={{ backgroundColor: user.avatarColor || '#143D2B' }}
+                  <div className="tenant-dropdown-list">
+                    <div
+                      style={{
+                        fontSize: '0.68rem',
+                        fontWeight: 700,
+                        color: 'var(--text-muted)',
+                        textTransform: 'uppercase',
+                        padding: '6px 12px 4px',
+                        letterSpacing: '0.4px',
+                      }}
+                    >
+                      Switch Account
+                    </div>
+
+                    {allUsers.map((user) => {
+                      const isSelected = user.id === currentUser.id;
+                      const uRole = USER_ROLES.find((r) => r.value === user.role) || USER_ROLES[0];
+                      return (
+                        <button
+                          key={user.id}
+                          onClick={() => {
+                            onSwitchUser(user.id);
+                            setDropdownOpen(false);
+                          }}
+                          className={`tenant-account-item ${isSelected ? 'active' : ''}`}
                         >
-                          {user.avatarInitials}
-                        </div>
-                        <div className="tenant-item-details">
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <span className="tenant-item-name">{user.username}</span>
-                            {isSelected && <Check size={14} color="var(--primary)" />}
+                          <div
+                            className="tenant-avatar-sm"
+                            style={{ backgroundColor: user.avatarColor || '#143D2B' }}
+                          >
+                            {user.avatarInitials}
                           </div>
-                          <span className="tenant-item-sub">
-                            {uRole.label} • {user.county}
-                          </span>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
+                          <div className="tenant-item-details">
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                              <span className="tenant-item-name">{user.username}</span>
+                              {isSelected && <Check size={14} color="var(--primary)" />}
+                            </div>
+                            <span className="tenant-item-sub">
+                              {uRole.label} • {user.county}
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
 
-                <div className="tenant-dropdown-actions">
-                  <button
-                    onClick={() => {
-                      setDropdownOpen(false);
-                      onOpenNewUserModal();
-                    }}
-                    className="tenant-action-btn"
-                  >
-                    <UserPlus size={14} style={{ marginRight: '6px' }} />
-                    <span>Add New Profile</span>
-                  </button>
+                  <div className="tenant-dropdown-actions">
+                    <button
+                      onClick={() => {
+                        setDropdownOpen(false);
+                        onOpenNewUserModal();
+                      }}
+                      className="tenant-action-btn"
+                    >
+                      <UserPlus size={14} style={{ marginRight: '6px' }} />
+                      <span>Add New Profile</span>
+                    </button>
 
-                  <button
-                    onClick={() => {
-                      setDropdownOpen(false);
-                      onNavigateToProfile();
-                    }}
-                    className="tenant-action-btn secondary"
-                  >
-                    View Farm Profile
-                  </button>
+                    <button
+                      onClick={() => {
+                        setDropdownOpen(false);
+                        onNavigateToProfile();
+                      }}
+                      className="tenant-action-btn secondary"
+                    >
+                      View Farm Profile
+                    </button>
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </header>
