@@ -1719,6 +1719,13 @@ th,
   outline: 2px solid var(--primary);
 }
 
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
 /* Toast Notice */
 .toast-notice {
   position: fixed;
@@ -2246,464 +2253,272 @@ th,
 }
 
 /* ==========================================================================
-   Profile View & Farmer Management
+   Simplified Profile View & Farmer Accounts
    ========================================================================== */
 
-.profile-container {
+.simple-profile-page {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
-/* Farmer Hero Banner */
-.farmer-hero-card {
-  background: linear-gradient(135deg, #143D2B 0%, #1A4F38 100%);
-  border: 1px solid #0F2E20;
-  border-radius: var(--radius-md);
+/* User Profile Header Card */
+.profile-user-card {
   padding: 1.5rem;
-  color: #ffffff;
 }
 
-.farmer-hero-main {
+.profile-user-main {
   display: flex;
+  align-items: flex-start;
   gap: 1.25rem;
-  align-items: center;
 }
 
-.farmer-hero-avatar {
-  width: 68px;
-  height: 68px;
+.profile-user-avatar {
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.6rem;
-  font-weight: 700;
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  flex-shrink: 0;
-}
-
-.farmer-hero-details {
-  flex: 1;
-  min-width: 0;
-}
-
-.farmer-hero-badge-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
-  margin-bottom: 4px;
-}
-
-.farmer-role-badge {
-  font-size: 0.7rem;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: var(--radius-sm);
-  background-color: rgba(255, 255, 255, 0.95);
-  border: 1px solid transparent;
-}
-
-.farmer-accreditation-badge {
-  display: inline-flex;
-  align-items: center;
-  font-size: 0.7rem;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: var(--radius-sm);
-  background-color: rgba(198, 138, 20, 0.25);
-  color: #F8E2B2;
-  border: 1px solid rgba(198, 138, 20, 0.5);
-}
-
-.farmer-offline-badge {
-  display: inline-flex;
-  align-items: center;
-  font-size: 0.7rem;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: var(--radius-sm);
-  background-color: rgba(255, 255, 255, 0.12);
-  color: #E0EDE6;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.farmer-hero-name {
-  font-size: 1.45rem;
-  font-weight: 700;
-  color: #ffffff;
-  margin: 2px 0;
-}
-
-.farmer-hero-station {
-  font-size: 0.85rem;
-  color: #B5D1C3;
-  margin-bottom: 6px;
-}
-
-.farmer-hero-meta-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  font-size: 0.75rem;
-  color: #D1E3DA;
-}
-
-.farmer-meta-tag {
-  display: inline-flex;
-  align-items: center;
-}
-
-.farmer-stats-strip {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 0.75rem;
-  margin-top: 1.25rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-.stat-pill {
-  background-color: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: var(--radius-sm);
-  padding: 8px 12px;
-  display: flex;
-  flex-direction: column;
-}
-
-.stat-pill .stat-label {
-  font-size: 0.68rem;
-  color: #B5D1C3;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-
-.stat-pill .stat-value {
-  font-size: 1.15rem;
-  color: #ffffff;
-  margin-top: 2px;
-}
-
-.stat-pill .stat-value.text-success {
-  color: #8CE8B2;
-}
-
-/* Profile Sub-Tab Bar */
-.profile-tab-bar {
-  display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  border-bottom: 1px solid var(--border-divider);
-  padding-bottom: 4px;
-}
-
-.profile-tab-btn {
-  display: inline-flex;
-  align-items: center;
-  padding: 8px 14px;
-  border-radius: var(--radius-sm);
-  background: none;
-  border: 1px solid transparent;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.15s ease;
-}
-
-.profile-tab-btn:hover {
-  background-color: var(--bg-subtle);
-  color: var(--text-main);
-}
-
-.profile-tab-btn.active {
-  background-color: var(--primary);
-  color: #ffffff;
-  border-color: var(--primary);
-}
-
-/* Profile Details 2-Column Grid */
-.profile-details-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1rem;
-  margin-top: 0.75rem;
-}
-
-.profile-detail-item {
-  display: flex;
-  flex-direction: column;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--border-divider);
-}
-
-.profile-detail-label {
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  font-weight: 600;
-  color: var(--text-muted);
-  margin-bottom: 2px;
-}
-
-.profile-detail-value {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-main);
-}
-
-/* Agronomy Spec Grid */
-.agronomy-spec-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
-  margin-top: 0.75rem;
-}
-
-.spec-card {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background-color: var(--bg-subtle);
-  border: 1px solid var(--border-card);
-  padding: 1rem;
-  border-radius: var(--radius-sm);
-}
-
-.spec-meta {
-  display: flex;
-  flex-direction: column;
-}
-
-.spec-value {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--text-main);
-}
-
-.spec-label {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  margin-top: 1px;
-}
-
-/* Multi-Farmer Accounts Directory Grid */
-.farmer-accounts-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.farmer-account-card {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-card);
-  border-radius: var(--radius-md);
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  transition: all 0.15s ease;
-}
-
-.farmer-account-card:hover {
-  border-color: var(--primary);
-}
-
-.farmer-account-card.active-tenant {
-  border: 2px solid var(--primary);
-  background-color: var(--primary-subtle);
-}
-
-.farmer-account-card-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.farmer-account-card-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.95rem;
+  font-size: 1.35rem;
   font-weight: 700;
   flex-shrink: 0;
 }
 
-.farmer-account-card-info {
+.profile-user-info {
   flex: 1;
   min-width: 0;
 }
 
-.farmer-account-card-name {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--text-main);
-}
-
-.farmer-active-badge {
-  display: inline-flex;
-  align-items: center;
-  font-size: 0.62rem;
-  font-weight: 800;
-  color: var(--primary);
-  background-color: #ffffff;
-  padding: 1px 5px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--primary);
-}
-
-.farmer-account-role-label {
-  font-size: 0.72rem;
-  font-weight: 600;
-  display: block;
-  margin-top: 1px;
-}
-
-.farmer-account-card-body {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 8px;
-  background-color: rgba(255, 255, 255, 0.6);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  font-size: 0.76rem;
-}
-
-.card-spec-row {
-  display: flex;
-  justify-content: space-between;
-}
-
-.card-spec-row .label {
-  color: var(--text-muted);
-}
-
-.card-spec-row .val {
-  font-weight: 600;
-  color: var(--text-main);
-}
-
-.farmer-account-card-actions {
+.profile-user-title-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: auto;
+  flex-wrap: wrap;
 }
 
-.btn-icon-danger {
-  background: none;
-  border: 1px solid var(--border-card);
-  color: var(--status-danger);
-  padding: 6px;
+.profile-user-name {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.profile-user-role-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 8px;
   border-radius: var(--radius-sm);
-  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.profile-user-farm-sub {
+  font-size: 0.84rem;
+  color: var(--text-muted);
+  margin: 3px 0 8px;
+}
+
+.profile-user-contacts {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.15s ease;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
 }
 
-.btn-icon-danger:hover {
-  background-color: var(--status-danger-subtle);
-  border-color: var(--status-danger);
-}
-
-/* Offline Database Admin Styles */
-.db-status-pill {
+.contact-item {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.72rem;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: var(--radius-full);
 }
 
-.db-status-pill.online {
-  background-color: var(--status-success-subtle);
-  color: var(--status-success);
-  border: 1px solid #BAE3CC;
+.profile-edit-btn {
+  font-size: 0.8rem;
+  padding: 0.4rem 0.85rem;
+  flex-shrink: 0;
 }
 
-.db-status-pill.online .dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: var(--status-success);
+/* Season Stats Strip */
+.profile-season-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border-divider);
 }
 
-.db-info-box {
+.season-stat-item {
   background-color: var(--bg-subtle);
   border: 1px solid var(--border-card);
-  border-left: 4px solid var(--primary);
   border-radius: var(--radius-sm);
-  padding: 0.85rem 1rem;
-  font-size: 0.8rem;
+  padding: 10px 14px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+}
+
+.season-stat-item .label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  font-weight: 600;
+}
+
+.season-stat-item .val {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-top: 2px;
+}
+
+.season-stat-item .val.text-success {
+  color: var(--status-success);
+}
+
+/* Farm Details Grid */
+.farm-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 0.75rem 1.5rem;
   margin-top: 0.75rem;
 }
 
-.db-info-item code {
-  background-color: #ffffff;
-  border: 1px solid var(--border-subtle);
-  padding: 1px 6px;
-  border-radius: var(--radius-sm);
-  font-size: 0.75rem;
-  color: var(--primary);
+.farm-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
-.db-action-card {
-  background-color: var(--bg-subtle);
-  border: 1px solid var(--border-card);
-  border-radius: var(--radius-sm);
-  padding: 1rem;
+.farm-info-row .info-label {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.farm-info-row .info-val {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+/* Profiles on this Device List */
+.simple-accounts-list {
   display: flex;
   flex-direction: column;
+  gap: 8px;
+  margin-top: 0.75rem;
 }
 
-.db-status-alert {
-  margin-top: 1rem;
-  padding: 0.65rem 1rem;
-  background-color: var(--status-success-subtle);
-  border: 1px solid #BAE3CC;
-  color: var(--status-success);
-  border-radius: var(--radius-sm);
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-align: center;
-}
-
-.btn-purge {
-  display: inline-flex;
+.simple-account-row {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  width: 100%;
-  background: none;
-  border: 1px dashed var(--border-card);
-  color: var(--status-danger);
-  font-size: 0.76rem;
-  font-weight: 600;
-  padding: 8px;
+  gap: 12px;
+  padding: 10px 14px;
   border-radius: var(--radius-sm);
-  cursor: pointer;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-card);
   transition: all 0.15s ease;
 }
 
-.btn-purge:hover {
+.simple-account-row.active {
+  background-color: var(--primary-subtle);
+  border-color: var(--primary);
+}
+
+.simple-account-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.88rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.simple-account-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.simple-active-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--primary);
+  background-color: #ffffff;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--primary);
+  text-transform: uppercase;
+}
+
+.simple-account-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-icon-subtle-danger {
+  background: none;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.btn-icon-subtle-danger:hover {
+  color: var(--status-danger);
   background-color: var(--status-danger-subtle);
   border-color: var(--status-danger);
 }
+
+.btn-text-danger {
+  background: none;
+  border: none;
+  color: var(--status-danger);
+  font-size: 0.76rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 0;
+  font-weight: 500;
+}
+
+.btn-text-danger:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .profile-user-main {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .profile-user-title-row {
+    justify-content: center;
+  }
+
+  .profile-user-contacts {
+    justify-content: center;
+  }
+
+  .profile-season-strip {
+    grid-template-columns: 1fr;
+  }
+}
+
 

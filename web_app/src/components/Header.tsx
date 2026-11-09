@@ -120,20 +120,17 @@ export const Header: React.FC<HeaderProps> = ({
             {dropdownOpen && (
               <div className="tenant-dropdown-menu">
                 <div className="tenant-dropdown-header">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <ShieldCheck size={14} color="var(--primary)" />
-                    <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--primary)' }}>
-                      Local Multi-Tenant Database
-                    </span>
+                  <div style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-main)' }}>
+                    Signed in as
                   </div>
-                  <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>
-                    100% Offline • Zero Server Cost
-                  </span>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                    {currentUser.username} • {roleMeta.label}
+                  </div>
                 </div>
 
                 <div className="tenant-dropdown-list">
-                  <div style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--text-muted)', padding: '6px 12px 2px' }}>
-                    SWITCH OPERATOR ACCOUNT
+                  <div style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', padding: '6px 12px 4px', letterSpacing: '0.4px' }}>
+                    Switch Account
                   </div>
 
                   {allUsers.map((user) => {
@@ -150,7 +147,7 @@ export const Header: React.FC<HeaderProps> = ({
                       >
                         <div
                           className="tenant-avatar-sm"
-                          style={{ backgroundColor: user.avatarColor || '#1B5E20' }}
+                          style={{ backgroundColor: user.avatarColor || '#143D2B' }}
                         >
                           {user.avatarInitials}
                         </div>
@@ -177,7 +174,7 @@ export const Header: React.FC<HeaderProps> = ({
                     className="tenant-action-btn"
                   >
                     <UserPlus size={14} style={{ marginRight: '6px' }} />
-                    <span>Register New Farmer Account</span>
+                    <span>Add New Profile</span>
                   </button>
 
                   <button
@@ -187,7 +184,7 @@ export const Header: React.FC<HeaderProps> = ({
                     }}
                     className="tenant-action-btn secondary"
                   >
-                    Manage Station & Storage Profile
+                    View Farm Profile
                   </button>
                 </div>
               </div>

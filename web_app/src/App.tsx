@@ -417,13 +417,13 @@ export function App() {
 
       {/* Register New Farmer Modal from Header */}
       {newUserModalOpen && (
-        <div className="modal-backdrop">
-          <div className="modal-container" style={{ maxWidth: '500px' }}>
+        <div className="modal-overlay" onClick={() => setNewUserModalOpen(false)}>
+          <div className="modal-content" style={{ maxWidth: '500px' }} onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <div>
                 <h3 className="modal-title">Register New Farmer Profile</h3>
                 <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                  Creates an independent, isolated local database partition.
+                  Creates an independent farmer account on this device.
                 </p>
               </div>
               <button onClick={() => setNewUserModalOpen(false)} className="modal-close-btn">

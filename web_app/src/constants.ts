@@ -3,33 +3,33 @@ import { DiseaseInfo, MilestoneStage, Species, UserRole } from './types';
 export const USER_ROLES: { value: UserRole; label: string; desc: string; badgeColor: string }[] = [
   {
     value: 'station_manager',
-    label: 'Lead Station Manager',
-    desc: 'Full farm oversight, commercial reeling operations, and financial audits.',
-    badgeColor: '#1B5E20',
-  },
-  {
-    value: 'lead_technician',
-    label: 'Chawki Rearing Technician',
-    desc: 'Precision egg incubation, young-instar microclimate, and leaf hygiene.',
-    badgeColor: '#0D47A1',
+    label: 'Farm Manager',
+    desc: 'Full farm oversight, rearing operations, and farm records.',
+    badgeColor: '#143D2B',
   },
   {
     value: 'commercial_reeler',
-    label: 'Commercial Cocoon Producer',
-    desc: 'Late-age shoot feeding, chandrike spinning, and harvest yield marketing.',
-    badgeColor: '#E65100',
+    label: 'Commercial Farmer',
+    desc: 'Silkworm rearing and cocoon production.',
+    badgeColor: '#C68A14',
+  },
+  {
+    value: 'lead_technician',
+    label: 'Chawki Technician',
+    desc: 'Egg incubation, young worms, and leaf preparation.',
+    badgeColor: '#2B5775',
   },
   {
     value: 'extension_officer',
-    label: 'KALRO Extension Officer',
-    desc: 'Multi-farm advisory, disease diagnostics, farmer training, and certification.',
+    label: 'Extension Officer',
+    desc: 'Field advisory, training, and farm inspection.',
     badgeColor: '#4A148C',
   },
   {
     value: 'apprentice',
-    label: 'Farm Operator / Apprentice',
-    desc: 'Rearing house bed cleaning, fresh forage cutting, and daily feeding chores.',
-    badgeColor: '#37474F',
+    label: 'Farm Assistant',
+    desc: 'Daily feeding, bed cleaning, and leaf harvesting.',
+    badgeColor: '#53635A',
   },
 ];
 
