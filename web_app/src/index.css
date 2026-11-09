@@ -2640,8 +2640,8 @@ th,
 
 .routine-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 0.85rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.9rem;
   margin-top: 0.85rem;
 }
 
@@ -2649,70 +2649,138 @@ th,
   background-color: #ffffff;
   border: 1px solid var(--border-card);
   border-radius: var(--radius-sm);
-  padding: 12px 14px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 8px;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.routine-card:hover {
+  border-color: rgba(20, 61, 43, 0.35);
 }
 
 .routine-card.current {
   border-color: var(--primary);
-  background-color: #fbfdfc;
-  box-shadow: 0 0 0 1px var(--primary);
+  box-shadow: 0 0 0 1.5px var(--primary);
 }
 
 .routine-card.done {
-  border-color: rgba(30, 122, 69, 0.35);
-  background-color: #f8faf8;
+  border-color: rgba(30, 122, 69, 0.4);
 }
 
-.routine-header {
+.routine-img-wrapper {
+  position: relative;
+  width: 100%;
+  height: 125px;
+  overflow: hidden;
+  background-color: #14281e;
+}
+
+.routine-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.routine-card:hover .routine-img {
+  transform: scale(1.04);
+}
+
+.routine-img-overlay {
+  position: absolute;
+  inset: 0;
+  padding: 8px 10px;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  align-items: flex-start;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.05) 55%, rgba(0, 0, 0, 0.25) 100%);
+  pointer-events: none;
 }
 
-.routine-icon-title {
-  display: flex;
+.routine-time-badge {
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--text-main);
+  gap: 4px;
+  background: rgba(15, 23, 20, 0.75);
+  backdrop-filter: blur(4px);
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
 }
 
 .routine-status-pill {
-  font-size: 0.7rem;
-  font-weight: 600;
-  padding: 2px 7px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 8px;
   border-radius: var(--radius-full);
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .routine-status-pill.done {
-  background-color: rgba(30, 122, 69, 0.12);
-  color: var(--status-success);
+  background-color: #1e7a45;
+  color: #ffffff;
 }
 
 .routine-status-pill.pending {
-  background-color: rgba(198, 138, 20, 0.12);
-  color: var(--accent-gold);
+  background-color: #c68a14;
+  color: #ffffff;
 }
 
 .routine-status-pill.active {
-  background-color: rgba(20, 61, 43, 0.12);
+  background-color: var(--primary);
+  color: #ffffff;
+}
+
+.routine-body {
+  padding: 10px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.routine-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.routine-title {
+  margin: 0;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.routine-current-tag {
+  font-size: 0.65rem;
+  font-weight: 700;
   color: var(--primary);
+  background-color: rgba(20, 61, 43, 0.08);
+  border: 1px solid rgba(20, 61, 43, 0.2);
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 .routine-desc {
-  font-size: 0.75rem;
+  font-size: 0.74rem;
   color: var(--text-muted);
-  line-height: 1.4;
+  line-height: 1.42;
   margin: 0;
 }
 
@@ -2720,10 +2788,25 @@ th,
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 4px;
-  padding-top: 6px;
-  border-top: 1px dashed var(--border-subtle);
-  font-size: 0.73rem;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.routine-meta-text {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.routine-btn {
+  padding: 3px 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  white-space: nowrap;
 }
 
 .batch-filter-bar {

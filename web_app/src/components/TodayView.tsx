@@ -436,131 +436,198 @@ export const TodayView: React.FC<TodayViewProps> = ({
         <div className="routine-grid">
           {/* Routine 1: Morning Feed */}
           <div className={`routine-card ${shift.isMorning ? 'current' : ''} ${morningRoutineDone ? 'done' : ''}`}>
-            <div className="routine-header">
-              <div className="routine-icon-title">
-                <Sunrise size={16} style={{ color: 'var(--primary)' }} />
-                <span>1. Morning Feed (07:00 – 09:30)</span>
+            <div className="routine-img-wrapper">
+              <img
+                src="/images/routine/morning_feed.jpg"
+                alt="Morning feeding of fresh mulberry leaves to silkworms"
+                className="routine-img"
+                loading="lazy"
+              />
+              <div className="routine-img-overlay">
+                <span className="routine-time-badge">
+                  <Sunrise size={12} />
+                  <span>07:00 – 09:30</span>
+                </span>
+                <span className={`routine-status-pill ${morningRoutineDone ? 'done' : dueBatches.length > 0 ? 'pending' : 'active'}`}>
+                  {morningRoutineDone ? (
+                    <>
+                      <Check size={11} />
+                      <span>Done</span>
+                    </>
+                  ) : (
+                    <span>{dueBatches.length > 0 ? `${dueBatches.length} Due` : 'Ready'}</span>
+                  )}
+                </span>
               </div>
-              <span className={`routine-status-pill ${morningRoutineDone ? 'done' : dueBatches.length > 0 ? 'pending' : 'active'}`}>
-                {morningRoutineDone ? (
-                  <>
-                    <Check size={11} />
-                    <span>Done</span>
-                  </>
-                ) : (
-                  <span>{dueBatches.length > 0 ? `${dueBatches.length} Due` : 'Ready'}</span>
-                )}
-              </span>
             </div>
-            <p className="routine-desc">
-              Feed succulent morning leaves with high moisture content. Chop leaves finely (0.5–1 cm) for Chawki instars.
-            </p>
-            <div className="routine-action-row">
-              <span style={{ color: 'var(--text-muted)' }}>
-                {morningFedCount}/{activeBatches.length} lots serviced
-              </span>
-              <button
-                type="button"
-                onClick={() => onOpenQuickLog(undefined, 'feed')}
-                className="btn-accent"
-                style={{ padding: '2px 8px', fontSize: '0.72rem' }}
-              >
-                + Log Feed
-              </button>
+
+            <div className="routine-body">
+              <div className="routine-title-row">
+                <h4 className="routine-title">
+                  <Sunrise size={14} style={{ color: 'var(--primary)' }} />
+                  <span>1. Morning Feed</span>
+                </h4>
+                {shift.isMorning && <span className="routine-current-tag">Now</span>}
+              </div>
+              <p className="routine-desc">
+                Feed succulent morning leaves with high moisture content. Chop leaves finely (0.5–1 cm) for Chawki instars.
+              </p>
+              <div className="routine-action-row">
+                <span className="routine-meta-text">
+                  {morningFedCount}/{activeBatches.length} lots fed
+                </span>
+                <button
+                  type="button"
+                  onClick={() => onOpenQuickLog(undefined, 'feed')}
+                  className="btn-accent routine-btn"
+                >
+                  + Log Feed
+                </button>
+              </div>
             </div>
           </div>
 
           {/* Routine 2: Midday Climate & Hygiene */}
           <div className={`routine-card ${shift.isMidday ? 'current' : ''} ${envLoggedToday ? 'done' : ''}`}>
-            <div className="routine-header">
-              <div className="routine-icon-title">
-                <Thermometer size={16} style={{ color: 'var(--status-info)' }} />
-                <span>2. Midday Climate Check</span>
+            <div className="routine-img-wrapper">
+              <img
+                src="/images/routine/midday_climate.jpg"
+                alt="Analog wet and dry bulb hygrometer and thermometer in rearing house"
+                className="routine-img"
+                loading="lazy"
+              />
+              <div className="routine-img-overlay">
+                <span className="routine-time-badge">
+                  <Sun size={12} />
+                  <span>12:00 – 14:00</span>
+                </span>
+                <span className={`routine-status-pill ${envLoggedToday ? 'done' : 'pending'}`}>
+                  {envLoggedToday ? (
+                    <>
+                      <Check size={11} />
+                      <span>Recorded</span>
+                    </>
+                  ) : (
+                    <span>Pending</span>
+                  )}
+                </span>
               </div>
-              <span className={`routine-status-pill ${envLoggedToday ? 'done' : 'pending'}`}>
-                {envLoggedToday ? (
-                  <>
-                    <Check size={11} />
-                    <span>Recorded</span>
-                  </>
-                ) : (
-                  <span>Pending</span>
-                )}
-              </span>
             </div>
-            <p className="routine-desc">
-              Inspect dry bulb thermometer and wet hygrometer at 12:00 PM. Target: 24–26°C and 75–80% RH.
-            </p>
-            <div className="routine-action-row">
-              <span style={{ color: 'var(--text-muted)' }}>
-                {latestEnv ? `Last: ${latestEnv.temperatureCelsius.toFixed(1)}°C / ${latestEnv.humidityPercent}%` : 'No log today'}
-              </span>
-              <button
-                type="button"
-                onClick={() => onOpenQuickLog(undefined, 'climate')}
-                className="btn-secondary"
-                style={{ padding: '2px 8px', fontSize: '0.72rem' }}
-              >
-                + Log Climate
-              </button>
+
+            <div className="routine-body">
+              <div className="routine-title-row">
+                <h4 className="routine-title">
+                  <Thermometer size={14} style={{ color: 'var(--status-info)' }} />
+                  <span>2. Midday Climate Check</span>
+                </h4>
+                {shift.isMidday && <span className="routine-current-tag">Now</span>}
+              </div>
+              <p className="routine-desc">
+                Inspect dry bulb thermometer and wet hygrometer at 12:00 PM. Target: 24–26°C and 75–80% RH.
+              </p>
+              <div className="routine-action-row">
+                <span className="routine-meta-text">
+                  {latestEnv ? `${latestEnv.temperatureCelsius.toFixed(1)}°C / ${latestEnv.humidityPercent}%` : 'No log today'}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => onOpenQuickLog(undefined, 'climate')}
+                  className="btn-secondary routine-btn"
+                >
+                  + Log Climate
+                </button>
+              </div>
             </div>
           </div>
 
           {/* Routine 3: Bed Sanitation & Spacing */}
           <div className="routine-card">
-            <div className="routine-header">
-              <div className="routine-icon-title">
-                <ShieldCheck size={16} style={{ color: '#2B5775' }} />
-                <span>3. Tray Cleaning & Bed Spacing</span>
+            <div className="routine-img-wrapper">
+              <img
+                src="/images/routine/bed_cleaning.jpg"
+                alt="Mesh cleaning nets on tiered sericulture rearing racks"
+                className="routine-img"
+                loading="lazy"
+              />
+              <div className="routine-img-overlay">
+                <span className="routine-time-badge">
+                  <Sparkles size={12} />
+                  <span>14:00 – 16:30</span>
+                </span>
+                <span className="routine-status-pill done">
+                  <span>Daily</span>
+                </span>
               </div>
-              <span className="routine-status-pill done">
-                <span>Daily</span>
-              </span>
             </div>
-            <p className="routine-desc">
-              Remove frass (excreta) and unconsumed dried leaves. For moulting lots, withhold leaf and dust with 97:3 slaked lime.
-            </p>
-            <div className="routine-action-row">
-              <span style={{ color: 'var(--text-muted)' }}>
-                {moultBatches.length > 0 ? `${moultBatches.length} lot(s) in moult` : 'Normal active beds'}
-              </span>
-              <button
-                type="button"
-                onClick={() => onOpenQuickLog(undefined, 'mortality')}
-                className="btn-secondary"
-                style={{ padding: '2px 8px', fontSize: '0.72rem' }}
-              >
-                Record Loss
-              </button>
+
+            <div className="routine-body">
+              <div className="routine-title-row">
+                <h4 className="routine-title">
+                  <ShieldCheck size={14} style={{ color: '#2B5775' }} />
+                  <span>3. Tray Cleaning & Spacing</span>
+                </h4>
+              </div>
+              <p className="routine-desc">
+                Spread mesh cleaning nets before feeding to separate larvae from frass. For moulting lots, withhold leaf and dust bed with 97:3 slaked lime.
+              </p>
+              <div className="routine-action-row">
+                <span className="routine-meta-text">
+                  {moultBatches.length > 0 ? `${moultBatches.length} lot(s) in moult` : 'Normal active beds'}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => onOpenQuickLog(undefined, 'mortality')}
+                  className="btn-secondary routine-btn"
+                >
+                  Record Loss
+                </button>
+              </div>
             </div>
           </div>
 
           {/* Routine 4: Evening Rations */}
           <div className={`routine-card ${shift.isEvening ? 'current' : ''}`}>
-            <div className="routine-header">
-              <div className="routine-icon-title">
-                <Moon size={16} style={{ color: 'var(--accent-gold)' }} />
-                <span>4. Evening Rations (17:00 – 19:30)</span>
+            <div className="routine-img-wrapper">
+              <img
+                src="/images/routine/evening_feed.jpg"
+                alt="Late-age silkworms feeding on mulberry shoots in evening light"
+                className="routine-img"
+                loading="lazy"
+              />
+              <div className="routine-img-overlay">
+                <span className="routine-time-badge">
+                  <Moon size={12} />
+                  <span>17:00 – 19:30</span>
+                </span>
+                <span className={`routine-status-pill ${shift.isEvening ? 'active' : 'pending'}`}>
+                  <span>{shift.isEvening ? 'Active Shift' : 'Scheduled'}</span>
+                </span>
               </div>
-              <span className={`routine-status-pill ${shift.isEvening ? 'active' : 'pending'}`}>
-                <span>{shift.isEvening ? 'Active Shift' : 'Scheduled'}</span>
-              </span>
             </div>
-            <p className="routine-desc">
-              Provide heavy night feed of fresh whole leaves or shoots. Silkworms feed most actively during cooler night hours.
-            </p>
-            <div className="routine-action-row">
-              <span style={{ color: 'var(--text-muted)' }}>
-                Stored leaf: {leafCoverage.totalStockKg.toFixed(1)} kg
-              </span>
-              <button
-                type="button"
-                onClick={() => onOpenQuickLog(undefined, 'feed')}
-                className="btn-accent"
-                style={{ padding: '2px 8px', fontSize: '0.72rem' }}
-              >
-                + Log Feed
-              </button>
+
+            <div className="routine-body">
+              <div className="routine-title-row">
+                <h4 className="routine-title">
+                  <Moon size={14} style={{ color: 'var(--accent-gold)' }} />
+                  <span>4. Evening Rations</span>
+                </h4>
+                {shift.isEvening && <span className="routine-current-tag">Now</span>}
+              </div>
+              <p className="routine-desc">
+                Provide heavy night feed of fresh whole leaves or shoots. Silkworms feed most actively during cooler night hours.
+              </p>
+              <div className="routine-action-row">
+                <span className="routine-meta-text">
+                  Stored leaf: {leafCoverage.totalStockKg.toFixed(1)} kg
+                </span>
+                <button
+                  type="button"
+                  onClick={() => onOpenQuickLog(undefined, 'feed')}
+                  className="btn-accent routine-btn"
+                >
+                  + Log Feed
+                </button>
+              </div>
             </div>
           </div>
         </div>
