@@ -2865,55 +2865,6 @@ th,
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.log-batch-context {
-  background-color: var(--bg-subtle);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  margin-top: 6px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.log-batch-context-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-  gap: 8px;
-  font-size: 0.74rem;
-}
-
-.preset-pill-row {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  margin-top: 6px;
-}
-
-.preset-pill-btn {
-  background-color: var(--bg-subtle);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-full);
-  padding: 3px 10px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: var(--text-main);
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.preset-pill-btn:hover {
-  background-color: #ffffff;
-  border-color: var(--primary);
-  color: var(--primary);
-}
-
-.preset-pill-btn.active {
-  background-color: var(--primary);
-  border-color: var(--primary);
-  color: #ffffff;
-}
-
 .unit-toggle-group {
   display: inline-flex;
   border: 1px solid var(--border-card);

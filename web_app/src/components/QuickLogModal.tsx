@@ -11,7 +11,6 @@ import {
   ShieldAlert,
   Info,
   Clock,
-  Zap,
 } from 'lucide-react';
 import {
   Batch,
@@ -21,7 +20,7 @@ import {
   LeafType,
   MortalityLog,
 } from '../types';
-import { getCurrentStage, getLiveLarvaeCount, getSuggestedDailyFeedGrams } from '../utils';
+import { getCurrentStage } from '../utils';
 
 interface QuickLogModalProps {
   batches: Batch[];
@@ -81,11 +80,7 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
 
   // Selected Batch Context
   const selectedBatch = batches.find((b) => b.id === selectedBatchId) || batches[0];
-  const liveCount = selectedBatch ? getLiveLarvaeCount(selectedBatch, mortalityLogs) : 0;
   const currentStage = selectedBatch ? getCurrentStage(selectedBatch) : null;
-  const suggestedDailyGrams = selectedBatch && currentStage
-    ? getSuggestedDailyFeedGrams(selectedBatch, liveCount, currentStage)
-    : 0;
 
   // Feed State
   const [feedUnit, setFeedUnit] = useState<'kg' | 'g'>('kg');
@@ -133,19 +128,6 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
-
-  // Auto-fill suggested meal
-  const handleAutoFillFeed = () => {
-    if (suggestedDailyGrams <= 0) return;
-    // Single feed round is roughly 1/3 of daily target
-    const singleFeedGrams = Math.round(suggestedDailyGrams / 3.0);
-    if (feedUnit === 'kg') {
-      setFeedAmount(Number((singleFeedGrams / 1000.0).toFixed(2)));
-    } else {
-      setFeedAmount(singleFeedGrams);
-    }
-    setWasSkipped(false);
-  };
 
   // Submit Handler
   const handleSubmit = (e: React.FormEvent) => {
@@ -319,7 +301,7 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
         )}
 
         <form onSubmit={handleSubmit}>
-          {/* Selected Batch & Real-time Context Strip */}
+          {/* Selected Batch */}
           <div className="form-group" style={{ marginBottom: '1rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
               <label className="form-label" style={{ margin: 0 }}>Silkworm Batch</label>
@@ -339,53 +321,6 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
                 </option>
               ))}
             </select>
-
-            {/* Batch Context Strip */}
-            {selectedBatch && (
-              <div className="log-batch-context">
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
-                  <span style={{ fontSize: '0.76rem', fontWeight: 700, color: 'var(--primary)' }}>
-                    {selectedBatch.displayTag || selectedBatch.batchTag}
-                  </span>
-                  <span
-                    style={{
-                      fontSize: '0.7rem',
-                      fontWeight: 600,
-                      padding: '1px 7px',
-                      borderRadius: 'var(--radius-full)',
-                      backgroundColor: currentStage?.isMoult ? '#fff3cd' : 'rgba(20, 61, 43, 0.1)',
-                      color: currentStage?.isMoult ? '#856404' : 'var(--primary)',
-                    }}
-                  >
-                    {currentStage?.name || 'Rearing Lot'}
-                  </span>
-                </div>
-
-                <div className="log-batch-context-grid">
-                  <div>
-                    <span style={{ color: 'var(--text-muted)' }}>Live Worms: </span>
-                    <strong className="tabular-nums">{liveCount.toLocaleString()}</strong>
-                  </div>
-                  <div>
-                    <span style={{ color: 'var(--text-muted)' }}>Daily Target: </span>
-                    <strong className="tabular-nums">
-                      {suggestedDailyGrams > 0 ? `${(suggestedDailyGrams / 1000.0).toFixed(1)} kg` : 'Moult Fasting'}
-                    </strong>
-                  </div>
-                  <div>
-                    <span style={{ color: 'var(--text-muted)' }}>Room: </span>
-                    <strong>{selectedBatch.roomName || 'House 1'}</strong>
-                  </div>
-                </div>
-
-                {/* Moult Warning Callout */}
-                {currentStage?.isMoult && (
-                  <div style={{ fontSize: '0.72rem', color: '#856404', marginTop: '2px', lineHeight: 1.35 }}>
-                    ⚠️ <strong>Moult Rest:</strong> Worms are inactive. Withhold leaf feeding and dust bed with dry slaked lime (97:3).
-                  </div>
-                )}
-              </div>
-            )}
           </div>
 
           {/* TAB 1: FEED ALLOCATION */}
@@ -423,7 +358,7 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
 
               {!wasSkipped ? (
                 <>
-                  {/* Quantity with Unit Switcher & Presets */}
+                  {/* Quantity with Unit Switcher */}
                   <div className="form-group">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                       <label className="form-label" style={{ margin: 0 }}>Feed Quantity *</label>
@@ -465,33 +400,6 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
                       placeholder={feedUnit === 'kg' ? 'e.g. 2.5' : 'e.g. 2500'}
                       required
                     />
-
-                    {/* Quick Preset Buttons */}
-                    <div className="preset-pill-row">
-                      {(feedUnit === 'kg' ? [0.5, 1.0, 2.0, 3.5, 5.0, 10.0] : [500, 1000, 2000, 3500, 5000]).map((val) => (
-                        <button
-                          key={val}
-                          type="button"
-                          className={`preset-pill-btn ${feedAmount === val ? 'active' : ''}`}
-                          onClick={() => setFeedAmount(val)}
-                        >
-                          +{val} {feedUnit}
-                        </button>
-                      ))}
-
-                      {suggestedDailyGrams > 0 && (
-                        <button
-                          type="button"
-                          className="preset-pill-btn"
-                          style={{ backgroundColor: 'rgba(20, 61, 43, 0.08)', color: 'var(--primary)', borderColor: 'rgba(20, 61, 43, 0.25)' }}
-                          onClick={handleAutoFillFeed}
-                          title="Fill calculated ration for 1 meal"
-                        >
-                          <Zap size={11} style={{ display: 'inline', marginRight: '3px' }} />
-                          Fill Suggested Meal
-                        </button>
-                      )}
-                    </div>
                   </div>
 
                   {/* Forage Variety & Feeding Shift */}
@@ -545,7 +453,7 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
           {/* TAB 2: LARVAL LOSS / MORTALITY */}
           {logType === 'mortality' && (
             <div>
-              {/* Dead Count with Presets */}
+              {/* Dead Count */}
               <div className="form-group">
                 <label className="form-label">Dead Larvae Count *</label>
                 <input
@@ -557,18 +465,6 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
                   placeholder="e.g. 12"
                   required
                 />
-                <div className="preset-pill-row">
-                  {[1, 5, 10, 25, 50, 100].map((num) => (
-                    <button
-                      key={num}
-                      type="button"
-                      className={`preset-pill-btn ${lossCount === num ? 'active' : ''}`}
-                      onClick={() => setLossCount(num)}
-                    >
-                      {num} worms
-                    </button>
-                  ))}
-                </div>
               </div>
 
               {/* Suspected Cause */}
@@ -643,18 +539,6 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
                     placeholder="e.g. 25.0"
                     required
                   />
-                  <div className="preset-pill-row">
-                    {[23.0, 24.0, 25.0, 26.0, 27.0, 28.0].map((t) => (
-                      <button
-                        key={t}
-                        type="button"
-                        className={`preset-pill-btn ${temp === t ? 'active' : ''}`}
-                        onClick={() => setTemp(t)}
-                      >
-                        {t}°C
-                      </button>
-                    ))}
-                  </div>
                 </div>
 
                 {/* Relative Humidity */}
@@ -670,18 +554,6 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
                     placeholder="e.g. 78"
                     required
                   />
-                  <div className="preset-pill-row">
-                    {[70, 75, 80, 85].map((h) => (
-                      <button
-                        key={h}
-                        type="button"
-                        className={`preset-pill-btn ${hum === h ? 'active' : ''}`}
-                        onClick={() => setHum(h)}
-                      >
-                        {h}%
-                      </button>
-                    ))}
-                  </div>
                 </div>
               </div>
 
@@ -757,18 +629,6 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
                     placeholder="e.g. 3500"
                     required
                   />
-                  <div className="preset-pill-row">
-                    {[500, 1000, 2500, 3500, 5000].map((c) => (
-                      <button
-                        key={c}
-                        type="button"
-                        className={`preset-pill-btn ${cocoonCount === c ? 'active' : ''}`}
-                        onClick={() => setCocoonCount(c)}
-                      >
-                        {c.toLocaleString()}
-                      </button>
-                    ))}
-                  </div>
                 </div>
 
                 {/* Gross Weight with Unit Switch */}
