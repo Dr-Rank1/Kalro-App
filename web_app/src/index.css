@@ -2049,3 +2049,661 @@ th,
     page-break-inside: avoid;
   }
 }
+
+/* ==========================================================================
+   Multi-Tenant Farmer Identity & Local Database UI
+   ========================================================================== */
+
+/* Header Tenant Switcher */
+.tenant-switcher-wrapper {
+  position: relative;
+}
+
+.tenant-user-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  padding: 4px 10px 4px 6px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tenant-user-pill:hover {
+  background-color: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.tenant-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.tenant-user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  line-height: 1.1;
+}
+
+.tenant-user-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #ffffff;
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tenant-role-tag {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 1px 5px;
+  border-radius: var(--radius-sm);
+  margin-top: 1px;
+}
+
+.tenant-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 320px;
+  background-color: #ffffff;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.18), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tenant-dropdown-header {
+  padding: 10px 14px;
+  background-color: var(--bg-subtle);
+  border-bottom: 1px solid var(--border-card);
+}
+
+.tenant-dropdown-list {
+  padding: 6px 0;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.tenant-account-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 14px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.tenant-account-item:hover {
+  background-color: var(--bg-subtle);
+}
+
+.tenant-account-item.active {
+  background-color: var(--primary-subtle);
+}
+
+.tenant-avatar-sm {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.tenant-item-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.tenant-item-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.tenant-item-sub {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.tenant-dropdown-actions {
+  padding: 8px 12px;
+  border-top: 1px solid var(--border-divider);
+  background-color: var(--bg-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tenant-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 6px 12px;
+  background-color: var(--primary);
+  color: #ffffff;
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.tenant-action-btn:hover {
+  background-color: var(--primary-hover);
+}
+
+.tenant-action-btn.secondary {
+  background-color: #ffffff;
+  color: var(--text-main);
+  border-color: var(--border-card);
+}
+
+.tenant-action-btn.secondary:hover {
+  background-color: var(--bg-page);
+}
+
+/* ==========================================================================
+   Profile View & Farmer Management
+   ========================================================================== */
+
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Farmer Hero Banner */
+.farmer-hero-card {
+  background: linear-gradient(135deg, #143D2B 0%, #1A4F38 100%);
+  border: 1px solid #0F2E20;
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  color: #ffffff;
+}
+
+.farmer-hero-main {
+  display: flex;
+  gap: 1.25rem;
+  align-items: center;
+}
+
+.farmer-hero-avatar {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+}
+
+.farmer-hero-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.farmer-hero-badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.farmer-role-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid transparent;
+}
+
+.farmer-accreditation-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  background-color: rgba(198, 138, 20, 0.25);
+  color: #F8E2B2;
+  border: 1px solid rgba(198, 138, 20, 0.5);
+}
+
+.farmer-offline-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  background-color: rgba(255, 255, 255, 0.12);
+  color: #E0EDE6;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.farmer-hero-name {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 2px 0;
+}
+
+.farmer-hero-station {
+  font-size: 0.85rem;
+  color: #B5D1C3;
+  margin-bottom: 6px;
+}
+
+.farmer-hero-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 0.75rem;
+  color: #D1E3DA;
+}
+
+.farmer-meta-tag {
+  display: inline-flex;
+  align-items: center;
+}
+
+.farmer-stats-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.stat-pill {
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-pill .stat-label {
+  font-size: 0.68rem;
+  color: #B5D1C3;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.stat-pill .stat-value {
+  font-size: 1.15rem;
+  color: #ffffff;
+  margin-top: 2px;
+}
+
+.stat-pill .stat-value.text-success {
+  color: #8CE8B2;
+}
+
+/* Profile Sub-Tab Bar */
+.profile-tab-bar {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--border-divider);
+  padding-bottom: 4px;
+}
+
+.profile-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  background: none;
+  border: 1px solid transparent;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.profile-tab-btn:hover {
+  background-color: var(--bg-subtle);
+  color: var(--text-main);
+}
+
+.profile-tab-btn.active {
+  background-color: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+}
+
+/* Profile Details 2-Column Grid */
+.profile-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+.profile-detail-item {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-divider);
+}
+
+.profile-detail-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+
+.profile-detail-value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+/* Agronomy Spec Grid */
+.agronomy-spec-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+.spec-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: var(--bg-subtle);
+  border: 1px solid var(--border-card);
+  padding: 1rem;
+  border-radius: var(--radius-sm);
+}
+
+.spec-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.spec-value {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.spec-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+/* Multi-Farmer Accounts Directory Grid */
+.farmer-accounts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.farmer-account-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: all 0.15s ease;
+}
+
+.farmer-account-card:hover {
+  border-color: var(--primary);
+}
+
+.farmer-account-card.active-tenant {
+  border: 2px solid var(--primary);
+  background-color: var(--primary-subtle);
+}
+
+.farmer-account-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.farmer-account-card-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.farmer-account-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.farmer-account-card-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.farmer-active-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: var(--primary);
+  background-color: #ffffff;
+  padding: 1px 5px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--primary);
+}
+
+.farmer-account-role-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  display: block;
+  margin-top: 1px;
+}
+
+.farmer-account-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  background-color: rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  font-size: 0.76rem;
+}
+
+.card-spec-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.card-spec-row .label {
+  color: var(--text-muted);
+}
+
+.card-spec-row .val {
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.farmer-account-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.btn-icon-danger {
+  background: none;
+  border: 1px solid var(--border-card);
+  color: var(--status-danger);
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.btn-icon-danger:hover {
+  background-color: var(--status-danger-subtle);
+  border-color: var(--status-danger);
+}
+
+/* Offline Database Admin Styles */
+.db-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+}
+
+.db-status-pill.online {
+  background-color: var(--status-success-subtle);
+  color: var(--status-success);
+  border: 1px solid #BAE3CC;
+}
+
+.db-status-pill.online .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--status-success);
+}
+
+.db-info-box {
+  background-color: var(--bg-subtle);
+  border: 1px solid var(--border-card);
+  border-left: 4px solid var(--primary);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1rem;
+  font-size: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 0.75rem;
+}
+
+.db-info-item code {
+  background-color: #ffffff;
+  border: 1px solid var(--border-subtle);
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  color: var(--primary);
+}
+
+.db-action-card {
+  background-color: var(--bg-subtle);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.db-status-alert {
+  margin-top: 1rem;
+  padding: 0.65rem 1rem;
+  background-color: var(--status-success-subtle);
+  border: 1px solid #BAE3CC;
+  color: var(--status-success);
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.btn-purge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background: none;
+  border: 1px dashed var(--border-card);
+  color: var(--status-danger);
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-purge:hover {
+  background-color: var(--status-danger-subtle);
+  border-color: var(--status-danger);
+}
+

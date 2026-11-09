@@ -114,13 +114,59 @@ export interface PaymentRecord {
   notes?: string;
 }
 
+export type UserRole =
+  | 'station_manager'
+  | 'lead_technician'
+  | 'commercial_reeler'
+  | 'extension_officer'
+  | 'apprentice';
+
+export interface UserAccount {
+  id: string; // unique user UUID
+  username: string; // farmer / operator name
+  email?: string;
+  phone?: string;
+  role: UserRole;
+  stationName: string;
+  county: string;
+  avatarColor: string;
+  avatarInitials: string;
+  pinCode?: string; // 4-digit PIN lock
+  createdAt: string;
+  lastActiveAt: string;
+}
+
 export interface FarmProfile {
   id: string;
+  userId?: string;
   orgName: string;
   county: string;
   houseCount: number;
   syncCode: string;
   managerName: string;
+  managerRole?: UserRole;
+  phone?: string;
+  email?: string;
+  nationalId?: string;
+  subCounty?: string;
+  ward?: string;
+  altitudeMeters?: number;
+  accreditationLevel?: 'Research Station' | 'Commercial Producer' | 'Master Seed Lot' | 'Smallholder Cluster';
+  
+  // Agronomy & Rearing Facility Capacity
+  rearingBaysCount?: number;
+  maxTrayCapacity?: number;
+  mulberryAcreage?: number;
+  mulberryCultivars?: string[];
+  castorAcreage?: number;
+  kesseruTreesCount?: number;
+  targetMarket?: string;
+
+  // Security & Visuals
+  pinCode?: string;
+  avatarColor?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface DiseaseInfo {

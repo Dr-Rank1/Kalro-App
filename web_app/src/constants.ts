@@ -1,4 +1,37 @@
-import { DiseaseInfo, MilestoneStage, Species } from './types';
+import { DiseaseInfo, MilestoneStage, Species, UserRole } from './types';
+
+export const USER_ROLES: { value: UserRole; label: string; desc: string; badgeColor: string }[] = [
+  {
+    value: 'station_manager',
+    label: 'Lead Station Manager',
+    desc: 'Full farm oversight, commercial reeling operations, and financial audits.',
+    badgeColor: '#1B5E20',
+  },
+  {
+    value: 'lead_technician',
+    label: 'Chawki Rearing Technician',
+    desc: 'Precision egg incubation, young-instar microclimate, and leaf hygiene.',
+    badgeColor: '#0D47A1',
+  },
+  {
+    value: 'commercial_reeler',
+    label: 'Commercial Cocoon Producer',
+    desc: 'Late-age shoot feeding, chandrike spinning, and harvest yield marketing.',
+    badgeColor: '#E65100',
+  },
+  {
+    value: 'extension_officer',
+    label: 'KALRO Extension Officer',
+    desc: 'Multi-farm advisory, disease diagnostics, farmer training, and certification.',
+    badgeColor: '#4A148C',
+  },
+  {
+    value: 'apprentice',
+    label: 'Farm Operator / Apprentice',
+    desc: 'Rearing house bed cleaning, fresh forage cutting, and daily feeding chores.',
+    badgeColor: '#37474F',
+  },
+];
 
 export const KENYA_COUNTIES = [
   'Kiambu',
