@@ -941,7 +941,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
       </div>
 
       {/* 6. Rearing Microclimate & Forage Stockpile Breakdown */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem', marginBottom: '1.25rem' }}>
+      <div className="monitoring-side-by-side-grid">
         {/* Rearing Microclimate Card */}
         <div className="kalro-card" style={{ marginBottom: 0 }}>
           <div className="card-header-flex">
