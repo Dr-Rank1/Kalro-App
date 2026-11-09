@@ -327,6 +327,8 @@ export function App() {
             envLogs={envLogs}
             harvests={harvests}
             inventory={inventory}
+            profile={profile}
+            onOpenCreateProfile={() => handleOpenCreateProfile(() => setActiveTab('today'))}
             onOpenQuickLog={(batchId, type) => {
               if (!profile) {
                 handleOpenCreateProfile();
@@ -433,6 +435,8 @@ export function App() {
       {quickLogState.open && (
         <QuickLogModal
           batches={batches}
+          feedLogs={feedLogs}
+          mortalityLogs={mortalityLogs}
           initialBatchId={quickLogState.batchId}
           defaultType={quickLogState.type}
           onClose={() => setQuickLogState({ open: false })}
