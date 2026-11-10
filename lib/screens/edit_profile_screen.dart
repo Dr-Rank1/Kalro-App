@@ -111,6 +111,47 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
+  Future<void> _confirmDeleteProfile() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Delete profile?'.tr),
+        content: Text(
+          'Are you sure you want to delete profile "${_session.user.farmerFacingName}" from this device? This cannot be undone.'.tr,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('Cancel'.tr),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: Text('Delete'.tr),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _saving = true);
+    try {
+      await _auth.deleteUser(_session.user);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Profile deleted'.tr)),
+      );
+      Navigator.of(context).pop();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Delete failed: $e'.tr)),
+      );
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -237,6 +278,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               KalroPrimaryButton(
                 label: _saving ? 'Saving...'.tr : 'Save profile'.tr,
                 onPressed: _saving ? null : _save,
+              ),
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                icon: const Icon(Icons.delete_outline, color: Colors.red, size: 18),
+                label: Text('Delete profile'.tr, style: const TextStyle(color: Colors.red)),
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(48),
+                  side: const BorderSide(color: Colors.red),
+                ),
+                onPressed: _saving ? null : _confirmDeleteProfile,
               ),
             ],
           ),

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { UserRole, FarmProfile, UserAccount } from '../types';
 import { KENYA_COUNTIES, USER_ROLES } from '../constants';
-import { RefreshCw, Check } from 'lucide-react';
+import { RefreshCw, Check, Trash2 } from 'lucide-react';
 
 export interface ProfileFormData {
   username: string;
@@ -26,6 +26,7 @@ interface ProfileFormModalProps {
   };
   onClose: () => void;
   onSave: (data: ProfileFormData) => void;
+  onDelete?: () => void;
 }
 
 const AVATAR_COLORS = [
@@ -49,6 +50,7 @@ export const ProfileFormModal: React.FC<ProfileFormModalProps> = ({
   initialData,
   onClose,
   onSave,
+  onDelete,
 }) => {
   const user = initialData?.user;
   const profile = initialData?.profile;
@@ -418,13 +420,30 @@ export const ProfileFormModal: React.FC<ProfileFormModalProps> = ({
             )}
           </div>
 
-          <div className="modal-footer">
-            <button type="button" onClick={onClose} className="btn-secondary">
-              Cancel
-            </button>
-            <button type="submit" className="btn-accent">
-              {mode === 'create' ? 'Create Farm Profile' : 'Save Changes'}
-            </button>
+          <div className="modal-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            {mode === 'edit' && onDelete ? (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onDelete();
+                }}
+                className="btn-danger-outline"
+                style={{ fontSize: '0.8rem', padding: '0.45rem 0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+                title="Delete this profile permanently"
+              >
+                <Trash2 size={13} />
+                Delete Profile
+              </button>
+            ) : <div />}
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button type="button" onClick={onClose} className="btn-secondary">
+                Cancel
+              </button>
+              <button type="submit" className="btn-accent">
+                {mode === 'create' ? 'Create Farm Profile' : 'Save Changes'}
+              </button>
+            </div>
           </div>
         </form>
       </div>

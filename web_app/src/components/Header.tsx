@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FarmProfile, UserAccount } from '../types';
 import { USER_ROLES } from '../constants';
-import { FileText, ChevronDown, Check, UserPlus } from 'lucide-react';
+import { FileText, ChevronDown, Check, UserPlus, Trash2 } from 'lucide-react';
 
 interface HeaderProps {
   profile: FarmProfile | null;
@@ -12,6 +12,7 @@ interface HeaderProps {
   onSwitchUser: (userId: string) => void;
   onOpenNewUserModal: () => void;
   onNavigateToProfile: () => void;
+  onRequestDeleteUser?: (user: UserAccount) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -23,6 +24,7 @@ export const Header: React.FC<HeaderProps> = ({
   onSwitchUser,
   onOpenNewUserModal,
   onNavigateToProfile,
+  onRequestDeleteUser,
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -161,13 +163,16 @@ export const Header: React.FC<HeaderProps> = ({
                       const isSelected = user.id === currentUser.id;
                       const uRole = USER_ROLES.find((r) => r.value === user.role) || USER_ROLES[0];
                       return (
-                        <button
+                        <div
                           key={user.id}
                           onClick={() => {
                             onSwitchUser(user.id);
                             setDropdownOpen(false);
                           }}
                           className={`tenant-account-item ${isSelected ? 'active' : ''}`}
+                          style={{ display: 'flex', alignItems: 'center', width: '100%', cursor: 'pointer' }}
+                          role="button"
+                          tabIndex={0}
                         >
                           <div
                             className="tenant-avatar-sm"
@@ -175,7 +180,7 @@ export const Header: React.FC<HeaderProps> = ({
                           >
                             {user.avatarInitials}
                           </div>
-                          <div className="tenant-item-details">
+                          <div className="tenant-item-details" style={{ flex: 1, minWidth: 0 }}>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                               <span className="tenant-item-name">{user.username}</span>
                               {isSelected && <Check size={14} color="var(--primary)" />}
@@ -184,7 +189,23 @@ export const Header: React.FC<HeaderProps> = ({
                               {uRole.label} • {user.county}
                             </span>
                           </div>
-                        </button>
+                          {onRequestDeleteUser && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setDropdownOpen(false);
+                                onRequestDeleteUser(user);
+                              }}
+                              className="btn-icon-subtle-danger"
+                              style={{ padding: '4px', marginLeft: '6px' }}
+                              title={`Delete profile for ${user.username}`}
+                              aria-label={`Delete profile for ${user.username}`}
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          )}
+                        </div>
                       );
                     })}
                   </div>

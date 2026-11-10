@@ -14,6 +14,7 @@ import {
   AlertTriangle,
   UserPlus,
 } from 'lucide-react';
+import { DeleteProfileModal } from './DeleteProfileModal';
 
 interface ProfileViewProps {
   profile: FarmProfile | null;
@@ -29,6 +30,7 @@ interface ProfileViewProps {
   onExportActiveUserBackup: () => void;
   onImportBackup: (jsonStr: string) => Promise<{ success: boolean; message: string }>;
   onClearActiveUserRecords: () => void;
+  onRequestDeleteUser?: (user: UserAccount) => void;
 }
 
 export const ProfileView: React.FC<ProfileViewProps> = ({
@@ -45,9 +47,19 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   onExportActiveUserBackup,
   onImportBackup,
   onClearActiveUserRecords,
+  onRequestDeleteUser,
 }) => {
   const [importStatus, setImportStatus] = useState<string | null>(null);
+  const [localUserToDelete, setLocalUserToDelete] = useState<UserAccount | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleDeleteClick = (user: UserAccount) => {
+    if (onRequestDeleteUser) {
+      onRequestDeleteUser(user);
+    } else {
+      setLocalUserToDelete(user);
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -170,10 +182,20 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             </div>
           </div>
 
-          <button onClick={onOpenEditProfile} className="btn-secondary profile-edit-btn">
-            <Edit2 size={13} style={{ marginRight: '5px' }} />
-            Edit Profile
-          </button>
+          <div className="profile-header-actions">
+            <button onClick={onOpenEditProfile} className="btn-secondary profile-edit-btn">
+              <Edit2 size={13} style={{ marginRight: '5px' }} />
+              Edit Profile
+            </button>
+            <button
+              onClick={() => handleDeleteClick(currentUser)}
+              className="btn-danger-outline profile-delete-btn"
+              title="Delete this farm profile"
+            >
+              <Trash2 size={13} style={{ marginRight: '5px' }} />
+              Delete Profile
+            </button>
+          </div>
         </div>
 
         {/* 2. Quick Season Numbers */}
@@ -306,19 +328,14 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                     </span>
                   )}
 
-                  {allUsers.length > 1 && !isActive && (
-                    <button
-                      onClick={() => {
-                        if (window.confirm(`Delete profile for "${user.username}"?`)) {
-                          onDeleteUser(user.id);
-                        }
-                      }}
-                      className="btn-icon-subtle-danger"
-                      title="Delete profile"
-                    >
-                      <Trash2 size={13} />
-                    </button>
-                  )}
+                  <button
+                    onClick={() => handleDeleteClick(user)}
+                    className="btn-icon-subtle-danger"
+                    title={`Delete profile for "${user.username}"`}
+                    aria-label={`Delete profile for ${user.username}`}
+                  >
+                    <Trash2 size={13} />
+                  </button>
                 </div>
               </div>
             );
@@ -366,24 +383,70 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           </div>
         )}
 
-        <div style={{ marginTop: '1.25rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border-divider)' }}>
-          <button
-            onClick={() => {
-              if (
-                window.confirm(
-                  `Are you sure you want to clear all batches and logs for ${currentUser.username}? Other farmer profiles will stay safe.`
-                )
-              ) {
-                onClearActiveUserRecords();
-              }
-            }}
-            className="btn-text-danger"
-          >
-            <AlertTriangle size={13} style={{ marginRight: '5px' }} />
-            Clear data for {currentUser.username}
-          </button>
+        {/* Danger Zone: Clear Records or Delete Profile */}
+        <div style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid var(--border-divider)', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.6rem' }}>
+            <div>
+              <div style={{ fontSize: '0.84rem', fontWeight: 600, color: 'var(--text-main)' }}>
+                Clear Records Only
+              </div>
+              <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
+                Keep {currentUser.username}'s farm profile, but wipe all rearing batches and feeding logs.
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                if (
+                  window.confirm(
+                    `Are you sure you want to clear all batches and logs for ${currentUser.username}? Profile details will remain saved.`
+                  )
+                ) {
+                  onClearActiveUserRecords();
+                }
+              }}
+              className="btn-secondary"
+              style={{ fontSize: '0.76rem', color: 'var(--text-muted)' }}
+            >
+              <AlertTriangle size={12} style={{ marginRight: '4px' }} />
+              Clear Records
+            </button>
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.6rem', paddingTop: '0.85rem', borderTop: '1px dashed var(--border-divider)' }}>
+            <div>
+              <div style={{ fontSize: '0.84rem', fontWeight: 600, color: 'var(--status-danger)' }}>
+                Delete Farm Profile
+              </div>
+              <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
+                Permanently delete {currentUser.username} and all associated records from this device.
+              </div>
+            </div>
+            <button
+              onClick={() => handleDeleteClick(currentUser)}
+              className="btn-danger"
+              style={{ fontSize: '0.78rem', padding: '0.4rem 0.85rem' }}
+            >
+              <Trash2 size={13} style={{ marginRight: '5px' }} />
+              Delete Profile
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Standalone Fallback Modal if parent does not provide onRequestDeleteUser */}
+      {!onRequestDeleteUser && localUserToDelete && (
+        <DeleteProfileModal
+          isOpen={localUserToDelete !== null}
+          user={localUserToDelete}
+          profile={localUserToDelete?.id === currentUser.id ? profile : null}
+          allUsers={allUsers}
+          onClose={() => setLocalUserToDelete(null)}
+          onConfirmDelete={(userId) => {
+            onDeleteUser(userId);
+            setLocalUserToDelete(null);
+          }}
+        />
+      )}
     </div>
   );
 };

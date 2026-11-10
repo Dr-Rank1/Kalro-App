@@ -112,6 +112,47 @@ class _FarmSettingsScreenState extends State<FarmSettingsScreen> {
     }
   }
 
+  Future<void> _confirmDeleteFarm() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Delete farm profile?'.tr),
+        content: Text(
+          'This will permanently delete the farm "${widget.session.farm.orgName}" and all associated rearing lots, logs, and user records. Continue?'.tr,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('Cancel'.tr),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: Text('Delete'.tr),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _saving = true);
+    try {
+      await _auth.deleteFarm(widget.session.farm.id);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Farm profile deleted'.tr)),
+      );
+      Navigator.of(context).pop();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Delete failed: $e'.tr)),
+      );
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
   Future<void> _copySyncCode() async {
     await Clipboard.setData(
       ClipboardData(text: widget.session.farm.syncCode),
@@ -242,11 +283,22 @@ class _FarmSettingsScreenState extends State<FarmSettingsScreen> {
             ),
           ),
           const SizedBox(height: 24),
-          if (canEdit)
+          if (canEdit) ...[
             KalroPrimaryButton(
               label: _saving ? 'Saving...'.tr : 'Save changes'.tr,
               onPressed: _saving ? null : _save,
-            )
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton.icon(
+              icon: const Icon(Icons.delete_outline, color: Colors.red, size: 18),
+              label: Text('Delete farm profile'.tr, style: const TextStyle(color: Colors.red)),
+              style: OutlinedButton.styleFrom(
+                minimumSize: const Size.fromHeight(48),
+                side: const BorderSide(color: Colors.red),
+              ),
+              onPressed: _saving ? null : _confirmDeleteFarm,
+            ),
+          ]
           else
             Text(
               'Ask the farm owner to change farm name, county, or houses.'.tr,

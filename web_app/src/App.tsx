@@ -10,6 +10,7 @@ import { QuickLogModal } from './components/QuickLogModal';
 import { QrCodeModal } from './components/QrCodeModal';
 import { ReportExportModal } from './components/ReportExportModal';
 import { ProfileFormModal, ProfileFormData } from './components/ProfileFormModal';
+import { DeleteProfileModal } from './components/DeleteProfileModal';
 import { downloadSingleBatchPdf } from './utils/pdfGenerator';
 import { storage } from './storage';
 import {
@@ -82,6 +83,9 @@ export function App() {
     onComplete?: () => void;
   }>({ open: false, mode: 'create' });
 
+  // Delete Profile Confirmation Target
+  const [deleteProfileTarget, setDeleteProfileTarget] = useState<UserAccount | null>(null);
+
   // Toast Notification
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -126,10 +130,23 @@ export function App() {
 
   // Delete Farmer Profile
   const handleDeleteUser = (userId: string): boolean => {
+    const userToDelete = allUsers.find((u) => u.id === userId);
+    const username = userToDelete?.username || 'Profile';
+    const isDeletingActive = currentUser?.id === userId;
+    const remainingUsers = allUsers.filter((u) => u.id !== userId);
+
     const success = storage.deleteUserProfile(userId);
     if (success) {
       reloadAll();
-      showToast('Profile deleted.');
+      if (isDeletingActive) {
+        if (remainingUsers.length > 0) {
+          showToast(`Deleted profile for "${username}". Switched to ${remainingUsers[0].username}.`);
+        } else {
+          showToast(`Deleted profile for "${username}". No active profiles.`);
+        }
+      } else {
+        showToast(`Deleted profile for "${username}".`);
+      }
     }
     return success;
   };
@@ -308,6 +325,7 @@ export function App() {
         onSwitchUser={handleSwitchUser}
         onOpenNewUserModal={() => handleOpenCreateProfile()}
         onNavigateToProfile={() => setActiveTab('you')}
+        onRequestDeleteUser={(u) => setDeleteProfileTarget(u)}
       />
 
       {/* Navigation */}
@@ -427,6 +445,7 @@ export function App() {
             onExportActiveUserBackup={handleExportActiveUserBackup}
             onImportBackup={handleImportBackup}
             onClearActiveUserRecords={handleClearActiveUserRecords}
+            onRequestDeleteUser={(u) => setDeleteProfileTarget(u)}
           />
         )}
       </main>
@@ -477,7 +496,23 @@ export function App() {
         initialData={{ user: currentUser, profile }}
         onClose={() => setProfileModalState({ open: false, mode: 'create' })}
         onSave={handleSaveProfileForm}
+        onDelete={() => currentUser && setDeleteProfileTarget(currentUser)}
       />
+
+      {/* Delete Profile Confirmation Dialog */}
+      {deleteProfileTarget && (
+        <DeleteProfileModal
+          isOpen={deleteProfileTarget !== null}
+          user={deleteProfileTarget}
+          profile={deleteProfileTarget.id === currentUser?.id ? profile : null}
+          allUsers={allUsers}
+          onClose={() => setDeleteProfileTarget(null)}
+          onConfirmDelete={(uid) => {
+            handleDeleteUser(uid);
+            setDeleteProfileTarget(null);
+          }}
+        />
+      )}
 
       {/* Toast Notification */}
       {toastMessage && (

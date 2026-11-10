@@ -91,6 +91,19 @@ class StorageService {
     }
   }
 
+  // Remove key from IndexedDB in background
+  private async idbDelete(key: string): Promise<void> {
+    try {
+      const db = await this.initIndexedDb();
+      if (!db) return;
+      const tx = db.transaction(IDB_STORE, 'readwrite');
+      const store = tx.objectStore(IDB_STORE);
+      store.delete(key);
+    } catch {
+      // IndexedDB optional background mirror
+    }
+  }
+
   // Read key-value from localStorage
   private get<T>(key: string, defaultValue: T): T {
     try {
@@ -330,31 +343,13 @@ class StorageService {
   // Delete a user profile and all their isolated tenant data
   deleteUserProfile(userId: string): boolean {
     const users = this.getAllUsers();
-    if (users.length <= 1) {
-      // Clear last user completely
-      this.saveUsers([]);
-      localStorage.removeItem(GLOBAL_KEYS.activeUserId);
-      const collections = [
-        'batches',
-        'feed_logs',
-        'mortality_logs',
-        'environment_logs',
-        'cocoon_harvests',
-        'leaf_inventory',
-        'leaf_movements',
-        'payments',
-        'profile',
-      ];
-      collections.forEach((col) => {
-        localStorage.removeItem(`kalro_u_${userId}_${col}`);
-      });
-      return true;
-    }
+    const currentActiveId = localStorage.getItem(GLOBAL_KEYS.activeUserId);
+    const isDeletingActive = currentActiveId === userId || (!currentActiveId && users[0]?.id === userId);
 
     const filtered = users.filter((u) => u.id !== userId);
     this.saveUsers(filtered);
 
-    // Remove tenant collections
+    // Remove tenant collections from localStorage and IndexedDB
     const collections = [
       'batches',
       'feed_logs',
@@ -367,11 +362,15 @@ class StorageService {
       'profile',
     ];
     collections.forEach((col) => {
-      localStorage.removeItem(`kalro_u_${userId}_${col}`);
+      const key = `kalro_u_${userId}_${col}`;
+      localStorage.removeItem(key);
+      this.idbDelete(key);
     });
 
-    // If deleted user was active, switch to first remaining user
-    if (this.getActiveUserId() === userId) {
+    if (filtered.length === 0) {
+      localStorage.removeItem(GLOBAL_KEYS.activeUserId);
+      this.idbDelete(GLOBAL_KEYS.activeUserId);
+    } else if (isDeletingActive) {
       this.setActiveUserId(filtered[0].id);
     }
 

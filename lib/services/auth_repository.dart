@@ -139,6 +139,20 @@ class AuthRepository {
     return farm;
   }
 
+  Future<void> deleteFarm(String farmId) async {
+    final root = await farmsRoot();
+    final dir = Directory('${root.path}/$farmId');
+    if (await dir.exists()) {
+      await dir.delete(recursive: true);
+    }
+  }
+
+  Future<void> deleteUser(AppUser user) async {
+    final users = await getUsers(user.farmId);
+    final remaining = users.where((u) => u.id != user.id).toList();
+    await _saveAllUsers(user.farmId, remaining);
+  }
+
   Future<AppUser> changePin({
     required AppUser user,
     required String currentPin,
