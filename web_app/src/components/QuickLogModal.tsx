@@ -392,8 +392,8 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
 
                     <input
                       type="number"
-                      step={feedUnit === 'kg' ? '0.1' : '10'}
-                      min="0.1"
+                      step="any"
+                      min="0"
                       value={feedAmount}
                       onChange={(e) => setFeedAmount(e.target.value === '' ? '' : Number(e.target.value))}
                       className="form-control tabular-nums"
@@ -530,7 +530,7 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
                   <label className="form-label">Dry Bulb Temperature (°C) *</label>
                   <input
                     type="number"
-                    step="0.1"
+                    step="any"
                     min="15"
                     max="40"
                     value={temp}
@@ -665,8 +665,8 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
 
                   <input
                     type="number"
-                    step={harvestWeightUnit === 'kg' ? '0.1' : '10'}
-                    min="0.1"
+                    step="any"
+                    min="0"
                     value={harvestWeight}
                     onChange={(e) => setHarvestWeight(e.target.value === '' ? '' : Number(e.target.value))}
                     className="form-control tabular-nums"
@@ -712,8 +712,8 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
                   <label className="form-label">20-Shell Sample (Grams)</label>
                   <input
                     type="number"
-                    step="0.1"
-                    min="0.1"
+                    step="any"
+                    min="0"
                     value={shellWeightGrams}
                     onChange={(e) => setShellWeightGrams(e.target.value === '' ? '' : Number(e.target.value))}
                     className="form-control tabular-nums"

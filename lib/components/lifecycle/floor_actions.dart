@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -231,7 +232,10 @@ class FloorActionsBar extends StatelessWidget {
                     ] else ...[
                       TextField(
                         controller: gramsController,
-                        keyboardType: TextInputType.number,
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                        ],
                         decoration: InputDecoration(
                           labelText: 'Quantity (grams)'.tr,
                           suffixText: 'g',
@@ -267,7 +271,7 @@ class FloorActionsBar extends StatelessWidget {
                             notes: notesController.text,
                           );
                         } else {
-                          final grams = double.tryParse(gramsController.text.trim());
+                          final grams = double.tryParse(gramsController.text.trim().replaceAll(',', '.'));
                           if (grams == null || grams <= 0) return;
                           await _floor.logCustomFeed(
                             repositories: repositories,

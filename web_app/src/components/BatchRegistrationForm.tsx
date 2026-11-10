@@ -39,7 +39,7 @@ export const BatchRegistrationForm: React.FC<BatchRegistrationFormProps> = ({
 
   // State
   const [species, setSpecies] = useState<Species>('bombyx');
-  const [count, setCount] = useState<number | ''>(20000);
+  const [count, setCount] = useState<number | ''>('');
   const [startDate, setStartDate] = useState<string>(
     new Date().toISOString().split('T')[0]
   );
@@ -163,25 +163,6 @@ export const BatchRegistrationForm: React.FC<BatchRegistrationFormProps> = ({
           <span className="step-num">2</span>
           <span>Batch Size & Start Date</span>
         </label>
-
-        {/* Quick Size Chips */}
-        <div className="size-pills-row">
-          <span className="size-pills-label">Quick presets:</span>
-          {[
-            { label: '10,000 (1/2 Box)', val: 10000 },
-            { label: '20,000 (1 Box)', val: 20000 },
-            { label: '40,000 (2 Boxes)', val: 40000 },
-          ].map((preset) => (
-            <button
-              key={preset.val}
-              type="button"
-              onClick={() => setCount(preset.val)}
-              className={`size-pill ${count === preset.val ? 'active' : ''}`}
-            >
-              {preset.label}
-            </button>
-          ))}
-        </div>
 
         <div className="two-col-grid">
           <div className="input-group">

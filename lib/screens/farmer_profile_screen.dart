@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 
 import '../components/components.dart';
 import '../l10n/app_localizations.dart';
@@ -14,18 +13,12 @@ import '../services/notification_service.dart';
 import '../services/permission_service.dart';
 import '../services/profile_photo_service.dart';
 import '../services/profile_service.dart';
-import '../services/role_access.dart';
 import '../services/user_preferences.dart';
 import '../theme/kalro_colors.dart';
-import 'batch_detail_screen.dart';
-import 'cloud_sync_screen.dart';
 import 'create_batch_screen.dart';
 import 'data_management_screen.dart';
 import 'edit_profile_screen.dart';
 import 'farm_settings_screen.dart';
-import 'finance_screen.dart';
-import 'reminder_settings_screen.dart';
-import 'reports_screen.dart';
 import 'user_management_screen.dart';
 import 'package:kalro/l10n/translator.dart';
 
@@ -246,6 +239,38 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
     if (ok == true) widget.onLogout?.call();
   }
 
+  Future<void> _confirmDeleteProfile() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Delete profile?'.tr),
+        content: Text(
+          Translator.fill(
+            'Are you sure you want to delete {name}? All local account data will be permanently removed.',
+            {'name': _session.user.farmerFacingName},
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('Cancel'.tr),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: KalroColors.danger),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text('Delete'.tr),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && mounted) {
+      await _auth.deleteUser(_session.user);
+      if (mounted) {
+        widget.onLogout?.call();
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -254,10 +279,11 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
         child: AsyncContent(
           future: _summaryFuture,
           builder: (context, summary) {
+            final hasLots = summary.totalLots > 0;
             return RefreshIndicator(
               onRefresh: () async => _reload(),
               child: ListView(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
                 children: [
                   KalroToolbar(
                     title: l10n?.navProfile ?? 'You'.tr,
@@ -270,253 +296,236 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                     onEdit: _openEditProfile,
                     onEditPhoto: _changePhoto,
                   ),
-                  const SizedBox(height: 12),
-                  FarmIdentityCard(
-                    farm: _session.farm,
-                    onOpen: _openFarmSettings,
-                  ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
                   KalroSectionHeader(
                     title: 'This season'.tr,
-                    subtitle: summary.memberSince == null
-                        ? null
-                        : Translator.fill('Member since {date}', {
-                            'date': DateFormat.yMMMd(Translator.dateLocale)
-                                .format(summary.memberSince!),
-                          }),
                   ),
                   const SizedBox(height: 8),
-                  if (summary.totalLots == 0)
-                    EmptyStateCard(
-                      icon: Icons.layers_outlined,
-                      title: 'No lots yet'.tr,
-                      message: 'Start a lot to build your farm record.'.tr,
-                      actionLabel: _canEdit ? 'Start a lot'.tr : 'OK'.tr,
-                      onAction: _canEdit ? () => _startLot() : () {},
-                    )
-                  else ...[
-                    SeasonRecordGrid(summary: summary),
-                    const SizedBox(height: 12),
+                  if (hasLots) ...[
                     Container(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: KalroColors.divider),
+                        borderRadius: BorderRadius.circular(18),
+                        boxShadow: KalroColors.softShadow,
                       ),
-                      child: StockSplitRow(
-                        leftTitle: 'Bombyx live'.tr,
-                        leftValue: '${summary.bombyxLarvaeCount}',
-                        rightTitle: 'Eri live'.tr,
-                        rightValue: '${summary.eriLarvaeCount}',
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          _MetricPill(
+                            label: 'Active Batches'.tr,
+                            value: '${summary.activeBatchCount}',
+                            color: KalroColors.primaryGreen,
+                          ),
+                          Container(width: 1, height: 36, color: KalroColors.divider),
+                          _MetricPill(
+                            label: 'Harvest'.tr,
+                            value: '${summary.harvestKg.toStringAsFixed(1)} kg',
+                            color: KalroColors.harvest,
+                          ),
+                          Container(width: 1, height: 36, color: KalroColors.divider),
+                          _MetricPill(
+                            label: 'Houses'.tr,
+                            value: '${_session.farm.houseCount}',
+                            color: KalroColors.leaf,
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                  if (summary.lastCycle != null) ...[
                     const SizedBox(height: 16),
-                    KalroSectionHeader(
-                      title: 'Last closed lot'.tr,
-                      subtitle: 'Survival, harvest, and cost per kg'.tr,
-                    ),
-                    const SizedBox(height: 8),
-                    CycleMemoryCard(
-                      memory: summary.lastCycle!,
-                      showMoney: true,
-                      onOpen: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => BatchDetailScreen(
-                              repositories: widget.repositories,
-                              batchId: summary.lastCycle!.batch.id,
+                  ] else ...[
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(18),
+                        boxShadow: KalroColors.softShadow,
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: KalroColors.leaf.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(Icons.eco_outlined, color: KalroColors.primaryGreen),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'No lots yet'.tr,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: KalroColors.textDark,
+                                  ),
+                                ),
+                                Text(
+                                  'Start a lot to build your farm record.'.tr,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 11,
+                                    color: KalroColors.textMuted,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        );
-                      },
-                      onStartLikeThis: _canEdit
-                          ? () => _startLot(
-                                screen: CreateBatchScreen(
-                                  repository: widget.repositories.batches,
-                                  producers: widget.repositories.producers,
-                                  farmRepositories: widget.repositories,
-                                  copyFrom: summary.lastCycle!.batch,
+                          if (_canEdit)
+                            TextButton(
+                              onPressed: () => _startLot(),
+                              child: Text(
+                                '+ Start Lot'.tr,
+                                style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.w700,
+                                  color: KalroColors.primaryGreen,
                                 ),
-                              )
-                          : null,
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
+                    const SizedBox(height: 16),
                   ],
-                  const SizedBox(height: 16),
-                  FarmTeamStrip(
-                    members: summary.teamMembers,
-                    currentUserId: _session.user.id,
-                    onManage: _canManage ? _openTeam : null,
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'You · account'.tr,
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
+                  // Settings Container
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: KalroColors.softShadow,
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  _AccountCard(
-                    icon: Icons.language,
-                    title: l10n?.profileLanguage ?? 'Language'.tr,
-                    child: Row(
+                    child: Column(
                       children: [
-                        _LangChip(
-                          label: l10n?.profileEnglish ?? 'English'.tr,
-                          selected: _language == 'en',
-                          onTap: () {
-                            setState(() => _language = 'en');
-                            widget.onLanguageChanged('en');
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.language, size: 20, color: KalroColors.primaryGreen),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  l10n?.profileLanguage ?? 'Language'.tr,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: KalroColors.textDark,
+                                  ),
+                                ),
+                              ),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  _LangChip(
+                                    label: 'EN',
+                                    selected: _language == 'en',
+                                    onTap: () {
+                                      setState(() => _language = 'en');
+                                      widget.onLanguageChanged('en');
+                                    },
+                                  ),
+                                  const SizedBox(width: 6),
+                                  _LangChip(
+                                    label: 'SW',
+                                    selected: _language == 'sw',
+                                    onTap: () {
+                                      setState(() => _language = 'sw');
+                                      widget.onLanguageChanged('sw');
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Divider(height: 1, indent: 16, endIndent: 16, color: KalroColors.divider),
+                        _CleanTile(
+                          icon: Icons.home_work_outlined,
+                          title: 'Farm Settings'.tr,
+                          subtitle: 'County, houses, and sync code'.tr,
+                          onTap: _openFarmSettings,
+                        ),
+                        const Divider(height: 1, indent: 16, endIndent: 16, color: KalroColors.divider),
+                        _CleanTile(
+                          icon: Icons.cloud_upload_outlined,
+                          title: l10n?.profileDataBackup ?? 'Data & Backup'.tr,
+                          subtitle: 'Export and secure farm data'.tr,
+                          onTap: () async {
+                            await Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => DataManagementScreen(
+                                  repositories: widget.repositories,
+                                  session: _session,
+                                  onDataChanged: _reload,
+                                ),
+                              ),
+                            );
+                            _reload();
                           },
                         ),
-                        const SizedBox(width: 8),
-                        _LangChip(
-                          label: l10n?.profileSwahili ?? 'Swahili'.tr,
-                          selected: _language == 'sw',
-                          onTap: () {
-                            setState(() => _language = 'sw');
-                            widget.onLanguageChanged('sw');
-                          },
+                        const Divider(height: 1, indent: 16, endIndent: 16, color: KalroColors.divider),
+                        _CleanTile(
+                          icon: Icons.lock_outline,
+                          title: 'Change PIN'.tr,
+                          subtitle: 'Security PIN for login'.tr,
+                          onTap: _changePin,
                         ),
+                        if (_canManage) ...[
+                          const Divider(height: 1, indent: 16, endIndent: 16, color: KalroColors.divider),
+                          _CleanTile(
+                            icon: Icons.groups_outlined,
+                            title: 'Team Members'.tr,
+                            subtitle: Translator.fill('{n} people', {
+                              'n': '${summary.teamMembers.length}',
+                            }),
+                            onTap: _openTeam,
+                          ),
+                        ],
                       ],
                     ),
                   ),
-                  if (_canEdit)
-                    _ProfileTile(
-                      icon: Icons.notifications_outlined,
-                      title: l10n?.profileMyReminders ?? 'My reminders'.tr,
-                      subtitle: summary.remindersEnabled
-                          ? Translator.fill('On · {time}', {
-                              'time': summary.reminderClock,
-                            })
-                          : 'Reminders off'.tr,
-                      onTap: () async {
-                        await Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => ReminderSettingsScreen(
-                              repositories: widget.repositories,
-                              notificationService: widget.notificationService,
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      if (widget.onLogout != null)
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: _confirmSignOut,
+                            icon: const Icon(Icons.logout, size: 18),
+                            label: Text(l10n?.profileSignOut ?? 'Sign out'.tr),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: KalroColors.textMuted,
+                              side: const BorderSide(color: KalroColors.divider),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
                             ),
-                          ),
-                        );
-                        _reload();
-                      },
-                    ),
-                  _ProfileTile(
-                    icon: Icons.lock_outline,
-                    title: 'Change PIN'.tr,
-                    subtitle: 'Used to sign in on this farm'.tr,
-                    onTap: _changePin,
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Farm & data'.tr,
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  _ProfileTile(
-                    icon: Icons.home_work_outlined,
-                    title: 'Farm settings'.tr,
-                    subtitle: 'County, houses, stock, and sync code'.tr,
-                    onTap: _openFarmSettings,
-                  ),
-                  if (_canManage)
-                    _ProfileTile(
-                      icon: Icons.groups_outlined,
-                      title: 'Team members'.tr,
-                      subtitle: Translator.fill('{n} people', {
-                        'n': '${summary.teamMembers.length}',
-                      }),
-                      onTap: _openTeam,
-                    ),
-                  if (RoleAccess.showReports(_role))
-                    _ProfileTile(
-                      icon: Icons.bar_chart_outlined,
-                      title: 'Reports'.tr,
-                      subtitle: 'Harvest, survival, and cost per kg'.tr,
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => ReportsScreen(
-                              repositories: widget.repositories,
-                              userPreferences: widget.userPreferences,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  if (RoleAccess.showFinance(_role))
-                    _ProfileTile(
-                      icon: Icons.payments_outlined,
-                      title: 'Finance'.tr,
-                      subtitle: 'Payments, receivables, and seed purchases.'.tr,
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => FinanceScreen(
-                              repositories: widget.repositories,
-                              userPreferences: widget.userPreferences,
-                              readOnly: !_canEdit,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  _ProfileTile(
-                    icon: Icons.cloud_upload_outlined,
-                    title: l10n?.profileDataBackup ?? 'Data & Backup'.tr,
-                    subtitle:
-                        l10n?.profileBackupDesc ?? 'Secure your data locally'.tr,
-                    onTap: () async {
-                      await Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => DataManagementScreen(
-                            repositories: widget.repositories,
-                            session: _session,
-                            onDataChanged: _reload,
                           ),
                         ),
-                      );
-                      _reload();
-                    },
-                  ),
-                  _ProfileTile(
-                    icon: Icons.cloud_sync_outlined,
-                    title: 'Send to CRC'.tr,
-                    subtitle: summary.lastBackupAt == null
-                        ? 'No cloud backup yet'.tr
-                        : Translator.fill('Last backup {date}', {
-                            'date': DateFormat.yMMMd(Translator.dateLocale)
-                                .add_jm()
-                                .format(summary.lastBackupAt!),
-                          }),
-                    onTap: () async {
-                      await Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => CloudSyncScreen(
-                            session: _session,
-                            repositories: widget.repositories,
-                            onDataChanged: _reload,
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: _confirmDeleteProfile,
+                          icon: const Icon(Icons.delete_outline, size: 18, color: KalroColors.danger),
+                          label: Text(
+                            'Delete Profile'.tr,
+                            style: const TextStyle(color: KalroColors.danger),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(color: KalroColors.danger.withValues(alpha: 0.3)),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
                           ),
                         ),
-                      );
-                      _reload();
-                    },
+                      ),
+                    ],
                   ),
-                  if (widget.onLogout != null)
-                    _ProfileTile(
-                      icon: Icons.logout,
-                      title: l10n?.profileSignOut ?? 'Sign out'.tr,
-                      iconColor: Colors.redAccent,
-                      textColor: Colors.redAccent,
-                      onTap: _confirmSignOut,
-                    ),
                 ],
               ),
             );
@@ -644,43 +653,96 @@ class _ChangePinDialogState extends State<_ChangePinDialog> {
   }
 }
 
-class _AccountCard extends StatelessWidget {
-  const _AccountCard({
+class _MetricPill extends StatelessWidget {
+  const _MetricPill({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  final String label;
+  final String value;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          value,
+          style: GoogleFonts.poppins(
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+            color: color,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: GoogleFonts.poppins(
+            fontSize: 11,
+            color: KalroColors.textMuted,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _CleanTile extends StatelessWidget {
+  const _CleanTile({
     required this.icon,
     required this.title,
-    required this.child,
+    this.subtitle,
+    required this.onTap,
   });
 
   final IconData icon;
   final String title;
-  final Widget child;
+  final String? subtitle;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: KalroColors.divider),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(icon, color: KalroColors.primaryGreen),
-              const SizedBox(width: 10),
-              Text(
-                title,
-                style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Icon(icon, size: 20, color: KalroColors.primaryGreen),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: GoogleFonts.poppins(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: KalroColors.textDark,
+                    ),
+                  ),
+                  if (subtitle != null) ...[
+                    const SizedBox(height: 1),
+                    Text(
+                      subtitle!,
+                      style: GoogleFonts.poppins(
+                        fontSize: 11,
+                        color: KalroColors.textMuted,
+                      ),
+                    ),
+                  ],
+                ],
               ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          child,
-        ],
+            ),
+            const Icon(Icons.chevron_right, size: 18, color: KalroColors.textMuted),
+          ],
+        ),
       ),
     );
   }
@@ -699,83 +761,24 @@ class _LangChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Material(
-        color: selected ? KalroColors.headerGreen : KalroColors.background,
-        borderRadius: BorderRadius.circular(12),
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Text(
-              label,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(
-                fontWeight: FontWeight.w600,
-                color: selected ? Colors.white : KalroColors.textDark,
-              ),
-            ),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: selected ? KalroColors.primaryGreen : KalroColors.background,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: selected ? KalroColors.primaryGreen : KalroColors.divider,
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _ProfileTile extends StatelessWidget {
-  const _ProfileTile({
-    required this.icon,
-    required this.title,
-    this.subtitle,
-    this.onTap,
-    this.iconColor,
-    this.textColor,
-  });
-
-  final IconData icon;
-  final String title;
-  final String? subtitle;
-  final VoidCallback? onTap;
-  final Color? iconColor;
-  final Color? textColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Material(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        clipBehavior: Clip.antiAlias,
-        child: ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          leading: Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: (iconColor ?? KalroColors.primaryGreen).withValues(alpha: 0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: iconColor ?? KalroColors.primaryGreen),
+        child: Text(
+          label,
+          style: GoogleFonts.poppins(
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+            color: selected ? Colors.white : KalroColors.textDark,
           ),
-          title: Text(
-            title,
-            style: GoogleFonts.poppins(
-              fontWeight: FontWeight.w600,
-              color: textColor ?? KalroColors.textDark,
-            ),
-          ),
-          subtitle: subtitle == null
-              ? null
-              : Text(
-                  subtitle!,
-                  style: GoogleFonts.poppins(
-                    fontSize: 12,
-                    color: KalroColors.textMuted,
-                  ),
-                ),
-          trailing: const Icon(Icons.chevron_right, color: KalroColors.textMuted),
-          onTap: onTap,
         ),
       ),
     );

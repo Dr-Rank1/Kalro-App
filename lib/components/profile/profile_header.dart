@@ -28,110 +28,79 @@ class ProfileHeader extends StatelessWidget {
     final user = session.user;
     final farm = session.farm;
     final photo = resolvedPhoto(session);
+    final locationText = farm.orgName +
+        (farm.county != null && farm.county!.trim().isNotEmpty
+            ? ' · ${farm.county}'
+            : '');
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(22),
         boxShadow: KalroColors.softShadow,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _Avatar(
-                name: user.farmerFacingName,
-                photoPath: photo,
-                onEditPhoto: onEditPhoto,
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      user.farmerFacingName,
-                      style: GoogleFonts.poppins(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
-                        height: 1.15,
-                      ),
-                    ),
-                    if (user.showsLoginName) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        Translator.fill('Signed in as {name}', {
-                          'name': user.username,
-                        }),
-                        style: GoogleFonts.poppins(
-                          fontSize: 13,
-                          color: KalroColors.textMuted,
-                        ),
-                      ),
-                    ],
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 6,
-                      runSpacing: 6,
-                      children: [
-                        _Chip(
-                          icon: user.permission.icon,
-                          label: user.permission.label,
-                          color: user.permission.badgeColor,
-                        ),
-                        _Chip(
-                          icon: Icons.agriculture_outlined,
-                          label: role.label,
-                          color: KalroColors.headerGreen,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              if (onEdit != null)
-                IconButton(
-                  onPressed: onEdit,
-                  tooltip: 'Edit profile'.tr,
-                  icon: const Icon(
-                    Icons.edit_outlined,
-                    color: KalroColors.primaryGreen,
+          _Avatar(
+            name: user.farmerFacingName,
+            photoPath: photo,
+            onEditPhoto: onEditPhoto,
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  user.farmerFacingName,
+                  style: GoogleFonts.poppins(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: KalroColors.textDark,
                   ),
                 ),
-            ],
-          ),
-          if ((user.phone ?? '').isNotEmpty) ...[
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                const Icon(Icons.phone_outlined, size: 16, color: KalroColors.textMuted),
-                const SizedBox(width: 8),
+                const SizedBox(height: 4),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: KalroColors.leaf.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    role.label,
+                    style: GoogleFonts.poppins(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: KalroColors.primaryGreen,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 6),
                 Text(
-                  user.phone!,
-                  style: GoogleFonts.poppins(fontSize: 13, color: KalroColors.textDark),
+                  locationText,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    color: KalroColors.textMuted,
+                  ),
                 ),
               ],
             ),
-          ],
-          const SizedBox(height: 8),
-          Text(
-            farm.locationLine,
-            style: GoogleFonts.poppins(
-              fontSize: 13,
-              color: KalroColors.textMuted,
-            ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            user.permission.description,
-            style: GoogleFonts.poppins(
-              fontSize: 12,
-              color: KalroColors.textMuted,
-              height: 1.35,
+          if (onEdit != null)
+            IconButton(
+              onPressed: onEdit,
+              tooltip: 'Edit profile'.tr,
+              icon: const Icon(
+                Icons.edit_outlined,
+                color: KalroColors.primaryGreen,
+                size: 22,
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -206,44 +175,6 @@ class _Avatar extends StatelessWidget {
     if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
     return '${parts.first.substring(0, 1)}${parts.last.substring(0, 1)}'
         .toUpperCase();
-  }
-}
-
-class _Chip extends StatelessWidget {
-  const _Chip({
-    required this.icon,
-    required this.label,
-    required this.color,
-  });
-
-  final IconData icon;
-  final String label;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 12, color: color),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: GoogleFonts.poppins(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: color,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }
 

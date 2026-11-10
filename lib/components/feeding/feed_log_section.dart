@@ -173,8 +173,12 @@ class _FeedLogSectionState extends State<FeedLogSection> {
                       const SizedBox(height: 12),
                       TextField(
                         controller: quantityController,
-                        decoration: InputDecoration(labelText: 'Quantity (grams)'.tr),
-                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          labelText: 'Quantity (grams)'.tr,
+                          hintText: 'e.g. 50',
+                          suffixText: 'g',
+                        ),
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
                         inputFormatters: [
                           FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
                         ],
@@ -217,7 +221,7 @@ class _FeedLogSectionState extends State<FeedLogSection> {
                         }
 
                         final quantity = double.tryParse(
-                          quantityController.text.trim(),
+                          quantityController.text.trim().replaceAll(',', '.'),
                         );
                         if (feedController.text.trim().isEmpty ||
                             quantity == null ||

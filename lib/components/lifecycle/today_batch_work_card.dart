@@ -87,7 +87,7 @@ class TodayBatchWorkCard extends StatelessWidget {
             children: [
               Container(height: 4, decoration: BoxDecoration(color: accent, borderRadius: const BorderRadius.vertical(top: Radius.circular(18)))),
               Padding(
-                padding: const EdgeInsets.fromLTRB(14, 12, 14, 10),
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -101,15 +101,15 @@ class TodayBatchWorkCard extends StatelessWidget {
                                 batch.species.label,
                                 style: GoogleFonts.poppins(
                                   fontWeight: FontWeight.w700,
-                                  fontSize: 15,
+                                  fontSize: 16,
+                                  color: KalroColors.textDark,
                                 ),
                               ),
                               if (batch.batchTag != null && batch.batchTag!.isNotEmpty)
                                 Text(
                                   batch.batchTag!,
                                   style: GoogleFonts.poppins(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w600,
+                                    fontSize: 12,
                                     color: KalroColors.textMuted,
                                   ),
                                 ),
@@ -129,7 +129,7 @@ class TodayBatchWorkCard extends StatelessWidget {
                             children: [
                               Icon(
                                 icon,
-                                size: 13,
+                                size: 14,
                                 color: fedToday ? KalroColors.headerGreen : accent,
                               ),
                               const SizedBox(width: 4),
@@ -146,41 +146,38 @@ class TodayBatchWorkCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '${plan.actionTitle} · ${Translator.fill('{n} live', {'n': '$liveCount'})} · ${Translator.fill('day {d} of {n}', {
-                        'd': '${plan.cycleDay}',
-                        'n': '${plan.cycleLengthDays}',
-                      })}',
-                      style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        color: KalroColors.textMuted,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      plan.feedLabel,
-                      style: GoogleFonts.poppins(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    if (onOpenGuide != null) ...[
-                      const SizedBox(height: 4),
-                      GestureDetector(
-                        onTap: onOpenGuide,
-                        child: Text(
-                          'Open today’s field guide'.tr,
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Text(
+                          '${plan.stage.label} · Day ${plan.cycleDay}',
                           style: GoogleFonts.poppins(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                             color: KalroColors.headerGreen,
                           ),
                         ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '•  ${Translator.fill('{n} live', {'n': '$liveCount'})}',
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            color: KalroColors.textMuted,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      plan.feedLabel,
+                      style: GoogleFonts.poppins(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: KalroColors.textDark,
                       ),
-                    ],
+                    ),
                     if (canEdit) ...[
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 12),
                       FloorActionsBar(
                         batch: batch,
                         plan: plan,
