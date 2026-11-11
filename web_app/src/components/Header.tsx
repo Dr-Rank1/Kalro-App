@@ -85,8 +85,9 @@ export const Header: React.FC<HeaderProps> = ({
             className="btn-header-secondary"
             title="Generate and export official station PDF report"
           >
-            <FileText size={14} style={{ marginRight: '6px' }} />
-            <span className="hidden-sm">Export Report</span>
+            <FileText size={14} style={{ marginRight: '5px' }} />
+            <span className="btn-text-desktop">Export Report</span>
+            <span className="btn-text-mobile">Report</span>
           </button>
 
           {/* User Account Button or Switcher */}
@@ -96,8 +97,9 @@ export const Header: React.FC<HeaderProps> = ({
               className="btn-header-accent"
               title="Set up your farm profile"
             >
-              <UserPlus size={14} style={{ marginRight: '6px' }} />
-              <span>Set Up Profile</span>
+              <UserPlus size={14} style={{ marginRight: '5px' }} />
+              <span className="btn-text-desktop">Set Up Profile</span>
+              <span className="btn-text-mobile">Profile</span>
             </button>
           ) : (
             <div className="tenant-switcher-wrapper" ref={dropdownRef}>

@@ -197,6 +197,7 @@ class _BatchesScreenState extends State<BatchesScreen> {
     await Navigator.of(
       context,
     ).pushNamed(BatchDetailScreen.routeName, arguments: batchId);
+    if (!mounted) return;
     _reload();
     widget.onBatchChanged();
   }

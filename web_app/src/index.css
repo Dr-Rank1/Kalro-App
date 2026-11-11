@@ -116,7 +116,7 @@ th,
 .main-header {
   background-color: var(--header-bg);
   color: var(--text-white);
-  padding: 0.85rem 1.5rem;
+  padding: 0.75rem clamp(0.75rem, 2vw, 1.5rem);
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   position: sticky;
   top: 0;
@@ -243,6 +243,59 @@ th,
 
 .header-action-btn:active {
   background: #8E5C00;
+}
+
+/* Responsive Adaptive Text Helpers */
+.btn-text-desktop {
+  display: inline;
+}
+
+.btn-text-mobile {
+  display: none;
+}
+
+/* Batch Filter Bar Styling */
+.batches-filter-row {
+  display: flex;
+  gap: 0.65rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.batches-filter-pills {
+  display: flex;
+  background: var(--bg-card);
+  padding: 2px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-card);
+}
+
+.batches-filter-pill-btn {
+  background: transparent;
+  color: var(--text-muted);
+  border: none;
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-transform: capitalize;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+}
+
+.batches-filter-pill-btn:hover {
+  color: var(--text-main);
+}
+
+.batches-filter-pill-btn.active {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.batches-new-btn {
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 /* Secondary Navigation Bar */
@@ -1391,11 +1444,15 @@ th,
 
 /* Mobile & Tablets (<= 768px) */
 @media (max-width: 768px) {
+  .main-header {
+    padding: 0.55rem 0.85rem;
+  }
+
   .header-inner {
     flex-direction: column;
     align-items: stretch;
     gap: 0.65rem;
-    padding: 0.65rem 0.85rem;
+    padding: 0;
   }
 
   .brand-section {
@@ -1525,20 +1582,87 @@ th,
 
 /* Small Mobile Screens (<= 480px) */
 @media (max-width: 480px) {
+  .main-header {
+    padding: 0.45rem 0.55rem;
+  }
+
+  .brand-text h1 {
+    font-size: 1rem;
+  }
+
   .brand-text p {
-    font-size: 0.72rem;
+    font-size: 0.68rem;
+    max-width: 220px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .header-controls {
     font-size: 0.75rem;
+    gap: 0.35rem;
+  }
+
+  .btn-text-desktop {
+    display: none !important;
+  }
+
+  .btn-text-mobile {
+    display: inline !important;
+  }
+
+  .hidden-sm {
+    display: none !important;
   }
 
   .btn-header-secondary,
+  .btn-header-accent,
   .header-action-btn {
-    padding: 0.35rem 0.75rem;
-    font-size: 0.75rem;
+    padding: 0.32rem 0.65rem;
+    font-size: 0.74rem;
     flex: 1 1 auto;
     justify-content: center;
+  }
+
+  .tenant-user-name {
+    max-width: 85px;
+    font-size: 0.72rem;
+  }
+
+  .tenant-dropdown-menu {
+    right: 0;
+    width: 280px;
+    max-width: calc(100vw - 16px);
+  }
+
+  .batches-filter-row {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .batches-filter-pill-btn {
+    padding: 0.32rem 0.55rem;
+    font-size: 0.74rem;
+  }
+
+  .batches-new-btn {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.76rem;
+  }
+
+  .farm-tabs-bar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .farm-tabs-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .farm-tab-btn {
+    padding: 0.38rem 0.65rem;
+    font-size: 0.75rem;
+    gap: 0.3rem;
   }
 
   .ops-station-pill {
@@ -1582,6 +1706,68 @@ th,
   .batch-actions button {
     width: 100%;
     justify-content: center;
+  }
+}
+
+/* Ultra Small Mobile Screens (<= 360px) */
+@media (max-width: 360px) {
+  .main-header {
+    padding: 0.35rem 0.45rem;
+  }
+
+  .brand-logo {
+    width: 32px;
+    height: 32px;
+  }
+
+  .brand-text h1 {
+    font-size: 0.92rem;
+  }
+
+  .brand-text p {
+    display: none;
+  }
+
+  .header-controls {
+    gap: 0.25rem;
+  }
+
+  .btn-header-secondary,
+  .btn-header-accent,
+  .header-action-btn {
+    padding: 0.28rem 0.48rem;
+    font-size: 0.7rem;
+    gap: 3px;
+  }
+
+  .tenant-user-pill {
+    padding: 3px 6px;
+    gap: 4px;
+  }
+
+  .tenant-avatar {
+    width: 22px;
+    height: 22px;
+    font-size: 0.65rem;
+  }
+
+  .tenant-role-tag {
+    display: none;
+  }
+
+  .batches-filter-pill-btn {
+    padding: 0.28rem 0.42rem;
+    font-size: 0.7rem;
+  }
+
+  .batches-new-btn {
+    padding: 0.3rem 0.55rem;
+    font-size: 0.72rem;
+  }
+
+  .farm-tab-btn {
+    padding: 0.32rem 0.5rem;
+    font-size: 0.72rem;
   }
 }
 

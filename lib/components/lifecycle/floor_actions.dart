@@ -69,7 +69,9 @@ class FloorActionsBar extends StatelessWidget {
       ),
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      onChanged();
+      if (context.mounted) {
+        onChanged();
+      }
     });
   }
 

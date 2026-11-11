@@ -68,6 +68,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
     await Navigator.of(
       context,
     ).pushNamed(BatchDetailScreen.routeName, arguments: batchId);
+    if (!mounted) return;
     _reload();
     widget.onBatchChanged();
   }

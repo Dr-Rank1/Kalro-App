@@ -100,33 +100,23 @@ export const BatchesView: React.FC<BatchesViewProps> = ({
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+        <div className="batches-filter-row">
           {/* Flat Filter Pills */}
-          <div style={{ display: 'flex', background: 'var(--bg-card)', padding: '2px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-card)' }}>
+          <div className="batches-filter-pills">
             {(['all', 'active', 'closed'] as const).map((mode) => (
               <button
                 key={mode}
                 onClick={() => setFilter(mode)}
-                style={{
-                  background: filter === mode ? 'var(--primary)' : 'transparent',
-                  color: filter === mode ? '#ffffff' : 'var(--text-muted)',
-                  border: 'none',
-                  padding: '0.35rem 0.85rem',
-                  borderRadius: 'var(--radius-sm)',
-                  fontSize: '0.78rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  textTransform: 'capitalize',
-                  transition: 'background-color 0.15s ease',
-                }}
+                className={`batches-filter-pill-btn ${filter === mode ? 'active' : ''}`}
               >
-                {mode === 'all' ? 'All Batches' : mode}
+                <span className="btn-text-desktop">{mode === 'all' ? 'All Batches' : mode}</span>
+                <span className="btn-text-mobile">{mode === 'all' ? 'All' : mode}</span>
               </button>
             ))}
           </div>
 
-          <button onClick={handleNewBatchClick} className="btn-accent">
-            New Batch
+          <button onClick={handleNewBatchClick} className="btn-accent batches-new-btn">
+            + New Batch
           </button>
         </div>
       </div>

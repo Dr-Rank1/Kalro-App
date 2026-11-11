@@ -326,7 +326,7 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                           Container(width: 1, height: 36, color: KalroColors.divider),
                           _MetricPill(
                             label: 'Houses'.tr,
-                            value: '${_session.farm.houseCount}',
+                            value: _session.farm.houseCount == null ? '1' : '${_session.farm.houseCount}',
                             color: KalroColors.leaf,
                           ),
                         ],

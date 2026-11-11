@@ -73,6 +73,7 @@ class _RearingHubScreenState extends State<RearingHubScreen> {
     await Navigator.of(
       context,
     ).pushNamed(BatchDetailScreen.routeName, arguments: batchId);
+    if (!mounted) return;
     _reload();
     widget.onBatchChanged();
   }

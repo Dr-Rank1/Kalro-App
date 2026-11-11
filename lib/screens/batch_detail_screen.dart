@@ -38,7 +38,8 @@ class BatchDetailScreen extends StatefulWidget {
   State<BatchDetailScreen> createState() => _BatchDetailScreenState();
 }
 
-class _BatchDetailScreenState extends State<BatchDetailScreen> {
+class _BatchDetailScreenState extends State<BatchDetailScreen>
+    with SingleTickerProviderStateMixin {
   final _planning = LifecyclePlanningService();
   final _adjuster = PredictionAdjuster();
   final _metricsService = BatchMetricsService();
@@ -47,11 +48,19 @@ class _BatchDetailScreenState extends State<BatchDetailScreen> {
 
   Future<_BatchDetailData>? _dataFuture;
   RearingScenario? _scenario;
+  late final TabController _tabController;
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 3, vsync: this);
     _reload();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   void _reload() {
@@ -144,92 +153,93 @@ class _BatchDetailScreenState extends State<BatchDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        backgroundColor: KalroColors.background,
-        body: FutureBuilder<_BatchDetailData>(
-          future: _dataFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Scaffold(
-                appBar: AppBar(title: Text('Loading...'.tr)),
-                body: const Center(child: CircularProgressIndicator()),
-              );
-            }
-
-            final data = snapshot.data;
-            final batch = data?.batch;
-            if (batch == null) {
-              return Scaffold(
-                appBar: AppBar(title: Text('Batch Details'.tr)),
-                body: Center(child: Text('Batch not found'.tr)),
-              );
-            }
-
-            final observations = data!.observations;
-            final loggedConditions = data.conditions;
-            final conditions =
-                _scenario?.conditionsFor(batch.species) ?? loggedConditions;
-            final cycle = _planning.planBatch(
-              batch,
-              observedStageDates: observations,
-              conditions: conditions,
+    return Scaffold(
+      backgroundColor: KalroColors.background,
+      body: FutureBuilder<_BatchDetailData>(
+        future: _dataFuture,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData &&
+              snapshot.connectionState == ConnectionState.waiting) {
+            return Scaffold(
+              appBar: AppBar(title: Text('Loading...'.tr)),
+              body: const Center(child: CircularProgressIndicator()),
             );
-            final metrics = _metricsService.compute(batch, data.totalMortality);
-            final milestones = cycle.milestones;
-            final current = _lifecycleEngine.currentStage(
-              batch,
-              observedStageDates: observations,
-              conditions: conditions,
-            );
+          }
 
-            final adjustment = _adjuster.adjust(batch.species, conditions);
-            final dayPlan = RearingDayService().planFor(
-              batch,
-              observedStageDates: observations,
-              conditions: conditions,
-              liveCount: metrics.liveCount,
+          final data = snapshot.data;
+          final batch = data?.batch;
+          if (batch == null) {
+            return Scaffold(
+              appBar: AppBar(title: Text('Batch Details'.tr)),
+              body: Center(child: Text('Batch not found'.tr)),
             );
+          }
 
-            return NestedScrollView(
-              headerSliverBuilder: (context, innerBoxIsScrolled) {
-                return [
-                  SliverAppBar(
-                    expandedHeight: 228,
-                    pinned: true,
-                    backgroundColor: KalroColors.headerGreen,
-                    title: Text(batch.species.label.tr),
-                    actions: [
-                      IconButton(
-                        icon: const Icon(Icons.qr_code_2_outlined, color: Colors.white),
-                        tooltip: 'Rearing Tray Tag'.tr,
-                        onPressed: () => BatchQrDialog.show(context, batch),
-                      ),
-                    ],
-                    flexibleSpace: FlexibleSpaceBar(
-                      background: _buildHeroHeader(
-                        batch,
-                        metrics,
-                        current,
-                        dayPlan,
-                      ),
+          final observations = data!.observations;
+          final loggedConditions = data.conditions;
+          final conditions =
+              _scenario?.conditionsFor(batch.species) ?? loggedConditions;
+          final cycle = _planning.planBatch(
+            batch,
+            observedStageDates: observations,
+            conditions: conditions,
+          );
+          final metrics = _metricsService.compute(batch, data.totalMortality);
+          final milestones = cycle.milestones;
+          final current = _lifecycleEngine.currentStage(
+            batch,
+            observedStageDates: observations,
+            conditions: conditions,
+          );
+
+          final adjustment = _adjuster.adjust(batch.species, conditions);
+          final dayPlan = RearingDayService().planFor(
+            batch,
+            observedStageDates: observations,
+            conditions: conditions,
+            liveCount: metrics.liveCount,
+          );
+
+          return NestedScrollView(
+            headerSliverBuilder: (context, innerBoxIsScrolled) {
+              return [
+                SliverAppBar(
+                  expandedHeight: 228,
+                  pinned: true,
+                  backgroundColor: KalroColors.headerGreen,
+                  title: Text(batch.species.label.tr),
+                  actions: [
+                    IconButton(
+                      icon: const Icon(Icons.qr_code_2_outlined, color: Colors.white),
+                      tooltip: 'Rearing Tray Tag'.tr,
+                      onPressed: () => BatchQrDialog.show(context, batch),
                     ),
-                    bottom: TabBar(
-                      labelColor: Colors.white,
-                      unselectedLabelColor: Colors.white70,
-                      indicatorColor: KalroColors.peach,
-                      indicatorWeight: 3,
-                      tabs: [
-                        Tab(text: 'Today'.tr),
-                        Tab(text: 'Timeline'.tr),
-                        Tab(text: 'Records'.tr),
-                      ],
+                  ],
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: _buildHeroHeader(
+                      batch,
+                      metrics,
+                      current,
+                      dayPlan,
                     ),
                   ),
-                ];
-              },
-              body: TabBarView(
+                  bottom: TabBar(
+                    controller: _tabController,
+                    labelColor: Colors.white,
+                    unselectedLabelColor: Colors.white70,
+                    indicatorColor: KalroColors.peach,
+                    indicatorWeight: 3,
+                    tabs: [
+                      Tab(text: 'Today'.tr),
+                      Tab(text: 'Timeline'.tr),
+                      Tab(text: 'Records'.tr),
+                    ],
+                  ),
+                ),
+              ];
+            },
+            body: TabBarView(
+              controller: _tabController,
                 children: [
                   ListView(
                     padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
@@ -474,8 +484,7 @@ class _BatchDetailScreenState extends State<BatchDetailScreen> {
             );
           },
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildHeroHeader(
