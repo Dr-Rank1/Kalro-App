@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { UserRole, FarmProfile, UserAccount } from '../types';
 import { KENYA_COUNTIES, USER_ROLES } from '../constants';
 import { RefreshCw, Check, Trash2 } from 'lucide-react';
+import { CountySelector } from './CountySelector';
 
 export interface ProfileFormData {
   username: string;
@@ -301,22 +302,14 @@ export const ProfileFormModal: React.FC<ProfileFormModalProps> = ({
                   />
                 </div>
 
-                <div className="form-group">
-                  <label className="form-label">County *</label>
-                  <select
+                <div style={{ gridColumn: 'span 2' }}>
+                  <CountySelector
                     value={county}
-                    onChange={(e) => handleCountyChange(e.target.value)}
-                    className="form-control"
-                  >
-                    {KENYA_COUNTIES.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(newCounty) => handleCountyChange(newCounty)}
+                  />
                 </div>
 
-                <div className="form-group">
+                <div className="form-group" style={{ gridColumn: 'span 2' }}>
                   <label className="form-label">Sub-County</label>
                   <input
                     type="text"
