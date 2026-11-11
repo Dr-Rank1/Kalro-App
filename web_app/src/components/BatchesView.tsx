@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, QrCode, FileText, UserPlus } from 'lucide-react';
 import { Batch, FeedLog, MortalityLog, CocoonHarvest, FarmProfile, EnvironmentLog } from '../types';
 import { getCurrentStage, getLiveLarvaeCount, formatDate } from '../utils';
@@ -35,7 +35,19 @@ export const BatchesView: React.FC<BatchesViewProps> = ({
   onToast,
   onRequireProfile,
 }) => {
-  const [filter, setFilter] = useState<'all' | 'active' | 'closed'>('all');
+  const [filter, setFilter] = useState<'all' | 'active' | 'closed'>(() => {
+    try {
+      const saved = localStorage.getItem('kalro_batch_filter');
+      if (saved === 'all' || saved === 'active' || saved === 'closed') return saved;
+    } catch {}
+    return 'all';
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('kalro_batch_filter', filter);
+    } catch {}
+  }, [filter]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedBatch, setSelectedBatch] = useState<Batch | null>(null);
 

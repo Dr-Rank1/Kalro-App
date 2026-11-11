@@ -43,13 +43,23 @@ export function App() {
   const [currentUser, setCurrentUser] = useState<UserAccount | null>(() => storage.getActiveUser());
   const [allUsers, setAllUsers] = useState<UserAccount[]>(() => storage.getAllUsers());
 
+  const VALID_TABS: NavTab[] = ['today', 'batches', 'plan', 'farm', 'you'];
+
   const initialBatches = storage.getBatches();
   const [activeTab, setActiveTab] = useState<NavTab>(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       const tabParam = params.get('tab') as NavTab | null;
-      if (tabParam && ['today', 'batches', 'plan', 'farm', 'you'].includes(tabParam)) {
+      if (tabParam && VALID_TABS.includes(tabParam)) {
         return tabParam;
+      }
+      try {
+        const storedTab = localStorage.getItem('kalro_active_tab') as NavTab | null;
+        if (storedTab && VALID_TABS.includes(storedTab)) {
+          return storedTab;
+        }
+      } catch {
+        // ignore storage errors
       }
     }
     return initialBatches.length === 0 ? 'batches' : 'today';
@@ -100,6 +110,61 @@ export function App() {
   useEffect(() => {
     document.documentElement.removeAttribute('data-theme');
   }, []);
+
+  // Synchronize activeTab with URL query parameter and localStorage
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    try {
+      localStorage.setItem('kalro_active_tab', activeTab);
+    } catch {
+      // ignore
+    }
+
+    const currentUrl = new URL(window.location.href);
+    if (currentUrl.searchParams.get('tab') !== activeTab) {
+      currentUrl.searchParams.set('tab', activeTab);
+      if (activeTab !== 'farm') {
+        currentUrl.searchParams.delete('subtab');
+      }
+      window.history.replaceState({ tab: activeTab }, '', currentUrl.toString());
+    }
+  }, [activeTab]);
+
+  // Handle browser back and forward button navigation
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const handlePopState = () => {
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get('tab') as NavTab | null;
+      if (tabParam && VALID_TABS.includes(tabParam)) {
+        setActiveTab(tabParam);
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  // Explicit tab selection handler that pushes browser history
+  const handleSelectTab = (tab: NavTab) => {
+    setActiveTab(tab);
+    try {
+      localStorage.setItem('kalro_active_tab', tab);
+    } catch {
+      // ignore
+    }
+
+    if (typeof window !== 'undefined') {
+      const currentUrl = new URL(window.location.href);
+      if (currentUrl.searchParams.get('tab') !== tab) {
+        currentUrl.searchParams.set('tab', tab);
+        if (tab !== 'farm') {
+          currentUrl.searchParams.delete('subtab');
+        }
+        window.history.pushState({ tab }, '', currentUrl.toString());
+      }
+    }
+  };
 
   // Refresh all state from storage for the active tenant
   const reloadAll = () => {
@@ -324,14 +389,14 @@ export function App() {
         }}
         onSwitchUser={handleSwitchUser}
         onOpenNewUserModal={() => handleOpenCreateProfile()}
-        onNavigateToProfile={() => setActiveTab('you')}
+        onNavigateToProfile={() => handleSelectTab('you')}
         onRequestDeleteUser={(u) => setDeleteProfileTarget(u)}
       />
 
       {/* Navigation */}
       <Navigation
         activeTab={activeTab}
-        onSelectTab={setActiveTab}
+        onSelectTab={handleSelectTab}
         activeBatchesCount={activeBatchesCount}
       />
 
@@ -347,7 +412,7 @@ export function App() {
               harvests={harvests}
               inventory={inventory}
               profile={profile}
-              onOpenCreateProfile={() => handleOpenCreateProfile(() => setActiveTab('today'))}
+              onOpenCreateProfile={() => handleOpenCreateProfile(() => handleSelectTab('today'))}
               onOpenQuickLog={(batchId, type) => {
                 if (!profile) {
                   handleOpenCreateProfile();
@@ -355,7 +420,7 @@ export function App() {
                 }
                 setQuickLogState({ open: true, batchId, type });
               }}
-              onSelectTab={(tab) => setActiveTab(tab as NavTab)}
+              onSelectTab={(tab) => handleSelectTab(tab as NavTab)}
               onExportBatchPdf={(b) => {
                 if (!profile) {
                   showToast('Please set up a farm profile before exporting PDF.');
@@ -394,7 +459,7 @@ export function App() {
               }}
               onOpenQr={(b) => setQrModalBatch(b)}
               onToast={showToast}
-              onRequireProfile={() => handleOpenCreateProfile(() => setActiveTab('batches'))}
+              onRequireProfile={() => handleOpenCreateProfile(() => handleSelectTab('batches'))}
             />
           )}
 

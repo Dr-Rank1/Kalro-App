@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BOMBYX_STAGES, ERI_STAGES } from '../constants';
 import { Batch, MilestoneStage, Species } from '../types';
 import { getCurrentStage, getBatchAgeDays } from '../utils';
@@ -174,8 +174,32 @@ function getDetailedStageShortAction(stage: MilestoneStage): string {
 }
 
 export const PlanView: React.FC<PlanViewProps> = ({ batches }) => {
-  const [activeSpecies, setActiveSpecies] = useState<Species>('bombyx');
-  const [viewMode, setViewMode] = useState<'phases' | 'detailed'>('phases');
+  const [activeSpecies, setActiveSpecies] = useState<Species>(() => {
+    try {
+      const saved = localStorage.getItem('kalro_plan_species');
+      if (saved === 'bombyx' || saved === 'eri') return saved;
+    } catch {}
+    return 'bombyx';
+  });
+  const [viewMode, setViewMode] = useState<'phases' | 'detailed'>(() => {
+    try {
+      const saved = localStorage.getItem('kalro_plan_view');
+      if (saved === 'phases' || saved === 'detailed') return saved;
+    } catch {}
+    return 'phases';
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('kalro_plan_species', activeSpecies);
+    } catch {}
+  }, [activeSpecies]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('kalro_plan_view', viewMode);
+    } catch {}
+  }, [viewMode]);
 
   const activeBatches = batches.filter((b) => b.status === 'active' && b.species === activeSpecies);
   const phases = activeSpecies === 'bombyx' ? BOMBYX_5_PHASES : ERI_5_PHASES;

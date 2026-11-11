@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Batch,
   FeedLog,
@@ -53,16 +53,45 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
   onExportBackup,
   onOpenReportModal,
 }) => {
+  const VALID_FARM_TABS: FarmTab[] = ['leaf', 'climate', 'health', 'harvest', 'finance'];
+
   const [activeTab, setActiveTab] = useState<FarmTab>(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       const sub = params.get('subtab') as FarmTab | null;
-      if (sub && ['leaf', 'climate', 'health', 'harvest', 'finance'].includes(sub)) {
+      if (sub && VALID_FARM_TABS.includes(sub)) {
         return sub;
+      }
+      try {
+        const stored = localStorage.getItem('kalro_active_farm_subtab') as FarmTab | null;
+        if (stored && VALID_FARM_TABS.includes(stored)) {
+          return stored;
+        }
+      } catch {
+        // ignore
       }
     }
     return 'leaf';
   });
+
+  // Synchronize active subtab with URL query parameter and localStorage
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    try {
+      localStorage.setItem('kalro_active_farm_subtab', activeTab);
+    } catch {
+      // ignore
+    }
+
+    const currentUrl = new URL(window.location.href);
+    if (currentUrl.searchParams.get('tab') === 'farm') {
+      if (currentUrl.searchParams.get('subtab') !== activeTab) {
+        currentUrl.searchParams.set('subtab', activeTab);
+        window.history.replaceState({ tab: 'farm', subtab: activeTab }, '', currentUrl.toString());
+      }
+    }
+  }, [activeTab]);
 
   // --------------------------------------------------------------------------
   // Tab 1: Forage & Feed State
