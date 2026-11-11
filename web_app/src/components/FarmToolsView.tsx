@@ -9,6 +9,7 @@ import {
   LeafMovement,
   PaymentRecord,
   LeafType,
+  FarmProfile,
 } from '../types';
 import { DISEASE_LIBRARY } from '../constants';
 import {
@@ -26,6 +27,7 @@ interface FarmToolsViewProps {
   inventory: LeafInventory;
   leafMovements: LeafMovement[];
   payments: PaymentRecord[];
+  profile?: FarmProfile | null;
   onAddFeedLog: (log: FeedLog) => void;
   onAddMortalityLog: (log: MortalityLog) => void;
   onAddHarvest: (harvest: CocoonHarvest) => void;
@@ -47,6 +49,7 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
   inventory,
   leafMovements: _leafMovements,
   payments,
+  profile,
   onAddLeafMovement,
   onAddPayment,
   onExportCsv,
@@ -260,7 +263,7 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
   return (
     <div className="farm-tools-container view-enter-animate">
       {/* Header */}
-      <div className="card-header-flex" style={{ marginBottom: '1.25rem' }}>
+      <div className="card-header-flex" style={{ marginBottom: profile ? '0.75rem' : '1.25rem' }}>
         <div>
           <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0, color: 'var(--text-main)' }}>
             Agronomy & Sericulture Station Tools
@@ -270,6 +273,38 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
           </p>
         </div>
       </div>
+
+      {/* Farm Profile Synchronization Pill */}
+      {profile && (
+        <div
+          style={{
+            background: 'var(--bg-subtle)',
+            border: '1px solid var(--border-subtle)',
+            borderRadius: 'var(--radius-sm)',
+            padding: '8px 12px',
+            marginBottom: '1rem',
+            fontSize: '0.78rem',
+            color: 'var(--text-main)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '8px',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            <span style={{ fontWeight: 700, color: 'var(--primary)' }}>Farm Profile Synced:</span>
+            <span>{profile.orgName} ({profile.county} County)</span>
+            <span>•</span>
+            <span>{profile.houseCount} Rearing {profile.houseCount === 1 ? 'House' : 'Houses'}</span>
+            <span>•</span>
+            <span>{profile.mulberryAcreage} Acre(s) Mulberry</span>
+          </div>
+          <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+            Calculators pre-configured for your farm capacity
+          </span>
+        </div>
+      )}
 
       {/* 5 Clean Tabs */}
       <div className="farm-tabs-bar">

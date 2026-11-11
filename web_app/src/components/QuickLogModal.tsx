@@ -11,11 +11,14 @@ import {
   ShieldAlert,
   Info,
   Clock,
+  Building2,
+  Plus,
 } from 'lucide-react';
 import {
   Batch,
   CocoonHarvest,
   EnvironmentLog,
+  FarmProfile,
   FeedLog,
   LeafType,
   MortalityLog,
@@ -28,6 +31,8 @@ interface QuickLogModalProps {
   mortalityLogs?: MortalityLog[];
   initialBatchId?: string;
   defaultType?: 'feed' | 'mortality' | 'climate' | 'harvest';
+  profile?: FarmProfile | null;
+  onOpenBatchRegistration?: () => void;
   onClose: () => void;
   onSaveFeed: (log: FeedLog) => void;
   onSaveMortality: (log: MortalityLog) => void;
@@ -41,41 +46,21 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
   mortalityLogs = [],
   initialBatchId,
   defaultType = 'feed',
+  profile,
+  onOpenBatchRegistration,
   onClose,
   onSaveFeed,
   onSaveMortality,
   onSaveClimate,
   onSaveHarvest,
 }) => {
-  if (batches.length === 0) {
-    return (
-      <div className="modal-overlay" onClick={onClose}>
-        <div className="modal-content quick-log-modal" style={{ maxWidth: '440px' }} onClick={(e) => e.stopPropagation()}>
-          <div className="modal-header">
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 700 }}>Operational Rearing Entry</h3>
-            <button onClick={onClose} className="modal-close-btn" aria-label="Close dialog">
-              <X size={18} />
-            </button>
-          </div>
-          <div className="empty-state" style={{ padding: '1.75rem 1rem', textAlign: 'center' }}>
-            <h4 style={{ margin: '0 0 8px', fontSize: '1.05rem', fontWeight: 700 }}>No Silkworm Batches Available</h4>
-            <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-              Please register or start a rearing batch before logging feeding, mortality, climate, or harvest entries.
-            </p>
-            <button type="button" onClick={onClose} className="btn-primary" style={{ marginTop: '1.25rem' }}>
-              Close
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   const activeBatches = batches.filter((b) => b.status === 'active');
   const [selectedBatchId, setSelectedBatchId] = useState<string>(
     initialBatchId || (activeBatches.length > 0 ? activeBatches[0].id : batches[0]?.id || '')
   );
-  const [logType, setLogType] = useState<'feed' | 'mortality' | 'climate' | 'harvest'>(defaultType);
+  const [logType, setLogType] = useState<'feed' | 'mortality' | 'climate' | 'harvest'>(
+    batches.length === 0 ? 'climate' : defaultType
+  );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Selected Batch Context
@@ -188,7 +173,7 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
       }
       onSaveClimate({
         id: `el-${Date.now()}`,
-        batchId: selectedBatchId,
+        batchId: selectedBatchId || 'chamber',
         recordedAt: now,
         temperatureCelsius: t,
         humidityPercent: h,
@@ -300,28 +285,88 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
-          {/* Selected Batch */}
-          <div className="form-group" style={{ marginBottom: '1rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-              <label className="form-label" style={{ margin: 0 }}>Silkworm Batch</label>
-              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-                {activeBatches.length} active lot{activeBatches.length === 1 ? '' : 's'}
-              </span>
-            </div>
-            <select
-              value={selectedBatchId}
-              onChange={(e) => setSelectedBatchId(e.target.value)}
-              className="form-control"
-              required
+        {batches.length === 0 && logType !== 'climate' ? (
+          <div className="empty-state" style={{ padding: '2rem 1.25rem', textAlign: 'center' }}>
+            <div
+              style={{
+                width: '48px',
+                height: '48px',
+                borderRadius: '50%',
+                backgroundColor: 'var(--bg-subtle)',
+                color: 'var(--primary)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 12px',
+              }}
             >
-              {batches.map((b) => (
-                <option key={b.id} value={b.id}>
-                  {b.displayTag || b.batchTag || b.id} ({b.species === 'bombyx' ? 'Bombyx mori' : 'Eri Silkworm'} - {b.status})
-                </option>
-              ))}
-            </select>
+              <Leaf size={24} />
+            </div>
+            <h4 style={{ margin: '0 0 6px', fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-main)' }}>
+              Active Silkworm Batch Required
+            </h4>
+            <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: 1.5, maxWidth: '380px', marginLeft: 'auto', marginRight: 'auto' }}>
+              Recording daily rations, larval health, or cocoon harvests requires an active rearing lot. Register your first batch or record ambient rearing room climate.
+            </p>
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '1.25rem', flexWrap: 'wrap' }}>
+              {onOpenBatchRegistration && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onOpenBatchRegistration();
+                  }}
+                  className="btn-accent"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 16px', fontSize: '0.82rem' }}
+                >
+                  <Plus size={15} />
+                  Register First Batch
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => setLogType('climate')}
+                className="btn-secondary"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '8px 16px', fontSize: '0.82rem' }}
+              >
+                <Thermometer size={14} />
+                Record Chamber Climate
+              </button>
+            </div>
           </div>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            {/* Selected Batch or Facility Header */}
+            {batches.length > 0 ? (
+              <div className="form-group" style={{ marginBottom: '1rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                  <label className="form-label" style={{ margin: 0 }}>Silkworm Batch</label>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                    {activeBatches.length} active lot{activeBatches.length === 1 ? '' : 's'}
+                  </span>
+                </div>
+                <select
+                  value={selectedBatchId}
+                  onChange={(e) => setSelectedBatchId(e.target.value)}
+                  className="form-control"
+                  required
+                >
+                  {batches.map((b) => (
+                    <option key={b.id} value={b.id}>
+                      {b.displayTag || b.batchTag || b.id} ({b.species === 'bombyx' ? 'Bombyx mori' : 'Eri Silkworm'} - {b.status})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : (
+              <div className="form-group" style={{ marginBottom: '1rem' }}>
+                <label className="form-label">Rearing House Location</label>
+                <div style={{ background: 'var(--bg-subtle)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-sm)', padding: '8px 12px', fontSize: '0.82rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Building2 size={16} color="var(--primary)" />
+                  <span>{profile?.orgName ? `${profile.orgName} (${profile.county} County)` : 'Rearing House Chamber'} — Baseline Ambient Climate</span>
+                </div>
+              </div>
+            )}
 
           {/* TAB 1: FEED ALLOCATION */}
           {logType === 'feed' && (
@@ -751,7 +796,8 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
                 : 'Save Cocoon Harvest'}
             </button>
           </div>
-        </form>
+          </form>
+        )}
       </div>
     </div>
   );

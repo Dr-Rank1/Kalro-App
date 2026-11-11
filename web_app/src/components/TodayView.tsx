@@ -46,6 +46,8 @@ interface TodayViewProps {
   inventory: LeafInventory;
   profile?: FarmProfile | null;
   onOpenCreateProfile?: () => void;
+  onOpenAddBatch?: () => void;
+  onOpenAddLeaf?: () => void;
   onOpenQuickLog: (batchId?: string, defaultType?: 'feed' | 'mortality' | 'climate' | 'harvest') => void;
   onSelectTab: (tab: 'batches' | 'plan' | 'farm' | 'you') => void;
   onExportBatchPdf?: (batch: Batch) => void;
@@ -98,6 +100,8 @@ export const TodayView: React.FC<TodayViewProps> = ({
   inventory,
   profile,
   onOpenCreateProfile,
+  onOpenAddBatch,
+  onOpenAddLeaf,
   onOpenQuickLog,
   onSelectTab,
   onExportBatchPdf,
@@ -190,7 +194,13 @@ export const TodayView: React.FC<TodayViewProps> = ({
   const alerts: { type: 'warning' | 'critical' | 'info'; message: string; sub?: string }[] = [];
 
   if (activeBatches.length > 0) {
-    if (leafCoverage.urgency === 'critical') {
+    if (leafCoverage.totalStockKg === 0) {
+      alerts.push({
+        type: 'warning',
+        message: `Leaf Inventory Not Recorded (0.0 kg stored forage)`,
+        sub: `Record morning harvest from your ${profile?.mulberryAcreage || 1} acre plot to activate live forage runway forecasts.`,
+      });
+    } else if (leafCoverage.urgency === 'critical') {
       alerts.push({
         type: 'critical',
         message: `Critical Forage Deficit: Only ${leafCoverage.totalStockKg.toFixed(1)} kg stored forage remaining.`,
@@ -717,72 +727,191 @@ export const TodayView: React.FC<TodayViewProps> = ({
         )}
 
         {activeBatches.length === 0 ? (
-          <div className="empty-state" style={{ padding: '2.5rem 1.5rem', textAlign: 'center' }}>
+          <div className="empty-state" style={{ padding: '2rem 1.5rem', textAlign: 'center', backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-md)' }}>
             <div
               style={{
-                width: '56px',
-                height: '56px',
+                width: '52px',
+                height: '52px',
                 borderRadius: '50%',
-                backgroundColor: 'var(--bg-subtle)',
+                backgroundColor: 'var(--primary-subtle)',
                 color: 'var(--primary)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                margin: '0 auto 14px',
+                margin: '0 auto 12px',
               }}
             >
-              <Leaf size={28} />
+              <Sparkles size={26} />
             </div>
-            <h4 style={{ fontSize: '1.15rem', fontWeight: 700, margin: '0 0 8px', color: 'var(--text-main)' }}>
-              No Active Silkworm Batches Today
-            </h4>
-            <p style={{ maxWidth: '480px', margin: '0 auto 20px', fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
-              All previous rearing cycles are completed or no rearing cycle is active yet. Start a new lot to activate daily feeding schedules, tray microclimate tracking, and forage allocation.
-            </p>
-            <button
-              type="button"
-              onClick={() => onSelectTab('batches')}
-              className="btn-primary"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 22px', fontSize: '0.88rem' }}
-            >
-              <Plus size={16} />
-              Start New Batch Cycle
-            </button>
 
-            {/* 3-Step Sericulture Startup Checklist */}
+            <h4 style={{ fontSize: '1.2rem', fontWeight: 700, margin: '0 0 6px', color: 'var(--text-main)' }}>
+              {profile ? `Welcome to Today's Operations, ${profile.managerName}!` : 'No Active Silkworm Batches Today'}
+            </h4>
+
+            {profile && (
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'var(--bg-subtle)', border: '1px solid var(--border-subtle)', padding: '4px 12px', borderRadius: 'var(--radius-full)', fontSize: '0.76rem', color: 'var(--text-muted)', marginBottom: '14px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                <Building2 size={13} color="var(--primary)" />
+                <span style={{ fontWeight: 600, color: 'var(--text-main)' }}>{profile.orgName}</span>
+                <span>•</span>
+                <span>{profile.county} County</span>
+                <span>•</span>
+                <span>{profile.houseCount} Rearing {profile.houseCount === 1 ? 'House' : 'Houses'}</span>
+                <span>•</span>
+                <span>{profile.mulberryAcreage} Acre(s) Mulberry</span>
+              </div>
+            )}
+
+            <p style={{ maxWidth: '520px', margin: '0 auto 24px', fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.55 }}>
+              {profile
+                ? 'Your farm profile is active. Follow these 3 essential daily operations to synchronize your rearing cycles, microclimate calibration, and forage runway:'
+                : 'All previous rearing cycles are completed or no rearing cycle is active yet. Start a new lot to activate daily feeding schedules, tray microclimate tracking, and forage allocation.'}
+            </p>
+
+            {/* 3 Synchronized Core Operations Cards */}
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                gap: '12px',
-                marginTop: '2rem',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+                gap: '14px',
+                marginBottom: '1.75rem',
                 textAlign: 'left',
               }}
             >
-              <div style={{ background: '#f8faf8', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-sm)', padding: '12px' }}>
-                <div style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', marginBottom: '4px' }}>
-                  1. Room Sanitation
+              {/* Step 1: Start Batch */}
+              <div
+                style={{
+                  background: '#fcfdfc',
+                  border: '1px solid var(--border-subtle)',
+                  borderRadius: 'var(--radius-sm)',
+                  padding: '1rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--primary)', marginBottom: '6px' }}>
+                    <Plus size={16} />
+                    <span style={{ fontSize: '0.76rem', fontWeight: 700, textTransform: 'uppercase' }}>
+                      1. Start Rearing Batch
+                    </span>
+                  </div>
+                  <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '0 0 12px', lineHeight: 1.45 }}>
+                    Register your disease-free eggs (DFLs) to activate daily feeding rations, tray spacing schedules, and stage tracking.
+                  </p>
                 </div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
-                  Disinfect trays and spray 2% formalin or 0.05% Asthra solution 3 days before brushing.
-                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (onOpenAddBatch) {
+                      onOpenAddBatch();
+                    } else {
+                      onSelectTab('batches');
+                    }
+                  }}
+                  className="btn-accent"
+                  style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.82rem', padding: '8px 12px' }}
+                >
+                  <Plus size={15} />
+                  + Register First Batch
+                </button>
               </div>
-              <div style={{ background: '#f8faf8', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-sm)', padding: '12px' }}>
-                <div style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', marginBottom: '4px' }}>
-                  2. Leaf Forage Harvest
+
+              {/* Step 2: Record Climate */}
+              <div
+                style={{
+                  background: '#fcfdfc',
+                  border: '1px solid var(--border-subtle)',
+                  borderRadius: 'var(--radius-sm)',
+                  padding: '1rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--status-info)', marginBottom: '6px' }}>
+                    <Thermometer size={16} />
+                    <span style={{ fontSize: '0.76rem', fontWeight: 700, textTransform: 'uppercase' }}>
+                      2. Rearing Room Climate
+                    </span>
+                  </div>
+                  <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '0 0 12px', lineHeight: 1.45 }}>
+                    Calibrate and log chamber temperature (24–26°C) and relative humidity (75–85%) before larvae brush onto rearing trays.
+                  </p>
                 </div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
-                  Harvest fresh, tender top mulberry leaves at dawn (06:30–08:30) and preserve under wet hessian cloth.
-                </div>
+                <button
+                  type="button"
+                  onClick={() => onOpenQuickLog(undefined, 'climate')}
+                  className="btn-secondary"
+                  style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '5px', fontSize: '0.82rem', padding: '8px 12px' }}
+                >
+                  <Thermometer size={14} />
+                  Record House Climate
+                </button>
               </div>
-              <div style={{ background: '#f8faf8', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-sm)', padding: '12px' }}>
-                <div style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', marginBottom: '4px' }}>
-                  3. Egg Incubation
+
+              {/* Step 3: Record Leaf Stock */}
+              <div
+                style={{
+                  background: '#fcfdfc',
+                  border: '1px solid var(--border-subtle)',
+                  borderRadius: 'var(--radius-sm)',
+                  padding: '1rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--status-success)', marginBottom: '6px' }}>
+                    <Leaf size={16} />
+                    <span style={{ fontSize: '0.76rem', fontWeight: 700, textTransform: 'uppercase' }}>
+                      3. Forage Leaf Stock
+                    </span>
+                  </div>
+                  <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '0 0 12px', lineHeight: 1.45 }}>
+                    Log freshly harvested mulberry from your {profile?.mulberryAcreage || 1} acre plot into leaf storage to calculate forage runway.
+                  </p>
                 </div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
-                  Maintain 25°C and 80% RH. Black-box DFLs on day 9 and expose to light on day 10 for uniform 95%+ hatch.
-                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (onOpenAddLeaf) {
+                      onOpenAddLeaf();
+                    } else {
+                      onSelectTab('farm');
+                    }
+                  }}
+                  className="btn-secondary"
+                  style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '5px', fontSize: '0.82rem', padding: '8px 12px' }}
+                >
+                  <Plus size={14} />
+                  + Record Leaf Stock
+                </button>
               </div>
+            </div>
+
+            {/* Quick Cross-Nav Links */}
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap', borderTop: '1px solid var(--border-divider)', paddingTop: '1rem' }}>
+              <button
+                type="button"
+                onClick={() => onSelectTab('plan')}
+                className="roadmap-tag-pill"
+                style={{ fontSize: '0.78rem', padding: '6px 14px', cursor: 'pointer', background: 'var(--bg-subtle)', border: '1px solid var(--border-subtle)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              >
+                <span>📖 Explore 30-Day Agronomy Roadmap</span>
+                <ArrowRight size={13} />
+              </button>
+              <button
+                type="button"
+                onClick={() => onSelectTab('farm')}
+                className="roadmap-tag-pill"
+                style={{ fontSize: '0.78rem', padding: '6px 14px', cursor: 'pointer', background: 'var(--bg-subtle)', border: '1px solid var(--border-subtle)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              >
+                <span>🧮 Bed Disinfection & Mulberry Calculators</span>
+                <ArrowRight size={13} />
+              </button>
             </div>
           </div>
         ) : filteredBatches.length === 0 ? (
@@ -932,6 +1061,24 @@ export const TodayView: React.FC<TodayViewProps> = ({
                         </button>
                       )}
                     </div>
+
+                    {/* Synchronized Protocol & Tools Links */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', paddingTop: '6px', borderTop: '1px solid var(--border-divider)', fontSize: '0.72rem' }}>
+                      <button
+                        type="button"
+                        onClick={() => onSelectTab('plan')}
+                        style={{ background: 'none', border: 'none', color: 'var(--primary)', padding: 0, cursor: 'pointer', textDecoration: 'underline', fontWeight: 600 }}
+                      >
+                        {stage.name} Protocol in Plan →
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onSelectTab('farm')}
+                        style={{ background: 'none', border: 'none', color: 'var(--text-muted)', padding: 0, cursor: 'pointer', textDecoration: 'underline' }}
+                      >
+                        Bed Spacing in Tools →
+                      </button>
+                    </div>
                   </div>
                 </div>
               );
@@ -1054,13 +1201,27 @@ export const TodayView: React.FC<TodayViewProps> = ({
                 Harvested reserves in humidified storage
               </p>
             </div>
-            <button
-              onClick={() => onSelectTab('farm')}
-              className="btn-secondary"
-              style={{ fontSize: '0.75rem', padding: '0.3rem 0.65rem' }}
-            >
-              Open Ledger
-            </button>
+            <div style={{ display: 'flex', gap: '6px' }}>
+              {onOpenAddLeaf && (
+                <button
+                  type="button"
+                  onClick={onOpenAddLeaf}
+                  className="btn-accent"
+                  style={{ fontSize: '0.75rem', padding: '0.3rem 0.65rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                >
+                  <Plus size={12} />
+                  + Add Stock
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => onSelectTab('farm')}
+                className="btn-secondary"
+                style={{ fontSize: '0.75rem', padding: '0.3rem 0.65rem' }}
+              >
+                Open Ledger
+              </button>
+            </div>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', margin: '0.85rem 0' }}>

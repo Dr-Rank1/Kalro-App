@@ -5,6 +5,7 @@ import { getCurrentStage, getBatchAgeDays } from '../utils';
 
 interface PlanViewProps {
   batches: Batch[];
+  onSelectTab?: (tab: 'today' | 'batches' | 'farm' | 'you') => void;
 }
 
 interface SimplifiedPhase {
@@ -173,7 +174,7 @@ function getDetailedStageShortAction(stage: MilestoneStage): string {
   return 'Peak voracious feeding: feed whole mature shoots 3–4× daily.';
 }
 
-export const PlanView: React.FC<PlanViewProps> = ({ batches }) => {
+export const PlanView: React.FC<PlanViewProps> = ({ batches, onSelectTab }) => {
   const [activeSpecies, setActiveSpecies] = useState<Species>(() => {
     try {
       const saved = localStorage.getItem('kalro_plan_species');
@@ -202,6 +203,7 @@ export const PlanView: React.FC<PlanViewProps> = ({ batches }) => {
   }, [viewMode]);
 
   const activeBatches = batches.filter((b) => b.status === 'active' && b.species === activeSpecies);
+  const allActiveBatches = batches.filter((b) => b.status === 'active');
   const phases = activeSpecies === 'bombyx' ? BOMBYX_5_PHASES : ERI_5_PHASES;
   const detailedStages = activeSpecies === 'bombyx' ? BOMBYX_STAGES : ERI_STAGES;
 
@@ -218,6 +220,45 @@ export const PlanView: React.FC<PlanViewProps> = ({ batches }) => {
               ? '40-day Bivoltine Mulberry silkworm rearing cycle.'
               : '39-day Polyphagous Eri silkworm rearing cycle.'}
           </p>
+
+          {allActiveBatches.length > 0 && (
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                marginTop: '6px',
+                background: 'var(--primary-subtle)',
+                color: 'var(--primary)',
+                padding: '4px 10px',
+                borderRadius: 'var(--radius-sm)',
+                fontSize: '0.74rem',
+                fontWeight: 600,
+              }}
+            >
+              <span>
+                Active: {allActiveBatches[0].displayTag || allActiveBatches[0].batchTag} (Day {getBatchAgeDays(allActiveBatches[0])} · {getCurrentStage(allActiveBatches[0]).name})
+              </span>
+              {onSelectTab && (
+                <button
+                  type="button"
+                  onClick={() => onSelectTab('today')}
+                  style={{
+                    border: 'none',
+                    background: 'none',
+                    color: 'var(--primary)',
+                    textDecoration: 'underline',
+                    cursor: 'pointer',
+                    fontSize: '0.74rem',
+                    fontWeight: 700,
+                    padding: 0,
+                  }}
+                >
+                  Go to Operations Today →
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Quiet Controls: Species Toggle + Mode Toggle */}

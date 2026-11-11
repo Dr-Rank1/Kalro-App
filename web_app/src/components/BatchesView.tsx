@@ -184,6 +184,7 @@ export const BatchesView: React.FC<BatchesViewProps> = ({
               onAddBatch(newBatch);
             }}
             existingBatches={batches}
+            profile={profile}
           />
         </div>
       ) : filtered.length === 0 ? (
@@ -357,6 +358,7 @@ export const BatchesView: React.FC<BatchesViewProps> = ({
               }}
               onCancel={() => setShowAddModal(false)}
               existingBatches={batches}
+              profile={profile}
             />
           </div>
         </div>

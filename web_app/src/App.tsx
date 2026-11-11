@@ -11,6 +11,8 @@ import { QrCodeModal } from './components/QrCodeModal';
 import { ReportExportModal } from './components/ReportExportModal';
 import { ProfileFormModal, ProfileFormData } from './components/ProfileFormModal';
 import { DeleteProfileModal } from './components/DeleteProfileModal';
+import { BatchRegistrationForm } from './components/BatchRegistrationForm';
+import { LeafStockModal } from './components/LeafStockModal';
 import { downloadSingleBatchPdf } from './utils/pdfGenerator';
 import { storage } from './storage';
 import {
@@ -62,7 +64,7 @@ export function App() {
         // ignore storage errors
       }
     }
-    return initialBatches.length === 0 ? 'batches' : 'today';
+    return 'today';
   });
 
   // Application Data State for active user tenant
@@ -86,12 +88,19 @@ export function App() {
   const [qrModalBatch, setQrModalBatch] = useState<Batch | null>(null);
   const [reportModalOpen, setReportModalOpen] = useState(false);
 
+  // Today Action Modals
+  const [todayBatchModalOpen, setTodayBatchModalOpen] = useState(false);
+  const [todayLeafModalOpen, setTodayLeafModalOpen] = useState(false);
+
   // Profile Modal State (Create / Edit)
   const [profileModalState, setProfileModalState] = useState<{
     open: boolean;
     mode: 'create' | 'edit';
     onComplete?: () => void;
-  }>({ open: false, mode: 'create' });
+  }>(() => ({
+    open: storage.getAllUsers().length === 0,
+    mode: 'create',
+  }));
 
   // Delete Profile Confirmation Target
   const [deleteProfileTarget, setDeleteProfileTarget] = useState<UserAccount | null>(null);
@@ -109,6 +118,13 @@ export function App() {
   // Lock to clean light theme
   useEffect(() => {
     document.documentElement.removeAttribute('data-theme');
+  }, []);
+
+  // First-Login / Onboarding trigger: If no farm profiles exist in storage, prompt immediately
+  useEffect(() => {
+    if (storage.getAllUsers().length === 0 && !storage.getActiveUser()) {
+      setProfileModalState({ open: true, mode: 'create' });
+    }
   }, []);
 
   // Synchronize activeTab with URL query parameter and localStorage
@@ -229,7 +245,8 @@ export function App() {
     if (profileModalState.mode === 'create') {
       const res = storage.createUserProfile(data);
       reloadAll();
-      showToast(`Welcome, ${res.user.username}! Farm profile created.`);
+      handleSelectTab('today');
+      showToast(`Welcome, ${res.user.username}! Farm profile created. Welcome to Today's Operations.`);
     } else {
       storage.updateUserProfile(data);
       reloadAll();
@@ -413,6 +430,8 @@ export function App() {
               inventory={inventory}
               profile={profile}
               onOpenCreateProfile={() => handleOpenCreateProfile(() => handleSelectTab('today'))}
+              onOpenAddBatch={() => setTodayBatchModalOpen(true)}
+              onOpenAddLeaf={() => setTodayLeafModalOpen(true)}
               onOpenQuickLog={(batchId, type) => {
                 if (!profile) {
                   handleOpenCreateProfile();
@@ -466,6 +485,7 @@ export function App() {
           {activeTab === 'plan' && (
             <PlanView
               batches={batches}
+              onSelectTab={handleSelectTab}
             />
           )}
 
@@ -479,6 +499,7 @@ export function App() {
               inventory={inventory}
               leafMovements={leafMovements}
               payments={payments}
+              profile={profile}
               onAddFeedLog={handleAddFeed}
               onAddMortalityLog={handleAddMortality}
               onAddHarvest={handleAddHarvest}
@@ -526,6 +547,8 @@ export function App() {
           mortalityLogs={mortalityLogs}
           initialBatchId={quickLogState.batchId}
           defaultType={quickLogState.type}
+          profile={profile}
+          onOpenBatchRegistration={() => setTodayBatchModalOpen(true)}
           onClose={() => setQuickLogState({ open: false })}
           onSaveFeed={handleAddFeed}
           onSaveMortality={handleAddMortality}
@@ -533,6 +556,54 @@ export function App() {
           onSaveHarvest={handleAddHarvest}
         />
       )}
+
+      {/* Direct Batch Registration Modal from Today */}
+      {todayBatchModalOpen && (
+        <div className="modal-overlay" onClick={() => setTodayBatchModalOpen(false)}>
+          <div
+            className="modal-content"
+            style={{ maxWidth: '640px' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header">
+              <div>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 700, margin: 0, color: 'var(--text-main)' }}>
+                  Register Silkworm Rearing Batch
+                </h3>
+                <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>
+                  Start a rearing lot to activate daily rations, microclimate calibration, and forage runway
+                </p>
+              </div>
+              <button
+                onClick={() => setTodayBatchModalOpen(false)}
+                className="modal-close-btn"
+                aria-label="Close dialog"
+              >
+                ✕
+              </button>
+            </div>
+            <BatchRegistrationForm
+              isModal={true}
+              existingBatches={batches}
+              profile={profile}
+              onSuccess={(newBatch) => {
+                handleAddBatch(newBatch);
+                setTodayBatchModalOpen(false);
+                handleSelectTab('today');
+              }}
+              onCancel={() => setTodayBatchModalOpen(false)}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Direct Leaf Harvest Modal from Today */}
+      <LeafStockModal
+        isOpen={todayLeafModalOpen}
+        profile={profile}
+        onClose={() => setTodayLeafModalOpen(false)}
+        onSave={handleAddLeafMovement}
+      />
 
       {/* Tray QR Code Modal */}
       {qrModalBatch && (

@@ -3,14 +3,16 @@ import {
   ChevronDown,
   ChevronUp,
   CheckCircle2,
+  Building2,
 } from 'lucide-react';
-import { Batch, Species } from '../types';
+import { Batch, FarmProfile, Species } from '../types';
 
 interface BatchRegistrationFormProps {
   onSuccess: (batch: Batch) => void;
   onCancel?: () => void;
   isModal?: boolean;
   existingBatches?: Batch[];
+  profile?: FarmProfile | null;
 }
 
 export const BatchRegistrationForm: React.FC<BatchRegistrationFormProps> = ({
@@ -18,6 +20,7 @@ export const BatchRegistrationForm: React.FC<BatchRegistrationFormProps> = ({
   onCancel,
   isModal = false,
   existingBatches = [],
+  profile,
 }) => {
   const currentYear = new Date().getFullYear();
 
@@ -244,9 +247,16 @@ export const BatchRegistrationForm: React.FC<BatchRegistrationFormProps> = ({
           </div>
 
           <div className="input-group">
-            <label className="input-label" htmlFor="roomNameInput">
-              Rearing Chamber / Bay
-            </label>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <label className="input-label" htmlFor="roomNameInput" style={{ margin: 0 }}>
+                Rearing Chamber / Bay
+              </label>
+              {profile && (
+                <span style={{ fontSize: '0.72rem', color: 'var(--primary)', fontWeight: 600 }}>
+                  {profile.houseCount} {profile.houseCount === 1 ? 'House' : 'Houses'} Registered
+                </span>
+              )}
+            </div>
             <input
               id="roomNameInput"
               type="text"
@@ -256,6 +266,21 @@ export const BatchRegistrationForm: React.FC<BatchRegistrationFormProps> = ({
               placeholder="e.g. Rearing House 1 - Bay A"
               required
             />
+            {profile && profile.houseCount > 1 && (
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '4px' }}>
+                {Array.from({ length: Math.min(profile.houseCount, 4) }, (_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => setRoomName(`Rearing House ${i + 1} - Bay A`)}
+                    className="roadmap-tag-pill"
+                    style={{ fontSize: '0.7rem', padding: '2px 8px', cursor: 'pointer' }}
+                  >
+                    House {i + 1}
+                  </button>
+                ))}
+              </div>
+            )}
             <span className="input-sub-hint">Physical room where trays are housed</span>
           </div>
         </div>
@@ -285,6 +310,17 @@ export const BatchRegistrationForm: React.FC<BatchRegistrationFormProps> = ({
             <div className="forecast-item-sub">{cycleDays} days total cycle · Need {bedSpaceM2} m² bed space</div>
           </div>
         </div>
+
+        {profile && (
+          <div style={{ marginTop: '0.65rem', paddingTop: '0.65rem', borderTop: '1px solid var(--border-divider)', fontSize: '0.74rem', color: 'var(--text-muted)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
+            <span>
+              🌾 Farm Forage Check: <strong>{profile.mulberryAcreage || 1} acre(s)</strong> at {profile.orgName} (Annual forage: ~{((profile.mulberryAcreage || 1) * 16000).toLocaleString()} kg)
+            </span>
+            <span style={{ color: 'var(--status-success)', fontWeight: 600 }}>
+              ✓ Farm supports this batch demand ({totalForageKg} kg)
+            </span>
+          </div>
+        )}
       </div>
 
       {/* 4. Optional Advanced Details (Collapsed by Default) */}
