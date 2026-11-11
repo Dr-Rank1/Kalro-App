@@ -107,6 +107,8 @@ export const TodayView: React.FC<TodayViewProps> = ({
   onExportBatchPdf,
 }) => {
   const [batchFilter, setBatchFilter] = useState<BatchFilter>('all');
+  const [selectedHouseTab, setSelectedHouseTab] = useState<string>('all');
+  const houseCount = Math.max(1, profile?.houseCount || 1);
   const activeBatches = batches.filter((b) => b.status === 'active');
 
   const now = new Date();
@@ -158,6 +160,11 @@ export const TodayView: React.FC<TodayViewProps> = ({
   // Latest microclimate reading
   const latestEnv = envLogs.length > 0 ? envLogs[0] : null;
   const envLoggedToday = latestEnv && latestEnv.recordedAt.startsWith(todayStr);
+
+  // Per-chamber active climate reading
+  const activeHouseEnv = selectedHouseTab === 'all'
+    ? latestEnv
+    : (envLogs.find((e) => e.roomName === selectedHouseTab) || null);
 
   // Batches breakdown by state
   const dueBatches = activeBatches.filter((b) => {
@@ -415,7 +422,9 @@ export const TodayView: React.FC<TodayViewProps> = ({
               : '--'}
           </span>
           <span className="metric-sub">
-            {latestEnv ? `${latestEnv.humidityPercent}% RH (Hygrometer)` : 'No reading today'}
+            {latestEnv
+              ? `${latestEnv.roomName ? `${latestEnv.roomName} · ` : ''}${latestEnv.humidityPercent}% RH (Hygrometer)`
+              : 'No reading today'}
           </span>
         </div>
       </div>
@@ -537,7 +546,9 @@ export const TodayView: React.FC<TodayViewProps> = ({
               </p>
               <div className="routine-action-row">
                 <span className="routine-meta-text">
-                  {latestEnv ? `${latestEnv.temperatureCelsius.toFixed(1)}°C / ${latestEnv.humidityPercent}%` : 'No log today'}
+                  {latestEnv
+                    ? `${latestEnv.roomName ? `${latestEnv.roomName}: ` : ''}${latestEnv.temperatureCelsius.toFixed(1)}°C / ${latestEnv.humidityPercent}%`
+                    : 'No log today'}
                 </span>
                 <button
                   type="button"
@@ -1095,7 +1106,10 @@ export const TodayView: React.FC<TodayViewProps> = ({
             <div>
               <h3 className="card-title">Rearing House Microclimate</h3>
               <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-                House 1 Rearing Chamber Thermometer & Hygrometer
+                {selectedHouseTab !== 'all'
+                  ? selectedHouseTab
+                  : (activeHouseEnv?.roomName ? `${activeHouseEnv.roomName} (Latest)` : 'House 1')}{' '}
+                Rearing Chamber Thermometer &amp; Hygrometer
               </p>
             </div>
             <button
@@ -1107,6 +1121,76 @@ export const TodayView: React.FC<TodayViewProps> = ({
               + Log Climate
             </button>
           </div>
+
+          {/* Multi-House Chamber Selector Pills */}
+          {houseCount > 1 && (
+            <div
+              style={{
+                display: 'flex',
+                gap: '6px',
+                margin: '0.65rem 0 0.15rem',
+                overflowX: 'auto',
+                paddingBottom: '2px',
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => setSelectedHouseTab('all')}
+                style={{
+                  padding: '4px 10px',
+                  fontSize: '0.74rem',
+                  borderRadius: 'var(--radius-sm)',
+                  border: selectedHouseTab === 'all' ? '1px solid var(--primary)' : '1px solid var(--border-subtle)',
+                  background: selectedHouseTab === 'all' ? 'var(--primary)' : 'var(--bg-subtle)',
+                  color: selectedHouseTab === 'all' ? '#fff' : 'var(--text-main)',
+                  fontWeight: selectedHouseTab === 'all' ? 700 : 500,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                All Houses
+              </button>
+              {Array.from({ length: houseCount }, (_, i) => `House ${i + 1}`).map((house) => {
+                const houseLog = envLogs.find((e) => e.roomName === house);
+                const isSelected = selectedHouseTab === house;
+                return (
+                  <button
+                    key={house}
+                    type="button"
+                    onClick={() => setSelectedHouseTab(house)}
+                    style={{
+                      padding: '4px 10px',
+                      fontSize: '0.74rem',
+                      borderRadius: 'var(--radius-sm)',
+                      border: isSelected ? '1px solid var(--primary)' : '1px solid var(--border-subtle)',
+                      background: isSelected ? 'var(--primary)' : 'var(--bg-subtle)',
+                      color: isSelected ? '#fff' : 'var(--text-main)',
+                      fontWeight: isSelected ? 700 : 500,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    <span>{house}</span>
+                    {houseLog && (
+                      <span
+                        className="tabular-nums"
+                        style={{
+                          fontSize: '0.68rem',
+                          fontWeight: 600,
+                          opacity: isSelected ? 1 : 0.85,
+                        }}
+                      >
+                        ({houseLog.temperatureCelsius.toFixed(1)}°C)
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', margin: '0.85rem 0' }}>
             <div
@@ -1126,21 +1210,21 @@ export const TodayView: React.FC<TodayViewProps> = ({
                 Dry Bulb Temp
               </div>
               <div className="tabular-nums" style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--primary)', margin: '2px 0' }}>
-                {latestEnv ? `${latestEnv.temperatureCelsius.toFixed(1)}°C` : '--'}
+                {activeHouseEnv ? `${activeHouseEnv.temperatureCelsius.toFixed(1)}°C` : '--'}
               </div>
               <div
                 style={{
                   fontSize: '0.72rem',
-                  color: latestEnv
-                    ? latestEnv.temperatureCelsius >= 24 && latestEnv.temperatureCelsius <= 26
+                  color: activeHouseEnv
+                    ? activeHouseEnv.temperatureCelsius >= 24 && activeHouseEnv.temperatureCelsius <= 26
                       ? 'var(--status-success)'
                       : 'var(--status-warning)'
                     : 'var(--text-muted)',
                   fontWeight: 600,
                 }}
               >
-                {latestEnv
-                  ? latestEnv.temperatureCelsius >= 24 && latestEnv.temperatureCelsius <= 26
+                {activeHouseEnv
+                  ? activeHouseEnv.temperatureCelsius >= 24 && activeHouseEnv.temperatureCelsius <= 26
                     ? 'Optimal (24.0 – 26.0°C)'
                     : 'Deviation from target'
                   : 'No reading recorded'}
@@ -1164,21 +1248,21 @@ export const TodayView: React.FC<TodayViewProps> = ({
                 Relative Humidity
               </div>
               <div className="tabular-nums" style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--status-info)', margin: '2px 0' }}>
-                {latestEnv ? `${latestEnv.humidityPercent}%` : '--'}
+                {activeHouseEnv ? `${activeHouseEnv.humidityPercent}%` : '--'}
               </div>
               <div
                 style={{
                   fontSize: '0.72rem',
-                  color: latestEnv
-                    ? latestEnv.humidityPercent >= 70 && latestEnv.humidityPercent <= 85
+                  color: activeHouseEnv
+                    ? activeHouseEnv.humidityPercent >= 70 && activeHouseEnv.humidityPercent <= 85
                       ? 'var(--status-success)'
                       : 'var(--status-warning)'
                     : 'var(--text-muted)',
                   fontWeight: 600,
                 }}
               >
-                {latestEnv
-                  ? latestEnv.humidityPercent >= 70 && latestEnv.humidityPercent <= 85
+                {activeHouseEnv
+                  ? activeHouseEnv.humidityPercent >= 70 && activeHouseEnv.humidityPercent <= 85
                     ? 'Target (70 – 85%)'
                     : 'Deviation from target'
                   : 'No reading recorded'}
@@ -1187,8 +1271,8 @@ export const TodayView: React.FC<TodayViewProps> = ({
           </div>
 
           <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border-divider)', paddingTop: '0.6rem' }}>
-            <span>Ventilation: {latestEnv?.ventilationStatus ? `${latestEnv.ventilationStatus.toUpperCase()} airflow` : 'Active cross-draft louvers'}</span>
-            <span>Status: {latestEnv ? `Logged ${new Date(latestEnv.recordedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'No readings today'}</span>
+            <span>Ventilation: {activeHouseEnv?.ventilationStatus ? `${activeHouseEnv.ventilationStatus.toUpperCase()} airflow` : 'Active cross-draft louvers'}</span>
+            <span>Status: {activeHouseEnv ? `${activeHouseEnv.roomName ? `[${activeHouseEnv.roomName}] ` : ''}Logged ${new Date(activeHouseEnv.recordedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'No readings recorded'}</span>
           </div>
         </div>
 
@@ -1280,8 +1364,8 @@ export const TodayView: React.FC<TodayViewProps> = ({
             </div>
           </div>
 
-          <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border-divider)', paddingTop: '0.6rem' }}>
-            <span>Daily consumption: ~{leafCoverage.dailyNeedKg.toFixed(1)} kg/day</span>
+          <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border-divider)', paddingTop: '0.6rem', flexWrap: 'wrap', gap: '4px' }}>
+            <span>Auto-deduct on feeds active · ~{leafCoverage.dailyNeedKg.toFixed(1)} kg/day</span>
             <span style={{ fontWeight: 600, color: leafCoverage.daysOfCover <= 2 ? 'var(--status-danger)' : 'var(--status-success)' }}>
               {leafCoverage.daysOfCover > 0 ? `${leafCoverage.daysOfCover} days buffer remaining` : 'No active consumption'}
             </span>

@@ -718,11 +718,12 @@ export function generateSingleBatchPdf(data: SingleBatchReportData): jsPDF {
   const limits = SPECIES_THRESHOLDS[batch.species];
   const envRows = batchEnv.map((e) => {
     const dateFormatted = e.recordedAt.split('T')[0] + ' ' + (e.recordedAt.split('T')[1]?.slice(0, 5) || '');
+    const roomPrefix = e.roomName ? `[${e.roomName}] ` : '';
     const isTempOk = e.temperatureCelsius >= limits.minTemp && e.temperatureCelsius <= limits.maxTemp;
     const isHumOk = e.humidityPercent >= limits.minHum && e.humidityPercent <= limits.maxHum;
     const status = isTempOk && isHumOk ? 'Compliant' : 'Deviation Recorded';
     return [
-      dateFormatted,
+      `${roomPrefix}${dateFormatted}`,
       `${e.temperatureCelsius.toFixed(1)}°C`,
       `${e.humidityPercent}% RH`,
       e.ventilationStatus ? e.ventilationStatus.toUpperCase() : 'OPTIMAL',

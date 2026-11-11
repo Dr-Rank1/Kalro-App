@@ -50,6 +50,7 @@ class EnvironmentLogRepository {
     String? ventilation,
     String? lightCondition,
     String? notes,
+    String? roomName,
   }) async {
     final log = EnvironmentLog(
       id: _uuid.v4(),
@@ -61,6 +62,7 @@ class EnvironmentLogRepository {
       lightCondition:
           lightCondition?.trim().isEmpty == true ? null : lightCondition?.trim(),
       notes: notes?.trim().isEmpty == true ? null : notes?.trim(),
+      roomName: roomName?.trim().isEmpty == true ? null : roomName?.trim(),
     );
 
     final logs = await getAll();

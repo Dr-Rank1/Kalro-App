@@ -8,6 +8,7 @@ class EnvironmentLog {
     this.ventilation,
     this.lightCondition,
     this.notes,
+    this.roomName,
   });
 
   final String id;
@@ -18,6 +19,7 @@ class EnvironmentLog {
   final String? ventilation;
   final String? lightCondition;
   final String? notes;
+  final String? roomName;
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -28,6 +30,7 @@ class EnvironmentLog {
         'ventilation': ventilation,
         'lightCondition': lightCondition,
         'notes': notes,
+        'roomName': roomName,
       };
 
   factory EnvironmentLog.fromJson(Map<String, dynamic> json) => EnvironmentLog(
@@ -39,5 +42,6 @@ class EnvironmentLog {
         ventilation: json['ventilation'] as String?,
         lightCondition: json['lightCondition'] as String?,
         notes: json['notes'] as String?,
+        roomName: json['roomName'] as String?,
       );
 }

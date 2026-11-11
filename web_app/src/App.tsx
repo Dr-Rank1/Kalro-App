@@ -273,10 +273,15 @@ export function App() {
     showToast(`Batch "${b.displayTag || b.batchTag}" status updated.`);
   };
 
-  const handleAddFeed = (f: FeedLog) => {
-    storage.addFeedLog(f);
+  const handleAddFeed = (f: FeedLog, options?: { autoDeductStock?: boolean; batchTag?: string }) => {
+    storage.addFeedLog(f, options);
     reloadAll();
-    showToast(`Feeding logged (${(f.quantityGrams / 1000).toFixed(1)} kg ${f.leafType}).`);
+    const kg = (f.quantityGrams / 1000).toFixed(1);
+    if (options?.autoDeductStock !== false && !f.wasSkipped && f.quantityGrams > 0) {
+      showToast(`Feeding logged (${kg} kg ${f.leafType}) · Auto-deducted from leaf stockpile.`);
+    } else {
+      showToast(`Feeding logged (${kg} kg ${f.leafType}).`);
+    }
   };
 
   const handleAddMortality = (m: MortalityLog) => {
@@ -288,7 +293,8 @@ export function App() {
   const handleAddClimate = (e: EnvironmentLog) => {
     storage.addEnvironmentLog(e);
     reloadAll();
-    showToast(`Climate recorded: ${e.temperatureCelsius}°C, ${e.humidityPercent}% RH.`);
+    const chamberLabel = e.roomName ? `${e.roomName}: ` : '';
+    showToast(`Climate recorded (${chamberLabel}${e.temperatureCelsius}°C, ${e.humidityPercent}% RH).`);
   };
 
   const handleAddHarvest = (h: CocoonHarvest) => {
@@ -548,6 +554,7 @@ export function App() {
           initialBatchId={quickLogState.batchId}
           defaultType={quickLogState.type}
           profile={profile}
+          inventory={inventory}
           onOpenBatchRegistration={() => setTodayBatchModalOpen(true)}
           onClose={() => setQuickLogState({ open: false })}
           onSaveFeed={handleAddFeed}

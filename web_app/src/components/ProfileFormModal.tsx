@@ -90,7 +90,7 @@ export const ProfileFormModal: React.FC<ProfileFormModalProps> = ({
       setAvatarColor(user?.avatarColor || profile?.avatarColor || AVATAR_COLORS[0]);
       setErrorMsg(null);
     }
-  }, [isOpen, initialData]);
+  }, [isOpen, user?.id, profile?.id]);
 
   if (!isOpen) return null;
 

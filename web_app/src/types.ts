@@ -54,6 +54,7 @@ export interface EnvironmentLog {
   humidityPercent: number;
   ventilationStatus?: 'optimal' | 'low' | 'excessive';
   notes?: string;
+  roomName?: string;
 }
 
 export interface CocoonHarvest {

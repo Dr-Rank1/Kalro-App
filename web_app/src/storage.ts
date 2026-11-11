@@ -436,22 +436,28 @@ class StorageService {
     if (!uid) return;
     this.set(this.getTenantKey('feed_logs', uid), logs);
   }
-  addFeedLog(log: FeedLog): void {
+  addFeedLog(log: FeedLog, options?: { autoDeductStock?: boolean; batchTag?: string }): void {
     const list = this.getFeedLogs();
     list.unshift(log);
     this.saveFeedLogs(list);
 
-    // Deduct stock if available in current user's inventory
-    const inv = this.getLeafInventory();
-    const kg = log.quantityGrams / 1000.0;
-    if (log.leafType === 'mulberry') {
-      inv.mulberryKg = Math.max(0, inv.mulberryKg - kg);
-    } else if (log.leafType === 'castor') {
-      inv.castorKg = Math.max(0, inv.castorKg - kg);
-    } else {
-      inv.kesseruKg = Math.max(0, inv.kesseruKg - kg);
+    // Auto-deduct stock if requested (default: true) and feed was not skipped
+    const shouldDeduct = options?.autoDeductStock !== false && !log.wasSkipped && log.quantityGrams > 0;
+    if (shouldDeduct) {
+      const kg = Math.round((log.quantityGrams / 1000.0) * 100) / 100;
+      if (kg > 0) {
+        // Record outflow leaf movement which also updates inventory balance and history
+        const movement: LeafMovement = {
+          id: `lm-feed-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+          date: log.recordedAt || new Date().toISOString(),
+          leafType: log.leafType,
+          quantityKg: kg,
+          direction: 'outflow',
+          reason: `Ration fed to batch ${options?.batchTag || log.batchId}`,
+        };
+        this.addLeafMovement(movement);
+      }
     }
-    this.saveLeafInventory(inv);
   }
 
   // Mortality Logs

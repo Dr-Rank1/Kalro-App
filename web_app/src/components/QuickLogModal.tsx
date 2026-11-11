@@ -20,6 +20,7 @@ import {
   EnvironmentLog,
   FarmProfile,
   FeedLog,
+  LeafInventory,
   LeafType,
   MortalityLog,
 } from '../types';
@@ -32,9 +33,11 @@ interface QuickLogModalProps {
   initialBatchId?: string;
   defaultType?: 'feed' | 'mortality' | 'climate' | 'harvest';
   profile?: FarmProfile | null;
+  inventory?: LeafInventory;
+  initialRoomName?: string;
   onOpenBatchRegistration?: () => void;
   onClose: () => void;
-  onSaveFeed: (log: FeedLog) => void;
+  onSaveFeed: (log: FeedLog, options?: { autoDeductStock?: boolean; batchTag?: string }) => void;
   onSaveMortality: (log: MortalityLog) => void;
   onSaveClimate: (log: EnvironmentLog) => void;
   onSaveHarvest: (harvest: CocoonHarvest) => void;
@@ -47,6 +50,8 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
   initialBatchId,
   defaultType = 'feed',
   profile,
+  inventory,
+  initialRoomName,
   onOpenBatchRegistration,
   onClose,
   onSaveFeed,
@@ -76,13 +81,19 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
   const [feedingShift, setFeedingShift] = useState<'morning' | 'midday' | 'evening'>('morning');
   const [wasSkipped, setWasSkipped] = useState<boolean>(false);
   const [skipReason, setSkipReason] = useState<string>('');
+  const [autoDeductStock, setAutoDeductStock] = useState<boolean>(true);
 
   // Loss / Mortality State
   const [lossCount, setLossCount] = useState<number | ''>('');
   const [lossCause, setLossCause] = useState<string>('Bed-cleaning mechanical attrition');
   const [symptoms, setSymptoms] = useState<string>('');
 
-  // Climate State
+  // Climate State & Multi-House Chamber Selection
+  const houseCount = Math.max(1, profile?.houseCount || 1);
+  const houseOptions = Array.from({ length: houseCount }, (_, i) => `House ${i + 1}`);
+  const [selectedChamber, setSelectedChamber] = useState<string>(
+    initialRoomName || selectedBatch?.roomName || 'House 1'
+  );
   const [temp, setTemp] = useState<number | ''>(25.0);
   const [hum, setHum] = useState<number | ''>(78);
   const [ventilation, setVentilation] = useState<'optimal' | 'low' | 'excessive'>('optimal');
@@ -145,6 +156,9 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
         skippedReason: wasSkipped
           ? (skipReason.trim() || `${currentStage?.name || 'Moult'} fasting rest; bed dusted with dry slaked lime`)
           : undefined,
+      }, {
+        autoDeductStock: !wasSkipped && autoDeductStock,
+        batchTag: selectedBatch?.displayTag || selectedBatch?.batchTag,
       });
     } else if (logType === 'mortality') {
       const count = Number(lossCount);
@@ -178,6 +192,7 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
         temperatureCelsius: t,
         humidityPercent: h,
         ventilationStatus: ventilation,
+        roomName: selectedChamber || 'House 1',
       });
     } else if (logType === 'harvest') {
       const count = Number(cocoonCount);
@@ -213,6 +228,20 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
   const humNum = Number(hum);
   const isClimateOptimal =
     tempNum >= 24 && tempNum <= 26.5 && humNum >= 70 && humNum <= 85;
+
+  // Live Feed & Stockpile Calculation
+  const feedAmountNum = feedAmount !== '' ? Number(feedAmount) : 0;
+  const feedKg = !wasSkipped && feedAmountNum > 0
+    ? (feedUnit === 'kg' ? feedAmountNum : feedAmountNum / 1000)
+    : 0;
+
+  const currentStockKg = inventory ? (
+    leafType === 'mulberry' ? inventory.mulberryKg :
+    leafType === 'castor' ? inventory.castorKg :
+    inventory.kesseruKg
+  ) : 0;
+
+  const remainingStockKg = Math.max(0, currentStockKg - feedKg);
 
   // Live Harvest Calculation
   const harvestWeightGrams =
@@ -475,6 +504,83 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
                       </select>
                     </div>
                   </div>
+
+                  {/* Leaf Stockpile Auto-Deduction Confirmation */}
+                  <div
+                    style={{
+                      marginTop: '0.85rem',
+                      padding: '0.75rem 0.85rem',
+                      background: 'var(--bg-subtle)',
+                      border: '1px solid var(--border-subtle)',
+                      borderRadius: 'var(--radius-sm)',
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
+                      <label
+                        htmlFor="autoDeductCheck"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          fontWeight: 600,
+                          fontSize: '0.8rem',
+                          color: 'var(--text-main)',
+                          cursor: 'pointer',
+                          margin: 0,
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          id="autoDeductCheck"
+                          checked={autoDeductStock}
+                          onChange={(e) => setAutoDeductStock(e.target.checked)}
+                        />
+                        <span>Auto-deduct from stored {leafType.charAt(0).toUpperCase() + leafType.slice(1)} stockpile</span>
+                      </label>
+                      <span
+                        className="tabular-nums"
+                        style={{
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
+                          color: currentStockKg > 0 ? 'var(--primary)' : 'var(--status-warning)',
+                        }}
+                      >
+                        In stock: {currentStockKg.toFixed(1)} kg
+                      </span>
+                    </div>
+
+                    {autoDeductStock && (
+                      <div
+                        style={{
+                          fontSize: '0.74rem',
+                          color: 'var(--text-muted)',
+                          paddingTop: '6px',
+                          borderTop: '1px dashed var(--border-divider)',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          flexWrap: 'wrap',
+                          gap: '4px',
+                        }}
+                      >
+                        <span>
+                          {feedKg > 0 ? (
+                            <>
+                              Deducting <strong className="tabular-nums" style={{ color: 'var(--text-main)' }}>{feedKg.toFixed(1)} kg</strong>
+                              {' · '}Remaining balance: <strong className="tabular-nums" style={{ color: currentStockKg >= feedKg ? 'var(--status-success)' : 'var(--status-danger)' }}>{remainingStockKg.toFixed(1)} kg</strong>
+                            </>
+                          ) : (
+                            'Enter feed amount above to preview auto-deduction'
+                          )}
+                        </span>
+                        {currentStockKg < feedKg && feedKg > 0 && (
+                          <span style={{ color: 'var(--status-warning)', fontWeight: 600 }}>
+                            ⚠️ Feed exceeds stored stockpile
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </>
               ) : (
                 <div className="form-group">
@@ -569,6 +675,74 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
           {/* TAB 3: ROOM CLIMATE */}
           {logType === 'climate' && (
             <div>
+              {/* Chamber / House Bay Selector */}
+              <div className="form-group" style={{ marginBottom: '1rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                  <label className="form-label" style={{ margin: 0 }}>
+                    Rearing House Chamber *
+                  </label>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                    {houseCount > 1
+                      ? `${houseCount} rearing houses (${profile?.orgName || 'Farm'})`
+                      : 'Primary rearing chamber'}
+                  </span>
+                </div>
+
+                {/* 1-Tap Quick Pills for Rearing Houses when multiple houses exist */}
+                {houseCount > 1 && (
+                  <div
+                    style={{
+                      display: 'flex',
+                      gap: '6px',
+                      marginBottom: '8px',
+                      flexWrap: 'wrap',
+                    }}
+                  >
+                    {houseOptions.map((house) => {
+                      const isSelected = selectedChamber === house;
+                      return (
+                        <button
+                          key={house}
+                          type="button"
+                          onClick={() => setSelectedChamber(house)}
+                          style={{
+                            padding: '6px 12px',
+                            borderRadius: 'var(--radius-sm)',
+                            border: isSelected ? '2px solid var(--primary)' : '1px solid var(--border-card)',
+                            background: isSelected ? 'rgba(20, 61, 43, 0.08)' : 'var(--bg-subtle)',
+                            color: isSelected ? 'var(--primary)' : 'var(--text-main)',
+                            fontWeight: isSelected ? 700 : 500,
+                            fontSize: '0.78rem',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '5px',
+                          }}
+                        >
+                          <Building2 size={13} />
+                          <span>{house}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                <select
+                  value={selectedChamber}
+                  onChange={(e) => setSelectedChamber(e.target.value)}
+                  className="form-control"
+                >
+                  {houseOptions.map((house) => (
+                    <option key={house} value={house}>
+                      {house} {houseCount > 1 ? `· ${profile?.orgName || 'Rearing Unit'}` : '· Main Chamber'}
+                    </option>
+                  ))}
+                  <option value="Incubation Chamber">Egg Incubation / Dark Chamber</option>
+                  <option value="Chawki Chamber">Chawki Rearing Chamber (1st-2nd Instar)</option>
+                  <option value="Cocoon Harvest Bay">Cocoon Mounting / Spinning Bay</option>
+                </select>
+              </div>
+
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                 {/* Dry Bulb Temp */}
                 <div className="form-group">
