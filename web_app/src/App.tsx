@@ -337,117 +337,120 @@ export function App() {
 
       {/* Main Views Container */}
       <main className="main-content">
-        {activeTab === 'today' && (
-          <TodayView
-            batches={batches}
-            feedLogs={feedLogs}
-            mortalityLogs={mortalityLogs}
-            envLogs={envLogs}
-            harvests={harvests}
-            inventory={inventory}
-            profile={profile}
-            onOpenCreateProfile={() => handleOpenCreateProfile(() => setActiveTab('today'))}
-            onOpenQuickLog={(batchId, type) => {
-              if (!profile) {
-                handleOpenCreateProfile();
-                return;
-              }
-              setQuickLogState({ open: true, batchId, type });
-            }}
-            onSelectTab={(tab) => setActiveTab(tab as NavTab)}
-            onExportBatchPdf={(b) => {
-              if (!profile) {
-                showToast('Please set up a farm profile before exporting PDF.');
-                handleOpenCreateProfile();
-                return;
-              }
-              downloadSingleBatchPdf({
-                batch: b,
-                profile,
-                feedLogs,
-                mortalityLogs,
-                envLogs,
-                harvests,
-              });
-              showToast(`Lot dossier for "${b.displayTag || b.batchTag || b.id}" exported as PDF.`);
-            }}
-          />
-        )}
+        <div key={activeTab} className="view-enter-animate">
+          {activeTab === 'today' && (
+            <TodayView
+              batches={batches}
+              feedLogs={feedLogs}
+              mortalityLogs={mortalityLogs}
+              envLogs={envLogs}
+              harvests={harvests}
+              inventory={inventory}
+              profile={profile}
+              onOpenCreateProfile={() => handleOpenCreateProfile(() => setActiveTab('today'))}
+              onOpenQuickLog={(batchId, type) => {
+                if (!profile) {
+                  handleOpenCreateProfile();
+                  return;
+                }
+                setQuickLogState({ open: true, batchId, type });
+              }}
+              onSelectTab={(tab) => setActiveTab(tab as NavTab)}
+              onExportBatchPdf={(b) => {
+                if (!profile) {
+                  showToast('Please set up a farm profile before exporting PDF.');
+                  handleOpenCreateProfile();
+                  return;
+                }
+                downloadSingleBatchPdf({
+                  batch: b,
+                  profile,
+                  feedLogs,
+                  mortalityLogs,
+                  envLogs,
+                  harvests,
+                });
+                showToast(`Lot dossier for "${b.displayTag || b.batchTag || b.id}" exported as PDF.`);
+              }}
+            />
+          )}
 
-        {activeTab === 'batches' && (
-          <BatchesView
-            batches={batches}
-            feedLogs={feedLogs}
-            mortalityLogs={mortalityLogs}
-            harvests={harvests}
-            profile={profile}
-            envLogs={envLogs}
-            onAddBatch={handleAddBatch}
-            onUpdateBatch={handleUpdateBatch}
-            onOpenQuickLog={(batchId, type) => {
-              if (!profile) {
-                handleOpenCreateProfile();
-                return;
-              }
-              setQuickLogState({ open: true, batchId, type });
-            }}
-            onOpenQr={(b) => setQrModalBatch(b)}
-            onToast={showToast}
-            onRequireProfile={() => handleOpenCreateProfile(() => setActiveTab('batches'))}
-          />
-        )}
+          {activeTab === 'batches' && (
+            <BatchesView
+              batches={batches}
+              feedLogs={feedLogs}
+              mortalityLogs={mortalityLogs}
+              harvests={harvests}
+              profile={profile}
+              envLogs={envLogs}
+              onAddBatch={handleAddBatch}
+              onUpdateBatch={handleUpdateBatch}
+              onOpenQuickLog={(batchId, type) => {
+                if (!profile) {
+                  handleOpenCreateProfile();
+                  return;
+                }
+                setQuickLogState({ open: true, batchId, type });
+              }}
+              onOpenQr={(b) => setQrModalBatch(b)}
+              onToast={showToast}
+              onRequireProfile={() => handleOpenCreateProfile(() => setActiveTab('batches'))}
+            />
+          )}
 
-        {activeTab === 'plan' && (
-          <PlanView
-            batches={batches}
-          />
-        )}
+          {activeTab === 'plan' && (
+            <PlanView
+              batches={batches}
+            />
+          )}
 
-        {activeTab === 'farm' && (
-          <FarmToolsView
-            batches={batches}
-            feedLogs={feedLogs}
-            mortalityLogs={mortalityLogs}
-            harvests={harvests}
-            inventory={inventory}
-            leafMovements={leafMovements}
-            payments={payments}
-            onAddFeedLog={handleAddFeed}
-            onAddMortalityLog={handleAddMortality}
-            onAddHarvest={handleAddHarvest}
-            onAddLeafMovement={handleAddLeafMovement}
-            onAddPayment={handleAddPayment}
-            onExportCsv={handleExportCsv}
-            onExportBackup={handleExportActiveUserBackup}
-            onOpenReportModal={() => {
-              if (!profile) {
-                showToast('Please set up a farm profile before exporting reports.');
-                handleOpenCreateProfile();
-                return;
-              }
-              setReportModalOpen(true);
-            }}
-          />
-        )}
+          {activeTab === 'farm' && (
+            <FarmToolsView
+              batches={batches}
+              feedLogs={feedLogs}
+              mortalityLogs={mortalityLogs}
+              envLogs={envLogs}
+              harvests={harvests}
+              inventory={inventory}
+              leafMovements={leafMovements}
+              payments={payments}
+              onAddFeedLog={handleAddFeed}
+              onAddMortalityLog={handleAddMortality}
+              onAddHarvest={handleAddHarvest}
+              onAddLeafMovement={handleAddLeafMovement}
+              onAddPayment={handleAddPayment}
+              onExportCsv={handleExportCsv}
+              onExportBackup={handleExportActiveUserBackup}
+              onOpenReportModal={() => {
+                if (!profile) {
+                  showToast('Please set up a farm profile before exporting reports.');
+                  handleOpenCreateProfile();
+                  return;
+                }
+                setReportModalOpen(true);
+              }}
+            />
+          )}
 
-        {activeTab === 'you' && (
-          <ProfileView
-            profile={profile}
-            currentUser={currentUser}
-            allUsers={allUsers}
-            batches={batches}
-            harvests={harvests}
-            payments={payments}
-            onOpenCreateProfile={() => handleOpenCreateProfile()}
-            onOpenEditProfile={handleOpenEditProfile}
-            onSwitchUser={handleSwitchUser}
-            onDeleteUser={handleDeleteUser}
-            onExportActiveUserBackup={handleExportActiveUserBackup}
-            onImportBackup={handleImportBackup}
-            onClearActiveUserRecords={handleClearActiveUserRecords}
-            onRequestDeleteUser={(u) => setDeleteProfileTarget(u)}
-          />
-        )}
+          {activeTab === 'you' && (
+            <ProfileView
+              profile={profile}
+              currentUser={currentUser}
+              allUsers={allUsers}
+              batches={batches}
+              harvests={harvests}
+              payments={payments}
+              onOpenCreateProfile={() => handleOpenCreateProfile()}
+              onOpenEditProfile={handleOpenEditProfile}
+              onSwitchUser={handleSwitchUser}
+              onDeleteUser={handleDeleteUser}
+              onExportActiveUserBackup={handleExportActiveUserBackup}
+              onImportBackup={handleImportBackup}
+              onClearActiveUserRecords={handleClearActiveUserRecords}
+              onRequestDeleteUser={(u) => setDeleteProfileTarget(u)}
+            />
+          )}
+        </div>
       </main>
 
       {/* Quick Log Modal */}

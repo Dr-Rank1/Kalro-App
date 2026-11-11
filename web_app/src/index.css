@@ -3180,4 +3180,717 @@ th,
   margin-bottom: 12px;
 }
 
+/* ==========================================================================
+   Simplified & Image-Rich Lifecycle Roadmap (PlanView)
+   ========================================================================== */
+
+.roadmap-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.roadmap-view-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.roadmap-toggle-group {
+  display: inline-flex;
+  background-color: var(--bg-card);
+  padding: 2px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-card);
+}
+
+.roadmap-toggle-btn {
+  background: transparent;
+  color: var(--text-muted);
+  border: none;
+  padding: 0.35rem 0.8rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.roadmap-toggle-btn.active {
+  background-color: var(--primary);
+  color: #ffffff;
+}
+
+/* Active Batch Top Banner */
+.roadmap-active-banner {
+  background-color: #f7faf8;
+  border: 1px solid rgba(20, 61, 43, 0.2);
+  border-left: 4px solid var(--primary);
+  border-radius: var(--radius-sm);
+  padding: 0.7rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  font-size: 0.82rem;
+}
+
+/* Simplified Cards List */
+.roadmap-simple-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.roadmap-simple-card {
+  background-color: #ffffff;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.roadmap-simple-card.active-lot {
+  border-color: var(--primary);
+  background-color: #fcfdfc;
+  box-shadow: 0 0 0 1px var(--primary);
+}
+
+.roadmap-simple-card.is-moult {
+  border-left: 4px solid var(--status-warning);
+}
+
+.roadmap-simple-card.is-harvest {
+  border-left: 4px solid var(--accent-gold);
+}
+
+/* Day Pill Tag */
+.roadmap-day-pill {
+  background-color: var(--primary);
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+
+.roadmap-day-pill.moult {
+  background-color: var(--status-warning);
+}
+
+.roadmap-day-pill.harvest {
+  background-color: var(--accent-gold);
+}
+
+/* Card Body */
+.roadmap-simple-body {
+  padding: 0.85rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.roadmap-simple-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.roadmap-simple-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.roadmap-simple-action {
+  font-size: 0.82rem;
+  color: var(--text-main);
+  line-height: 1.45;
+  margin: 0;
+}
+
+.roadmap-simple-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+  padding-top: 0.35rem;
+  border-top: 1px solid var(--border-divider);
+}
+
+.roadmap-chip {
+  background-color: var(--bg-subtle);
+  border: 1px solid var(--border-card);
+  padding: 2px 7px;
+  border-radius: var(--radius-sm);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.roadmap-chip strong {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.roadmap-chip.alert {
+  background-color: #fff9ed;
+  border-color: rgba(198, 138, 20, 0.3);
+  color: #7a5405;
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   Agronomy & Farm Tools (FarmToolsView) - Simplified 4-Tab Design
+   ========================================================================== */
+
+.farm-tools-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+/* Tabs Bar */
+.farm-tabs-bar {
+  display: flex;
+  gap: 0.4rem;
+  background-color: #f0f4f1;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-card);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.farm-tab-btn {
+  background: transparent;
+  color: var(--text-muted);
+  border: none;
+  padding: 0.55rem 0.95rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.farm-tab-btn:hover {
+  color: var(--text-main);
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
+.farm-tab-btn.active {
+  background-color: var(--primary);
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(20, 61, 43, 0.2);
+}
+
+/* Farm Stat Grid & Cards */
+.farm-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+
+.farm-stat-card {
+  background-color: #ffffff;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-sm);
+  padding: 0.95rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.18s ease;
+}
+
+.farm-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(20, 61, 43, 0.08);
+  border-color: rgba(20, 61, 43, 0.3);
+}
+
+.farm-stat-label {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.farm-stat-number {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.2;
+}
+
+.farm-stat-sub {
+  font-size: 0.73rem;
+  color: var(--text-muted);
+}
+
+/* Inline Collapsible Forms */
+.farm-inline-form {
+  background-color: var(--bg-subtle);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  margin-top: 0.85rem;
+}
+
+/* Disease Selector Chips */
+.farm-chip-btn {
+  background-color: #ffffff;
+  border: 1px solid var(--border-card);
+  color: var(--text-muted);
+  padding: 0.4rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.farm-chip-btn:hover {
+  border-color: var(--primary);
+  color: var(--text-main);
+}
+
+.farm-chip-btn.active {
+  background-color: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+  box-shadow: 0 2px 6px rgba(20, 61, 43, 0.2);
+}
+
+/* Disease Diagnostic Card */
+.disease-diagnostic-card {
+  background-color: #ffffff;
+  border: 1px solid var(--border-card);
+  border-left: 4px solid var(--primary);
+  border-radius: var(--radius-sm);
+  padding: 1.15rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.quarantine-pill {
+  background-color: #fde8e8;
+  color: #c53030;
+  border: 1px solid rgba(197, 48, 48, 0.25);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  letter-spacing: 0.02em;
+}
+
+.disease-action-callout {
+  background-color: #f7faf8;
+  border: 1px solid rgba(20, 61, 43, 0.15);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 0.95rem;
+  color: var(--text-main);
+}
+
+/* Reeling Batch Card */
+.reeling-batch-card {
+  background-color: #ffffff;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-sm);
+  padding: 1.15rem;
+  margin-bottom: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reeling-batch-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(20, 61, 43, 0.08);
+}
+
+/* Export Cards */
+.farm-export-box {
+  background-color: #ffffff;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-sm);
+  padding: 1.15rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.85rem;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.farm-export-box:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(20, 61, 43, 0.08);
+}
+
+.farm-export-box.primary {
+  border-color: rgba(20, 61, 43, 0.25);
+  background-color: #f7faf8;
+}
+
+/* ==========================================================================
+   Agronomy Tools Depth: Calculators, SOP Checklists & Benchmark Displays
+   ========================================================================== */
+
+/* Calculator Card */
+.farm-calc-card {
+  background-color: #ffffff;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-sm);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.farm-calc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.farm-calc-inputs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+  background-color: var(--bg-subtle);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+}
+
+.farm-calc-results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.75rem;
+}
+
+.farm-calc-result-box {
+  background-color: #f7faf8;
+  border: 1px solid rgba(20, 61, 43, 0.2);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.farm-calc-result-box.highlight {
+  background-color: #eaf3ed;
+  border-color: var(--primary);
+}
+
+.farm-calc-result-val {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1.2;
+}
+
+.farm-calc-result-lbl {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.farm-calc-result-sub {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+/* Biosecurity SOP Checklist */
+.farm-sop-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.farm-sop-item {
+  background-color: #ffffff;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1rem;
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.farm-sop-item:hover {
+  border-color: rgba(20, 61, 43, 0.4);
+  background-color: #fafdfb;
+}
+
+.farm-sop-item.done {
+  background-color: #f4f8f5;
+  border-color: rgba(20, 61, 43, 0.3);
+}
+
+.farm-sop-checkbox {
+  margin-top: 3px;
+  width: 1.15rem;
+  height: 1.15rem;
+  accent-color: var(--primary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.farm-sop-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex: 1;
+}
+
+.farm-sop-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.farm-sop-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Climate Status Badge */
+.farm-climate-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.farm-climate-badge.optimal {
+  background-color: #edf7ee;
+  color: #1e7e34;
+  border: 1px solid rgba(30, 126, 52, 0.25);
+}
+
+.farm-climate-badge.warning {
+  background-color: #fff9ed;
+  color: #975a16;
+  border: 1px solid rgba(151, 90, 22, 0.25);
+}
+
+.farm-climate-badge.danger {
+  background-color: #fde8e8;
+  color: #c53030;
+  border: 1px solid rgba(197, 48, 48, 0.25);
+}
+
+/* Benchmark Comparison Table */
+.farm-bench-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.farm-bench-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  text-align: left;
+}
+
+.farm-bench-table th {
+  background-color: var(--bg-subtle);
+  color: var(--text-muted);
+  font-size: 0.74rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid var(--border-divider);
+}
+
+.farm-bench-table td {
+  padding: 0.75rem 0.85rem;
+  border-bottom: 1px solid var(--border-divider);
+  color: var(--text-main);
+}
+
+.farm-bench-table tr:hover td {
+  background-color: #fafcfb;
+}
+
+.farm-grade-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.farm-grade-pill.grade-a {
+  background-color: #edf7ee;
+  color: #1e7e34;
+  border: 1px solid rgba(30, 126, 52, 0.3);
+}
+
+.farm-grade-pill.grade-b {
+  background-color: #fff9ed;
+  color: #975a16;
+  border: 1px solid rgba(151, 90, 22, 0.3);
+}
+
+.farm-grade-pill.grade-c {
+  background-color: #fde8e8;
+  color: #c53030;
+  border: 1px solid rgba(197, 48, 48, 0.3);
+}
+
+
+/* ==========================================================================
+   Smooth Website-Wide Animations & Tactile Interactions
+   ========================================================================== */
+
+/* 1. Global View Transition (slide up and fade in smoothly on tab switch) */
+@keyframes viewSlideFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.view-enter-animate {
+  animation: viewSlideFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* 2. Interactive Card Lift & Elevation */
+.kalro-card,
+.routine-card,
+.roadmap-simple-card {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.18s ease;
+}
+
+.kalro-card:hover,
+.routine-card:hover,
+.roadmap-simple-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(20, 61, 43, 0.07);
+}
+
+/* 3. Tactile Button & Navigation Feedback */
+.btn-primary,
+.btn-secondary,
+.btn-accent,
+.farm-tab-btn,
+.farm-chip-btn,
+.nav-item,
+.routine-action-btn,
+.roadmap-toggle-btn {
+  transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.15s ease,
+              border-color 0.15s ease,
+              box-shadow 0.15s ease,
+              color 0.15s ease;
+}
+
+.btn-primary:active,
+.btn-secondary:active,
+.btn-accent:active,
+.farm-tab-btn:active,
+.farm-chip-btn:active,
+.nav-item:active,
+.routine-action-btn:active,
+.roadmap-toggle-btn:active {
+  transform: scale(0.97);
+}
+
+/* 4. Collapsible Form / Content Animation */
+@keyframes expandFade {
+  0% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.collapsible-content {
+  animation: expandFade 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* 5. Modal Backdrop & Pop-In Animation */
+@keyframes modalBackdropFade {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes modalPopIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modal-overlay,
+.report-modal-overlay {
+  animation: modalBackdropFade 0.2s ease-out both;
+}
+
+.modal-content,
+.report-modal-content {
+  animation: modalPopIn 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+
+
+
 

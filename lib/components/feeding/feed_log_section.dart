@@ -69,11 +69,7 @@ class _FeedLogSectionState extends State<FeedLogSection> {
     final feedController = TextEditingController(
       text: widget.defaultFeedType ?? '',
     );
-    final quantityController = TextEditingController(
-      text: widget.suggestedGrams != null && widget.suggestedGrams! > 0
-          ? widget.suggestedGrams!.round().toString()
-          : '',
-    );
+    final quantityController = TextEditingController();
     final stageController = TextEditingController();
     final notesController = TextEditingController();
 
@@ -173,9 +169,10 @@ class _FeedLogSectionState extends State<FeedLogSection> {
                       const SizedBox(height: 12),
                       TextField(
                         controller: quantityController,
+                        autofocus: true,
                         decoration: InputDecoration(
                           labelText: 'Quantity (grams)'.tr,
-                          hintText: 'e.g. 50',
+                          hintText: 'Enter grams (e.g. 50)',
                           suffixText: 'g',
                         ),
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),

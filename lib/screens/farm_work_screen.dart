@@ -18,7 +18,7 @@ import 'reports_screen.dart';
 
 import 'package:kalro/l10n/translator.dart';
 
-/// Daily logs and farm tools with live numbers on each row.
+/// Agronomy and farm management hub with streamlined tools and live KPIs.
 class FarmWorkScreen extends StatefulWidget {
   const FarmWorkScreen({
     super.key,
@@ -72,30 +72,15 @@ class _FarmWorkScreenState extends State<FarmWorkScreen> {
     _reload();
   }
 
-  String _feedValue(FarmWorkStats stats) {
-    final logged = stats.feedTodayGrams >= 1000
-        ? '${(stats.feedTodayGrams / 1000).toStringAsFixed(1)} kg'
-        : '${stats.feedTodayGrams.round()} g';
-    if (stats.suggestedTodayGrams <= 0) return logged;
-    final suggested = stats.suggestedTodayGrams >= 1000
-        ? '${(stats.suggestedTodayGrams / 1000).toStringAsFixed(1)} kg'
-        : '${stats.suggestedTodayGrams.round()} g';
-    return '$logged / $suggested';
-  }
-
-  String _leafValue(FarmWorkStats stats) {
+  String _leafDaysCover(FarmWorkStats stats) {
     if (stats.leafNeedTodayKg <= 0) {
-      return Translator.fill('{kg} kg stock', {
-        'kg': stats.leafStockKg.toStringAsFixed(1),
-      });
+      return '${stats.leafStockKg.toStringAsFixed(1)} kg';
     }
     final days = LeafLedgerService.daysOfCover(
       stockKg: stats.leafStockKg,
       dailyNeedKg: stats.leafNeedTodayKg,
     );
-    return Translator.fill('{n} days cover', {
-      'n': days >= 99 ? '—' : days.toStringAsFixed(1),
-    });
+    return days >= 99 ? 'Ample stock' : '${days.toStringAsFixed(1)} days cover';
   }
 
   @override
@@ -116,21 +101,121 @@ class _FarmWorkScreenState extends State<FarmWorkScreen> {
                     subtitle: 'Log work, leaf, money, and the field guide.'.tr,
                   ),
                   const SizedBox(height: 16),
-                  Text(
-                    'Daily records'.tr,
-                    style: GoogleFonts.poppins(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: KalroColors.textDark,
+
+                  // Station Overview KPI Card
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: KalroColors.divider),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.03),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Leaf Inventory'.tr,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: KalroColors.textMuted,
+                                  letterSpacing: 0.3,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                stats == null
+                                    ? '…'
+                                    : '${stats.leafStockKg.toStringAsFixed(1)} kg',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w700,
+                                  color: KalroColors.leaf,
+                                ),
+                              ),
+                              Text(
+                                stats == null ? '' : _leafDaysCover(stats),
+                                style: GoogleFonts.poppins(
+                                  fontSize: 11,
+                                  color: KalroColors.textMuted,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          width: 1,
+                          height: 44,
+                          color: KalroColors.divider,
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Cocoon Reeling'.tr,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: KalroColors.textMuted,
+                                  letterSpacing: 0.3,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                stats == null
+                                    ? '…'
+                                    : stats.harvestWindowOpen
+                                        ? 'Window Open'.tr
+                                        : '${stats.lastHarvestKg.toStringAsFixed(1)} kg',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w700,
+                                  color: stats?.harvestWindowOpen == true
+                                      ? KalroColors.harvest
+                                      : KalroColors.headerGreen,
+                                ),
+                              ),
+                              Text(
+                                stats?.harvestWindowOpen == true
+                                    ? 'Ready to mount & harvest'.tr
+                                    : 'Last harvest weight'.tr,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 11,
+                                  color: KalroColors.textMuted,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
+
+                  const SizedBox(height: 20),
+
+                  // Daily Operations
+                  _SectionHeader(title: 'Daily Operations'.tr),
                   const SizedBox(height: 8),
-                  _WorkTile(
+                  _ModernFarmTile(
                     icon: Icons.eco_outlined,
                     color: KalroColors.leaf,
                     title: 'Feeding'.tr,
-                    subtitle: 'Logged vs suggested today'.tr,
-                    value: stats == null ? '…' : _feedValue(stats),
+                    subtitle: 'Feed logs & ration history'.tr,
+                    badge: stats == null || stats.feedTodayGrams <= 0
+                        ? null
+                        : '${stats.feedTodayGrams.round()} g today',
                     onTap: () => _open(
                       FeedingScreen(
                         repositories: widget.repositories,
@@ -138,14 +223,14 @@ class _FarmWorkScreenState extends State<FarmWorkScreen> {
                       ),
                     ),
                   ),
-                  _WorkTile(
+                  _ModernFarmTile(
                     icon: Icons.healing_outlined,
                     color: KalroColors.rest,
                     title: 'Health & mortality'.tr,
-                    subtitle: 'Deaths logged today'.tr,
-                    value: stats == null
-                        ? '…'
-                        : Translator.fill('{n}', {'n': '${stats.deathsToday}'}),
+                    subtitle: 'Loss logs & rearing room conditions'.tr,
+                    badge: stats != null && stats.deathsToday > 0
+                        ? '-${stats.deathsToday} today'
+                        : null,
                     onTap: () => _open(
                       HealthScreen(
                         repositories: widget.repositories,
@@ -153,18 +238,12 @@ class _FarmWorkScreenState extends State<FarmWorkScreen> {
                       ),
                     ),
                   ),
-                  _WorkTile(
+                  _ModernFarmTile(
                     icon: Icons.inventory_2_outlined,
                     color: KalroColors.harvest,
                     title: 'Cocoon harvest'.tr,
-                    subtitle: stats?.harvestWindowOpen == true
-                        ? 'Harvest window open'.tr
-                        : 'Last recorded weight'.tr,
-                    value: stats == null
-                        ? '…'
-                        : stats.harvestWindowOpen
-                            ? 'Open'.tr
-                            : '${stats.lastHarvestKg.toStringAsFixed(2)} kg',
+                    subtitle: 'Commercial silk grading & yield quality'.tr,
+                    badge: stats?.harvestWindowOpen == true ? 'Ready' : null,
                     onTap: () => _open(
                       HarvestScreen(
                         repositories: widget.repositories,
@@ -172,22 +251,18 @@ class _FarmWorkScreenState extends State<FarmWorkScreen> {
                       ),
                     ),
                   ),
+
                   const SizedBox(height: 18),
-                  Text(
-                    'Leaf, money & guides'.tr,
-                    style: GoogleFonts.poppins(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: KalroColors.textDark,
-                    ),
-                  ),
+
+                  // Forage & Station Management
+                  _SectionHeader(title: 'Forage, Guides & Management'.tr),
                   const SizedBox(height: 8),
-                  _WorkTile(
+                  _ModernFarmTile(
                     icon: Icons.grass_outlined,
                     color: KalroColors.leaf,
                     title: 'Leaf & stock'.tr,
-                    subtitle: 'Days of cover at today’s larvae'.tr,
-                    value: stats == null ? '…' : _leafValue(stats),
+                    subtitle: 'Forage inventory & harvest addition'.tr,
+                    badge: stats == null ? null : '${stats.leafStockKg.toStringAsFixed(1)} kg',
                     onTap: () => _open(
                       InventoryScreen(
                         repositories: widget.repositories,
@@ -196,11 +271,11 @@ class _FarmWorkScreenState extends State<FarmWorkScreen> {
                       ),
                     ),
                   ),
-                  _WorkTile(
+                  _ModernFarmTile(
                     icon: Icons.menu_book_outlined,
                     color: KalroColors.headerGreen,
                     title: 'Field guide'.tr,
-                    subtitle: 'KALRO hatch, moult rest, spinning signs'.tr,
+                    subtitle: 'Sericulture disease symptoms & diagnostics'.tr,
                     onTap: () => _open(
                       FieldGuideScreen(
                         species: stats?.guideSpecies,
@@ -213,11 +288,11 @@ class _FarmWorkScreenState extends State<FarmWorkScreen> {
                     ),
                   ),
                   if (RoleAccess.showFinance(_role))
-                    _WorkTile(
+                    _ModernFarmTile(
                       icon: Icons.account_balance_wallet_outlined,
                       color: KalroColors.accentBrown,
                       title: 'Finance'.tr,
-                      subtitle: 'Payments and farm money'.tr,
+                      subtitle: 'Cocoon sales & farm expense ledger'.tr,
                       onTap: () => _open(
                         FinanceScreen(
                           repositories: widget.repositories,
@@ -227,11 +302,11 @@ class _FarmWorkScreenState extends State<FarmWorkScreen> {
                       ),
                     ),
                   if (RoleAccess.showReports(_role))
-                    _WorkTile(
+                    _ModernFarmTile(
                       icon: Icons.assessment_outlined,
                       color: KalroColors.info,
                       title: 'Reports'.tr,
-                      subtitle: 'Cycle, feed, and harvest summaries'.tr,
+                      subtitle: 'Official PDF reports & CSV export'.tr,
                       onTap: () => _open(
                         ReportsScreen(
                           repositories: widget.repositories,
@@ -249,21 +324,41 @@ class _FarmWorkScreenState extends State<FarmWorkScreen> {
   }
 }
 
-class _WorkTile extends StatelessWidget {
-  const _WorkTile({
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader({required this.title});
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 4),
+      child: Text(
+        title,
+        style: GoogleFonts.poppins(
+          fontSize: 14,
+          fontWeight: FontWeight.w700,
+          color: KalroColors.textDark,
+        ),
+      ),
+    );
+  }
+}
+
+class _ModernFarmTile extends StatelessWidget {
+  const _ModernFarmTile({
     required this.icon,
     required this.color,
     required this.title,
     required this.subtitle,
     required this.onTap,
-    this.value,
+    this.badge,
   });
 
   final IconData icon;
   final Color color;
   final String title;
   final String subtitle;
-  final String? value;
+  final String? badge;
   final VoidCallback onTap;
 
   @override
@@ -272,24 +367,24 @@ class _WorkTile extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 8),
       child: Material(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(16),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             child: Row(
               children: [
                 Container(
-                  width: 40,
-                  height: 40,
+                  width: 42,
+                  height: 42,
                   decoration: BoxDecoration(
                     color: color.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(icon, color: color, size: 20),
+                  child: Icon(icon, color: color, size: 22),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -302,26 +397,39 @@ class _WorkTile extends StatelessWidget {
                           color: KalroColors.textDark,
                         ),
                       ),
+                      const SizedBox(height: 2),
                       Text(
                         subtitle,
-                        style: GoogleFonts.poppins(fontSize: 11, color: KalroColors.textMuted),
+                        style: GoogleFonts.poppins(
+                          fontSize: 11,
+                          color: KalroColors.textMuted,
+                        ),
                       ),
                     ],
                   ),
                 ),
-                if (value != null)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 6),
+                if (badge != null)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    margin: const EdgeInsets.only(right: 6),
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                     child: Text(
-                      value!,
+                      badge!,
                       style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 11,
                         color: color,
                       ),
                     ),
                   ),
-                const Icon(Icons.chevron_right, color: KalroColors.textLight, size: 20),
+                const Icon(
+                  Icons.chevron_right,
+                  color: KalroColors.textLight,
+                  size: 20,
+                ),
               ],
             ),
           ),

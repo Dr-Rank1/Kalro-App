@@ -74,18 +74,7 @@ class FloorActionsBar extends StatelessWidget {
   }
 
   Future<void> _openFeedOptions(BuildContext context) async {
-    final defaultGrams = plan.suggestedGrams > 0
-        ? plan.suggestedGrams
-        : RearingDayService.fullRationGrams(
-            batch.species,
-            plan.stage.instarNumber ?? 1,
-            batch.eggCount > 0 ? batch.eggCount : 400,
-          );
-    final initialGrams = defaultGrams > 0 ? defaultGrams : 50.0;
-
-    final gramsController = TextEditingController(
-      text: initialGrams.round().toString(),
-    );
+    final gramsController = TextEditingController();
     final feedMaterialController = TextEditingController(
       text: FloorLogService.defaultFeedType(batch),
     );
@@ -134,7 +123,7 @@ class FloorActionsBar extends StatelessWidget {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            'Feeding & Rest Options'.tr,
+                            isSkipping ? 'Record Skipped Feed'.tr : 'Feed Larvae'.tr,
                             style: GoogleFonts.poppins(
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
@@ -163,10 +152,7 @@ class FloorActionsBar extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            Translator.fill(
-                              'Standard daily ration: {g} g for this stage. Adjust grams to feed or record a skipped feed.',
-                              {'g': '${initialGrams.round()}'},
-                            ),
+                            'Enter the exact amount of feed in grams given to this batch, or record a skipped feed.'.tr,
                             style: GoogleFonts.poppins(
                               fontSize: 12,
                               color: KalroColors.textMuted,
@@ -232,6 +218,7 @@ class FloorActionsBar extends StatelessWidget {
                     ] else ...[
                       TextField(
                         controller: gramsController,
+                        autofocus: true,
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
                         inputFormatters: [
                           FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
@@ -239,7 +226,7 @@ class FloorActionsBar extends StatelessWidget {
                         decoration: InputDecoration(
                           labelText: 'Quantity (grams)'.tr,
                           suffixText: 'g',
-                          hintText: 'e.g. 50',
+                          hintText: 'Enter grams (e.g. 50)',
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -724,19 +711,15 @@ class FloorActionsBar extends StatelessWidget {
                 ),
               ),
               OutlinedButton.icon(
-                onPressed: () => _feed(context, grams: feedGrams),
+                onPressed: () => _openFeedOptions(context),
                 icon: const Icon(Icons.eco_outlined, size: 18),
                 label: Text('Feed larvae instead'.tr),
               ),
             ] else ...[
               FilledButton.icon(
-                onPressed: () => _feed(context, grams: feedGrams),
+                onPressed: () => _openFeedOptions(context),
                 icon: const Icon(Icons.eco_outlined, size: 18),
-                label: Text(
-                  Translator.fill('Feed larvae · {g} g', {
-                    'g': '${feedGrams.round()}',
-                  }),
-                ),
+                label: Text('Feed larvae'.tr),
                 style: FilledButton.styleFrom(
                   backgroundColor: KalroColors.leaf,
                   foregroundColor: Colors.white,
