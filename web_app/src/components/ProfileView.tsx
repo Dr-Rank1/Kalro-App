@@ -161,6 +161,18 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             </p>
 
             <div className="profile-user-contacts">
+              {currentUser.staffId && (
+                <span className="contact-item">
+                  <span style={{ fontWeight: 600, color: 'var(--text-muted)', marginRight: '4px' }}>Staff ID:</span>
+                  <strong style={{ color: 'var(--primary)', fontFamily: 'monospace' }}>{currentUser.staffId}</strong>
+                </span>
+              )}
+              {currentUser.shift && (
+                <span className="contact-item">
+                  <span style={{ fontWeight: 600, color: 'var(--text-muted)', marginRight: '4px' }}>Shift:</span>
+                  <strong style={{ color: 'var(--text-main)', textTransform: 'capitalize' }}>{currentUser.shift} Shift</strong>
+                </span>
+              )}
               {currentUser.phone && (
                 <span className="contact-item">
                   <Phone size={13} style={{ marginRight: '4px' }} />
@@ -263,13 +275,13 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         </div>
       </div>
 
-      {/* 4. Profiles on this Device */}
+      {/* 4. Station Staff Roster & Duty Rotation */}
       <div className="kalro-card">
         <div className="card-header-flex">
           <div>
-            <h3 className="card-title">Profiles on this Device</h3>
+            <h3 className="card-title">Station Staff Roster &amp; Duty Rotation</h3>
             <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-              Each farmer keeps separate batches and records on this phone or browser.
+              Institutional batch sharing: In KALRO sericulture facilities, all rotating staff share access to the station's rearing lots and forage stores. Select your profile to assume active duty so all operations are timestamped with your name.
             </p>
           </div>
           <button
@@ -278,7 +290,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             style={{ fontSize: '0.78rem', padding: '0.35rem 0.75rem' }}
           >
             <Plus size={13} style={{ marginRight: '4px' }} />
-            Add Profile
+            Register Staff
           </button>
         </div>
 
@@ -301,15 +313,30 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 <div className="simple-account-details">
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <strong style={{ fontSize: '0.88rem' }}>{user.username}</strong>
+                    {user.staffId && (
+                      <span
+                        style={{
+                          fontSize: '0.68rem',
+                          fontFamily: 'monospace',
+                          padding: '1px 5px',
+                          borderRadius: '3px',
+                          backgroundColor: 'var(--bg-subtle)',
+                          border: '1px solid var(--border-subtle)',
+                          color: 'var(--text-muted)',
+                        }}
+                      >
+                        {user.staffId}
+                      </span>
+                    )}
                     {isActive && (
                       <span className="simple-active-tag">
                         <Check size={11} style={{ marginRight: '3px' }} />
-                        Active
+                        Active on Shift
                       </span>
                     )}
                   </div>
                   <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
-                    {uRole.label} • {user.stationName} ({user.county})
+                    {uRole.label} • {user.shift ? `${user.shift.toUpperCase()} SHIFT` : 'General Shift'}
                   </span>
                 </div>
 
@@ -319,12 +346,13 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                       onClick={() => onSwitchUser(user.id)}
                       className="btn-secondary"
                       style={{ fontSize: '0.75rem', padding: '0.3rem 0.65rem' }}
+                      title={`Assume shift duty as ${user.username}`}
                     >
-                      Switch
+                      Take Over Shift
                     </button>
                   ) : (
                     <span style={{ fontSize: '0.72rem', color: 'var(--primary)', fontWeight: 600 }}>
-                      Current
+                      Current Duty
                     </span>
                   )}
 

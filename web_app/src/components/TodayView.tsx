@@ -17,6 +17,8 @@ import {
   Check,
   Sparkles,
   ArrowRight,
+  History,
+  Users,
 } from 'lucide-react';
 import {
   Batch,
@@ -26,6 +28,8 @@ import {
   MortalityLog,
   CocoonHarvest,
   FarmProfile,
+  UserAccount,
+  AuditLogEntry,
 } from '../types';
 import {
   calculateLeafCoverage,
@@ -34,7 +38,7 @@ import {
   getSuggestedDailyFeedGrams,
   isFedToday,
 } from '../utils';
-import { SPECIES_THRESHOLDS } from '../constants';
+import { SPECIES_THRESHOLDS, USER_ROLES } from '../constants';
 import { BombyxBatchCardHeader, EriBatchCardHeader } from './SericultureCardArtwork';
 
 interface TodayViewProps {
@@ -45,12 +49,16 @@ interface TodayViewProps {
   harvests: CocoonHarvest[];
   inventory: LeafInventory;
   profile?: FarmProfile | null;
+  currentUser?: UserAccount | null;
+  allUsers?: UserAccount[];
+  auditLogs?: AuditLogEntry[];
   onOpenCreateProfile?: () => void;
   onOpenAddBatch?: () => void;
   onOpenAddLeaf?: () => void;
   onOpenQuickLog: (batchId?: string, defaultType?: 'feed' | 'mortality' | 'climate' | 'harvest') => void;
-  onSelectTab: (tab: 'batches' | 'plan' | 'farm' | 'you') => void;
+  onSelectTab: (tab: 'today' | 'batches' | 'audit' | 'plan' | 'farm' | 'you') => void;
   onExportBatchPdf?: (batch: Batch) => void;
+  onSwitchUser?: (userId: string) => void;
 }
 
 type BatchFilter = 'all' | 'due' | 'moult' | 'spinning';
@@ -99,17 +107,25 @@ export const TodayView: React.FC<TodayViewProps> = ({
   harvests,
   inventory,
   profile,
+  currentUser,
+  allUsers,
+  auditLogs = [],
   onOpenCreateProfile,
   onOpenAddBatch,
   onOpenAddLeaf,
   onOpenQuickLog,
   onSelectTab,
   onExportBatchPdf,
+  onSwitchUser,
 }) => {
   const [batchFilter, setBatchFilter] = useState<BatchFilter>('all');
   const [selectedHouseTab, setSelectedHouseTab] = useState<string>('all');
   const houseCount = Math.max(1, profile?.houseCount || 1);
   const activeBatches = batches.filter((b) => b.status === 'active');
+
+  const roleMeta = currentUser
+    ? USER_ROLES.find((r) => r.value === currentUser.role) || USER_ROLES[0]
+    : USER_ROLES[0];
 
   const now = new Date();
   const currentHour = now.getHours();
@@ -308,6 +324,118 @@ export const TodayView: React.FC<TodayViewProps> = ({
             className="btn-secondary"
           >
             Log Harvest
+          </button>
+        </div>
+      </div>
+
+      {/* 1B. Rotating Station Operator Duty Bar */}
+      <div
+        className="station-duty-bar"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '12px',
+          padding: '0.75rem 1rem',
+          backgroundColor: '#ffffff',
+          border: '1px solid var(--border-card)',
+          borderRadius: 'var(--radius-md)',
+          marginBottom: '1rem',
+          boxShadow: 'var(--shadow-sm)',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: '240px' }}>
+          <div
+            style={{
+              width: '38px',
+              height: '38px',
+              borderRadius: '50%',
+              backgroundColor: currentUser?.avatarColor || 'var(--primary)',
+              color: '#ffffff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: 700,
+              fontSize: '0.86rem',
+              flexShrink: 0,
+            }}
+          >
+            {currentUser?.avatarInitials || 'ST'}
+          </div>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--text-muted)', fontWeight: 600 }}>
+                Operator on Duty:
+              </span>
+              <strong style={{ fontSize: '0.88rem', color: 'var(--text-main)' }}>
+                {currentUser?.username || 'Station Operator'}
+              </strong>
+              {currentUser?.staffId && (
+                <span
+                  style={{
+                    fontSize: '0.68rem',
+                    fontFamily: 'monospace',
+                    padding: '1px 6px',
+                    borderRadius: '3px',
+                    backgroundColor: 'var(--bg-subtle)',
+                    border: '1px solid var(--border-subtle)',
+                    color: 'var(--text-muted)',
+                  }}
+                >
+                  {currentUser.staffId}
+                </span>
+              )}
+            </div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '1px' }}>
+              <span style={{ color: roleMeta?.badgeColor || 'var(--primary)', fontWeight: 600 }}>
+                {roleMeta?.label || 'Sericulture Specialist'}
+              </span>
+              <span>•</span>
+              <span>All operations stamped with operator &amp; time</span>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {allUsers && allUsers.length > 1 && onSwitchUser && (
+            <select
+              value={currentUser?.id || ''}
+              onChange={(e) => onSwitchUser(e.target.value)}
+              className="form-control"
+              style={{
+                fontSize: '0.76rem',
+                padding: '0.35rem 0.6rem',
+                height: 'auto',
+                width: 'auto',
+                minWidth: '155px',
+              }}
+              title="Switch active sericulture operator on duty"
+            >
+              {allUsers.map((u) => (
+                <option key={u.id} value={u.id}>
+                  {u.username} ({u.staffId || u.role})
+                </option>
+              ))}
+            </select>
+          )}
+
+          <button
+            type="button"
+            onClick={() => onSelectTab('audit')}
+            className="btn-secondary"
+            style={{
+              fontSize: '0.76rem',
+              padding: '0.35rem 0.75rem',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '5px',
+            }}
+            title="View complete chronological audit trail of all staff operations"
+          >
+            <History size={13} />
+            <span>Staff Audit Ledger ({auditLogs?.length || 0})</span>
+            <ArrowRight size={12} />
           </button>
         </div>
       </div>
@@ -1040,6 +1168,51 @@ export const TodayView: React.FC<TodayViewProps> = ({
                       </div>
                     </div>
 
+                    {/* Staff Operational Attribution Strip */}
+                    {(() => {
+                      const latestBatchLog = (auditLogs || []).find(
+                        (a) =>
+                          a.batchId === b.id ||
+                          (b.batchTag && a.batchTag === b.batchTag) ||
+                          (b.displayTag && a.batchTag === b.displayTag)
+                      );
+                      const latestBatchFeed = feedLogs
+                        .filter((f) => f.batchId === b.id)
+                        .sort((x, y) => y.recordedAt.localeCompare(x.recordedAt))[0];
+
+                      return (
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            fontSize: '0.72rem',
+                            color: 'var(--text-muted)',
+                            backgroundColor: 'var(--bg-subtle)',
+                            border: '1px solid var(--border-subtle)',
+                            borderRadius: 'var(--radius-sm)',
+                            padding: '4px 8px',
+                            margin: '0.1rem 0 0.65rem',
+                          }}
+                        >
+                          <Clock size={12} style={{ color: 'var(--primary)', flexShrink: 0 }} />
+                          <span className="truncate" style={{ flex: 1 }}>
+                            {latestBatchLog ? (
+                              <>
+                                <strong style={{ color: 'var(--text-main)' }}>{latestBatchLog.title}:</strong> {latestBatchLog.details} · <span style={{ color: 'var(--primary)', fontWeight: 600 }}>{latestBatchLog.operatorName}</span> ({new Date(latestBatchLog.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})
+                              </>
+                            ) : latestBatchFeed ? (
+                              <>
+                                <strong style={{ color: 'var(--text-main)' }}>Last Feed:</strong> {(latestBatchFeed.quantityGrams / 1000).toFixed(1)} kg {latestBatchFeed.leafType} by <span style={{ color: 'var(--primary)', fontWeight: 600 }}>{latestBatchFeed.operatorName || 'Staff'}</span> at {new Date(latestBatchFeed.recordedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              </>
+                            ) : (
+                              <span>Pending first operational log for this shift</span>
+                            )}
+                          </span>
+                        </div>
+                      );
+                    })()}
+
                     {/* Card Action Buttons */}
                     <div style={{ display: 'flex', gap: '0.4rem', marginTop: 'auto' }}>
                       <button
@@ -1090,6 +1263,124 @@ export const TodayView: React.FC<TodayViewProps> = ({
                         Bed Spacing in Tools →
                       </button>
                     </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* 5B. Station Shift Activity Stream (Today's Operations) */}
+      <div className="kalro-card" style={{ marginBottom: '1.25rem' }}>
+        <div className="card-header-flex" style={{ marginBottom: '0.75rem' }}>
+          <div>
+            <h3 className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <History size={16} style={{ color: 'var(--primary)' }} />
+              <span>Station Shift Activity Stream (Today's Operations)</span>
+            </h3>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+              Chronological log of feeding, microclimate checks, bed hygiene, and harvests across rotating staff
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => onSelectTab('audit')}
+            className="btn-secondary"
+            style={{ fontSize: '0.76rem', padding: '0.35rem 0.75rem', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+          >
+            <span>View Full Operations Ledger</span>
+            <ArrowRight size={13} />
+          </button>
+        </div>
+
+        {/* Recent Operations List */}
+        {(!auditLogs || auditLogs.length === 0) ? (
+          <div style={{ padding: '1.25rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.8rem', backgroundColor: 'var(--bg-subtle)', borderRadius: 'var(--radius-sm)' }}>
+            No shift operations logged yet today. Logs recorded via "Log Feeding", "House Climate", or "Record Loss" will appear here in real time.
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            {auditLogs.slice(0, 5).map((log) => {
+              const timeStr = new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+              const dateStr = new Date(log.timestamp).toLocaleDateString([], { month: 'short', day: 'numeric' });
+              return (
+                <div
+                  key={log.id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '8px 12px',
+                    borderRadius: 'var(--radius-sm)',
+                    border: '1px solid var(--border-subtle)',
+                    backgroundColor: '#ffffff',
+                    fontSize: '0.78rem',
+                    flexWrap: 'wrap',
+                    gap: '8px',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: '220px', flex: 1 }}>
+                    <span
+                      style={{
+                        fontSize: '0.72rem',
+                        fontFamily: 'monospace',
+                        color: 'var(--text-muted)',
+                        minWidth: '55px',
+                      }}
+                    >
+                      {timeStr}
+                    </span>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          padding: '2px 7px',
+                          borderRadius: '3px',
+                          fontSize: '0.68rem',
+                          fontWeight: 700,
+                          backgroundColor:
+                            log.actionType === 'feed_log'
+                              ? 'rgba(46, 125, 50, 0.12)'
+                              : log.actionType === 'climate_check'
+                              ? 'rgba(43, 87, 117, 0.12)'
+                              : log.actionType === 'mortality_log'
+                              ? 'rgba(191, 54, 12, 0.12)'
+                              : log.actionType === 'shift_handover'
+                              ? 'rgba(198, 138, 20, 0.15)'
+                              : 'rgba(20, 61, 43, 0.1)',
+                          color:
+                            log.actionType === 'feed_log'
+                              ? '#2E7D32'
+                              : log.actionType === 'climate_check'
+                              ? '#2B5775'
+                              : log.actionType === 'mortality_log'
+                              ? '#BF360C'
+                              : log.actionType === 'shift_handover'
+                              ? '#C68A14'
+                              : '#143D2B',
+                        }}
+                      >
+                        {log.title}
+                      </span>
+                      {log.roomName && (
+                        <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                          [{log.roomName}]
+                        </span>
+                      )}
+                    </div>
+
+                    <span style={{ color: 'var(--text-main)', flex: 1 }} className="truncate">
+                      {log.details}
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.74rem' }}>
+                    <span style={{ color: 'var(--text-muted)' }}>by</span>
+                    <strong style={{ color: 'var(--primary)' }}>{log.operatorName}</strong>
+                    <span style={{ color: 'var(--text-muted)', fontSize: '0.68rem' }}>({dateStr})</span>
                   </div>
                 </div>
               );

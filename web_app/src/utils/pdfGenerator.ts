@@ -1,6 +1,7 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import {
+  AuditLogEntry,
   Batch,
   CocoonHarvest,
   EnvironmentLog,
@@ -10,6 +11,7 @@ import {
   LeafMovement,
   MortalityLog,
   PaymentRecord,
+  UserAccount,
 } from '../types';
 import {
   calculateLeafCoverage,
@@ -868,4 +870,250 @@ export function downloadSingleBatchPdf(data: SingleBatchReportData): void {
   const safeTag = tag.replace(/[^a-zA-Z0-9_-]/g, '_');
   const dateStr = new Date().toISOString().split('T')[0];
   doc.save(`KALRO_Lot_${safeTag}_${dateStr}.pdf`);
+}
+
+export interface StaffAuditReportData {
+  profile: FarmProfile;
+  auditLogs: AuditLogEntry[];
+  allUsers: UserAccount[];
+  batches: Batch[];
+}
+
+export function generateStaffAuditPdf(data: StaffAuditReportData): jsPDF {
+  const { profile, auditLogs, allUsers, batches } = data;
+
+  const doc = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4',
+  });
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const margin = 14;
+  let y = margin;
+
+  const primaryColor: [number, number, number] = [30, 77, 43]; // #1E4D2B
+  const textDark: [number, number, number] = [30, 41, 59]; // #1E293B
+  const textMuted: [number, number, number] = [100, 116, 139]; // #64748B
+  const subtleBg: [number, number, number] = [244, 246, 244]; // #F4F6F4
+
+  // --- Document Header ---
+  doc.setFillColor(...primaryColor);
+  doc.rect(margin, y, pageWidth - margin * 2, 24, 'F');
+
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(12.5);
+  doc.text('KENYA AGRICULTURAL & LIVESTOCK RESEARCH ORGANIZATION', margin + 6, y + 7.5);
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8);
+  doc.text('National Sericulture Research Centre (NSRC) • P.O. Box 220-01000, Thika, Kenya', margin + 6, y + 13.5);
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9);
+  doc.text('STAFF OPERATIONS & SHIFT AUDIT DOSSIER • WHO DID WHAT & WHEN', margin + 6, y + 19.5);
+
+  y += 28;
+
+  // --- Station & Roster Context Box ---
+  doc.setFillColor(...subtleBg);
+  doc.setDrawColor(200, 215, 205);
+  doc.rect(margin, y, pageWidth - margin * 2, 22, 'FD');
+
+  doc.setTextColor(...textDark);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8.5);
+  doc.text('Station Facility:', margin + 4, y + 6);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`${profile.orgName} (${profile.county} County)`, margin + 30, y + 6);
+
+  doc.setFont('helvetica', 'bold');
+  doc.text('Active Roster:', margin + 4, y + 11.5);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`${allUsers.length} Rotating Sericulture Specialists`, margin + 30, y + 11.5);
+
+  doc.setFont('helvetica', 'bold');
+  doc.text('Concurrent Lots:', margin + 4, y + 17);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`${batches.filter((b) => b.status === 'active').length} Active Rearing Lots across ${profile.houseCount || 4} Rearing Houses`, margin + 30, y + 17);
+
+  const reportDateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  doc.setFont('helvetica', 'bold');
+  doc.text('Date Exported:', margin + 115, y + 6);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`${reportDateStr} ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} EAT`, margin + 140, y + 6);
+
+  doc.setFont('helvetica', 'bold');
+  doc.text('Audit Scope:', margin + 115, y + 11.5);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`${auditLogs.length} Verified Operational Records`, margin + 140, y + 11.5);
+
+  y += 26;
+
+  // --- Staff Operations Performance Table ---
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9);
+  doc.setTextColor(...primaryColor);
+  doc.text('1. Sericulture Staff Duty Attribution & Activity Count', margin, y);
+  y += 3;
+
+  const staffRows = allUsers.map((u) => {
+    const userLogs = auditLogs.filter((l) => l.operatorId === u.id || l.operatorName === u.username);
+    const feedCount = userLogs.filter((l) => l.actionType === 'feed_log').length;
+    const climateCount = userLogs.filter((l) => l.actionType === 'climate_check').length;
+    const otherCount = userLogs.length - feedCount - climateCount;
+    return [
+      u.username,
+      u.role.replace(/_/g, ' ').toUpperCase(),
+      u.staffId || 'KALRO-STF',
+      u.shift ? u.shift.toUpperCase() : 'GENERAL',
+      String(feedCount),
+      String(climateCount),
+      String(otherCount),
+      String(userLogs.length),
+    ];
+  });
+
+  autoTable(doc, {
+    startY: y,
+    margin: { left: margin, right: margin },
+    head: [['Staff Member', 'Institutional Role', 'Staff ID', 'Shift', 'Feeds', 'Climate', 'Other', 'Total Logs']],
+    body: staffRows,
+    theme: 'grid',
+    headStyles: {
+      fillColor: primaryColor,
+      textColor: [255, 255, 255],
+      fontStyle: 'bold',
+      fontSize: 7.5,
+      halign: 'left',
+    },
+    bodyStyles: {
+      fontSize: 7,
+      textColor: textDark,
+      cellPadding: 2,
+    },
+    alternateRowStyles: {
+      fillColor: subtleBg,
+    },
+    tableLineColor: [226, 232, 240],
+    tableLineWidth: 0.1,
+  });
+
+  y = (doc as any).lastAutoTable.finalY + 8;
+
+  // --- Chronological Operations Audit Ledger ---
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9);
+  doc.setTextColor(...primaryColor);
+  doc.text('2. Chronological Operational Records (Who Made What Change, When & Location)', margin, y);
+  y += 3;
+
+  const ledgerRows = auditLogs.slice(0, 150).map((l) => {
+    const d = new Date(l.timestamp);
+    const dateFormatted = d.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' }) + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const batchLoc = l.batchTag ? (l.roomName ? `${l.batchTag} [${l.roomName}]` : l.batchTag) : (l.roomName || 'Station Bay');
+    return [
+      dateFormatted,
+      l.operatorName,
+      l.operatorRole.replace(/_/g, ' '),
+      l.actionType.replace(/_/g, ' ').toUpperCase(),
+      batchLoc,
+      l.metrics || '--',
+      l.details,
+    ];
+  });
+
+  autoTable(doc, {
+    startY: y,
+    margin: { left: margin, right: margin },
+    head: [['Date & Time', 'Staff Member', 'Role', 'Action', 'Batch / Room', 'Metric', 'Operational Details']],
+    body: ledgerRows,
+    theme: 'grid',
+    headStyles: {
+      fillColor: primaryColor,
+      textColor: [255, 255, 255],
+      fontStyle: 'bold',
+      fontSize: 7,
+      halign: 'left',
+    },
+    bodyStyles: {
+      fontSize: 6.5,
+      textColor: textDark,
+      cellPadding: 2,
+    },
+    columnStyles: {
+      0: { cellWidth: 22 },
+      1: { cellWidth: 24, fontStyle: 'bold' },
+      2: { cellWidth: 20 },
+      3: { cellWidth: 18 },
+      4: { cellWidth: 26 },
+      5: { cellWidth: 20, fontStyle: 'bold' },
+      6: { cellWidth: 'auto' },
+    },
+    alternateRowStyles: {
+      fillColor: subtleBg,
+    },
+    tableLineColor: [226, 232, 240],
+    tableLineWidth: 0.1,
+  });
+
+  y = (doc as any).lastAutoTable.finalY + 10;
+
+  if (y > pageHeight - 45) {
+    doc.addPage();
+    y = margin + 10;
+  }
+
+  // --- Institutional Certification & Signatures ---
+  doc.setFillColor(...subtleBg);
+  doc.setDrawColor(200, 215, 205);
+  doc.rect(margin, y, pageWidth - margin * 2, 32, 'FD');
+
+  doc.setTextColor(...textDark);
+  doc.setFont('helvetica', 'italic');
+  doc.setFontSize(7);
+  doc.text(
+    `Official Attestation: This operational dossier contains verified immutable time-stamped logs recorded by rotating sericulture technical staff at ${profile.orgName}. All feeding allocations, microclimate readings, and batch events have been inspected pursuant to KALRO sericulture quality management standards.`,
+    margin + 4,
+    y + 5,
+    { maxWidth: pageWidth - margin * 2 - 8 }
+  );
+
+  const sigCol1 = margin + 8;
+  const sigCol2 = margin + 105;
+  const sigY = y + 24;
+
+  doc.setDrawColor(140, 160, 150);
+  doc.line(sigCol1, sigY, sigCol1 + 75, sigY);
+  doc.line(sigCol2, sigY, sigCol2 + 75, sigY);
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7.5);
+  doc.text(`Station Head / Senior Research Scientist: ${profile.managerName}`, sigCol1, sigY + 4);
+  doc.text('Centre Quality Auditor / Extension Inspector', sigCol2, sigY + 4);
+
+  // --- Page Footers ---
+  const totalPages = doc.getNumberOfPages();
+  for (let i = 1; i <= totalPages; i++) {
+    doc.setPage(i);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7);
+    doc.setTextColor(...textMuted);
+    doc.text(
+      `KALRO Sericulture Research Centre • Staff Duty & Shift Audit Dossier • Page ${i} of ${totalPages}`,
+      pageWidth / 2,
+      pageHeight - 6,
+      { align: 'center' }
+    );
+  }
+
+  return doc;
+}
+
+export function downloadStaffAuditPdf(data: StaffAuditReportData): void {
+  const doc = generateStaffAuditPdf(data);
+  const todayStr = new Date().toISOString().split('T')[0];
+  doc.save(`KALRO_Staff_Audit_Dossier_${todayStr}.pdf`);
 }

@@ -3,6 +3,7 @@ import { Header } from './components/Header';
 import { Navigation, NavTab } from './components/Navigation';
 import { TodayView } from './components/TodayView';
 import { BatchesView } from './components/BatchesView';
+import { StaffAuditView } from './components/StaffAuditView';
 import { PlanView } from './components/PlanView';
 import { FarmToolsView } from './components/FarmToolsView';
 import { ProfileView } from './components/ProfileView';
@@ -13,9 +14,10 @@ import { ProfileFormModal, ProfileFormData } from './components/ProfileFormModal
 import { DeleteProfileModal } from './components/DeleteProfileModal';
 import { BatchRegistrationForm } from './components/BatchRegistrationForm';
 import { LeafStockModal } from './components/LeafStockModal';
-import { downloadSingleBatchPdf } from './utils/pdfGenerator';
+import { downloadSingleBatchPdf, downloadStaffAuditPdf } from './utils/pdfGenerator';
 import { storage } from './storage';
 import {
+  AuditLogEntry,
   Batch,
   CocoonHarvest,
   EnvironmentLog,
@@ -33,9 +35,9 @@ const DEFAULT_BLANK_PROFILE: FarmProfile = {
   id: 'guest-profile',
   orgName: 'KALRO Sericulture Station',
   county: 'Kiambu',
-  houseCount: 1,
+  houseCount: 4,
   syncCode: 'KALRO-SERI-KBU-001',
-  managerName: 'Farm Lead',
+  managerName: 'Dr. Joyce Njuguna',
 };
 
 export function App() {
@@ -45,7 +47,7 @@ export function App() {
   const [currentUser, setCurrentUser] = useState<UserAccount | null>(() => storage.getActiveUser());
   const [allUsers, setAllUsers] = useState<UserAccount[]>(() => storage.getAllUsers());
 
-  const VALID_TABS: NavTab[] = ['today', 'batches', 'plan', 'farm', 'you'];
+  const VALID_TABS: NavTab[] = ['today', 'batches', 'audit', 'plan', 'farm', 'you'];
 
   const initialBatches = storage.getBatches();
   const [activeTab, setActiveTab] = useState<NavTab>(() => {
@@ -77,6 +79,7 @@ export function App() {
   const [inventory, setInventory] = useState<LeafInventory>(() => storage.getLeafInventory());
   const [leafMovements, setLeafMovements] = useState<LeafMovement[]>(() => storage.getLeafMovements());
   const [payments, setPayments] = useState<PaymentRecord[]>(() => storage.getPayments());
+  const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>(() => storage.getAuditLogs());
 
   // Modal States
   const [quickLogState, setQuickLogState] = useState<{
@@ -196,6 +199,47 @@ export function App() {
     setInventory(storage.getLeafInventory());
     setLeafMovements(storage.getLeafMovements());
     setPayments(storage.getPayments());
+    setAuditLogs(storage.getAuditLogs());
+  };
+
+  const handleExportAuditPdf = () => {
+    if (!profile) return;
+    try {
+      downloadStaffAuditPdf({
+        profile,
+        auditLogs,
+        allUsers,
+        batches,
+      });
+      showToast('Staff Operations & Shift Audit Dossier exported as PDF.');
+    } catch (e) {
+      console.error(e);
+      showToast('Failed to export audit PDF.');
+    }
+  };
+
+  const handleExportAuditCsv = () => {
+    try {
+      const csv = storage.exportAuditLogsCsv();
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `KALRO_Staff_Audit_Ledger_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('Staff Operations Audit CSV downloaded.');
+    } catch (e) {
+      console.error(e);
+      showToast('Failed to export CSV.');
+    }
+  };
+
+  const handleAddAuditLog = (entry: AuditLogEntry) => {
+    storage.addAuditLog(entry);
+    reloadAll();
+    showToast(`Logged to Station Audit: "${entry.title}".`);
   };
 
   // Switch Active Tenant
@@ -435,6 +479,10 @@ export function App() {
               harvests={harvests}
               inventory={inventory}
               profile={profile}
+              currentUser={currentUser}
+              allUsers={allUsers}
+              auditLogs={auditLogs}
+              onSwitchUser={handleSwitchUser}
               onOpenCreateProfile={() => handleOpenCreateProfile(() => handleSelectTab('today'))}
               onOpenAddBatch={() => setTodayBatchModalOpen(true)}
               onOpenAddLeaf={() => setTodayLeafModalOpen(true)}
@@ -485,6 +533,19 @@ export function App() {
               onOpenQr={(b) => setQrModalBatch(b)}
               onToast={showToast}
               onRequireProfile={() => handleOpenCreateProfile(() => handleSelectTab('batches'))}
+            />
+          )}
+
+          {activeTab === 'audit' && (
+            <StaffAuditView
+              auditLogs={auditLogs}
+              batches={batches}
+              allUsers={allUsers}
+              currentUser={currentUser}
+              profile={profile}
+              onExportPdf={handleExportAuditPdf}
+              onExportCsv={handleExportAuditCsv}
+              onAddAuditLog={handleAddAuditLog}
             />
           )}
 
@@ -554,6 +615,8 @@ export function App() {
           initialBatchId={quickLogState.batchId}
           defaultType={quickLogState.type}
           profile={profile}
+          currentUser={currentUser}
+          allUsers={allUsers}
           inventory={inventory}
           onOpenBatchRegistration={() => setTodayBatchModalOpen(true)}
           onClose={() => setQuickLogState({ open: false })}

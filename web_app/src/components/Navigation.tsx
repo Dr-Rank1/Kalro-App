@@ -1,6 +1,6 @@
 import React from 'react';
 
-export type NavTab = 'today' | 'batches' | 'plan' | 'farm' | 'you';
+export type NavTab = 'today' | 'batches' | 'audit' | 'plan' | 'farm' | 'you';
 
 interface NavigationProps {
   activeTab: NavTab;
@@ -13,22 +13,14 @@ export const Navigation: React.FC<NavigationProps> = ({
   onSelectTab,
   activeBatchesCount = 0,
 }) => {
-  const tabs: { key: NavTab; label: string; badge?: number }[] =
-    activeBatchesCount === 0
-      ? [
-          { key: 'batches', label: 'Silkworm Batches' },
-          { key: 'today', label: 'Operations Today' },
-          { key: 'plan', label: 'Lifecycle Roadmap' },
-          { key: 'farm', label: 'Agronomy & Tools' },
-          { key: 'you', label: 'Station Profile' },
-        ]
-      : [
-          { key: 'today', label: 'Operations Today' },
-          { key: 'batches', label: 'Silkworm Batches', badge: activeBatchesCount },
-          { key: 'plan', label: 'Lifecycle Roadmap' },
-          { key: 'farm', label: 'Agronomy & Tools' },
-          { key: 'you', label: 'Station Profile' },
-        ];
+  const tabs: { key: NavTab; label: string; badge?: number }[] = [
+    { key: 'today', label: 'Operations Today' },
+    { key: 'batches', label: 'Silkworm Batches', badge: activeBatchesCount > 0 ? activeBatchesCount : undefined },
+    { key: 'audit', label: 'Staff Audit Log' },
+    { key: 'plan', label: 'Lifecycle Roadmap' },
+    { key: 'farm', label: 'Agronomy & Tools' },
+    { key: 'you', label: 'Station & Staff' },
+  ];
 
   return (
     <nav className="nav-bar-container">

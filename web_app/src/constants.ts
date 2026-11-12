@@ -3,34 +3,87 @@ import { DiseaseInfo, MilestoneStage, Species, UserRole } from './types';
 export const USER_ROLES: { value: UserRole; label: string; desc: string; badgeColor: string }[] = [
   {
     value: 'station_manager',
-    label: 'Farm Manager',
-    desc: 'Full farm oversight, rearing operations, and farm records.',
+    label: 'Station Head / Research Officer',
+    desc: 'Research centre oversight, rearing trials, lot dossiers, and station audit.',
     badgeColor: '#143D2B',
   },
   {
-    value: 'commercial_reeler',
-    label: 'Commercial Farmer',
-    desc: 'Silkworm rearing and cocoon production.',
-    badgeColor: '#C68A14',
-  },
-  {
     value: 'lead_technician',
-    label: 'Chawki Technician',
-    desc: 'Egg incubation, young worms, and leaf preparation.',
+    label: 'Chawki Master / Specialist',
+    desc: 'Egg incubation, brushing, and young-age (1st–3rd instar) microclimate management.',
     badgeColor: '#2B5775',
   },
   {
+    value: 'rearing_technician',
+    label: 'Silkworm Rearing Technician',
+    desc: 'Late-age (4th–5th instar) shoot feeding, tray spacing, bed cleaning, and mounting.',
+    badgeColor: '#C68A14',
+  },
+  {
+    value: 'moriculture_attendant',
+    label: 'Moriculture & Forage Attendant',
+    desc: 'Mulberry orchard harvesting, leaf grading (S-13/TR-10), and forage stockpile tracking.',
+    badgeColor: '#2E7D32',
+  },
+  {
+    value: 'cocoon_inspector',
+    label: 'Cocoon & Grainage Inspector',
+    desc: 'Cocoon harvest grading, defective sorting, shell ratio testing, and grainage.',
+    badgeColor: '#BF360C',
+  },
+  {
+    value: 'commercial_reeler',
+    label: 'Commercial Sericulture Specialist',
+    desc: 'Silk reeling evaluation, yarn yield analysis, and commercial sales.',
+    badgeColor: '#8D6E63',
+  },
+  {
     value: 'extension_officer',
-    label: 'Extension Officer',
-    desc: 'Field advisory, training, and farm inspection.',
+    label: 'Sericulture Extension Officer',
+    desc: 'Field technical advisory, county outreach, and farmer training.',
     badgeColor: '#4A148C',
   },
   {
     value: 'apprentice',
-    label: 'Farm Assistant',
-    desc: 'Daily feeding, bed cleaning, and leaf harvesting.',
+    label: 'Rearing Assistant / Attendant',
+    desc: 'Daily shift feeding, bed hygiene, dusting with slaked lime, and log support.',
     badgeColor: '#53635A',
   },
+];
+
+export const KENYA_SERICULTURE_BREEDS = [
+  {
+    code: 'CSR2_CSR4',
+    name: 'CSR2 × CSR4 Bivoltine Double Hybrid',
+    species: 'bombyx',
+    description: 'High silk content (22–24% shell ratio), robust pupation rate (92%+). Premier commercial hybrid in Kenyan highlands (Thika, Kiambu, Meru).',
+  },
+  {
+    code: 'ICB_CSR2',
+    name: 'ICB × CSR2 Improved Bivoltine Cross',
+    species: 'bombyx',
+    description: 'Bred for disease tolerance and fluctuations in temperature. High survival under fluctuating Kenyan climate.',
+  },
+  {
+    code: 'PM_CSR2',
+    name: 'Pure Mysore × CSR2 Cross-Breed',
+    species: 'bombyx',
+    description: 'Multivoltine female × Bivoltine male. Highly adaptable for warmer medium-altitude zones in Kenya (Machakos, Kitui, Kisumu).',
+  },
+  {
+    code: 'SAMIA_RICINI',
+    name: 'Samia cynthia ricini (Eri White Strain)',
+    species: 'eri',
+    description: 'Hardy non-mulberry open-ended cocoon producer. Fed on Ricinus communis (castor) or Heteropanax fragrans (kesseru). Continuous rearing throughout Kenya.',
+  },
+];
+
+export const KENYA_MULBERRY_CULTIVARS = [
+  { code: 'S13', name: 'S-13', leafQuality: 'Very High Moisture (74–76%)', use: 'Chawki Rearing (Instars 1–3)' },
+  { code: 'TR10', name: 'TR-10', leafQuality: 'High Biomass & Thick Leaf', use: 'Late Age Shoot Rearing (Instars 4–5)' },
+  { code: 'KANVA2', name: 'Kanva-2 (M-5)', leafQuality: 'Standard Hardy Cultivar', use: 'All-Stage Rearing' },
+  { code: 'S36', name: 'S-36', leafQuality: 'Succulent Sweet Leaf', use: 'Young Instars & Incubation' },
+  { code: 'LOCAL_EMBU', name: 'Local Embu Cultivar', leafQuality: 'Drought Tolerant Traditional', use: 'General Feeding' },
 ];
 
 export const TOP_SERICULTURE_COUNTIES = [

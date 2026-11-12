@@ -24,6 +24,12 @@ export interface Batch {
   displayTag?: string;
   notes?: string;
   roomName?: string;
+  // Operator Attribution & Institutional Tracking
+  createdBy?: string;
+  createdByName?: string;
+  assignedStaff?: string[];
+  bedAreaSqMeters?: number;
+  currentInstar?: number;
 }
 
 export interface FeedLog {
@@ -34,6 +40,12 @@ export interface FeedLog {
   leafType: LeafType;
   wasSkipped?: boolean;
   skippedReason?: string;
+  // Operator Attribution
+  operatorId?: string;
+  operatorName?: string;
+  operatorRole?: string;
+  shift?: 'morning' | 'midday' | 'evening' | 'night';
+  notes?: string;
 }
 
 export interface MortalityLog {
@@ -44,6 +56,11 @@ export interface MortalityLog {
   cause?: string;
   symptoms?: string;
   photoUrl?: string;
+  // Operator Attribution
+  operatorId?: string;
+  operatorName?: string;
+  operatorRole?: string;
+  notes?: string;
 }
 
 export interface EnvironmentLog {
@@ -55,6 +72,10 @@ export interface EnvironmentLog {
   ventilationStatus?: 'optimal' | 'low' | 'excessive';
   notes?: string;
   roomName?: string;
+  // Operator Attribution
+  operatorId?: string;
+  operatorName?: string;
+  operatorRole?: string;
 }
 
 export interface CocoonHarvest {
@@ -72,6 +93,11 @@ export interface CocoonHarvest {
   meltedCount?: number;
   reeledWeightGrams?: number;
   breakCount?: number;
+  // Operator Attribution
+  operatorId?: string;
+  operatorName?: string;
+  operatorRole?: string;
+  notes?: string;
 }
 
 export interface CocoonMetrics {
@@ -102,6 +128,11 @@ export interface LeafMovement {
   quantityKg: number;
   direction: 'inflow' | 'outflow';
   reason: string;
+  // Operator Attribution & Cultivar details
+  operatorId?: string;
+  operatorName?: string;
+  operatorRole?: string;
+  cultivar?: string;
 }
 
 export interface PaymentRecord {
@@ -116,15 +147,18 @@ export interface PaymentRecord {
 }
 
 export type UserRole =
-  | 'station_manager'
-  | 'lead_technician'
-  | 'commercial_reeler'
-  | 'extension_officer'
-  | 'apprentice';
+  | 'station_manager'      // Station Head / Senior Research Scientist
+  | 'lead_technician'      // Chawki Master & Larval Specialist
+  | 'rearing_technician'   // Silkworm Rearing Technician
+  | 'moriculture_attendant'// Moriculture & Forage Attendant
+  | 'cocoon_inspector'     // Cocoon Quality & Grainage Inspector
+  | 'commercial_reeler'    // Commercial Sericulture Reeler
+  | 'extension_officer'    // Sericulture Extension Officer
+  | 'apprentice';          // Rearing Attendant / Assistant
 
 export interface UserAccount {
   id: string; // unique user UUID
-  username: string; // farmer / operator name
+  username: string; // staff / operator name
   email?: string;
   phone?: string;
   role: UserRole;
@@ -132,9 +166,35 @@ export interface UserAccount {
   county: string;
   avatarColor: string;
   avatarInitials: string;
+  staffId?: string; // Institutional Staff ID (e.g. KALRO-STF-02)
+  shift?: 'morning' | 'midday' | 'evening' | 'night' | 'general';
   pinCode?: string; // 4-digit PIN lock
   createdAt: string;
   lastActiveAt: string;
+}
+
+export interface AuditLogEntry {
+  id: string;
+  timestamp: string; // ISO 8601 string
+  operatorId?: string;
+  operatorName: string;
+  operatorRole: string;
+  actionType:
+    | 'feed_log'
+    | 'climate_check'
+    | 'mortality_log'
+    | 'cocoon_harvest'
+    | 'leaf_inflow'
+    | 'leaf_outflow'
+    | 'batch_created'
+    | 'batch_updated'
+    | 'shift_handover';
+  title: string;
+  batchId?: string;
+  batchTag?: string;
+  roomName?: string;
+  details: string;
+  metrics?: string;
 }
 
 export interface FarmProfile {

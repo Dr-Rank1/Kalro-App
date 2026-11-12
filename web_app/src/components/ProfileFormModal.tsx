@@ -16,6 +16,8 @@ export interface ProfileFormData {
   mulberryAcreage: number;
   syncCode: string;
   avatarColor: string;
+  staffId?: string;
+  shift?: 'morning' | 'midday' | 'evening' | 'night' | 'general';
 }
 
 interface ProfileFormModalProps {
@@ -58,6 +60,8 @@ export const ProfileFormModal: React.FC<ProfileFormModalProps> = ({
 
   const [username, setUsername] = useState(user?.username || profile?.managerName || '');
   const [role, setRole] = useState<UserRole>(user?.role || profile?.managerRole || 'commercial_reeler');
+  const [staffId, setStaffId] = useState(user?.staffId || '');
+  const [shift, setShift] = useState<'morning' | 'midday' | 'evening' | 'night' | 'general'>(user?.shift || 'morning');
   const [stationName, setStationName] = useState(user?.stationName || profile?.orgName || '');
   const [county, setCounty] = useState(user?.county || profile?.county || 'Kiambu');
   const [subCounty, setSubCounty] = useState(profile?.subCounty || '');
@@ -79,6 +83,8 @@ export const ProfileFormModal: React.FC<ProfileFormModalProps> = ({
 
       setUsername(uName);
       setRole(uRole);
+      setStaffId(user?.staffId || '');
+      setShift(user?.shift || 'morning');
       setStationName(sName);
       setCounty(uCounty);
       setSubCounty(profile?.subCounty || '');
@@ -132,6 +138,8 @@ export const ProfileFormModal: React.FC<ProfileFormModalProps> = ({
     onSave({
       username: username.trim(),
       role,
+      staffId: staffId.trim() || undefined,
+      shift,
       stationName: stationName.trim(),
       county,
       subCounty: subCounty.trim(),
@@ -270,6 +278,32 @@ export const ProfileFormModal: React.FC<ProfileFormModalProps> = ({
                     className="form-control"
                     placeholder="e.g. +254 712 345 678"
                   />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Institutional Staff ID</label>
+                  <input
+                    type="text"
+                    value={staffId}
+                    onChange={(e) => setStaffId(e.target.value)}
+                    className="form-control font-mono"
+                    placeholder="e.g. KALRO-REC-03"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Duty Shift</label>
+                  <select
+                    value={shift}
+                    onChange={(e) => setShift(e.target.value as any)}
+                    className="form-control"
+                  >
+                    <option value="morning">Morning Shift (07:00 – 14:00)</option>
+                    <option value="midday">Midday Shift (12:00 – 16:00)</option>
+                    <option value="evening">Evening Shift (16:00 – 21:00)</option>
+                    <option value="night">Night Shift (21:00 – 07:00)</option>
+                    <option value="general">General Supervision</option>
+                  </select>
                 </div>
 
                 <div className="form-group" style={{ gridColumn: 'span 2' }}>

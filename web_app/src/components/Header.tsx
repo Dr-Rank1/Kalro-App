@@ -106,7 +106,7 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 className="tenant-user-pill"
-                title={`Active Farmer: ${currentUser.username} (${roleMeta.label})`}
+                title={`Active Sericulture Operator: ${currentUser.username} (${roleMeta.label})`}
                 aria-expanded={dropdownOpen}
               >
                 <div
@@ -121,7 +121,7 @@ export const Header: React.FC<HeaderProps> = ({
                     className="tenant-role-tag"
                     style={{ borderColor: roleMeta.badgeColor, color: roleMeta.badgeColor }}
                   >
-                    {roleMeta.label.split(' ')[0]}
+                    {currentUser.staffId ? `${currentUser.staffId} · ` : ''}{roleMeta.label.split(' ')[0]}
                   </span>
                 </div>
                 <ChevronDown
@@ -140,10 +140,10 @@ export const Header: React.FC<HeaderProps> = ({
                 <div className="tenant-dropdown-menu">
                   <div className="tenant-dropdown-header">
                     <div style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-main)' }}>
-                      Signed in as
+                      Active Operator on Duty
                     </div>
                     <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-                      {currentUser.username} • {roleMeta.label}
+                      {currentUser.username} {currentUser.staffId ? `(${currentUser.staffId})` : ''} • {roleMeta.label}
                     </div>
                   </div>
 
@@ -158,7 +158,7 @@ export const Header: React.FC<HeaderProps> = ({
                         letterSpacing: '0.4px',
                       }}
                     >
-                      Switch Account
+                      Rotate Staff Shift
                     </div>
 
                     {allUsers.map((user) => {
@@ -184,11 +184,13 @@ export const Header: React.FC<HeaderProps> = ({
                           </div>
                           <div className="tenant-item-details" style={{ flex: 1, minWidth: 0 }}>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                              <span className="tenant-item-name">{user.username}</span>
+                              <span className="tenant-item-name">
+                                {user.username} {user.staffId ? `(${user.staffId})` : ''}
+                              </span>
                               {isSelected && <Check size={14} color="var(--primary)" />}
                             </div>
                             <span className="tenant-item-sub">
-                              {uRole.label} • {user.county}
+                              {uRole.label} • {user.shift ? `${user.shift.toUpperCase()} SHIFT` : user.county}
                             </span>
                           </div>
                           {onRequestDeleteUser && (
@@ -221,7 +223,7 @@ export const Header: React.FC<HeaderProps> = ({
                       className="tenant-action-btn"
                     >
                       <UserPlus size={14} style={{ marginRight: '6px' }} />
-                      <span>Add New Profile</span>
+                      <span>Register Staff Member</span>
                     </button>
 
                     <button
@@ -231,7 +233,7 @@ export const Header: React.FC<HeaderProps> = ({
                       }}
                       className="tenant-action-btn secondary"
                     >
-                      View Farm Profile
+                      Station Roster &amp; Profile
                     </button>
                   </div>
                 </div>

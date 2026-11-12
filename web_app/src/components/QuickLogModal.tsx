@@ -23,8 +23,10 @@ import {
   LeafInventory,
   LeafType,
   MortalityLog,
+  UserAccount,
 } from '../types';
 import { getCurrentStage } from '../utils';
+import { USER_ROLES } from '../constants';
 
 interface QuickLogModalProps {
   batches: Batch[];
@@ -33,14 +35,23 @@ interface QuickLogModalProps {
   initialBatchId?: string;
   defaultType?: 'feed' | 'mortality' | 'climate' | 'harvest';
   profile?: FarmProfile | null;
+  currentUser?: UserAccount | null;
+  allUsers?: UserAccount[];
   inventory?: LeafInventory;
   initialRoomName?: string;
   onOpenBatchRegistration?: () => void;
   onClose: () => void;
-  onSaveFeed: (log: FeedLog, options?: { autoDeductStock?: boolean; batchTag?: string }) => void;
-  onSaveMortality: (log: MortalityLog) => void;
-  onSaveClimate: (log: EnvironmentLog) => void;
-  onSaveHarvest: (harvest: CocoonHarvest) => void;
+  onSaveFeed: (
+    log: FeedLog,
+    options?: {
+      autoDeductStock?: boolean;
+      batchTag?: string;
+      operator?: { id: string; name: string; role: string };
+    }
+  ) => void;
+  onSaveMortality: (log: MortalityLog, operator?: { id: string; name: string; role: string }) => void;
+  onSaveClimate: (log: EnvironmentLog, operator?: { id: string; name: string; role: string }) => void;
+  onSaveHarvest: (harvest: CocoonHarvest, operator?: { id: string; name: string; role: string }) => void;
 }
 
 export const QuickLogModal: React.FC<QuickLogModalProps> = ({
@@ -50,6 +61,8 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
   initialBatchId,
   defaultType = 'feed',
   profile,
+  currentUser,
+  allUsers = [],
   inventory,
   initialRoomName,
   onOpenBatchRegistration,
@@ -67,6 +80,19 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
     batches.length === 0 ? 'climate' : defaultType
   );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Operator on duty selection
+  const [operatorId, setOperatorId] = useState<string>(
+    currentUser?.id || allUsers[0]?.id || ''
+  );
+  const currentOp = allUsers.find((u) => u.id === operatorId) || currentUser || allUsers[0] || {
+    id: 'staff-general',
+    username: 'Station Technician',
+    role: 'rearing_technician' as const,
+    avatarInitials: 'ST',
+    avatarColor: '#143D2B',
+  };
+  const roleMeta = USER_ROLES.find((r) => r.value === currentOp.role) || USER_ROLES[0];
 
   // Selected Batch Context
   const selectedBatch = batches.find((b) => b.id === selectedBatchId) || batches[0];
@@ -156,9 +182,14 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
         skippedReason: wasSkipped
           ? (skipReason.trim() || `${currentStage?.name || 'Moult'} fasting rest; bed dusted with dry slaked lime`)
           : undefined,
+        operatorId: currentOp.id,
+        operatorName: currentOp.username,
+        operatorRole: currentOp.role,
+        shift: feedingShift,
       }, {
         autoDeductStock: !wasSkipped && autoDeductStock,
         batchTag: selectedBatch?.displayTag || selectedBatch?.batchTag,
+        operator: { id: currentOp.id, name: currentOp.username, role: currentOp.role },
       });
     } else if (logType === 'mortality') {
       const count = Number(lossCount);
@@ -173,7 +204,10 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
         count,
         cause: lossCause,
         symptoms: symptoms.trim() || undefined,
-      });
+        operatorId: currentOp.id,
+        operatorName: currentOp.username,
+        operatorRole: currentOp.role,
+      }, { id: currentOp.id, name: currentOp.username, role: currentOp.role });
     } else if (logType === 'climate') {
       const t = Number(temp);
       const h = Number(hum);
@@ -193,7 +227,10 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
         humidityPercent: h,
         ventilationStatus: ventilation,
         roomName: selectedChamber || 'House 1',
-      });
+        operatorId: currentOp.id,
+        operatorName: currentOp.username,
+        operatorRole: currentOp.role,
+      }, { id: currentOp.id, name: currentOp.username, role: currentOp.role });
     } else if (logType === 'harvest') {
       const count = Number(cocoonCount);
       const rawWeight = Number(harvestWeight);
@@ -217,7 +254,10 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
         totalWeightGrams: totalWeightInGrams,
         shellWeightGrams: shellWeightGrams !== '' ? Number(shellWeightGrams) : undefined,
         defectiveCount: defectiveCount !== '' ? Number(defectiveCount) : 0,
-      });
+        operatorId: currentOp.id,
+        operatorName: currentOp.username,
+        operatorRole: currentOp.role,
+      }, { id: currentOp.id, name: currentOp.username, role: currentOp.role });
     }
 
     onClose();
@@ -306,6 +346,71 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
             <Package size={14} />
             <span>Harvest</span>
           </button>
+        </div>
+
+        {/* Sericulture Staff Operator on Duty Attribution */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '6px 10px',
+            backgroundColor: 'var(--bg-subtle)',
+            borderRadius: 'var(--radius-sm)',
+            border: '1px solid var(--border-divider)',
+            margin: '0.4rem 0 0.75rem',
+            fontSize: '0.76rem',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+            <div
+              style={{
+                width: '24px',
+                height: '24px',
+                borderRadius: '50%',
+                backgroundColor: currentOp.avatarColor || '#143D2B',
+                color: '#ffffff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '0.68rem',
+                fontWeight: 700,
+                flexShrink: 0,
+              }}
+            >
+              {currentOp.avatarInitials || 'ST'}
+            </div>
+            <div className="truncate">
+              <span style={{ fontWeight: 600, color: 'var(--text-main)' }}>{currentOp.username}</span>
+              <span style={{ color: 'var(--text-muted)', marginLeft: '6px' }}>
+                • {roleMeta.label}
+              </span>
+            </div>
+          </div>
+          {allUsers && allUsers.length > 1 && (
+            <select
+              value={operatorId}
+              onChange={(e) => setOperatorId(e.target.value)}
+              style={{
+                fontSize: '0.72rem',
+                padding: '3px 8px',
+                border: '1px solid var(--border-card)',
+                borderRadius: '4px',
+                backgroundColor: '#ffffff',
+                color: 'var(--text-main)',
+                cursor: 'pointer',
+                fontWeight: 500,
+                flexShrink: 0,
+              }}
+              title="Select rotating staff member performing this operation"
+            >
+              {allUsers.map((u) => (
+                <option key={u.id} value={u.id}>
+                  Staff: {u.username}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
 
         {errorMessage && (
