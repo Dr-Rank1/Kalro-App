@@ -4087,59 +4087,7 @@ th,
 }
 
 /* -------------------------------------------------------------------------- */
-/* Low-Glare Rearing Chamber Red Mode                                         */
-/* Preserves silkworm spinning rhythm & avoids photic disruption             */
-/* -------------------------------------------------------------------------- */
-[data-theme="chamber-low-glare"] {
-  --primary: #991b1b;
-  --primary-hover: #7f1d1d;
-  --primary-subtle: #2d1010;
-  --header-bg: #160707;
-
-  --accent-gold: #b45309;
-  --accent-gold-hover: #92400e;
-  --accent-gold-subtle: #291807;
-
-  --status-success: #15803d;
-  --status-success-subtle: #122815;
-  --status-warning: #b45309;
-  --status-warning-subtle: #291807;
-  --status-danger: #dc2626;
-  --status-danger-subtle: #301010;
-  --status-info: #475569;
-  --status-info-subtle: #1e293b;
-
-  --bg-page: #0d0606;
-  --bg-card: #180a0a;
-  --bg-subtle: #240f0f;
-  --bg-muted: #301414;
-
-  --border-card: #451a1a;
-  --border-subtle: #3a1515;
-  --border-focus: #b91c1c;
-  --border-divider: #381515;
-
-  --text-main: #fecaca;
-  --text-muted: #f87171;
-  --text-light: #ef4444;
-  --text-white: #ffffff;
-}
-
-[data-theme="chamber-low-glare"] body {
-  background-color: var(--bg-page);
-  color: var(--text-main);
-}
-
-[data-theme="chamber-low-glare"] input,
-[data-theme="chamber-low-glare"] select,
-[data-theme="chamber-low-glare"] textarea {
-  background-color: var(--bg-card);
-  color: var(--text-main);
-  border-color: var(--border-card);
-}
-
-/* -------------------------------------------------------------------------- */
-/* Media Print for Physical Station Placards & Reports                         */
+/* Media Print for Official Station Reports                                   */
 /* -------------------------------------------------------------------------- */
 @media print {
   .main-header,

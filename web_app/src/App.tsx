@@ -13,13 +13,6 @@ import { DeleteProfileModal } from './components/DeleteProfileModal';
 import { BatchRegistrationForm } from './components/BatchRegistrationForm';
 import { LeafStockModal } from './components/LeafStockModal';
 import { TerminalLockModal } from './components/TerminalLockModal';
-import { ChamberPsychrometricModal } from './components/ChamberPsychrometricModal';
-import { BedSpacingModal } from './components/BedSpacingModal';
-import { DiseaseDiagnosticModal } from './components/DiseaseDiagnosticModal';
-import { CocoonGradingModal } from './components/CocoonGradingModal';
-import { PrintableTrayPlacardsModal } from './components/PrintableTrayPlacardsModal';
-import { ShiftHandoverModal } from './components/ShiftHandoverModal';
-import { StationWallboardModal } from './components/StationWallboardModal';
 import { downloadSingleBatchPdf, downloadStaffAuditPdf } from './utils/pdfGenerator';
 import { storage } from './storage';
 import {
@@ -33,7 +26,6 @@ import {
   LeafMovement,
   MortalityLog,
   PaymentRecord,
-  ShiftHandoverRecord,
   UserAccount,
 } from './types';
 import { USER_ROLES } from './constants';
@@ -127,32 +119,10 @@ export function App() {
     }, 3500);
   };
 
-  // Advanced Station Operations Modals
-  const [psychrometricModalOpen, setPsychrometricModalOpen] = useState(false);
-  const [bedSpacingModalState, setBedSpacingModalState] = useState<{ open: boolean; batchId?: string }>({ open: false });
-  const [diagnosticModalState, setDiagnosticModalState] = useState<{ open: boolean; batchId?: string }>({ open: false });
-  const [cocoonGradingModalState, setCocoonGradingModalState] = useState<{ open: boolean; batchId?: string }>({ open: false });
-  const [placardsModalOpen, setPlacardsModalOpen] = useState(false);
-  const [shiftHandoverModalOpen, setShiftHandoverModalOpen] = useState(false);
-  const [wallboardModalOpen, setWallboardModalOpen] = useState(false);
-
-  // Low-Glare Rearing Chamber Red Mode (Preserves silkworm spinning behavior & reduces light shock)
-  const [isChamberLowGlare, setIsChamberLowGlare] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('kalro_chamber_glare') === 'low';
-    }
-    return false;
-  });
-
+  // Clean corporate theme
   useEffect(() => {
-    if (isChamberLowGlare) {
-      document.documentElement.setAttribute('data-theme', 'chamber-low-glare');
-      localStorage.setItem('kalro_chamber_glare', 'low');
-    } else {
-      document.documentElement.removeAttribute('data-theme');
-      localStorage.removeItem('kalro_chamber_glare');
-    }
-  }, [isChamberLowGlare]);
+    document.documentElement.removeAttribute('data-theme');
+  }, []);
 
   // First-Login / Onboarding trigger: If no farm profiles exist in storage, prompt immediately
   useEffect(() => {
@@ -381,59 +351,6 @@ export function App() {
     showToast(`Batch "${b.displayTag || b.batchTag}" status updated.`);
   };
 
-  const handleQuarantineBatch = (batchId: string, reason: string) => {
-    const targetBatch = batches.find((b) => b.id === batchId);
-    if (!targetBatch) return;
-
-    const updatedBatch: Batch = {
-      ...targetBatch,
-      isQuarantined: true,
-      quarantineReason: reason,
-      quarantinedAt: new Date().toISOString(),
-      quarantinedBy: currentUser?.username || 'Station Staff',
-    };
-
-    storage.updateBatch(updatedBatch);
-    reloadAll();
-    showToast(`EMERGENCY: Batch "${targetBatch.displayTag || targetBatch.batchTag}" placed under quarantine.`);
-  };
-
-  const handleUpdateBatchTrays = (batchId: string, traysCount: number) => {
-    const targetBatch = batches.find((b) => b.id === batchId);
-    if (!targetBatch) return;
-
-    const updatedBatch: Batch = {
-      ...targetBatch,
-      currentTraysCount: traysCount,
-    };
-
-    storage.updateBatch(updatedBatch);
-    reloadAll();
-    showToast(`Batch "${targetBatch.displayTag || targetBatch.batchTag}" bed expanded to ${traysCount} trays.`);
-  };
-
-  const handleCompleteHandover = (record: ShiftHandoverRecord) => {
-    storage.addAuditLog({
-      id: `audit-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-      timestamp: record.timestamp,
-      operatorId: record.fromOperatorId,
-      operatorName: record.fromOperatorName,
-      operatorRole: currentUser?.role || 'lead_technician',
-      actionType: 'shift_handover',
-      title: `Shift Handover: ${record.shift.toUpperCase()} Custody Transfer`,
-      details: `Custody transferred from ${record.fromOperatorName} to ${record.toOperatorName}. Bed Status: ${record.bedCleanlinessStatus}. Notes: ${record.notes || 'None'}.`,
-      metrics: `Feeds: ${record.completedFeedsCount} done, ${record.pendingFeedsCount} pending`,
-    });
-
-    if (record.toOperatorId && record.toOperatorId !== currentUser?.id) {
-      storage.setActiveUserId(record.toOperatorId);
-    }
-
-    setShiftHandoverModalOpen(false);
-    reloadAll();
-    showToast(`Shift custody successfully transferred to ${record.toOperatorName}.`);
-  };
-
   const handleAddFeed = (f: FeedLog, options?: { autoDeductStock?: boolean; batchTag?: string }) => {
     storage.addFeedLog(f, options);
     reloadAll();
@@ -576,10 +493,6 @@ export function App() {
         onNavigateToProfile={() => handleSelectTab('you')}
         onRequestDeleteUser={(u) => setDeleteProfileTarget(u)}
         onLockTerminal={handleLockTerminal}
-        onOpenWallboard={() => setWallboardModalOpen(true)}
-        onOpenShiftHandover={() => setShiftHandoverModalOpen(true)}
-        isChamberLowGlare={isChamberLowGlare}
-        onToggleChamberLowGlare={() => setIsChamberLowGlare(!isChamberLowGlare)}
       />
 
       {/* Navigation */}
@@ -632,13 +545,6 @@ export function App() {
                 });
                 showToast(`Lot dossier for "${b.displayTag || b.batchTag || b.id}" exported as PDF.`);
               }}
-              onOpenPsychrometric={() => setPsychrometricModalOpen(true)}
-              onOpenBedSpacing={(batchId) => setBedSpacingModalState({ open: true, batchId })}
-              onOpenDiagnostic={(batchId) => setDiagnosticModalState({ open: true, batchId })}
-              onOpenCocoonGrading={(batchId) => setCocoonGradingModalState({ open: true, batchId })}
-              onOpenPlacards={() => setPlacardsModalOpen(true)}
-              onOpenShiftHandover={() => setShiftHandoverModalOpen(true)}
-              onOpenWallboard={() => setWallboardModalOpen(true)}
             />
           )}
 
@@ -825,84 +731,6 @@ export function App() {
         allUsers={allUsers}
         profile={profile}
         onUnlock={handleUnlockTerminal}
-      />
-
-      {/* Precision Psychrometric Chamber Calculator Modal */}
-      <ChamberPsychrometricModal
-        isOpen={psychrometricModalOpen}
-        onClose={() => setPsychrometricModalOpen(false)}
-        onSaveClimate={handleAddClimate}
-        profile={profile}
-        currentUser={currentUser}
-      />
-
-      {/* Rearing Bed Spacing & Disinfection Dusting Modal */}
-      <BedSpacingModal
-        isOpen={bedSpacingModalState.open}
-        onClose={() => setBedSpacingModalState({ open: false })}
-        batches={batches}
-        mortalityLogs={mortalityLogs}
-        profile={profile}
-        currentUser={currentUser}
-        onUpdateBatchTrays={handleUpdateBatchTrays}
-        onAddAuditLog={handleAddAuditLog}
-      />
-
-      {/* Disease Diagnostic Wizard & Quarantine Modal */}
-      <DiseaseDiagnosticModal
-        isOpen={diagnosticModalState.open}
-        onClose={() => setDiagnosticModalState({ open: false })}
-        batches={batches}
-        currentUser={currentUser}
-        onQuarantineBatch={handleQuarantineBatch}
-        onAddAuditLog={handleAddAuditLog}
-      />
-
-      {/* Kenya Cocoon Grading & Renditta Matrix Modal */}
-      <CocoonGradingModal
-        isOpen={cocoonGradingModalState.open}
-        onClose={() => setCocoonGradingModalState({ open: false })}
-        batches={batches}
-        profile={profile}
-        currentUser={currentUser}
-        onSaveHarvest={handleAddHarvest}
-        onAddAuditLog={handleAddAuditLog}
-      />
-
-      {/* Printable Tray & Rack Placards Modal */}
-      <PrintableTrayPlacardsModal
-        isOpen={placardsModalOpen}
-        onClose={() => setPlacardsModalOpen(false)}
-        batches={batches}
-        profile={profile}
-      />
-
-      {/* Station Shift Handover Protocol Modal */}
-      <ShiftHandoverModal
-        isOpen={shiftHandoverModalOpen}
-        onClose={() => setShiftHandoverModalOpen(false)}
-        currentUser={currentUser}
-        allUsers={allUsers}
-        batches={batches}
-        feedLogs={feedLogs}
-        mortalityLogs={mortalityLogs}
-        envLogs={envLogs}
-        onCompleteHandover={handleCompleteHandover}
-      />
-
-      {/* Facility Wallboard / TV Monitor Kiosk Modal */}
-      <StationWallboardModal
-        isOpen={wallboardModalOpen}
-        onClose={() => setWallboardModalOpen(false)}
-        profile={profile}
-        currentUser={currentUser}
-        allUsers={allUsers}
-        batches={batches}
-        feedLogs={feedLogs}
-        mortalityLogs={mortalityLogs}
-        envLogs={envLogs}
-        harvests={harvests}
-        inventory={inventory}
       />
 
       {/* Toast Notification */}

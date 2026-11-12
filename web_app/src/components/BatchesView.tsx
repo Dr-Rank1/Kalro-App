@@ -4,7 +4,6 @@ import { Batch, FeedLog, MortalityLog, CocoonHarvest, FarmProfile, EnvironmentLo
 import { getCurrentStage, getLiveLarvaeCount, formatDate } from '../utils';
 import { BatchRegistrationForm } from './BatchRegistrationForm';
 import { downloadSingleBatchPdf } from '../utils/pdfGenerator';
-import { BombyxBatchCardHeader, EriBatchCardHeader } from './SericultureCardArtwork';
 
 interface BatchesViewProps {
   batches: Batch[];
@@ -214,19 +213,6 @@ export const BatchesView: React.FC<BatchesViewProps> = ({
 
             return (
               <div key={batch.id} className="batch-item-card">
-                {batch.species === 'bombyx' ? (
-                  <BombyxBatchCardHeader
-                    day={stage.dayStart}
-                    maxDays={maxDays}
-                    stageName={batch.status === 'active' ? stage.name : 'Completed'}
-                  />
-                ) : (
-                  <EriBatchCardHeader
-                    day={stage.dayStart}
-                    maxDays={maxDays}
-                    stageName={batch.status === 'active' ? stage.name : 'Completed'}
-                  />
-                )}
                 <div className="batch-card-inner">
                   <div className="batch-tag-row">
                     <span className={`species-badge ${batch.species}`}>
@@ -236,23 +222,6 @@ export const BatchesView: React.FC<BatchesViewProps> = ({
                       {batch.status === 'active' ? stage.name : 'Completed & Closed'}
                     </span>
                   </div>
-
-                  {batch.isQuarantined && (
-                    <div
-                      style={{
-                        backgroundColor: '#FEF2F2',
-                        border: '1px solid #FCA5A5',
-                        borderRadius: 'var(--radius-sm)',
-                        padding: '6px 10px',
-                        margin: '0.45rem 0 0.2rem',
-                        color: '#991B1B',
-                        fontSize: '0.74rem',
-                        fontWeight: 600,
-                      }}
-                    >
-                      ⚠️ QUARANTINE ISOLATION: {batch.quarantineReason || 'Suspected Pathology'} ({batch.quarantinedBy || 'Staff'})
-                    </div>
-                  )}
 
                 <h3 className="truncate" style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '0.2rem' }}>
                   {batch.displayTag || batch.batchTag || batch.id}
