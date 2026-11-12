@@ -1,12 +1,14 @@
 import { BOMBYX_STAGES, ERI_STAGES } from './constants';
 import {
   Batch,
+  BedSpacingPlan,
   CocoonHarvest,
   CocoonMetrics,
   FeedLog,
   LeafInventory,
   MilestoneStage,
   MortalityLog,
+  PsychrometricResult,
 } from './types';
 
 export function getBatchAgeDays(batch: Batch, now = new Date()): number {
@@ -225,3 +227,180 @@ export function isFedToday(batchId: string, feedLogs: FeedLog[], now = new Date(
   const todayStr = now.toISOString().split('T')[0];
   return feedLogs.some((l) => l.batchId === batchId && l.recordedAt.startsWith(todayStr));
 }
+
+// Psychrometric Calculation from Dry Bulb & Wet Bulb Thermometers
+export function calculatePsychrometrics(dryBulbC: number, wetBulbC: number): PsychrometricResult {
+  const depression = Math.max(0, Number((dryBulbC - wetBulbC).toFixed(1)));
+
+  // Saturated vapor pressure at wet bulb (hPa)
+  const ew = 6.112 * Math.exp((17.67 * wetBulbC) / (wetBulbC + 243.5));
+  // Actual vapor pressure (hPa) with standard atmospheric pressure 1013.25
+  const ea = Math.max(0, ew - 0.00066 * (1 + 0.00115 * wetBulbC) * 1013.25 * depression);
+  // Saturated vapor pressure at dry bulb (hPa)
+  const es = 6.112 * Math.exp((17.67 * dryBulbC) / (dryBulbC + 243.5));
+
+  const rh = Math.min(100, Math.max(5, Math.round((ea / es) * 100)));
+  // Saturation deficit in g/m3: SD = (es - ea) * 216.7 / (dryBulb + 273.15)
+  const sd = Math.max(0, Number((((es - ea) * 216.7) / (dryBulbC + 273.15)).toFixed(1)));
+
+  let status: 'optimal' | 'dry_stress' | 'high_humidity_danger' = 'optimal';
+  let correctiveAction = 'Chamber microclimate is within optimal larval physiology boundaries.';
+
+  if (rh < 65) {
+    status = 'dry_stress';
+    correctiveAction = 'Dry Deficit Hazard: Hang wet gunny curtains along windows, moisten rearing floor, reduce excessive drafts to protect leaf moisture.';
+  } else if (rh > 85) {
+    status = 'high_humidity_danger';
+    correctiveAction = 'High Humidity Danger: Open ceiling and ridge ventilation louvers immediately, dust beds with dry slaked lime, separate crowded trays.';
+  }
+
+  return {
+    dryBulb: dryBulbC,
+    wetBulb: wetBulbC,
+    depression,
+    rhPercent: rh,
+    saturationDeficitGramsM3: sd,
+    status,
+    correctiveAction,
+  };
+}
+
+// Tray & Bed Area Spacing Expansion Plan per Instar
+export function calculateBedExpansion(
+  batch: Batch,
+  liveLarvae: number,
+  stage: MilestoneStage
+): BedSpacingPlan {
+  const instar = stage.instarNumber || 1;
+  // Standard m2 needed per 1000 worms based on KALRO Sericulture standard
+  const areaPer1000Map: Record<number, number> = {
+    1: 0.5,
+    2: 1.5,
+    3: 4.5,
+    4: 12.0,
+    5: 25.0,
+  };
+  const rate = areaPer1000Map[instar] || 1.0;
+  const thousands = Math.max(0.1, liveLarvae / 1000.0);
+  const requiredArea = Number((thousands * rate).toFixed(2));
+
+  // Standard tray is 0.9m x 0.6m = 0.54 m2
+  const standardTraysNeeded = Math.max(1, Math.ceil(requiredArea / 0.54));
+
+  // Chemical Bed Dusting (97:3 slaked lime to bleaching powder at 4g/m2)
+  const totalDustingGrams = requiredArea * 4.0;
+  const limeDustingKg = Number(((totalDustingGrams * 0.97) / 1000.0).toFixed(2));
+  const bleachingPowderGrams = Number((totalDustingGrams * 0.03).toFixed(1));
+
+  const currentTrays = batch.currentTraysCount || 1;
+  const spacingAlert = currentTrays < standardTraysNeeded;
+
+  return {
+    instarNumber: instar,
+    instarName: stage.name,
+    requiredAreaSqMeters: requiredArea,
+    standardTraysNeeded,
+    limeDustingKg,
+    bleachingPowderGrams,
+    spacingAlert,
+  };
+}
+
+// Leaf Withering Index based on elapsed hours since harvest
+export function calculateLeafWithering(
+  harvestTimestamp?: string,
+  cultivar = 'S-13'
+): {
+  elapsedHours: number;
+  estimatedMoisturePct: number;
+  status: 'fresh' | 'acceptable' | 'wilted_warning';
+  warningMessage?: string;
+} {
+  if (!harvestTimestamp) {
+    return {
+      elapsedHours: 0,
+      estimatedMoisturePct: 76,
+      status: 'fresh',
+    };
+  }
+
+  const harvestedAt = new Date(harvestTimestamp);
+  const diffHours = Math.max(0, (Date.now() - harvestedAt.getTime()) / (1000 * 60 * 60));
+
+  // Baseline initial moisture
+  const initialMoisture = cultivar.includes('S-13') ? 78 : 74;
+  // Withering rate: ~1.2% moisture loss per hour in tropical chamber conditions
+  const moisture = Math.max(50, Number((initialMoisture - diffHours * 1.2).toFixed(1)));
+
+  let status: 'fresh' | 'acceptable' | 'wilted_warning' = 'fresh';
+  let warningMessage: string | undefined;
+
+  if (diffHours >= 4 || moisture < 70) {
+    status = 'wilted_warning';
+    warningMessage = `Forage harvested ${diffHours.toFixed(1)}h ago (estimated moisture ${moisture}%). Re-hydrate by moistening covering gunny sheets or harvest fresh tender shoots.`;
+  } else if (diffHours >= 2.5) {
+    status = 'acceptable';
+    warningMessage = `Harvested ${diffHours.toFixed(1)}h ago. Recommended to feed within 1.5 hours to retain tender leaf moisture for young larvae.`;
+  }
+
+  return {
+    elapsedHours: Number(diffHours.toFixed(1)),
+    estimatedMoisturePct: moisture,
+    status,
+    warningMessage,
+  };
+}
+
+// Next Shift Ration Countdown Helper
+export function getNextShiftSchedule(now = new Date()): {
+  currentShift: 'morning' | 'midday' | 'evening' | 'night';
+  nextRationName: string;
+  nextRationHour: number;
+  nextRationMinute: number;
+  timeRemainingFormatted: string;
+  isOverdue: boolean;
+} {
+  const h = now.getHours();
+  const m = now.getMinutes();
+  const currentMinutes = h * 60 + m;
+
+  let targetMinutes: number;
+  let nextRationName: string;
+  let currentShift: 'morning' | 'midday' | 'evening' | 'night';
+
+  if (currentMinutes < 420) {
+    currentShift = 'night';
+    nextRationName = 'Morning Rations (Dawn Leaf)';
+    targetMinutes = 420;
+  } else if (currentMinutes < 720) {
+    currentShift = 'morning';
+    nextRationName = 'Midday Microclimate & 2nd Feeding';
+    targetMinutes = 720;
+  } else if (currentMinutes < 1020) {
+    currentShift = 'midday';
+    nextRationName = 'Evening Rations (Bed Spacing)';
+    targetMinutes = 1020;
+  } else if (currentMinutes < 1290) {
+    currentShift = 'evening';
+    nextRationName = 'Overnight Rest & Moisture Buffer';
+    targetMinutes = 1290;
+  } else {
+    currentShift = 'night';
+    nextRationName = 'Dawn Morning Rations (Tomorrow)';
+    targetMinutes = 420 + 24 * 60;
+  }
+
+  const diff = targetMinutes - currentMinutes;
+  const remHours = Math.floor(diff / 60);
+  const remMinutes = diff % 60;
+
+  return {
+    currentShift,
+    nextRationName,
+    nextRationHour: Math.floor((targetMinutes % (24 * 60)) / 60),
+    nextRationMinute: targetMinutes % 60,
+    timeRemainingFormatted: remHours > 0 ? `${remHours}h ${remMinutes}m` : `${remMinutes}m`,
+    isOverdue: diff <= 15,
+  };
+}
+

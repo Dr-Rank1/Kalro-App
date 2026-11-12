@@ -121,6 +121,49 @@ export const KENYA_MULBERRY_CULTIVARS = [
   },
 ];
 
+export const KENYA_ORCHARD_BLOCKS = [
+  {
+    code: 'BLOCK_A',
+    name: 'Block A (S-13 Chawki Orchard)',
+    cultivar: 'S-13',
+    leafType: 'mulberry',
+    acreage: 3.5,
+    notes: 'Tender dawn harvest plot dedicated for 1st–3rd instar chawki rearing.',
+  },
+  {
+    code: 'BLOCK_B',
+    name: 'Block B (TR-10 Late-Age Shoot Stand)',
+    cultivar: 'TR-10',
+    leafType: 'mulberry',
+    acreage: 5.0,
+    notes: 'High-protein whole shoot harvest plot for 4th and 5th instar larvae.',
+  },
+  {
+    code: 'BLOCK_C',
+    name: 'Block C (Kanva-2 / M-5 Commercial Stand)',
+    cultivar: 'Kanva-2',
+    leafType: 'mulberry',
+    acreage: 4.5,
+    notes: 'Commercial benchmark plot under regular NPK fertilization.',
+  },
+  {
+    code: 'BLOCK_D',
+    name: 'Block D (GRC-1 Giant Red Castor Stand)',
+    cultivar: 'GRC-1',
+    leafType: 'castor',
+    acreage: 2.0,
+    notes: 'Samia cynthia ricini (Eri) perennial host foliage block.',
+  },
+  {
+    code: 'BLOCK_E',
+    name: 'Block E (Heteropanax Kesseru Stand)',
+    cultivar: 'Kesseru',
+    leafType: 'kesseru',
+    acreage: 1.0,
+    notes: 'Perennial arbor reserve for dry-season Eri maintenance.',
+  },
+];
+
 export const KENYA_CASTOR_VARIETIES = [
   {
     code: 'GRC1',

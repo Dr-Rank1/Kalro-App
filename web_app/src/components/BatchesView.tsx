@@ -237,6 +237,23 @@ export const BatchesView: React.FC<BatchesViewProps> = ({
                     </span>
                   </div>
 
+                  {batch.isQuarantined && (
+                    <div
+                      style={{
+                        backgroundColor: '#FEF2F2',
+                        border: '1px solid #FCA5A5',
+                        borderRadius: 'var(--radius-sm)',
+                        padding: '6px 10px',
+                        margin: '0.45rem 0 0.2rem',
+                        color: '#991B1B',
+                        fontSize: '0.74rem',
+                        fontWeight: 600,
+                      }}
+                    >
+                      ⚠️ QUARANTINE ISOLATION: {batch.quarantineReason || 'Suspected Pathology'} ({batch.quarantinedBy || 'Staff'})
+                    </div>
+                  )}
+
                 <h3 className="truncate" style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '0.2rem' }}>
                   {batch.displayTag || batch.batchTag || batch.id}
                 </h3>

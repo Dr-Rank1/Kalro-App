@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FarmProfile, UserAccount } from '../types';
 import { USER_ROLES } from '../constants';
-import { FileText, ChevronDown, Check, UserPlus, Trash2, Lock } from 'lucide-react';
+import { FileText, ChevronDown, Check, UserPlus, Trash2, Lock, Tv, ArrowRightLeft, Moon, Sun } from 'lucide-react';
 
 interface HeaderProps {
   profile: FarmProfile | null;
@@ -14,6 +14,10 @@ interface HeaderProps {
   onNavigateToProfile: () => void;
   onRequestDeleteUser?: (user: UserAccount) => void;
   onLockTerminal?: () => void;
+  onOpenWallboard?: () => void;
+  onOpenShiftHandover?: () => void;
+  isChamberLowGlare?: boolean;
+  onToggleChamberLowGlare?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -27,6 +31,10 @@ export const Header: React.FC<HeaderProps> = ({
   onNavigateToProfile,
   onRequestDeleteUser,
   onLockTerminal,
+  onOpenWallboard,
+  onOpenShiftHandover,
+  isChamberLowGlare,
+  onToggleChamberLowGlare,
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -80,6 +88,48 @@ export const Header: React.FC<HeaderProps> = ({
               <span className="tabular-nums font-bold">{activeBatchesCount}</span>
               <span style={{ marginLeft: '5px' }}>Active {activeBatchesCount === 1 ? 'Lot' : 'Lots'}</span>
             </div>
+          )}
+
+          {onOpenWallboard && (
+            <button
+              onClick={onOpenWallboard}
+              className="btn-header-secondary"
+              title="Launch full-screen facility wallboard / monitor kiosk"
+            >
+              <Tv size={14} style={{ marginRight: '5px', color: '#60A5FA' }} />
+              <span className="btn-text-desktop">Wallboard</span>
+            </button>
+          )}
+
+          {onOpenShiftHandover && (
+            <button
+              onClick={onOpenShiftHandover}
+              className="btn-header-secondary"
+              title="Execute shift handover & custody transfer"
+            >
+              <ArrowRightLeft size={14} style={{ marginRight: '5px', color: 'var(--primary)' }} />
+              <span className="btn-text-desktop">Handover</span>
+            </button>
+          )}
+
+          {onToggleChamberLowGlare && (
+            <button
+              onClick={onToggleChamberLowGlare}
+              className="btn-header-secondary"
+              title={isChamberLowGlare ? 'Switch to normal institutional mode' : 'Switch to low-glare dark mode for 5th instar & spinning rooms'}
+            >
+              {isChamberLowGlare ? (
+                <>
+                  <Sun size={13} style={{ marginRight: '5px', color: '#FCD34D' }} />
+                  <span className="btn-text-desktop">Day Mode</span>
+                </>
+              ) : (
+                <>
+                  <Moon size={13} style={{ marginRight: '5px', color: '#94A3B8' }} />
+                  <span className="btn-text-desktop">Chamber Mode</span>
+                </>
+              )}
+            </button>
           )}
 
           <button

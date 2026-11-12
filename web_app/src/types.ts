@@ -30,6 +30,13 @@ export interface Batch {
   assignedStaff?: string[];
   bedAreaSqMeters?: number;
   currentInstar?: number;
+  currentTraysCount?: number;
+  targetForageCultivar?: string;
+  orchardBlock?: string;
+  isQuarantined?: boolean;
+  quarantineReason?: string;
+  quarantinedAt?: string;
+  quarantinedBy?: string;
 }
 
 export interface FeedLog {
@@ -73,6 +80,10 @@ export interface EnvironmentLog {
   ventilationStatus?: 'optimal' | 'low' | 'excessive';
   notes?: string;
   roomName?: string;
+  // Psychrometric calculation fields
+  dryBulbCelsius?: number;
+  wetBulbCelsius?: number;
+  saturationDeficit?: number;
   // Operator Attribution
   operatorId?: string;
   operatorName?: string;
@@ -94,6 +105,14 @@ export interface CocoonHarvest {
   meltedCount?: number;
   reeledWeightGrams?: number;
   breakCount?: number;
+  // Kenya Cocoon Quality Grades & Grainage Metrics
+  gradeAWeightGrams?: number;
+  gradeBWeightGrams?: number;
+  gradeCWeightGrams?: number;
+  singleCocoonWeightGrams?: number;
+  singleShellWeightGrams?: number;
+  shellRatioPercent?: number;
+  renditta?: number;
   // Operator Attribution
   operatorId?: string;
   operatorName?: string;
@@ -136,6 +155,8 @@ export interface LeafMovement {
   operatorName?: string;
   operatorRole?: string;
   cultivar?: string;
+  orchardBlock?: string;
+  witheringAlert?: boolean;
 }
 
 export interface PaymentRecord {
@@ -253,3 +274,53 @@ export interface MilestoneStage {
   idealTemp: string;
   idealHumidity: string;
 }
+
+export interface ShiftHandoverRecord {
+  id: string;
+  timestamp: string;
+  fromOperatorId: string;
+  fromOperatorName: string;
+  toOperatorId: string;
+  toOperatorName: string;
+  shift: 'morning' | 'midday' | 'evening' | 'night';
+  completedFeedsCount: number;
+  pendingFeedsCount: number;
+  mortalityTotal: number;
+  chamberTempCelsius: number;
+  chamberHumidityPercent: number;
+  bedCleanlinessStatus: 'clean' | 'dusting_needed' | 'lime_dusted';
+  notes?: string;
+  signedByIncomingPin: boolean;
+}
+
+export interface PsychrometricResult {
+  dryBulb: number;
+  wetBulb: number;
+  depression: number;
+  rhPercent: number;
+  saturationDeficitGramsM3: number;
+  status: 'optimal' | 'dry_stress' | 'high_humidity_danger';
+  correctiveAction: string;
+}
+
+export interface BedSpacingPlan {
+  instarNumber: number;
+  instarName: string;
+  requiredAreaSqMeters: number;
+  standardTraysNeeded: number;
+  limeDustingKg: number;
+  bleachingPowderGrams: number;
+  spacingAlert: boolean;
+}
+
+export interface DiseaseDiagnosticItem {
+  id: string;
+  name: string;
+  pathogen: string;
+  keySymptoms: string[];
+  urgency: 'critical' | 'high' | 'warning';
+  immediateAction: string;
+  quarantineRecommended: boolean;
+  disinfectionProtocol: string;
+}
+

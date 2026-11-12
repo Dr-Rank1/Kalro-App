@@ -19,6 +19,15 @@ import {
   ArrowRight,
   History,
   Users,
+  Layers,
+  Stethoscope,
+  Scale,
+  QrCode,
+  Tv,
+  ArrowRightLeft,
+  AlertOctagon,
+  Printer,
+  ShieldAlert,
 } from 'lucide-react';
 import {
   Batch,
@@ -37,6 +46,9 @@ import {
   getLiveLarvaeCount,
   getSuggestedDailyFeedGrams,
   isFedToday,
+  calculateBedExpansion,
+  calculateLeafWithering,
+  getNextShiftSchedule,
 } from '../utils';
 import { SPECIES_THRESHOLDS, USER_ROLES } from '../constants';
 import { BombyxBatchCardHeader, EriBatchCardHeader } from './SericultureCardArtwork';
@@ -59,6 +71,13 @@ interface TodayViewProps {
   onSelectTab: (tab: 'today' | 'batches' | 'audit' | 'you') => void;
   onExportBatchPdf?: (batch: Batch) => void;
   onSwitchUser?: (userId: string) => void;
+  onOpenPsychrometric?: () => void;
+  onOpenBedSpacing?: (batchId?: string) => void;
+  onOpenDiagnostic?: (batchId?: string) => void;
+  onOpenCocoonGrading?: (batchId?: string) => void;
+  onOpenPlacards?: () => void;
+  onOpenShiftHandover?: () => void;
+  onOpenWallboard?: () => void;
 }
 
 type BatchFilter = 'all' | 'due' | 'moult' | 'spinning';
@@ -117,6 +136,13 @@ export const TodayView: React.FC<TodayViewProps> = ({
   onSelectTab,
   onExportBatchPdf,
   onSwitchUser,
+  onOpenPsychrometric,
+  onOpenBedSpacing,
+  onOpenDiagnostic,
+  onOpenCocoonGrading,
+  onOpenPlacards,
+  onOpenShiftHandover,
+  onOpenWallboard,
 }) => {
   const [batchFilter, setBatchFilter] = useState<BatchFilter>('all');
   const [selectedHouseTab, setSelectedHouseTab] = useState<string>('all');
@@ -437,6 +463,161 @@ export const TodayView: React.FC<TodayViewProps> = ({
             <span>Staff Audit Ledger ({auditLogs?.length || 0})</span>
             <ArrowRight size={12} />
           </button>
+        </div>
+      </div>
+
+      {/* 2. Live Shift Ration Schedule & Precision Tools Strip */}
+      <div
+        className="kalro-card"
+        style={{
+          padding: '0.85rem 1.25rem',
+          backgroundColor: '#FFFFFF',
+          border: '1px solid var(--border-card)',
+          borderRadius: 'var(--radius-md)',
+          marginBottom: '1rem',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+          {/* Shift Countdown */}
+          {(() => {
+            const shiftSchedule = getNextShiftSchedule(now);
+            return (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '8px',
+                    backgroundColor: 'rgba(15, 56, 38, 0.08)',
+                    color: 'var(--primary)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}
+                >
+                  <Clock size={18} />
+                </div>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)' }}>
+                      Next Ration Window:
+                    </span>
+                    <span
+                      style={{
+                        fontSize: '0.72rem',
+                        fontWeight: 700,
+                        padding: '1px 6px',
+                        borderRadius: '4px',
+                        backgroundColor: shiftSchedule.isOverdue ? '#FEE2E2' : '#DCFCE7',
+                        color: shiftSchedule.isOverdue ? '#DC2626' : '#15803D',
+                      }}
+                    >
+                      In {shiftSchedule.timeRemainingFormatted}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '0.86rem', fontWeight: 700, color: 'var(--text-main)', marginTop: '1px' }}>
+                    {shiftSchedule.nextRationName} ({String(shiftSchedule.nextRationHour).padStart(2, '0')}:{String(shiftSchedule.nextRationMinute).padStart(2, '0')})
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* Precision Tools Buttons */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+            {onOpenPsychrometric && (
+              <button
+                type="button"
+                onClick={onOpenPsychrometric}
+                className="btn-secondary"
+                style={{ fontSize: '0.76rem', padding: '0.35rem 0.65rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                title="Calculate Relative Humidity and Vapor Deficit from Wet & Dry bulb thermometers"
+              >
+                <Thermometer size={13} style={{ color: 'var(--primary)' }} />
+                <span>Psychrometer</span>
+              </button>
+            )}
+
+            {onOpenBedSpacing && (
+              <button
+                type="button"
+                onClick={() => onOpenBedSpacing()}
+                className="btn-secondary"
+                style={{ fontSize: '0.76rem', padding: '0.35rem 0.65rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                title="Check bed area expansion matrix and chemical lime dusting dosage"
+              >
+                <Layers size={13} style={{ color: 'var(--primary)' }} />
+                <span>Bed Spacing &amp; Dusting</span>
+              </button>
+            )}
+
+            {onOpenDiagnostic && (
+              <button
+                type="button"
+                onClick={() => onOpenDiagnostic()}
+                className="btn-secondary"
+                style={{ fontSize: '0.76rem', padding: '0.35rem 0.65rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                title="Triage larval symptoms for Flacherie, Muscardine, Grasserie, or Pebrine"
+              >
+                <Stethoscope size={13} style={{ color: 'var(--status-danger)' }} />
+                <span>Diagnostic</span>
+              </button>
+            )}
+
+            {onOpenCocoonGrading && (
+              <button
+                type="button"
+                onClick={() => onOpenCocoonGrading()}
+                className="btn-secondary"
+                style={{ fontSize: '0.76rem', padding: '0.35rem 0.65rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                title="Grade cocoon lot, evaluate Shell Ratio %, and calculate Renditta"
+              >
+                <Scale size={13} style={{ color: 'var(--primary)' }} />
+                <span>Cocoon Grading</span>
+              </button>
+            )}
+
+            {onOpenPlacards && (
+              <button
+                type="button"
+                onClick={onOpenPlacards}
+                className="btn-secondary"
+                style={{ fontSize: '0.76rem', padding: '0.35rem 0.65rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                title="Generate printable rack & tray QR placards"
+              >
+                <Printer size={13} style={{ color: 'var(--text-muted)' }} />
+                <span>Rack Placards</span>
+              </button>
+            )}
+
+            {onOpenShiftHandover && (
+              <button
+                type="button"
+                onClick={onOpenShiftHandover}
+                className="btn-secondary"
+                style={{ fontSize: '0.76rem', padding: '0.35rem 0.65rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                title="Execute formal shift handover protocol with PIN custody authentication"
+              >
+                <ArrowRightLeft size={13} style={{ color: 'var(--primary)' }} />
+                <span>Handover</span>
+              </button>
+            )}
+
+            {onOpenWallboard && (
+              <button
+                type="button"
+                onClick={onOpenWallboard}
+                className="btn-secondary"
+                style={{ fontSize: '0.76rem', padding: '0.35rem 0.65rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                title="Launch full-screen wallboard telemetry display for monitor or kiosk"
+              >
+                <Tv size={13} style={{ color: '#2563EB' }} />
+                <span>Wallboard</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -1117,6 +1298,27 @@ export const TodayView: React.FC<TodayViewProps> = ({
                       )}
                     </div>
 
+                    {b.isQuarantined && (
+                      <div
+                        style={{
+                          backgroundColor: '#FEF2F2',
+                          border: '1px solid #FCA5A5',
+                          borderRadius: 'var(--radius-sm)',
+                          padding: '6px 10px',
+                          margin: '0.45rem 0 0.2rem',
+                          color: '#991B1B',
+                          fontSize: '0.74rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          fontWeight: 600,
+                        }}
+                      >
+                        <ShieldAlert size={14} style={{ color: '#DC2626', flexShrink: 0 }} />
+                        <span>ISOLATION PROTOCOL ACTIVE: {b.quarantineReason || 'Suspected Pathology'} ({b.quarantinedBy || 'Staff'})</span>
+                      </div>
+                    )}
+
                     <h4 className="truncate" style={{ fontSize: isSingle ? '1.15rem' : '1rem', fontWeight: 700, margin: '0 0 0.2rem' }}>
                       {b.displayTag || b.batchTag || b.id}
                     </h4>
@@ -1295,6 +1497,38 @@ export const TodayView: React.FC<TodayViewProps> = ({
                           <span style={{ fontSize: '0.72rem', fontWeight: 600 }}>PDF</span>
                         </button>
                       )}
+                    </div>
+
+                    {/* Specialized Precision Operations */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', marginTop: '0.4rem' }}>
+                      <button
+                        type="button"
+                        onClick={() => onOpenBedSpacing?.(b.id)}
+                        className="btn-secondary"
+                        style={{ fontSize: '0.72rem', padding: '0.35rem 0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
+                      >
+                        <Layers size={12} style={{ color: 'var(--primary)' }} />
+                        <span>Bed Spacing ({b.currentTraysCount || Math.ceil(live / 400)} Trays)</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onOpenDiagnostic?.(b.id)}
+                        className="btn-secondary"
+                        style={{
+                          fontSize: '0.72rem',
+                          padding: '0.35rem 0.5rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '4px',
+                          color: b.isQuarantined ? '#DC2626' : undefined,
+                          borderColor: b.isQuarantined ? '#FCA5A5' : undefined,
+                          backgroundColor: b.isQuarantined ? '#FEF2F2' : undefined,
+                        }}
+                      >
+                        <ShieldAlert size={12} />
+                        <span>{b.isQuarantined ? 'Quarantine Active' : 'Health Diagnostic'}</span>
+                      </button>
                     </div>
 
                     {/* Synchronized Station Links */}
