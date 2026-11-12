@@ -416,27 +416,20 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                                   ),
                                 ),
                               ),
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  _LangChip(
-                                    label: 'EN',
-                                    selected: _language == 'en',
-                                    onTap: () {
-                                      setState(() => _language = 'en');
-                                      widget.onLanguageChanged('en');
-                                    },
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: KalroColors.primaryGreen.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  'English',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: KalroColors.primaryGreen,
                                   ),
-                                  const SizedBox(width: 6),
-                                  _LangChip(
-                                    label: 'SW',
-                                    selected: _language == 'sw',
-                                    onTap: () {
-                                      setState(() => _language = 'sw');
-                                      widget.onLanguageChanged('sw');
-                                    },
-                                  ),
-                                ],
+                                ),
                               ),
                             ],
                           ),

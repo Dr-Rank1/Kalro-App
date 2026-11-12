@@ -1,6 +1,6 @@
 import React from 'react';
 
-export type NavTab = 'today' | 'batches' | 'audit' | 'plan' | 'farm' | 'you';
+export type NavTab = 'today' | 'batches' | 'audit' | 'you';
 
 interface NavigationProps {
   activeTab: NavTab;
@@ -17,9 +17,7 @@ export const Navigation: React.FC<NavigationProps> = ({
     { key: 'today', label: 'Operations Today' },
     { key: 'batches', label: 'Silkworm Batches', badge: activeBatchesCount > 0 ? activeBatchesCount : undefined },
     { key: 'audit', label: 'Staff Audit Log' },
-    { key: 'plan', label: 'Lifecycle Roadmap' },
-    { key: 'farm', label: 'Agronomy & Tools' },
-    { key: 'you', label: 'Station & Staff' },
+    { key: 'you', label: 'Station & Security' },
   ];
 
   return (

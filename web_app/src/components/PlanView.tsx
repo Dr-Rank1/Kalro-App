@@ -438,10 +438,6 @@ export const PlanView: React.FC<PlanViewProps> = ({ batches, onSelectTab }) => {
                     )}
                   </div>
 
-                  <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)' }}>
-                    {stage.swahiliName}
-                  </div>
-
                   <p className="roadmap-simple-action">{shortAction}</p>
 
                   {/* Clean Meta Chips */}

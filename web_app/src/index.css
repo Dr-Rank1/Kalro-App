@@ -681,6 +681,10 @@ th,
   gap: 1.25rem;
 }
 
+.batches-grid.single-batch-layout {
+  grid-template-columns: 1fr;
+}
+
 .batch-item-card {
   background-color: #ffffff;
   border: 1px solid var(--border-card);
@@ -690,6 +694,12 @@ th,
   flex-direction: column;
   overflow: hidden;
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.batch-item-card.single-command-card {
+  border-left: 4px solid var(--primary);
+  background: #ffffff;
+  box-shadow: 0 4px 20px -3px rgba(15, 56, 38, 0.08);
 }
 
 .batch-item-card:hover {

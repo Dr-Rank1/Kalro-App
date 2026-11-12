@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Leaf, Plus } from 'lucide-react';
 import { LeafMovement, LeafType, FarmProfile } from '../types';
+import { KENYA_MULBERRY_CULTIVARS, KENYA_CASTOR_VARIETIES } from '../constants';
 
 interface LeafStockModalProps {
   isOpen: boolean;
@@ -16,14 +17,26 @@ export const LeafStockModal: React.FC<LeafStockModalProps> = ({
   onSave,
 }) => {
   const [leafType, setLeafType] = useState<LeafType>('mulberry');
+  const [cultivar, setCultivar] = useState<string>('S-13');
   const [quantityKg, setQuantityKg] = useState<number | ''>(25);
   const [sourcePlot, setSourcePlot] = useState<string>(
-    profile?.orgName ? `${profile.orgName} - Main Plot` : 'Main Mulberry Plot'
+    profile?.orgName ? `${profile.orgName} - Block A` : 'Station Orchard Block A'
   );
-  const [notes, setNotes] = useState<string>('Morning harvest, high leaf moisture');
+  const [notes, setNotes] = useState<string>('Morning harvest, high leaf moisture (74%)');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   if (!isOpen) return null;
+
+  const handleTypeChange = (newType: LeafType) => {
+    setLeafType(newType);
+    if (newType === 'mulberry') {
+      setCultivar('S-13');
+    } else if (newType === 'castor') {
+      setCultivar('GRC-1');
+    } else {
+      setCultivar('Heteropanax fragrans');
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,9 +50,12 @@ export const LeafStockModal: React.FC<LeafStockModalProps> = ({
       id: `leaf-mv-${Date.now()}`,
       date: new Date().toISOString(),
       leafType,
+      cultivar,
       quantityKg: qty,
       direction: 'inflow',
-      reason: notes.trim() ? `${sourcePlot.trim()} • ${notes.trim()}` : sourcePlot.trim() || 'Harvest from farm plot',
+      reason: notes.trim()
+        ? `${cultivar} (${sourcePlot.trim()}) • ${notes.trim()}`
+        : `${cultivar} harvest from ${sourcePlot.trim()}`,
     };
 
     onSave(newMovement);
@@ -56,10 +72,10 @@ export const LeafStockModal: React.FC<LeafStockModalProps> = ({
         <div className="modal-header">
           <div>
             <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: 0, color: 'var(--text-main)' }}>
-              Record Fresh Forage Harvest
+              Record Forage Leaf Harvest
             </h3>
             <p style={{ fontSize: '0.76rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>
-              Add harvested leaf stock to update your forage runway and daily feeding buffer
+              Add freshly harvested mulberry or castor stock to update station forage stockpile
             </p>
           </div>
           <button onClick={onClose} className="modal-close-btn" aria-label="Close dialog">
@@ -75,19 +91,61 @@ export const LeafStockModal: React.FC<LeafStockModalProps> = ({
               </div>
             )}
 
+            {/* Forage Host Species */}
             <div className="form-group" style={{ marginBottom: 0 }}>
-              <label className="form-label">Forage Variety</label>
+              <label className="form-label">Host Plant Category</label>
               <select
                 value={leafType}
-                onChange={(e) => setLeafType(e.target.value as LeafType)}
+                onChange={(e) => handleTypeChange(e.target.value as LeafType)}
                 className="form-control"
               >
-                <option value="mulberry">Mulberry Leaves / Shoots (Kanva-2 & S-13)</option>
-                <option value="castor">Castor Leaves (GRC-1 Cultivar)</option>
-                <option value="kesseru">Kesseru Perennial Stand</option>
+                <option value="mulberry">Mulberry (Morus alba / Morus indica)</option>
+                <option value="castor">Castor (Ricinus communis - Eri host)</option>
+                <option value="kesseru">Kesseru (Heteropanax fragrans - Eri perennial)</option>
               </select>
             </div>
 
+            {/* Cultivar / Variety Picker */}
+            <div className="form-group" style={{ marginBottom: 0 }}>
+              <label className="form-label">
+                {leafType === 'mulberry' ? 'Mulberry Cultivar' : leafType === 'castor' ? 'Castor Variety' : 'Perennial Stand'}
+              </label>
+              {leafType === 'mulberry' ? (
+                <select
+                  value={cultivar}
+                  onChange={(e) => setCultivar(e.target.value)}
+                  className="form-control"
+                >
+                  {KENYA_MULBERRY_CULTIVARS.map((c) => (
+                    <option key={c.code} value={c.name}>
+                      {c.name} — {c.use} ({c.leafQuality})
+                    </option>
+                  ))}
+                </select>
+              ) : leafType === 'castor' ? (
+                <select
+                  value={cultivar}
+                  onChange={(e) => setCultivar(e.target.value)}
+                  className="form-control"
+                >
+                  {KENYA_CASTOR_VARIETIES.map((v) => (
+                    <option key={v.code} value={v.name}>
+                      {v.name} — {v.use}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type="text"
+                  value={cultivar}
+                  readOnly
+                  className="form-control"
+                  style={{ backgroundColor: 'var(--bg-subtle)' }}
+                />
+              )}
+            </div>
+
+            {/* Quantity Input */}
             <div className="form-group" style={{ marginBottom: 0 }}>
               <label className="form-label">Harvested Quantity (kg) *</label>
               <input
@@ -104,14 +162,13 @@ export const LeafStockModal: React.FC<LeafStockModalProps> = ({
                 required
               />
               <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '3px', display: 'block' }}>
-                {profile?.mulberryAcreage
-                  ? `Based on your ${profile.mulberryAcreage} acre(s) plot (avg daily yield: ~${((profile.mulberryAcreage * 16000) / 365).toFixed(1)} kg)`
-                  : 'Standard morning harvest: Pluck between 06:00 and 08:30 AM'}
+                Standard harvest schedule: Pluck early morning (06:00 – 08:30) to preserve leaf moisture content.
               </span>
             </div>
 
+            {/* Source Plot */}
             <div className="form-group" style={{ marginBottom: 0 }}>
-              <label className="form-label">Source Plot / Field Block</label>
+              <label className="form-label">Station Plot / Field Block</label>
               <input
                 type="text"
                 value={sourcePlot}
@@ -121,8 +178,9 @@ export const LeafStockModal: React.FC<LeafStockModalProps> = ({
               />
             </div>
 
+            {/* Notes */}
             <div className="form-group" style={{ marginBottom: 0 }}>
-              <label className="form-label">Notes & Harvest Quality</label>
+              <label className="form-label">Harvest Notes & Moisture Assessment</label>
               <input
                 type="text"
                 value={notes}
@@ -147,7 +205,7 @@ export const LeafStockModal: React.FC<LeafStockModalProps> = ({
             >
               <Leaf size={16} color="var(--primary)" style={{ flexShrink: 0 }} />
               <span>
-                Leaves added here are immediately reflected in Today's <strong>Forage Runway</strong> and available for daily feeding rations.
+                Harvested {cultivar} is added directly to the station stockpile and stamped in the Staff Audit Ledger.
               </span>
             </div>
           </div>
@@ -158,7 +216,7 @@ export const LeafStockModal: React.FC<LeafStockModalProps> = ({
             </button>
             <button type="submit" className="btn-accent" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
               <Plus size={15} />
-              Add to Leaf Stock
+              Add to Stockpile
             </button>
           </div>
         </form>

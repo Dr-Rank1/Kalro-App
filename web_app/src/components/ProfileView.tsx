@@ -13,6 +13,10 @@ import {
   Edit2,
   AlertTriangle,
   UserPlus,
+  Lock,
+  ShieldCheck,
+  KeyRound,
+  ShieldAlert,
 } from 'lucide-react';
 import { DeleteProfileModal } from './DeleteProfileModal';
 
@@ -31,6 +35,8 @@ interface ProfileViewProps {
   onImportBackup: (jsonStr: string) => Promise<{ success: boolean; message: string }>;
   onClearActiveUserRecords: () => void;
   onRequestDeleteUser?: (user: UserAccount) => void;
+  onLockTerminal?: () => void;
+  onUpdateOperatorPin?: (pin: string) => void;
 }
 
 export const ProfileView: React.FC<ProfileViewProps> = ({
@@ -48,9 +54,14 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   onImportBackup,
   onClearActiveUserRecords,
   onRequestDeleteUser,
+  onLockTerminal,
+  onUpdateOperatorPin,
 }) => {
   const [importStatus, setImportStatus] = useState<string | null>(null);
   const [localUserToDelete, setLocalUserToDelete] = useState<UserAccount | null>(null);
+  const [editingPin, setEditingPin] = useState(false);
+  const [newPinValue, setNewPinValue] = useState('');
+  const [pinNotice, setPinNotice] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDeleteClick = (user: UserAccount) => {
@@ -371,7 +382,130 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         </div>
       </div>
 
-      {/* 5. Backup & Storage */}
+      {/* 5. Station Terminal Security & Operator PIN Lock */}
+      <div className="kalro-card">
+        <div className="card-header-flex">
+          <div>
+            <h3 className="card-title">Station Security &amp; Terminal Lock</h3>
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+              Enforce authorized access in the rearing chamber. When unattended, arm the terminal lock to prevent accidental alteration of trial data.
+            </p>
+          </div>
+          {onLockTerminal && (
+            <button
+              onClick={onLockTerminal}
+              className="btn-accent"
+              style={{ fontSize: '0.78rem', padding: '0.35rem 0.85rem', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+            >
+              <Lock size={13} />
+              Lock Terminal Now
+            </button>
+          )}
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', margin: '1rem 0 0.5rem' }}>
+          {/* Security Status Box */}
+          <div
+            style={{
+              padding: '1rem',
+              backgroundColor: 'var(--bg-subtle)',
+              border: '1px solid var(--border-subtle)',
+              borderRadius: 'var(--radius-sm)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.4rem' }}>
+              <ShieldCheck size={18} style={{ color: 'var(--status-success)' }} />
+              <strong style={{ fontSize: '0.86rem', color: 'var(--text-main)' }}>
+                Terminal Lock: Armed &amp; Operational
+              </strong>
+            </div>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '0 0 0.75rem', lineHeight: 1.45 }}>
+              Staff members enter their assigned 4-digit PIN to access feeding rations, microclimate records, or lot management.
+            </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>Active Operator PIN:</span>
+              <strong style={{ fontSize: '0.85rem', fontFamily: 'monospace', letterSpacing: '2px' }}>
+                {currentUser.pinCode ? '••••' : '2026 (Default)'}
+              </strong>
+              <button
+                type="button"
+                onClick={() => {
+                  setEditingPin(!editingPin);
+                  setNewPinValue(currentUser.pinCode || '2026');
+                }}
+                className="btn-secondary"
+                style={{ fontSize: '0.72rem', padding: '2px 8px', marginLeft: 'auto' }}
+              >
+                {editingPin ? 'Cancel' : 'Change PIN'}
+              </button>
+            </div>
+
+            {editingPin && (
+              <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border-divider)' }}>
+                <div style={{ display: 'flex', gap: '6px' }}>
+                  <input
+                    type="password"
+                    maxLength={6}
+                    value={newPinValue}
+                    onChange={(e) => setNewPinValue(e.target.value.replace(/\D/g, ''))}
+                    placeholder="Enter 4-digit PIN"
+                    className="simple-input"
+                    style={{ fontSize: '0.85rem', padding: '4px 8px', width: '130px', textAlign: 'center', fontFamily: 'monospace' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (newPinValue.length < 4) {
+                        setPinNotice('PIN must be at least 4 digits.');
+                        return;
+                      }
+                      if (onUpdateOperatorPin) {
+                        onUpdateOperatorPin(newPinValue);
+                      }
+                      setEditingPin(false);
+                      setPinNotice('Security PIN updated successfully.');
+                      setTimeout(() => setPinNotice(null), 3500);
+                    }}
+                    className="btn-primary"
+                    style={{ fontSize: '0.75rem', padding: '4px 10px' }}
+                  >
+                    Save PIN
+                  </button>
+                </div>
+                {pinNotice && (
+                  <div style={{ fontSize: '0.72rem', color: 'var(--status-success)', marginTop: '4px' }}>
+                    {pinNotice}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Institutional Compliance Notice */}
+          <div
+            style={{
+              padding: '1rem',
+              backgroundColor: 'var(--bg-subtle)',
+              border: '1px solid var(--border-subtle)',
+              borderRadius: 'var(--radius-sm)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.4rem' }}>
+              <ShieldAlert size={18} style={{ color: 'var(--primary)' }} />
+              <strong style={{ fontSize: '0.86rem', color: 'var(--text-main)' }}>
+                Institutional Audit Standard
+              </strong>
+            </div>
+            <ul style={{ margin: 0, paddingLeft: '1.1rem', fontSize: '0.74rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+              <li>Audit logs are append-only; past actions cannot be overwritten.</li>
+              <li>Every feed, mortality loss, and climate log records operator name &amp; shift.</li>
+              <li>Only Station Manager or authorized scientists can export or wipe records.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* 6. Backup & Storage */}
       <div className="kalro-card">
         <div className="card-header-flex">
           <div>

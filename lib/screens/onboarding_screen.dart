@@ -170,8 +170,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     children: [
                       Image.asset('assets/images/kalro_app_icon.png', height: 100),
                       const SizedBox(height: 16),
-                      Row(mainAxisAlignment: MainAxisAlignment.center, children: [ChoiceChip(label: const Text('English'), selected: _language == 'English', onSelected: (sel) { if (sel) setState(() { _language = 'English'; Translator.currentLanguage = 'en'; }); }), const SizedBox(width: 12), ChoiceChip(label: const Text('Kiswahili'), selected: _language == 'Kiswahili', onSelected: (sel) { if (sel) setState(() { _language = 'Kiswahili'; Translator.currentLanguage = 'sw'; }); })]),
-                      SizedBox(height: 20),
                       Text(
                         'Set up your farm profile'.tr,
                         textAlign: TextAlign.center,

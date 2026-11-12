@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FarmProfile, UserAccount } from '../types';
 import { USER_ROLES } from '../constants';
-import { FileText, ChevronDown, Check, UserPlus, Trash2 } from 'lucide-react';
+import { FileText, ChevronDown, Check, UserPlus, Trash2, Lock } from 'lucide-react';
 
 interface HeaderProps {
   profile: FarmProfile | null;
@@ -13,6 +13,7 @@ interface HeaderProps {
   onOpenNewUserModal: () => void;
   onNavigateToProfile: () => void;
   onRequestDeleteUser?: (user: UserAccount) => void;
+  onLockTerminal?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -25,6 +26,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenNewUserModal,
   onNavigateToProfile,
   onRequestDeleteUser,
+  onLockTerminal,
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -89,6 +91,19 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="btn-text-desktop">Export Report</span>
             <span className="btn-text-mobile">Report</span>
           </button>
+
+          {onLockTerminal && (
+            <button
+              onClick={onLockTerminal}
+              className="btn-header-secondary"
+              title="Lock Sericulture Station Terminal with PIN"
+              style={{ display: 'inline-flex', alignItems: 'center' }}
+            >
+              <Lock size={13} style={{ marginRight: '5px', color: 'var(--primary)' }} />
+              <span className="btn-text-desktop">Lock Terminal</span>
+              <span className="btn-text-mobile">Lock</span>
+            </button>
+          )}
 
           {/* User Account Button or Switcher */}
           {!currentUser ? (
@@ -235,6 +250,20 @@ export const Header: React.FC<HeaderProps> = ({
                     >
                       Station Roster &amp; Profile
                     </button>
+
+                    {onLockTerminal && (
+                      <button
+                        onClick={() => {
+                          setDropdownOpen(false);
+                          onLockTerminal();
+                        }}
+                        className="tenant-action-btn secondary"
+                        style={{ color: 'var(--primary)', fontWeight: 600 }}
+                      >
+                        <Lock size={14} style={{ marginRight: '6px' }} />
+                        <span>Lock Station Terminal</span>
+                      </button>
+                    )}
                   </div>
                 </div>
               )}

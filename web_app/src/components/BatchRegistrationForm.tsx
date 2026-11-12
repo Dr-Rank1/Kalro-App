@@ -314,7 +314,7 @@ export const BatchRegistrationForm: React.FC<BatchRegistrationFormProps> = ({
         {profile && (
           <div style={{ marginTop: '0.65rem', paddingTop: '0.65rem', borderTop: '1px solid var(--border-divider)', fontSize: '0.74rem', color: 'var(--text-muted)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
             <span>
-              🌾 Farm Forage Check: <strong>{profile.mulberryAcreage || 1} acre(s)</strong> at {profile.orgName} (Annual forage: ~{((profile.mulberryAcreage || 1) * 16000).toLocaleString()} kg)
+              Forage Capacity Check: <strong>{profile.mulberryAcreage || 1} acre(s)</strong> at {profile.orgName} (Annual forage: ~{((profile.mulberryAcreage || 1) * 16000).toLocaleString()} kg)
             </span>
             <span style={{ color: 'var(--status-success)', fontWeight: 600 }}>
               ✓ Farm supports this batch demand ({totalForageKg} kg)

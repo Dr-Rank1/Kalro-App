@@ -38,6 +38,7 @@ export interface FeedLog {
   recordedAt: string; // ISO timestamp
   quantityGrams: number;
   leafType: LeafType;
+  cultivar?: string; // Specific Mulberry Cultivar (S-13, TR-10, Kanva-2) or Castor Variety (GRC-1, Local Green)
   wasSkipped?: boolean;
   skippedReason?: string;
   // Operator Attribution
@@ -119,6 +120,8 @@ export interface LeafInventory {
   castorKg: number;
   kesseruKg: number;
   lastUpdated: string;
+  mulberryByType?: Record<string, number>;
+  castorByType?: Record<string, number>;
 }
 
 export interface LeafMovement {
@@ -232,12 +235,9 @@ export interface FarmProfile {
 
 export interface DiseaseInfo {
   name: string;
-  swahiliName: string;
   pathogen: string;
   signs: string;
-  swahiliSigns: string;
   action: string;
-  swahiliAction: string;
   seedLotRisk: boolean;
   severity: 'high' | 'critical' | 'moderate';
 }
@@ -245,7 +245,6 @@ export interface DiseaseInfo {
 export interface MilestoneStage {
   instarNumber: number | null;
   name: string;
-  swahiliName: string;
   dayStart: number;
   dayEnd: number;
   isMoult: boolean;

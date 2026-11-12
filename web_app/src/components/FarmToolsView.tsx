@@ -866,11 +866,6 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
                   <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: 'var(--text-main)' }}>
                     {selectedDisease.name}
                   </h4>
-                  {selectedDisease.swahiliName && (
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                      Swahili: {selectedDisease.swahiliName}
-                    </span>
-                  )}
                 </div>
                 {selectedDisease.seedLotRisk && (
                   <span className="quarantine-pill">KEPHIS Notifiable Risk</span>

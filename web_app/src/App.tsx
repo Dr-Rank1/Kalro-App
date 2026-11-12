@@ -4,8 +4,6 @@ import { Navigation, NavTab } from './components/Navigation';
 import { TodayView } from './components/TodayView';
 import { BatchesView } from './components/BatchesView';
 import { StaffAuditView } from './components/StaffAuditView';
-import { PlanView } from './components/PlanView';
-import { FarmToolsView } from './components/FarmToolsView';
 import { ProfileView } from './components/ProfileView';
 import { QuickLogModal } from './components/QuickLogModal';
 import { QrCodeModal } from './components/QrCodeModal';
@@ -14,6 +12,7 @@ import { ProfileFormModal, ProfileFormData } from './components/ProfileFormModal
 import { DeleteProfileModal } from './components/DeleteProfileModal';
 import { BatchRegistrationForm } from './components/BatchRegistrationForm';
 import { LeafStockModal } from './components/LeafStockModal';
+import { TerminalLockModal } from './components/TerminalLockModal';
 import { downloadSingleBatchPdf, downloadStaffAuditPdf } from './utils/pdfGenerator';
 import { storage } from './storage';
 import {
@@ -47,7 +46,9 @@ export function App() {
   const [currentUser, setCurrentUser] = useState<UserAccount | null>(() => storage.getActiveUser());
   const [allUsers, setAllUsers] = useState<UserAccount[]>(() => storage.getAllUsers());
 
-  const VALID_TABS: NavTab[] = ['today', 'batches', 'audit', 'plan', 'farm', 'you'];
+  const VALID_TABS: NavTab[] = ['today', 'batches', 'audit', 'you'];
+
+  const [isTerminalLocked, setIsTerminalLocked] = useState<boolean>(false);
 
   const initialBatches = storage.getBatches();
   const [activeTab, setActiveTab] = useState<NavTab>(() => {
@@ -143,9 +144,7 @@ export function App() {
     const currentUrl = new URL(window.location.href);
     if (currentUrl.searchParams.get('tab') !== activeTab) {
       currentUrl.searchParams.set('tab', activeTab);
-      if (activeTab !== 'farm') {
-        currentUrl.searchParams.delete('subtab');
-      }
+      currentUrl.searchParams.delete('subtab');
       window.history.replaceState({ tab: activeTab }, '', currentUrl.toString());
     }
   }, [activeTab]);
@@ -177,9 +176,7 @@ export function App() {
       const currentUrl = new URL(window.location.href);
       if (currentUrl.searchParams.get('tab') !== tab) {
         currentUrl.searchParams.set('tab', tab);
-        if (tab !== 'farm') {
-          currentUrl.searchParams.delete('subtab');
-        }
+        currentUrl.searchParams.delete('subtab');
         window.history.pushState({ tab }, '', currentUrl.toString());
       }
     }
@@ -240,6 +237,43 @@ export function App() {
     storage.addAuditLog(entry);
     reloadAll();
     showToast(`Logged to Station Audit: "${entry.title}".`);
+  };
+
+  const handleLockTerminal = () => {
+    setIsTerminalLocked(true);
+    showToast('Station terminal locked. Operator PIN required.');
+  };
+
+  const handleUnlockTerminal = (operator: UserAccount) => {
+    setIsTerminalLocked(false);
+    if (operator.id !== currentUser?.id) {
+      storage.setActiveUserId(operator.id);
+    }
+    storage.addAuditLog({
+      id: `audit-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      timestamp: new Date().toISOString(),
+      operatorId: operator.id,
+      operatorName: operator.username,
+      operatorRole: operator.role,
+      actionType: 'shift_handover',
+      title: 'Terminal Unlocked',
+      details: `Terminal unlocked by ${operator.username} (${operator.staffId || operator.role}).`,
+    });
+    reloadAll();
+    showToast(`Terminal unlocked. Active duty: ${operator.username}.`);
+  };
+
+  const handleUpdateOperatorPin = (pin: string) => {
+    if (!currentUser) return;
+    const users = storage.getAllUsers();
+    const updated = users.map((u) => (u.id === currentUser.id ? { ...u, pinCode: pin } : u));
+    try {
+      localStorage.setItem('kalro_users', JSON.stringify(updated));
+    } catch {
+      // ignore
+    }
+    reloadAll();
+    showToast('Operator PIN updated.');
   };
 
   // Switch Active Tenant
@@ -458,6 +492,7 @@ export function App() {
         onOpenNewUserModal={() => handleOpenCreateProfile()}
         onNavigateToProfile={() => handleSelectTab('you')}
         onRequestDeleteUser={(u) => setDeleteProfileTarget(u)}
+        onLockTerminal={handleLockTerminal}
       />
 
       {/* Navigation */}
@@ -549,42 +584,6 @@ export function App() {
             />
           )}
 
-          {activeTab === 'plan' && (
-            <PlanView
-              batches={batches}
-              onSelectTab={handleSelectTab}
-            />
-          )}
-
-          {activeTab === 'farm' && (
-            <FarmToolsView
-              batches={batches}
-              feedLogs={feedLogs}
-              mortalityLogs={mortalityLogs}
-              envLogs={envLogs}
-              harvests={harvests}
-              inventory={inventory}
-              leafMovements={leafMovements}
-              payments={payments}
-              profile={profile}
-              onAddFeedLog={handleAddFeed}
-              onAddMortalityLog={handleAddMortality}
-              onAddHarvest={handleAddHarvest}
-              onAddLeafMovement={handleAddLeafMovement}
-              onAddPayment={handleAddPayment}
-              onExportCsv={handleExportCsv}
-              onExportBackup={handleExportActiveUserBackup}
-              onOpenReportModal={() => {
-                if (!profile) {
-                  showToast('Please set up a farm profile before exporting reports.');
-                  handleOpenCreateProfile();
-                  return;
-                }
-                setReportModalOpen(true);
-              }}
-            />
-          )}
-
           {activeTab === 'you' && (
             <ProfileView
               profile={profile}
@@ -601,6 +600,8 @@ export function App() {
               onImportBackup={handleImportBackup}
               onClearActiveUserRecords={handleClearActiveUserRecords}
               onRequestDeleteUser={(u) => setDeleteProfileTarget(u)}
+              onLockTerminal={handleLockTerminal}
+              onUpdateOperatorPin={handleUpdateOperatorPin}
             />
           )}
         </div>
@@ -722,6 +723,15 @@ export function App() {
           }}
         />
       )}
+
+      {/* Station Terminal PIN Lock Overlay */}
+      <TerminalLockModal
+        isOpen={isTerminalLocked}
+        currentUser={currentUser}
+        allUsers={allUsers}
+        profile={profile}
+        onUnlock={handleUnlockTerminal}
+      />
 
       {/* Toast Notification */}
       {toastMessage && (

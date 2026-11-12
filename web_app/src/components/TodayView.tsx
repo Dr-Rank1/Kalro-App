@@ -56,7 +56,7 @@ interface TodayViewProps {
   onOpenAddBatch?: () => void;
   onOpenAddLeaf?: () => void;
   onOpenQuickLog: (batchId?: string, defaultType?: 'feed' | 'mortality' | 'climate' | 'harvest') => void;
-  onSelectTab: (tab: 'today' | 'batches' | 'audit' | 'plan' | 'farm' | 'you') => void;
+  onSelectTab: (tab: 'today' | 'batches' | 'audit' | 'you') => void;
   onExportBatchPdf?: (batch: Batch) => void;
   onSwitchUser?: (userId: string) => void;
 }
@@ -1019,7 +1019,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
                     if (onOpenAddLeaf) {
                       onOpenAddLeaf();
                     } else {
-                      onSelectTab('farm');
+                      onSelectTab('today');
                     }
                   }}
                   className="btn-secondary"
@@ -1035,20 +1035,20 @@ export const TodayView: React.FC<TodayViewProps> = ({
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap', borderTop: '1px solid var(--border-divider)', paddingTop: '1rem' }}>
               <button
                 type="button"
-                onClick={() => onSelectTab('plan')}
+                onClick={() => onSelectTab('batches')}
                 className="roadmap-tag-pill"
                 style={{ fontSize: '0.78rem', padding: '6px 14px', cursor: 'pointer', background: 'var(--bg-subtle)', border: '1px solid var(--border-subtle)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
               >
-                <span>📖 Explore 30-Day Agronomy Roadmap</span>
+                <span>Silkworm Batch Registry</span>
                 <ArrowRight size={13} />
               </button>
               <button
                 type="button"
-                onClick={() => onSelectTab('farm')}
+                onClick={() => onSelectTab('audit')}
                 className="roadmap-tag-pill"
                 style={{ fontSize: '0.78rem', padding: '6px 14px', cursor: 'pointer', background: 'var(--bg-subtle)', border: '1px solid var(--border-subtle)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
               >
-                <span>🧮 Bed Disinfection & Mulberry Calculators</span>
+                <span>Staff Operations Audit Ledger</span>
                 <ArrowRight size={13} />
               </button>
             </div>
@@ -1068,7 +1068,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
             </button>
           </div>
         ) : (
-          <div className="batches-grid">
+          <div className={`batches-grid ${filteredBatches.length === 1 ? 'single-batch-layout' : ''}`}>
             {filteredBatches.map((b) => {
               const live = getLiveLarvaeCount(b, mortalityLogs);
               const stage = getCurrentStage(b);
@@ -1082,8 +1082,20 @@ export const TodayView: React.FC<TodayViewProps> = ({
                 .filter((f) => f.batchId === b.id && f.recordedAt.startsWith(todayStr))
                 .reduce((sum, f) => sum + f.quantityGrams, 0);
 
+              // Specific Forage Cultivar Recommendation
+              const isChawki = (stage.instarNumber || 1) <= 3;
+              const recommendedCultivar = b.species === 'bombyx'
+                ? isChawki
+                  ? 'S-13 Mulberry (Tender Chawki Shoots, 75-80% Moisture)'
+                  : 'TR-10 / Kanva-2 Mulberry (High-Protein Mature Whole Shoots)'
+                : isChawki
+                  ? 'GRC-1 Giant Red Castor (Tender Top Leaves)'
+                  : 'GRC-1 / Local Green Castor (Semi-Mature Foliage)';
+
+              const isSingle = filteredBatches.length === 1;
+
               return (
-                <div key={b.id} className="batch-item-card">
+                <div key={b.id} className={`batch-item-card ${isSingle ? 'single-command-card' : ''}`}>
                   {b.species === 'bombyx' ? (
                     <BombyxBatchCardHeader day={stage.dayStart} maxDays={maxDays} stageName={stage.name} />
                   ) : (
@@ -1098,13 +1110,18 @@ export const TodayView: React.FC<TodayViewProps> = ({
                       <span className={`status-badge ${stage.isMoult ? 'moult' : 'active'}`}>
                         {stage.name}
                       </span>
+                      {b.roomName && (
+                        <span className="status-badge" style={{ backgroundColor: 'var(--bg-subtle)', color: 'var(--text-muted)', border: '1px solid var(--border-subtle)' }}>
+                          {b.roomName}
+                        </span>
+                      )}
                     </div>
 
-                    <h4 className="truncate" style={{ fontSize: '1rem', fontWeight: 700, margin: '0 0 0.2rem' }}>
+                    <h4 className="truncate" style={{ fontSize: isSingle ? '1.15rem' : '1rem', fontWeight: 700, margin: '0 0 0.2rem' }}>
                       {b.displayTag || b.batchTag || b.id}
                     </h4>
                     <p className="truncate" style={{ fontSize: '0.76rem', color: 'var(--text-muted)', margin: '0 0 0.65rem' }}>
-                      {b.roomName || 'Rearing House 1'} • Day {stage.dayStart} of {maxDays}
+                      {b.roomName || 'Rearing House 1'} • Day {stage.dayStart} of {maxDays} • {b.eggCount.toLocaleString()} Original Seed Eggs
                     </p>
 
                     <div className="progress-bar-bg">
@@ -1114,11 +1131,11 @@ export const TodayView: React.FC<TodayViewProps> = ({
                     {/* Instar-Specific Guidance Banner */}
                     {stage.isMoult ? (
                       <div className="moult-alert-strip">
-                        <strong>⚠️ Moult Fasting:</strong> Withhold all leaves. Dust bed with 97:3 slaked lime to prevent flacherie. Maintain 24–25°C.
+                        <strong>Moult Fasting:</strong> Withhold all leaves. Dust bed with 97:3 slaked lime to prevent flacherie. Maintain 24–25°C.
                       </div>
                     ) : stage.isHarvest ? (
                       <div className="spinning-alert-strip">
-                        <strong>🔄 Mounting Stage:</strong> Worms are ready to spin. Place onto chandrika spinning frames in a quiet room.
+                        <strong>Mounting Stage:</strong> Worms are ready to spin. Place onto chandrika spinning frames in a quiet room.
                       </div>
                     ) : (
                       <div className="instar-guidance-box">
@@ -1126,11 +1143,32 @@ export const TodayView: React.FC<TodayViewProps> = ({
                       </div>
                     )}
 
+                    {/* Forage Cultivar Specification Strip */}
+                    <div
+                      style={{
+                        fontSize: '0.74rem',
+                        padding: '6px 10px',
+                        backgroundColor: 'rgba(15, 56, 38, 0.05)',
+                        border: '1px solid rgba(15, 56, 38, 0.15)',
+                        borderRadius: 'var(--radius-sm)',
+                        color: 'var(--primary)',
+                        marginBottom: '0.65rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                      }}
+                    >
+                      <Leaf size={13} style={{ flexShrink: 0 }} />
+                      <span className="truncate">
+                        <strong>Target Forage:</strong> {recommendedCultivar}
+                      </span>
+                    </div>
+
                     {/* Operational Details Grid */}
                     <div
                       style={{
                         display: 'grid',
-                        gridTemplateColumns: '1fr 1fr',
+                        gridTemplateColumns: isSingle ? 'repeat(4, 1fr)' : '1fr 1fr',
                         gap: '0.5rem',
                         fontSize: '0.78rem',
                         margin: '0.4rem 0 0.85rem',
@@ -1143,6 +1181,9 @@ export const TodayView: React.FC<TodayViewProps> = ({
                       <div>
                         <div style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>Live Larvae</div>
                         <strong className="tabular-nums">{live.toLocaleString()}</strong>
+                        <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginLeft: '4px' }}>
+                          ({b.eggCount > 0 ? ((live / b.eggCount) * 100).toFixed(0) : 100}%)
+                        </span>
                       </div>
                       <div>
                         <div style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>Daily Target</div>
@@ -1163,8 +1204,8 @@ export const TodayView: React.FC<TodayViewProps> = ({
                         </span>
                       </div>
                       <div>
-                        <div style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>Target Temp</div>
-                        <strong className="tabular-nums">{stage.idealTemp}</strong>
+                        <div style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>Target Temp &amp; RH</div>
+                        <strong className="tabular-nums">{stage.idealTemp} · {stage.idealHumidity}</strong>
                       </div>
                     </div>
 
@@ -1203,7 +1244,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
                               </>
                             ) : latestBatchFeed ? (
                               <>
-                                <strong style={{ color: 'var(--text-main)' }}>Last Feed:</strong> {(latestBatchFeed.quantityGrams / 1000).toFixed(1)} kg {latestBatchFeed.leafType} by <span style={{ color: 'var(--primary)', fontWeight: 600 }}>{latestBatchFeed.operatorName || 'Staff'}</span> at {new Date(latestBatchFeed.recordedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                <strong style={{ color: 'var(--text-main)' }}>Last Feed:</strong> {(latestBatchFeed.quantityGrams / 1000).toFixed(1)} kg {latestBatchFeed.cultivar || latestBatchFeed.leafType} by <span style={{ color: 'var(--primary)', fontWeight: 600 }}>{latestBatchFeed.operatorName || 'Staff'}</span> at {new Date(latestBatchFeed.recordedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                               </>
                             ) : (
                               <span>Pending first operational log for this shift</span>
@@ -1214,12 +1255,12 @@ export const TodayView: React.FC<TodayViewProps> = ({
                     })()}
 
                     {/* Card Action Buttons */}
-                    <div style={{ display: 'flex', gap: '0.4rem', marginTop: 'auto' }}>
+                    <div style={{ display: 'flex', gap: '0.4rem', marginTop: 'auto', flexWrap: 'wrap' }}>
                       <button
                         type="button"
                         onClick={() => onOpenQuickLog(b.id, 'feed')}
                         className="btn-accent"
-                        style={{ flex: 1, fontSize: '0.78rem', padding: '0.4rem' }}
+                        style={{ flex: 1, minWidth: '100px', fontSize: '0.78rem', padding: '0.45rem' }}
                       >
                         + Log Feed
                       </button>
@@ -1227,16 +1268,26 @@ export const TodayView: React.FC<TodayViewProps> = ({
                         type="button"
                         onClick={() => onOpenQuickLog(b.id, 'mortality')}
                         className="btn-secondary"
-                        style={{ flex: 1, fontSize: '0.78rem', padding: '0.4rem' }}
+                        style={{ flex: 1, minWidth: '100px', fontSize: '0.78rem', padding: '0.45rem' }}
                       >
                         Record Loss
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onOpenQuickLog(b.id, 'climate')}
+                        className="btn-secondary"
+                        style={{ fontSize: '0.78rem', padding: '0.45rem 0.65rem' }}
+                        title="Record chamber microclimate"
+                      >
+                        <Thermometer size={13} style={{ marginRight: '3px' }} />
+                        Climate
                       </button>
                       {onExportBatchPdf && (
                         <button
                           type="button"
                           onClick={() => onExportBatchPdf(b)}
                           className="btn-secondary"
-                          style={{ padding: '0.4rem 0.6rem', display: 'inline-flex', alignItems: 'center', gap: '3px' }}
+                          style={{ padding: '0.45rem 0.65rem', display: 'inline-flex', alignItems: 'center', gap: '3px' }}
                           title="Download verified PDF report for this batch"
                           aria-label={`Export PDF dossier for batch ${b.batchTag || b.id}`}
                         >
@@ -1246,21 +1297,21 @@ export const TodayView: React.FC<TodayViewProps> = ({
                       )}
                     </div>
 
-                    {/* Synchronized Protocol & Tools Links */}
+                    {/* Synchronized Station Links */}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', paddingTop: '6px', borderTop: '1px solid var(--border-divider)', fontSize: '0.72rem' }}>
                       <button
                         type="button"
-                        onClick={() => onSelectTab('plan')}
+                        onClick={() => onSelectTab('batches')}
                         style={{ background: 'none', border: 'none', color: 'var(--primary)', padding: 0, cursor: 'pointer', textDecoration: 'underline', fontWeight: 600 }}
                       >
-                        {stage.name} Protocol in Plan →
+                        Lot Dossier &amp; Trays →
                       </button>
                       <button
                         type="button"
-                        onClick={() => onSelectTab('farm')}
+                        onClick={() => onSelectTab('audit')}
                         style={{ background: 'none', border: 'none', color: 'var(--text-muted)', padding: 0, cursor: 'pointer', textDecoration: 'underline' }}
                       >
-                        Bed Spacing in Tools →
+                        Shift Audit History →
                       </button>
                     </div>
                   </div>
@@ -1585,46 +1636,62 @@ export const TodayView: React.FC<TodayViewProps> = ({
                   style={{ fontSize: '0.75rem', padding: '0.3rem 0.65rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                 >
                   <Plus size={12} />
-                  + Add Stock
+                  + Harvest Stock
                 </button>
               )}
-              <button
-                type="button"
-                onClick={() => onSelectTab('farm')}
-                className="btn-secondary"
-                style={{ fontSize: '0.75rem', padding: '0.3rem 0.65rem' }}
-              >
-                Open Ledger
-              </button>
+              {onOpenAddLeaf && (
+                <button
+                  type="button"
+                  onClick={onOpenAddLeaf}
+                  className="btn-secondary"
+                  style={{ fontSize: '0.75rem', padding: '0.3rem 0.65rem' }}
+                >
+                  Adjust Cultivars
+                </button>
+              )}
             </div>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', margin: '0.85rem 0' }}>
+            {/* Mulberry Section with Cultivars */}
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.82rem', marginBottom: '0.25rem' }}>
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                   <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--primary)', display: 'inline-block' }} />
-                  Mulberry Shoots (Kanva-2 & S-13)
+                  Mulberry Forage Stock (Morus alba)
                 </span>
-                <strong className="tabular-nums">{inventory.mulberryKg.toFixed(1)} kg</strong>
+                <strong className="tabular-nums">{inventory.mulberryKg.toFixed(1)} kg Total</strong>
               </div>
-              <div className="progress-bar-bg" style={{ margin: 0 }}>
+              <div className="progress-bar-bg" style={{ margin: '0 0 6px' }}>
                 <div
                   className="progress-bar-fill"
                   style={{ width: `${Math.min(100, (inventory.mulberryKg / 200) * 100)}%` }}
                 />
               </div>
+              {/* Cultivar tags */}
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', fontSize: '0.7rem' }}>
+                <span style={{ backgroundColor: 'var(--bg-subtle)', border: '1px solid var(--border-subtle)', padding: '2px 6px', borderRadius: '4px' }}>
+                  <strong>S-13 (Chawki):</strong> {(inventory.mulberryByType?.['S-13'] ?? (inventory.mulberryKg * 0.35)).toFixed(1)} kg
+                </span>
+                <span style={{ backgroundColor: 'var(--bg-subtle)', border: '1px solid var(--border-subtle)', padding: '2px 6px', borderRadius: '4px' }}>
+                  <strong>TR-10 (Late Age):</strong> {(inventory.mulberryByType?.['TR-10'] ?? (inventory.mulberryKg * 0.40)).toFixed(1)} kg
+                </span>
+                <span style={{ backgroundColor: 'var(--bg-subtle)', border: '1px solid var(--border-subtle)', padding: '2px 6px', borderRadius: '4px' }}>
+                  <strong>Kanva-2 / M-5:</strong> {(inventory.mulberryByType?.['Kanva-2'] ?? (inventory.mulberryKg * 0.25)).toFixed(1)} kg
+                </span>
+              </div>
             </div>
 
+            {/* Castor Section with Cultivars */}
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.82rem', marginBottom: '0.25rem' }}>
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                   <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--status-warning)', display: 'inline-block' }} />
-                  Castor Leaves (GRC-1 for Eri)
+                  Castor Forage Stock (Ricinus communis for Eri)
                 </span>
-                <strong className="tabular-nums">{inventory.castorKg.toFixed(1)} kg</strong>
+                <strong className="tabular-nums">{inventory.castorKg.toFixed(1)} kg Total</strong>
               </div>
-              <div className="progress-bar-bg" style={{ margin: 0 }}>
+              <div className="progress-bar-bg" style={{ margin: '0 0 6px' }}>
                 <div
                   className="progress-bar-fill"
                   style={{
@@ -1633,13 +1700,23 @@ export const TodayView: React.FC<TodayViewProps> = ({
                   }}
                 />
               </div>
+              {/* Variety tags */}
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', fontSize: '0.7rem' }}>
+                <span style={{ backgroundColor: 'var(--bg-subtle)', border: '1px solid var(--border-subtle)', padding: '2px 6px', borderRadius: '4px' }}>
+                  <strong>GRC-1 (Giant Red):</strong> {(inventory.castorByType?.['GRC-1'] ?? (inventory.castorKg * 0.60)).toFixed(1)} kg
+                </span>
+                <span style={{ backgroundColor: 'var(--bg-subtle)', border: '1px solid var(--border-subtle)', padding: '2px 6px', borderRadius: '4px' }}>
+                  <strong>Local Green Castor:</strong> {(inventory.castorByType?.['Local Green'] ?? (inventory.castorKg * 0.40)).toFixed(1)} kg
+                </span>
+              </div>
             </div>
 
+            {/* Kesseru Reserve */}
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.82rem', marginBottom: '0.25rem' }}>
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                   <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--accent-gold)', display: 'inline-block' }} />
-                  Kesseru Dry-Season Reserve
+                  Kesseru Dry-Season Reserve (Heteropanax fragrans)
                 </span>
                 <strong className="tabular-nums">{inventory.kesseruKg.toFixed(1)} kg</strong>
               </div>

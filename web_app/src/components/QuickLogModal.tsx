@@ -26,7 +26,7 @@ import {
   UserAccount,
 } from '../types';
 import { getCurrentStage } from '../utils';
-import { USER_ROLES } from '../constants';
+import { USER_ROLES, KENYA_MULBERRY_CULTIVARS, KENYA_CASTOR_VARIETIES } from '../constants';
 
 interface QuickLogModalProps {
   batches: Batch[];
@@ -104,10 +104,29 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
   const [leafType, setLeafType] = useState<LeafType>(
     selectedBatch?.species === 'eri' ? 'castor' : 'mulberry'
   );
+  const [cultivar, setCultivar] = useState<string>(
+    selectedBatch?.species === 'eri'
+      ? 'GRC-1'
+      : ((currentStage?.instarNumber || 1) <= 3 ? 'S-13' : 'TR-10')
+  );
   const [feedingShift, setFeedingShift] = useState<'morning' | 'midday' | 'evening'>('morning');
   const [wasSkipped, setWasSkipped] = useState<boolean>(false);
   const [skipReason, setSkipReason] = useState<string>('');
   const [autoDeductStock, setAutoDeductStock] = useState<boolean>(true);
+
+  // Auto-adapt cultivar when batch selection changes
+  useEffect(() => {
+    if (selectedBatch) {
+      if (selectedBatch.species === 'eri') {
+        setLeafType('castor');
+        setCultivar('GRC-1');
+      } else {
+        setLeafType('mulberry');
+        const st = getCurrentStage(selectedBatch);
+        setCultivar((st?.instarNumber || 1) <= 3 ? 'S-13' : 'TR-10');
+      }
+    }
+  }, [selectedBatchId]);
 
   // Loss / Mortality State
   const [lossCount, setLossCount] = useState<number | ''>('');
@@ -178,6 +197,7 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
         recordedAt: now,
         quantityGrams: finalGrams,
         leafType,
+        cultivar,
         wasSkipped,
         skippedReason: wasSkipped
           ? (skipReason.trim() || `${currentStage?.name || 'Moult'} fasting rest; bed dusted with dry slaked lime`)
@@ -581,31 +601,77 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
                     />
                   </div>
 
-                  {/* Forage Variety & Feeding Shift */}
+                  {/* Forage Variety, Cultivar & Shift */}
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-                    <div className="form-group">
-                      <label className="form-label">Forage Variety</label>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label className="form-label">Host Plant Category</label>
                       <select
                         value={leafType}
-                        onChange={(e) => setLeafType(e.target.value as LeafType)}
+                        onChange={(e) => {
+                          const lt = e.target.value as LeafType;
+                          setLeafType(lt);
+                          if (lt === 'mulberry') setCultivar('S-13');
+                          else if (lt === 'castor') setCultivar('GRC-1');
+                          else setCultivar('Heteropanax fragrans');
+                        }}
                         className="form-control"
                       >
-                        <option value="mulberry">Mulberry Shoots (Kanva-2 & S-13)</option>
-                        <option value="castor">Castor Leaves (GRC-1 Cultivar)</option>
+                        <option value="mulberry">Mulberry (Morus spp.)</option>
+                        <option value="castor">Castor (Ricinus communis)</option>
                         <option value="kesseru">Kesseru Perennial Stand</option>
                       </select>
                     </div>
 
-                    <div className="form-group">
-                      <label className="form-label">Feeding Shift</label>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label className="form-label">
+                        {leafType === 'mulberry' ? 'Mulberry Cultivar' : leafType === 'castor' ? 'Castor Variety' : 'Perennial Type'}
+                      </label>
+                      {leafType === 'mulberry' ? (
+                        <select
+                          value={cultivar}
+                          onChange={(e) => setCultivar(e.target.value)}
+                          className="form-control"
+                        >
+                          {KENYA_MULBERRY_CULTIVARS.map((c) => (
+                            <option key={c.code} value={c.name}>
+                              {c.name} ({c.use.split(' ')[0]})
+                            </option>
+                          ))}
+                        </select>
+                      ) : leafType === 'castor' ? (
+                        <select
+                          value={cultivar}
+                          onChange={(e) => setCultivar(e.target.value)}
+                          className="form-control"
+                        >
+                          {KENYA_CASTOR_VARIETIES.map((v) => (
+                            <option key={v.code} value={v.name}>
+                              {v.name}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input
+                          type="text"
+                          value={cultivar}
+                          readOnly
+                          className="form-control"
+                          style={{ backgroundColor: 'var(--bg-subtle)' }}
+                        />
+                      )}
+                    </div>
+
+                    <div className="form-group" style={{ gridColumn: 'span 2', marginBottom: 0 }}>
+                      <label className="form-label">Ration Shift</label>
                       <select
                         value={feedingShift}
                         onChange={(e) => setFeedingShift(e.target.value as any)}
                         className="form-control"
                       >
-                        <option value="morning">🌅 Morning Feed (07:30)</option>
-                        <option value="midday">☀️ Midday Feed (12:30)</option>
-                        <option value="evening">🌙 Evening Ration (18:00)</option>
+                        <option value="morning">Morning Rations (07:00 – 10:00)</option>
+                        <option value="midday">Midday Feeding (12:00 – 14:00)</option>
+                        <option value="evening">Evening Rations (17:00 – 19:30)</option>
+                        <option value="night">Night Rest Buffer (21:30)</option>
                       </select>
                     </div>
                   </div>
@@ -731,34 +797,34 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
                   onChange={(e) => setLossCause(e.target.value)}
                   className="form-control"
                 >
-                  <option value="Bed-cleaning mechanical attrition">🧹 Handling / Bed-cleaning mechanical attrition</option>
-                  <option value="Heat stress / Tray crowding">☀️ Heat stress / Overcrowded trays</option>
-                  <option value="White Muscardine (Beauveria)">🍄 White Muscardine (Beauveria fungus - Chalky)</option>
-                  <option value="Flacherie (Bacterial dysentery)">🦠 Flacherie (Bacterial dysentery - Soft cadaver)</option>
-                  <option value="Grasserie (BmNPV)">⚠️ Grasserie (Nuclear Polyhedrosis - Milky skin)</option>
-                  <option value="Uzi fly parasitism">🪰 Uzi fly parasitism (Black scar marks)</option>
-                  <option value="Unknown">❓ Other / Unknown physiological cause</option>
+                  <option value="Bed-cleaning mechanical attrition">Handling / Bed-cleaning mechanical attrition</option>
+                  <option value="Heat stress / Tray crowding">Heat stress / Overcrowded trays</option>
+                  <option value="White Muscardine (Beauveria)">White Muscardine (Beauveria fungus - Chalky)</option>
+                  <option value="Flacherie (Bacterial dysentery)">Flacherie (Bacterial dysentery - Soft cadaver)</option>
+                  <option value="Grasserie (BmNPV)">Grasserie (Nuclear Polyhedrosis - Milky skin)</option>
+                  <option value="Uzi fly parasitism">Uzi fly parasitism (Black scar marks)</option>
+                  <option value="Unknown">Other / Unknown physiological cause</option>
                 </select>
 
                 {/* Practical First-Aid Tip for Sericulture */}
                 {lossCause.includes('Muscardine') && (
                   <div className="disease-tip-callout">
-                    <strong>🍄 Muscardine First Aid:</strong> Remove cadavers with forceps. Dust bed with <strong>97:3 dry slaked lime & bleaching powder</strong>. Ventilate rearing house to lower humidity below 75%.
+                    <strong>Muscardine First Aid:</strong> Remove cadavers with forceps. Dust bed with <strong>97:3 dry slaked lime & bleaching powder</strong>. Ventilate rearing house to lower humidity below 75%.
                   </div>
                 )}
                 {lossCause.includes('Flacherie') && (
                   <div className="disease-tip-callout">
-                    <strong>🦠 Flacherie First Aid:</strong> Withhold wet or soiled leaves. Provide semi-mature, dry leaves. Increase air circulation to prevent tray fermentation.
+                    <strong>Flacherie First Aid:</strong> Withhold wet or soiled leaves. Provide semi-mature, dry leaves. Increase air circulation to prevent tray fermentation.
                   </div>
                 )}
                 {lossCause.includes('Heat stress') && (
                   <div className="disease-tip-callout">
-                    <strong>☀️ Heat Stress First Aid:</strong> Expand tray space immediately (20% more bed area). Moisten gunny bags on windows or floor to lower room temperature below 27°C.
+                    <strong>Heat Stress First Aid:</strong> Expand tray space immediately (20% more bed area). Moisten gunny bags on windows or floor to lower room temperature below 27°C.
                   </div>
                 )}
                 {lossCause.includes('Uzi fly') && (
                   <div className="disease-tip-callout">
-                    <strong>🪰 Uzi Fly First Aid:</strong> Inspect wire mesh netting on all doors and windows. Hang uzicide sticky traps at rearing room entrances.
+                    <strong>Uzi Fly First Aid:</strong> Inspect wire mesh netting on all doors and windows. Hang uzicide sticky traps at rearing room entrances.
                   </div>
                 )}
               </div>

@@ -62,14 +62,8 @@ class _KalroAppState extends State<KalroApp> {
     final onboardingDone = await widget.userPreferences.hasCompletedOnboarding();
     final walkthroughDone = await widget.userPreferences.hasSeenWalkthrough();
     final lang = await widget.userPreferences.getLanguage();
-    Locale? savedLocale;
-    if ((lang.toLowerCase().startsWith('sw') || lang.toLowerCase() == 'swahili')) {
-      savedLocale = const Locale('sw');
-      Translator.currentLanguage = 'sw';
-    } else {
-      savedLocale = const Locale('en');
-      Translator.currentLanguage = 'en';
-    }
+    Locale? savedLocale = const Locale('en');
+    Translator.currentLanguage = 'en';
 
     if (widget.initialRepositories != null) {
       final dir = await widget.initialRepositories!.storageDirectory();

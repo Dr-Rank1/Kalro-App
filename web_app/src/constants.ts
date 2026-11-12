@@ -79,11 +79,81 @@ export const KENYA_SERICULTURE_BREEDS = [
 ];
 
 export const KENYA_MULBERRY_CULTIVARS = [
-  { code: 'S13', name: 'S-13', leafQuality: 'Very High Moisture (74–76%)', use: 'Chawki Rearing (Instars 1–3)' },
-  { code: 'TR10', name: 'TR-10', leafQuality: 'High Biomass & Thick Leaf', use: 'Late Age Shoot Rearing (Instars 4–5)' },
-  { code: 'KANVA2', name: 'Kanva-2 (M-5)', leafQuality: 'Standard Hardy Cultivar', use: 'All-Stage Rearing' },
-  { code: 'S36', name: 'S-36', leafQuality: 'Succulent Sweet Leaf', use: 'Young Instars & Incubation' },
-  { code: 'LOCAL_EMBU', name: 'Local Embu Cultivar', leafQuality: 'Drought Tolerant Traditional', use: 'General Feeding' },
+  {
+    code: 'S13',
+    name: 'S-13',
+    leafQuality: 'Very High Moisture (74–76%)',
+    use: 'Chawki Rearing (Instars 1–3)',
+    harvestTiming: 'Early Dawn (06:00 – 07:30)',
+    notes: 'Tender succulent shoots, rapid digestion by young larvae.',
+  },
+  {
+    code: 'TR10',
+    name: 'TR-10',
+    leafQuality: 'High Biomass & Thick Lamina',
+    use: 'Late-Age Shoot Rearing (Instars 4–5)',
+    harvestTiming: 'Morning (07:00 – 08:30)',
+    notes: 'High protein content for peak silk gland development.',
+  },
+  {
+    code: 'KANVA2',
+    name: 'Kanva-2 (M-5)',
+    leafQuality: 'Hardy Commercial Standard',
+    use: 'All Rearing Stages',
+    harvestTiming: 'Morning / Afternoon',
+    notes: 'Primary commercial benchmark cultivar in Kenya.',
+  },
+  {
+    code: 'S36',
+    name: 'S-36',
+    leafQuality: 'High Sucrose & Tender Foliage',
+    use: 'Young Instars & Incubation',
+    harvestTiming: 'Early Morning',
+    notes: 'Sweet tender leaves, excellent for egg hatching brushing.',
+  },
+  {
+    code: 'LOCAL_EMBU',
+    name: 'Local Embu Cultivar',
+    leafQuality: 'Drought-Tolerant Indigenous',
+    use: 'General Feeding & Late Instars',
+    harvestTiming: 'Early Morning',
+    notes: 'Resilient in lower rainfall areas.',
+  },
+];
+
+export const KENYA_CASTOR_VARIETIES = [
+  {
+    code: 'GRC1',
+    name: 'GRC-1 (Giant Red Castor)',
+    leafQuality: 'Large succulent foliage, red veins',
+    use: 'Premier Eri Host (All Instars)',
+    foliageYield: '8,000 – 10,000 kg/acre/yr',
+    notes: 'High palatability, fast larval weight gain in Samia cynthia ricini.',
+  },
+  {
+    code: 'LOCAL_GREEN',
+    name: 'Local Green Castor',
+    leafQuality: 'Hardy indigenous wild castor',
+    use: 'Late-Age Eri Larvae (Instars 4–5)',
+    foliageYield: '6,000 – 7,500 kg/acre/yr',
+    notes: 'Exceptional drought tolerance during Kenyan dry seasons.',
+  },
+  {
+    code: 'EBR1',
+    name: 'EBR-1 (Early Branching Red)',
+    leafQuality: 'High branching density, frequent flushing',
+    use: 'Chawki Eri Larvae (Instars 1–3)',
+    foliageYield: '7,500 – 9,000 kg/acre/yr',
+    notes: 'Continuous tender leaf production.',
+  },
+  {
+    code: 'N1',
+    name: 'N-1 Castor',
+    leafQuality: 'Broad lamina, low ricin content',
+    use: 'Young Hatching Eri Larvae',
+    foliageYield: '7,000 – 8,500 kg/acre/yr',
+    notes: 'Safe, low toxicity foliage ideal for young hatched worms.',
+  },
 ];
 
 export const TOP_SERICULTURE_COUNTIES = [
@@ -157,7 +227,6 @@ export const BOMBYX_STAGES: MilestoneStage[] = [
   {
     instarNumber: null,
     name: 'Egg Incubation & Black Boxing',
-    swahiliName: 'Uangusaji Mayai',
     dayStart: 0,
     dayEnd: 0,
     isMoult: false,
@@ -169,7 +238,6 @@ export const BOMBYX_STAGES: MilestoneStage[] = [
   {
     instarNumber: 1,
     name: '1st Instar (Chawki)',
-    swahiliName: 'Kiwavi Hatua ya 1',
     dayStart: 1,
     dayEnd: 3,
     isMoult: false,
@@ -181,7 +249,6 @@ export const BOMBYX_STAGES: MilestoneStage[] = [
   {
     instarNumber: 1,
     name: '1st Moult (Rest)',
-    swahiliName: 'Pumziko la 1',
     dayStart: 4,
     dayEnd: 4,
     isMoult: true,
@@ -193,7 +260,6 @@ export const BOMBYX_STAGES: MilestoneStage[] = [
   {
     instarNumber: 2,
     name: '2nd Instar (Chawki)',
-    swahiliName: 'Kiwavi Hatua ya 2',
     dayStart: 5,
     dayEnd: 7,
     isMoult: false,
@@ -205,7 +271,6 @@ export const BOMBYX_STAGES: MilestoneStage[] = [
   {
     instarNumber: 2,
     name: '2nd Moult (Rest)',
-    swahiliName: 'Pumziko la 2',
     dayStart: 8,
     dayEnd: 8,
     isMoult: true,
@@ -217,7 +282,6 @@ export const BOMBYX_STAGES: MilestoneStage[] = [
   {
     instarNumber: 3,
     name: '3rd Instar (Adult Transition)',
-    swahiliName: 'Kiwavi Hatua ya 3',
     dayStart: 9,
     dayEnd: 12,
     isMoult: false,
@@ -229,7 +293,6 @@ export const BOMBYX_STAGES: MilestoneStage[] = [
   {
     instarNumber: 3,
     name: '3rd Moult (Rest)',
-    swahiliName: 'Pumziko la 3',
     dayStart: 13,
     dayEnd: 13,
     isMoult: true,
@@ -241,7 +304,6 @@ export const BOMBYX_STAGES: MilestoneStage[] = [
   {
     instarNumber: 4,
     name: '4th Instar (Late Stage)',
-    swahiliName: 'Kiwavi Hatua ya 4',
     dayStart: 14,
     dayEnd: 18,
     isMoult: false,
@@ -253,7 +315,6 @@ export const BOMBYX_STAGES: MilestoneStage[] = [
   {
     instarNumber: 4,
     name: '4th Moult (Final Rest)',
-    swahiliName: 'Pumziko la Mwisho',
     dayStart: 19,
     dayEnd: 20,
     isMoult: true,
@@ -265,7 +326,6 @@ export const BOMBYX_STAGES: MilestoneStage[] = [
   {
     instarNumber: 5,
     name: '5th Instar (Peak Voracious Feeding)',
-    swahiliName: 'Kiwavi Hatua ya 5 (Kula kwa Wingi)',
     dayStart: 21,
     dayEnd: 28,
     isMoult: false,
@@ -277,7 +337,6 @@ export const BOMBYX_STAGES: MilestoneStage[] = [
   {
     instarNumber: 5,
     name: 'Mounting & Silk Spinning',
-    swahiliName: 'Kupandisha kwenye Chandrike',
     dayStart: 29,
     dayEnd: 34,
     isMoult: false,
@@ -289,7 +348,6 @@ export const BOMBYX_STAGES: MilestoneStage[] = [
   {
     instarNumber: null,
     name: 'Commercial Cocoon Harvest Window',
-    swahiliName: 'Uvunaji wa Vifukofuko',
     dayStart: 35,
     dayEnd: 40,
     isMoult: false,
@@ -304,7 +362,6 @@ export const ERI_STAGES: MilestoneStage[] = [
   {
     instarNumber: null,
     name: 'Eri Egg Incubation',
-    swahiliName: 'Uangusaji Mayai ya Eri',
     dayStart: 0,
     dayEnd: 0,
     isMoult: false,
@@ -316,7 +373,6 @@ export const ERI_STAGES: MilestoneStage[] = [
   {
     instarNumber: 1,
     name: '1st Instar (Eri)',
-    swahiliName: 'Eri Hatua ya 1',
     dayStart: 1,
     dayEnd: 4,
     isMoult: false,
@@ -328,7 +384,6 @@ export const ERI_STAGES: MilestoneStage[] = [
   {
     instarNumber: 2,
     name: '2nd Instar (Eri)',
-    swahiliName: 'Eri Hatua ya 2',
     dayStart: 5,
     dayEnd: 8,
     isMoult: false,
@@ -340,7 +395,6 @@ export const ERI_STAGES: MilestoneStage[] = [
   {
     instarNumber: 3,
     name: '3rd Instar (Eri)',
-    swahiliName: 'Eri Hatua ya 3',
     dayStart: 9,
     dayEnd: 13,
     isMoult: false,
@@ -352,7 +406,6 @@ export const ERI_STAGES: MilestoneStage[] = [
   {
     instarNumber: 4,
     name: '4th Instar (Eri)',
-    swahiliName: 'Eri Hatua ya 4',
     dayStart: 14,
     dayEnd: 19,
     isMoult: false,
@@ -364,7 +417,6 @@ export const ERI_STAGES: MilestoneStage[] = [
   {
     instarNumber: 5,
     name: '5th Instar (Peak Eri Feeding)',
-    swahiliName: 'Eri Hatua ya 5',
     dayStart: 20,
     dayEnd: 27,
     isMoult: false,
@@ -376,7 +428,6 @@ export const ERI_STAGES: MilestoneStage[] = [
   {
     instarNumber: 5,
     name: 'Eri Spinning & Cocooning',
-    swahiliName: 'Kusuka Vifuko vya Eri',
     dayStart: 28,
     dayEnd: 33,
     isMoult: false,
@@ -388,7 +439,6 @@ export const ERI_STAGES: MilestoneStage[] = [
   {
     instarNumber: null,
     name: 'Open-End Cocoon Harvest',
-    swahiliName: 'Uvunaji wa Vifuko',
     dayStart: 34,
     dayEnd: 39,
     isMoult: false,
@@ -407,56 +457,41 @@ export const SPECIES_THRESHOLDS: Record<Species, { minTemp: number; maxTemp: num
 export const DISEASE_LIBRARY: DiseaseInfo[] = [
   {
     name: 'Pebrine (Microsporidiosis)',
-    swahiliName: 'Pebrine (Madoa ya Pilipili Mtama)',
     pathogen: 'Nosema bombycis (KEPHIS Notifiable Quarantine Microsporidian)',
     signs: 'Uneven stunted growth, sluggish larvae failing to moult, irregular brownish-black pepper spots scattered over the integument. Mother moth examination reveals oval refractive spores under 600x magnification. Transmitted vertically through eggs.',
-    swahiliSigns: 'Ukuaji usio sawa, vifo vya taratibu, na madoa madogo kama pilipili mtama kwenye ngozi.',
     action: 'CRITICAL REGULATORY RISK: Immediately isolate and incinerate the entire batch. Do not use for grainage/egg production. Disinfect rearing house with 2% formalin and 0.5% sodium hypochlorite. Notify KALRO/KEPHIS inspectors.',
-    swahiliAction: 'Choma kundi lote mara moja. Tenga eneo na uondoe vifaa vyote. Nyunyiza dawa ya formalin 2%.',
     seedLotRisk: true,
     severity: 'critical',
   },
   {
     name: 'Grasserie (Nuclear Polyhedrosis Virus)',
-    swahiliName: 'Grasserie (Ugonjwa wa Kung\'aa)',
     pathogen: 'Bombyx mori Nuclear Polyhedrosis Virus (BmNPV)',
     signs: 'Intersegmental membranes become intensely swollen. Integument turns shiny yellowish-white. Larvae become hyperactive, crawl restlessly to tray borders, and hang head-down. Fragile skin easily ruptures, releasing millions of infectious polyhedra in white milky fluid.',
-    swahiliSigns: 'Kiwavi hufura viungo, hung\'aa rangi ya maziwa, na ngozi ikipasuka hutoa usaha mweupe wenye virusi.',
     action: 'Pick infected larvae with forceps into 5% bleaching powder solution before body wall ruptures. Dust beds with slaked lime and bleaching powder (97:3 ratio) after cleaning. Increase cross-ventilation and avoid feeding moist/over-wet leaf.',
-    swahiliAction: 'Ondoa minyoo walioambukizwa haraka kabla hawajapasuka. Nyunyiza chokaa kavu (lime) na bleaching powder kwenye kitanda.',
     seedLotRisk: false,
     severity: 'high',
   },
   {
     name: 'Flacherie (Bacterial & Infectious Viral Dysentery)',
-    swahiliName: 'Flacherie (Mlegezo na Kimeo)',
     pathogen: 'Bacillus bombysepticus / BmIFV / Streptococcus faecalis',
     signs: 'Larvae cease feeding, become flaccid, sluggish, and vomit digestive liquid. The cephalothorax turns transparent, followed by dark brown to blackish discoloration. Cadavers decompose rapidly emitting a strong sour putrefactive odor.',
-    swahiliSigns: 'Kiwavi huacha kula, hulegea kama mfuko wa maji, na mwili hubadilika kuwa mweusi na kutoa harufu ya kuoza.',
     action: 'Immediately net-clean the bed to separate healthy larvae from tainted forage. Withhold fermenting or overheated leaves. Ensure harvested mulberry is aerated on racks. Dust bed with Sanitech / dry slaked lime.',
-    swahiliAction: 'Safisha vitanda kwa wavu, tenga minyoo wazima, na usilishe majani yaliyofungwa na kupata joto.',
     seedLotRisk: false,
     severity: 'high',
   },
   {
     name: 'White Muscardine (Calcino Fungal Disease)',
-    swahiliName: 'Muscardine (Kuvu Nyeupe ya Chaki)',
     pathogen: 'Beauveria bassiana (Entomopathogenic Fungus)',
     signs: 'Early stage shows moist oil-speck lesions on body. Larvae lose motility, stiffen, and die like wooden sticks. Within 24-36 hours, white mycelial growth emerges and covers the entire cadaver like chalk, discharging powdery white conidiospores.',
-    swahiliSigns: 'Minyoo hukakamaa kama vijiti vya chaki na kufunikwa na unga mweupe wa kuvu.',
     action: 'Regulate humidity below 70% with active cross-draft ventilation. Collect and burn mummified cadavers before white spores develop. Dust beds with Dithane M-45 (2% in slaked lime) during morning bed cleaning.',
-    swahiliAction: 'Punguza unyevu chumbani, fungua madirisha, na uondoe mizoga yote kabla unga mweupe haujaenea.',
     seedLotRisk: false,
     severity: 'high',
   },
   {
     name: 'Uzi Fly Parasitism',
-    swahiliName: 'Inzi wa Uzi (Uzi Fly Parasite)',
     pathogen: 'Exorista sorbillans (Tachinid Parasitoid Fly)',
     signs: 'Small black necrotic scars visible on lateral or intersegmental cuticle where the female fly oviposited eggs (instars 4 & 5). Larva spins flimsy cocoon; maggot pupates by boring out of the cocoon, piercing the continuous silk filament and causing 100% reelability loss.',
-    swahiliSigns: 'Madoa meusi ya mayai ya inzi kwenye mwili wa kiwavi. Funza hutoboa kifuko cha hariri na kuharibu uwezo wa kusokotwa.',
     action: 'Install 20-mesh nylon wire screens across all windows, ventilators, and doorways. Hang yellow sticky pheromone sheets above rearing beds. Place benzoic acid attractant traps in shallow trays along room corners.',
-    swahiliAction: 'Weka wavu wa chuma au nailoni madirishani na milangoni kuzuia inzi kuingia chumbani.',
     seedLotRisk: false,
     severity: 'moderate',
   },
