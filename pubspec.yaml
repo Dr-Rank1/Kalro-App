@@ -1,5 +1,5 @@
 name: kalro
-description: Sericulture management app for Eri and Bombyx rearing.
+description: Production-grade sericulture management platform for Kenyan silkworm farmers and research stations, supporting Bombyx mori and Eri rearing.
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev

@@ -5,487 +5,534 @@
 
 ### Executive Summary
 
-The **KALRO Sericulture Management System** is a mission-critical, offline-first mobile and web application suite developed for silkworm rearers, sericulture technicians, and extension officers in Kenya. Produced in collaboration with the **Kenya Agricultural and Livestock Research Organization (KALRO)**, the system digitizes the entire sericulture value chain—from egg incubation and larval instar feeding to disease mitigation, cocoon harvesting, commercial reeling analytics, and market grading.
+The **KALRO Sericulture Management System** is a mission-critical, offline-first mobile and web application suite engineered for silkworm rearers, station agronomists, research scientists, and extension officers across Kenya. Developed in direct alignment with the **Kenya Agricultural and Livestock Research Organization (KALRO)** and the **National Sericulture Research Centre (NSRC)**, the platform digitizes and optimizes the entire sericulture value chain—from germplasm conservation and breeding pedigree tracking to 5-instar feeding schedules, disease biosecurity, 4-stage automated hot-air cocoon drying, commercial reeling analytics, and mobile farmer payouts.
 
-Sericulture in East Africa operates under unique agricultural conditions: rearing sheds are situated in rural environments with intermittent or non-existent cellular connectivity; farmers operate with budget Android smartphones or basic touch devices; ambient outdoor temperatures and relative humidity directly govern larval biology; and farmers handle delicate caterpillars, damp leaves, and disinfectants, making complex phone interactions impractical.
+Sericulture in East Africa operates under distinct environmental, agronomic, and socio-economic conditions:
+* Rearing huts and station sheds are frequently situated in rural counties (e.g., Murang'a, Machakos, Kitui, Kirinyaga, Embu, Kakamega, Bungoma) with intermittent or absent cellular networks.
+* Farmers handle delicate caterpillars (*Bombyx mori* and *Philosamia ricini* / Eri), fresh damp foliage, and bed disinfectants, demanding hands-free, sunlight-calibrated, high-contrast interfaces.
+* Rural farmers predominantly utilize entry-level Android smartphones or feature phones, while station agronomists utilize desktop browsers and tablets for research trials.
+* Quality standards require rigorous cocoon sorting, strict elimination of sun-drying practices to preserve sericin and fibroin integrity, and transparent grading to ensure fair farmer compensation via mobile money.
 
-To address these conditions, this platform combines:
-1. **Mathematical Biological Modeling** for *Bombyx mori* (Mulberry silkworm) and *Samia cynthia ricini* (Eri silkworm).
-2. **Commercial Cocoon Reeling & Quality Analytics** (Renditta, Shell Ratio, Defect Rate, Reelability, KALRO Grade A/B/C classification).
-3. **Leaf Inventory Velocity & Runout Forecasting** across Mulberry, Castor, and Kesseru forages.
-4. **Hands-Free Bilingual Voice Guidance** (English & Kiswahili) via Text-to-Speech (TTS).
-5. **Zero-Cloud, Fully Transactional Local Storage** (`FarmStore` SQLite and Multi-Tenant IndexedDB) with cryptographic JSON backups and multi-sheet offline Excel (`.xlsx`) reporting.
-6. **Minimalist, High-Contrast Sunlight-Calibrated UI** designed to avoid cognitive overload and facilitate single-handed floor operations.
+To address these requirements, this platform combines:
+1. **Kenyan Germplasm & Genebank Registry**: Characterization of 11 mulberry varieties, 7 castor varieties, 98 accessions across evaluation blocks (C2–C4, D1–D4), Highway Farm, and research genebanks.
+2. **Breeding Pedigree & Heterosis Modeling**: Genetic voltinism tracking, parent cross combinations (KSK, ATK, ICIPE, Kinshoshowa), and heterosis vigor calculations.
+3. **5-Instar Lifecycle & Bed Space Management**: Mathematical feeding tables, environmental threshold surveillance, and slaked lime powder disinfection ($50\text{--}100\,\text{g/m}^2$) during moult rests.
+4. **Automated 4-Stage Hot-Air Cocoon Drying**: Replaces harmful sun-drying with a staged temperature curve ($115^\circ\text{C}\to 100^\circ\text{C}\to 95^\circ\text{C}\to 90^\circ\text{C}$) to guarantee optimal reelability and $40\%$ dry cocoon weight.
+5. **Commercial Cocoon Reeling & Quality Grading**: Real-time evaluation of Shell Ratio %, Renditta, Reelability %, Defect Rate %, and automated KALRO Grade A/B/C/Reject classification.
+6. **Pathology & Biosecurity Triage**: Diagnostic checklists and biocontrol measures for Grasserie, Pebrine, Flacherie, and Muscardine.
+7. **Rural Financial Settlement**: M-PESA B2C payout engine and an offline USSD dialer simulator (`*384*254#`) in English, Kiswahili, and Kikuyu.
+8. **Dual-Platform Architecture**: Native Flutter (Dart 3.x) with offline SQLite (`FarmStore`) and React 19 + TypeScript web PWA with monochromatic high-contrast styling adhering to Google Chrome Modern Web Guidance standards.
 
 ---
 
 ## 1. System Architecture & Dual-Platform Design
 
-The platform consists of two interoperable implementations sharing identical domain rules, data structures, and mathematical formulas:
-- **Mobile Client**: Native Flutter (Dart 3.x / Flutter 3.16+) targeted at Android, iOS, Linux, and Windows.
-- **Web Client**: Progressive Web App (React 19 + TypeScript + Vite) targeted at desktop workstations, research station computers, and mobile browsers.
+The platform consists of two interoperable clients sharing identical domain rules, mathematical models, and data interchange formats:
+* **Mobile Client**: Native Flutter (Dart 3.11+ / Flutter 3.27+) targeted at Android, Linux, and Windows, featuring zero-cloud offline persistence, biometric/PIN access control, and hardware integration (QR code scanning, offline TTS audio).
+* **Web Client**: Progressive Web Application (React 19 + TypeScript + Vite) targeted at research station workstations, desktop browsers, and tablets, featuring multi-tenant IndexedDB storage, high-contrast monochrome UI, and Google Chrome Modern Web Guidance compliance.
 
 ```mermaid
 flowchart TD
-    subgraph UI_Layer ["Presentation & Ergonomics"]
-        MobileApp["Flutter Mobile Application (Android / iOS / Desktop)"]
-        WebApp["React 19 + TypeScript PWA (Vite / Responsive)"]
-        TTS["Bilingual TTS Voice Guidance (EN / SW)"]
-        QR["Batch Tray QR Scanner & Generator"]
+    subgraph UI_Layer ["Dual Presentation Layer"]
+        MobileApp["Flutter Native Mobile App (Android / Linux / Windows)\nOffline SQLite, Biometric / PIN Lock, Bilingual TTS, QR Scanner"]
+        WebApp["React 19 Web Dashboard (Vite PWA)\nMonochromatic High-Contrast, Google Chrome Modern Web Guidance"]
     end
 
     subgraph Domain_Layer ["Sericultural Domain & Calculation Engines"]
-        LifecycleEngine["Biological Lifecycle Engine\n(Bombyx & Eri Instar Timelines)"]
-        ReelingEngine["Cocoon Analytics & Grading\n(Renditta, Shell %, ERR, Grade A/B/C)"]
-        LeafLedger["Forage Inventory & Runout Forecaster\n(Mulberry / Castor / Kesseru)"]
-        FormulaEngine["Mathematical Formula Engine\n(Shunting-Yard RPN Parser)"]
-        AlertsEngine["Climate & Health Alert Service\n(Temperature, RH%, Mortality, Moult)"]
+        AgronomyEngine["Kenyan Germplasm Registry\n(11 Mulberry, 7 Castor, 98 Accessions, Genebanks)"]
+        BreedingEngine["Breeding Pedigree & Heterosis Tracker\n(KSK, ATK, ICIPE, Kinshoshowa, Eri)"]
+        LifecycleEngine["5-Instar Biological Lifecycle Engine\n(Feeding Tables, Bed Expansion, Lime Calc)"]
+        DryingEngine["4-Stage Hot-Air Drying Controller\n(115°C -> 100°C -> 95°C -> 90°C Curve)"]
+        GradingEngine["Cocoon Defect Triage & Grading\n(Shell %, Renditta, Reelability, Pricing)"]
+        DiseaseEngine["Biosecurity & Pathology Triage\n(Grasserie, Pebrine, Flacherie, Muscardine)"]
+        PayoutEngine["Rural Settlement Engines\n(M-PESA B2C & Offline *384*254# USSD)"]
+        FormulaEngine["Mathematical Shunting-Yard Formula Parser\n(Custom Metric RPN Evaluator)"]
     end
 
-    subgraph Data_Layer ["Offline-First Persistence & Interchange"]
-        SQLite["FarmStore (Transactional SQLite with Indexed JSON Queries)"]
-        IDB["IndexedDB + LocalStorage Fallback (Tenant Isolated)"]
+    subgraph Data_Layer ["Data Persistence & Interoperability"]
+        SQLite["FarmStore (Transactional SQLite with Indexed JSON)"]
+        IndexedDB["Multi-Tenant Web Storage (IndexedDB + LocalStorage)"]
         Excel["Multi-Sheet Excel Export (6 Sheets .xlsx)"]
         PDF["Vector PDF Reports (jspdf / pdf)"]
         Backup["Cryptographic JSON Backup & Restore (SHA-256)"]
     end
 
+    MobileApp --> AgronomyEngine
+    MobileApp --> BreedingEngine
     MobileApp --> LifecycleEngine
-    MobileApp --> ReelingEngine
-    MobileApp --> LeafLedger
+    MobileApp --> DryingEngine
+    MobileApp --> GradingEngine
+    MobileApp --> DiseaseEngine
+    MobileApp --> PayoutEngine
     MobileApp --> FormulaEngine
-    MobileApp --> AlertsEngine
-    MobileApp --> TTS
-    MobileApp --> QR
     MobileApp --> SQLite
     MobileApp --> Excel
     MobileApp --> Backup
 
+    WebApp --> AgronomyEngine
+    WebApp --> BreedingEngine
     WebApp --> LifecycleEngine
-    WebApp --> ReelingEngine
-    WebApp --> LeafLedger
+    WebApp --> DryingEngine
+    WebApp --> GradingEngine
+    WebApp --> DiseaseEngine
+    WebApp --> PayoutEngine
     WebApp --> FormulaEngine
-    WebApp --> AlertsEngine
-    WebApp --> QR
-    WebApp --> IDB
+    WebApp --> IndexedDB
     WebApp --> PDF
     WebApp --> Backup
 ```
 
 ### Technology Matrix
 
-| Component | Flutter Mobile App | React Web PWA | Purpose & Responsibility |
+| Component | Flutter Mobile Application | React Web PWA | Operational Responsibility |
 |---|---|---|---|
-| **Core Framework** | Flutter 3.16+ / Dart 3.11+ | React 19.3+ / TypeScript 7.x | Primary presentation and application lifecycle |
-| **Build & Bundler** | Flutter Build Tools / Gradle | Vite 8.3+ | Code compilation, tree shaking, minification |
-| **Local Storage** | `sqlite3` + `sqlite3_flutter_libs` | `IndexedDB` (`IDBDatabase`) + `localStorage` | 100% offline, durable ACID transactions |
-| **Spreadsheets** | `excel: ^4.0.6` | CSV / Structured JSON exports | 6-sheet offline `.xlsx` generation |
-| **Document Export** | `pdf: ^3.11.3` + `printing` | `jspdf` + `jspdf-autotable` | Field records and performance certificate generation |
-| **Hardware & IoT** | `qr_flutter: ^4.1.0`, `image_picker` | `qrcode.react`, Camera Web API | Batch tray and Chandrike physical QR tracking |
-| **Audio Synthesis** | `flutter_tts: ^4.2.5` | Web Speech Synthesis API | Hands-free voice guidance in Swahili and English |
-| **Charts & Graphs** | `fl_chart: ^0.70.2` | SVG / Canvas Vector Engines | Growth curves, feed trends, defect breakdown |
-| **Localization** | `flutter_localizations` & `intl` | `translations.ts` dictionary | English & Kiswahili full system parity |
-| **Testing** | 113 Automated Unit & Widget Tests | Oxlint + TypeScript type verification | Zero-regression quality assurance |
+| **Core Framework** | Flutter 3.27+ / Dart 3.11+ | React 19.3+ / TypeScript 5.9+ | Application lifecycle, reactive rendering, state management |
+| **Styling & Theming** | Material 3 Sunlight-Readable Palette | Monochromatic High-Contrast (Black & White) | Sunlight legibility, WCAG AAA compliance, zero eye strain |
+| **Modern Web Standards** | N/A (Native Canvas / Skia) | Google Chrome Modern Web Guidance | `color-scheme`, `light-dark()`, `scrollbar-color`, `text-wrap`, `content-visibility` |
+| **Local Persistence** | `sqlite3` + `sqlite3_flutter_libs` | `IndexedDB` (`IDBDatabase`) + `localStorage` | 100% offline-first transactional storage |
+| **Data Interchange** | `excel: ^4.0.6` (6-sheet `.xlsx`) | Structured CSV, JSON Backup, PDF Export | Auditing, station report generation, backup serialization |
+| **Hardware & Sensors** | `qr_flutter`, `camera`, `flutter_tts` | `qrcode.react`, Web Speech Synthesis | Batch tray QR tracking, hands-free voice guidance |
+| **Financial & USSD** | M-PESA B2C validation & USSD dialer | Payout ledger & USSD architectural simulator | Mobile money disbursements and basic phone access |
+| **Quality Assurance** | 113 Automated Unit & Widget Tests | Oxlint + TypeScript type check + Vite build | Zero-regression quality assurance |
 
 ---
 
-## 2. Biological Lifecycle Modeling & Predictive Scheduling
+## 2. Characterized Kenyan Germplasm & Genebank Registry
 
-The application models the complex metamorphosis of silkworms through two distinct biological engine configurations based on KALRO technical manuals.
+Optimal silkworm health and silk yields depend directly on the nutritional quality, leaf moisture, and succulence of the host plant foliage. The platform embeds the complete official germplasm database established by KALRO / NSRC.
 
-### 2.1 *Bombyx mori* (Mulberry Silkworm)
+### 2.1 Characterized Mulberry Varieties (*Morus* spp.)
 
-*Bombyx mori* is a monophagous domesticated insect that feeds exclusively on fresh leaves of the white or black mulberry tree (*Morus alba*, *Morus indica*). It completes its larval cycle through 5 distinct growth instars separated by 4 dormant moults, spinning a sealed silk cocoon containing a single continuous fibroin filament.
+Eleven specialized mulberry cultivars characterized at KALRO Thika are maintained in the system with their agronomic traits and rearing suitabilities:
+
+| Variety Name | Origin / Classification | Leaf Yield (ton/ha/yr) | Leaf Moisture % | Rooting % | Rearing Suitability | Key Agronomic Characteristics |
+|---|---|---|---|---|---|---|
+| **V1** | High-Yield Bivoltine | 45–55 | 78–82% | 85–90% | Chawki (1st–2nd) & Late Age | Thick, succulent, dark green ovate leaves. High protein retention; standard for bivoltine rearing. |
+| **Thika** | Kenyan Selection (Local) | 30–38 | 72–75% | 75–80% | Late Age (3rd–5th Instar) | Highly adapted to Central Kenya mid-altitudes; robust drought tolerance and rapid regrowth. |
+| **Embu** | Kenyan Selection (Local) | 32–40 | 73–76% | 78–82% | 2nd to 5th Instar | High palatability; performs well in acidic to neutral volcanic soils. |
+| **Ithaanga** | Kenyan Semi-Arid Selection | 28–34 | 70–74% | 70–75% | Late Age Rearing | Superior resistance to prolonged moisture stress; deep taproot system for semi-arid zones. |
+| **Limuru** | High-Altitude Kenyan Selection | 26–32 | 74–77% | 65–70% | Mid to Late Age | Frost tolerant; adapted to cold high-altitude conditions (2,000+ m ASL). |
+| **Thailand** | Introduced Hybrid | 38–46 | 76–80% | 80–85% | 1st to 5th Instar | Broad, thin leaves with high moisture retention; rapid shoot development under irrigation. |
+| **Ichinose** | Japanese Temperate Selection | 30–35 | 75–78% | 60–65% | Chawki Rearing | High crude protein content; ideal for young chawki worms; requires careful pruning. |
+| **Kanva 2** | Indian Selection | 35–42 | 74–77% | 80–85% | Late Age Rearing | Vigorous growth habit, highly responsive to farmyard manure and chemical fertilization. |
+| **S54** | Improved Triploid Cultivar | 40–48 | 77–81% | 75–80% | Chawki & Early Instars | Large, smooth, lustrous leaves; excellent nutrient conversion ratio. |
+| **S36** | Improved Diploid Cultivar | 38–45 | 76–80% | 80–85% | Chawki Rearing | Glossy, high moisture content; delays wilting on the rearing bed. |
+| **Unknown 2** | Station Accession (Research) | 28–35 | 72–75% | 70–75% | Evaluation Trials | Ongoing comparative performance and biochemical profiling accession. |
+
+### 2.2 Evaluated Castor Varieties (*Ricinus communis*)
+
+Castor is the mandatory primary host plant for Eri silkworms (*Samia cynthia ricini* / *Philosamia ricini*). The platform incorporates 7 evaluated varieties:
+* **Nuu 70**: High leaf biomass cultivar adapted to semi-arid Eastern Kenya (Kitui/Machakos); low ricin toxin expression in mature leaves.
+* **KC6**: Fast-maturing dwarf variety suitable for intercropping with food legumes.
+* **KC14**: Broad-leaved selection with high moisture retention and resistance to castor rust (*Melampsora ricini*).
+* **KC2**: Traditional hardy accession with continuous leaf flush throughout dry periods.
+* **KC24**: Heavy canopy producer optimized for dedicated block planting.
+* **KC15**: Resistant to leaf hopper infestation; high crude fiber-to-protein ratio suitable for 5th instar larvae.
+* **KMC8**: Commercial oilseed and sericulture dual-purpose variety.
+
+### 2.3 Station Genebanks & Field Research Blocks
+
+The platform tracks and records germplasm inventory across designated KALRO research blocks:
+* **Genebank Collections**:
+  * *Old Genebank*: Historic foundation collection preserving baseline genetic diversity.
+  * *New Genebank*: Modern replicated plots for ongoing morphological and molecular characterization.
+  * *Centre Genebank*: Repository for elite regional selections (*Ex-Embu, Ex-Thika, Ex-Limuru, Ex-Ithanga*).
+* **Evaluation Blocks**:
+  * *Blocks C2, C3, and C4*: Replicated agronomic trials assessing pruning response, leaf yield per bush, and spacing densities.
+  * *Blocks D1, D2, D3, and D4*: Screened trials evaluating 98 individual accessions for pest resistance, rooting efficiency, and drought recovery.
+* **Highway Farm Trials**:
+  * Specialized research sectors comprising wild collections, irrigated high-density selections, rainfed/non-irrigated dryland plots, cross selections, and stabilized line selections.
+
+---
+
+## 3. Silkworm Breeding, Pedigree & Heterosis Modeling
+
+The breeding management system records genetic lineage, parental voltinism, and cross performance for both *Bombyx mori* and *Philosamia ricini*.
+
+### 3.1 Silkworm Strains
+
+1. **KSK (Kenya Sericulture Kakamega)**: High-vigor bivoltine strain adapted to tropical mid-elevations. Produces clean, white, peanut-shaped cocoons with high shell content.
+2. **ATK (Agricultural Technical Kakamega)**: Robust parental line characterized by high disease tolerance and uniform larval growth.
+3. **ICIPE Crosses**: Strains bred for resilience in arid and semi-arid lands (ASAL), demonstrating high tolerance to ambient temperature fluctuations.
+4. **Kinshoshowa**: Elite bivoltine hybrid imported and stabilized for maximum commercial filament length ($> 1,200\,\text{m}$) and low Renditta ($< 7.0$).
+5. **Eri Silkworm (*Philosamia ricini*)**: Polyvoltine saturniid moth feeding on castor. Produces open-ended, non-reelable spun silk (Ahimsa silk) where moths emerge naturally without destroying filament utility.
+
+### 3.2 Heterosis & Vigor Modeling
+
+The system calculates hybrid vigor ($H\%$) when crossing inbred parental lines to produce $F_1$ commercial eggs:
+
+$$\text{Mid-Parent Value (MP)} = \frac{P_1 + P_2}{2}$$
+
+$$\text{Heterosis Percentage } (H\%) = \left( \frac{F_1 - \text{MP}}{\text{MP}} \right) \times 100$$
+
+Where:
+* $P_1$ = Trait value of female parent (e.g., cocoon weight in grams).
+* $P_2$ = Trait value of male parent.
+* $F_1$ = Observed trait value of the resulting commercial hybrid generation.
+
+*Commercial hybrids exhibit positive heterosis ($+15\%$ to $+35\%$) in single cocoon weight, shell ratio, and effective rearing rate ($ERR\%$).*
+
+---
+
+## 4. Standardized 5-Instar Lifecycle & Bed Space Protocol
+
+The application models the metamorphosis of *Bombyx mori* through 5 distinct larval instars and 4 dormant moults based on standard rearing packages for **20,000 larvae** (one standard 12.5g disease-free egg box).
 
 ```mermaid
-graph LR
-    Incub["Incubation\n(10-12 days)\n25°C, 80% RH"] --> I1["1st Instar\n(3 days)\nTender Chopped Leaf"]
-    I1 --> M1["1st Moult\n(1 rest day)\nFeed Cutoff"]
-    M1 --> I2["2nd Instar\n(3 days)\nChopped Leaf"]
-    I2 --> M2["2nd Moult\n(1 rest day)\nFeed Cutoff"]
-    M2 --> I3["3rd Instar\n(3 days)\nChawki / Transition"]
-    I3 --> M3["3rd Moult\n(1 rest day)\nFeed Cutoff"]
-    M3 --> I4["4th Instar\n(3 days)\nWhole Leaf / Shoot"]
-    I4 --> M4["4th Moult\n(1 rest day)\nFinal Cutoff"]
-    M4 --> I5["5th Instar\n(6-7 days)\nVoracious Feeding"]
-    I5 --> Mount["Mounting\n(1 day)\nTransfer to Chandrike"]
-    Mount --> Spin["Spinning\n(3-5 days)\nCocoon Construction"]
-    Spin --> Harv["Cocoon Harvest\n(Day 38-40)\nSorting & Reeling"]
-    Harv --> Moth["Moth Emergence\n(Day 52-54)\nEgg Production"]
+graph TD
+    Incub["Incubation (10-12 days)\n25°C, 80% RH · Black boxing"] --> I1["1st Instar (3 days)\n26-28°C, 85% RH · 300-400g leaf · 0.4-1.0 m²"]
+    I1 --> M1["1st Moult (1 rest day)\nFeed Cutoff · Slaked Lime Dusting"]
+    M1 --> I2["2nd Instar (3 days)\n26-28°C, 85% RH · 700-1400g leaf · 1.0-2.0 m²"]
+    I2 --> M2["2nd Moult (1 rest day)\nFeed Cutoff · Slaked Lime Dusting"]
+    M2 --> I3["3rd Instar (3 days)\n24-26°C, 80% RH · 4-6kg leaf · 4.0-8.0 m²"]
+    I3 --> M3["3rd Moult (1 rest day)\nFeed Cutoff · Slaked Lime Dusting"]
+    M3 --> I4["4th Instar (3 days)\n24-25°C, 75% RH · 24-60kg shoots · 8.0-16.0 m²"]
+    I4 --> M4["4th Moult (1 rest day)\nFinal Cutoff · Slaked Lime Dusting"]
+    M4 --> I5["5th Instar (6-7 days)\n23-24°C, 70% RH · 40-200kg shoots · 16.0-34.0 m²"]
+    I5 --> Mount["Mounting (1 day)\nTransfer to Chandrike / Rotary Mountages"]
+    Mount --> Spin["Spinning (3-5 days)\n25°C, 65% RH · Cocoon Construction"]
+    Spin --> Harv["Harvest (Day 38-40)\nDefect Triage & Hot-Air Stifling"]
 ```
 
-#### Detailed Stage Calendar:
-1. **Egg Incubation (10–12 days)**: Eggs are kept in black boxing and controlled rearing conditions (25°C, 80% RH). Feed policy: `FeedPolicy.none`.
-2. **1st Instar (3 days)**: Young chawki worms fed tender, finely chopped (0.5–1.0 cm) top mulberry leaves 3–4 times daily. High moisture retention required.
-3. **1st Moult (1 day)**: Worms shed head capsules and cuticles. Complete feed cutoff (`FeedPolicy.none`). Farmers apply slaked lime or bed disinfectants (e.g., Vijetha/Labex).
-4. **2nd Instar (3 days)**: Medium chopped leaf (1–2 cm), bed spacing expanded $2\times$.
-5. **2nd Moult (1 day)**: Absolute rest. Larvae remain motionless with heads raised.
-6. **3rd Instar (3 days)**: Transition to late-stage rearing. Larval appetite accelerates.
-7. **3rd Moult (1 day)**: Third skin shed. Bed cleaning performed prior to settling.
-8. **4th Instar (3 days)**: Fed whole leaves or shoot feeding. Leaf demand escalates rapidly.
-9. **4th Moult (1 day)**: Final moult rest. Rearing floor prepared for peak leaf intake.
-10. **5th Instar (6–7 days)**: Consumes over 80% of total lifetime forage. Larvae increase weight by over 10,000-fold from hatching.
-11. **Mounting (1 day)**: Mature worms exhibit ripe translucent amber/creamy coloration, stop feeding, void soft gut contents, and raise heads looking for anchor points. Placed on rotary mountages or woven bamboo *Chandrikes*.
-12. **Spinning (3–5 days)**: Larva secretes liquid silk from twin sericteries through the spinneret, drawing out a single bave up to 1,500 meters long, hardening into a cocoon.
-13. **Cocoon Harvest Window (Days 38–40)**: Cocoons harvested 6–8 days after mounting starts, prior to pupal transformation and moth emergence.
-14. **Moth Emergence (Days 52–54)**: If unharvested/stifled, moths excrete alkaline proteases that dissolve cocoon shells, destroying silk commercial reelability.
+### 4.1 Instar Feeding & Environmental Schedule
+
+| Stage | Duration | Target Temp (°C) | Target RH (%) | Daily Leaf Rations (20,000 Larvae) | Bed Space Requirement | Leaf Cut & Feed Type |
+|---|---|---|---|---|---|---|
+| **Egg Incubation** | 10–12 days | $25^\circ\text{C}$ | 80% | None | Egg sheets in incubator | Black-boxing for synchronous hatching |
+| **1st Instar** | 3 days | $26\text{--}28^\circ\text{C}$ | 85% | 300g – 400g daily | $0.4\text{--}1.0\,\text{m}^2$ | Top 3rd–4th leaf, finely chopped ($0.5\,\text{cm}^2$) |
+| **1st Moult** | 24 hours | $25\text{--}26^\circ\text{C}$ | 70% | **Zero (Cutoff)** | Maintained | Slaked lime powder dusting ($50\text{--}100\,\text{g/m}^2$) |
+| **2nd Instar** | 3 days | $26\text{--}28^\circ\text{C}$ | 85% | 700g – 1,400g daily | $1.0\text{--}2.0\,\text{m}^2$ | Leaves below glossy leaf, chopped ($1.0\text{--}2.0\,\text{cm}^2$) |
+| **2nd Moult** | 24 hours | $25\text{--}26^\circ\text{C}$ | 70% | **Zero (Cutoff)** | Maintained | Absolute rest; lime dusting |
+| **3rd Instar** | 3 days | $24\text{--}26^\circ\text{C}$ | 80% | 4.0kg – 6.0kg daily | $4.0\text{--}8.0\,\text{m}^2$ | Green-stem leaves, whole or coarse cut |
+| **3rd Moult** | 24 hours | $24\text{--}25^\circ\text{C}$ | 70% | **Zero (Cutoff)** | Maintained | Bed cleaning prior to settling; lime dusting |
+| **4th Instar** | 3 days | $24\text{--}25^\circ\text{C}$ | 75% | 24.0kg – 60.0kg daily | $8.0\text{--}16.0\,\text{m}^2$ | Whole shoots ($1.0\text{--}1.5\,\text{m}$) or entire branches |
+| **4th Moult** | 24–36 hours | $23\text{--}24^\circ\text{C}$ | 70% | **Zero (Cutoff)** | Maintained | Bed cleaning; lime dusting |
+| **5th Instar** | 6–7 days | $23\text{--}24^\circ\text{C}$ | 70% | 40.0kg – 200.0kg daily | $16.0\text{--}34.0\,\text{m}^2$ | Peak appetite; fresh whole shoots fed 3–4 times daily |
+| **Mounting** | 1 day | $25^\circ\text{C}$ | 65% | None | 20–25 *Chandrikes* | Transfer ripe translucent caterpillars |
+| **Spinning** | 3–5 days | $25^\circ\text{C}$ | 60–65% | None | Mountages | Good ventilation to evaporate excreted water |
+| **Harvest** | Days 38–40 | Ambient | Ambient | None | Sorting tables | Harvest 6–8 days after mounting starts |
+
+### 4.2 Moult Physiology & Slaked Agricultural Lime Protocol
+
+During larval moulting, caterpillars cease feeding, anchor their abdominal prolegs to the bed surface, and raise their anterior segments. Disturbing worms or feeding during moult causes asynchronous development, damaged head capsules, and digestive failure.
+
+**Slaked Agricultural Lime Powder ($\text{Ca(OH)}_2$) Procedure**:
+1. When $90\text{--}95\%$ of larvae settle for moult, cease feeding immediately.
+2. Dust the rearing bed with dry slaked agricultural lime powder at a calibrated rate of **$50\text{--}100\,\text{g/m}^2$** using a fine mesh sieve.
+3. The alkaline lime absorbs excess moisture, maintains bed dryness ($< 70\%\text{ RH}$), and inactivates airborne polyhedrosis viruses and fungal spores.
+4. When all larvae have shed their skins and resume active movement, resume feeding with fresh succulent leaves.
 
 ---
 
-### 2.2 *Samia cynthia ricini* (Eri Silkworm)
+## 5. Automated 4-Stage Hot-Air Cocoon Drying
 
-Eri silkworm is a completely domesticated, non-mulberry, polyphagous saturniid moth feeding primarily on castor (*Ricinus communis*) and kesseru (*Heteropanax fragrans*). Unlike Bombyx, Eri cocoons are open-ended, spun with discontinuous silk fibers that cannot be reeled in continuous filaments; they must be spun into yarn like cotton or wool.
+Traditional sun-drying of green cocoons is strictly forbidden in commercial sericulture: solar ultraviolet radiation ($290\text{--}400\,\text{nm}$) degrades fibroin and sericin proteins, induces yellowing, breaks molecular cross-linkages, causes sericin insolubility during boiling, and drastically drops reeling filament continuity.
+
+The platform includes an automated 4-stage hot-air drying controller and countdown system engineered according to NSRC thermal guidelines:
 
 ```mermaid
-graph LR
-    E_Incub["Incubation\n(10 days)\nCastor Prep"] --> E_I1["1st Instar\n(3 days)\nTender Castor"]
-    E_I1 --> E_M1["1st Moult\n(1 rest day)"]
-    E_M1 --> E_I2["2nd Instar\n(2 days)\nLight Day 1 -> Full"]
-    E_I2 --> E_M2["2nd Moult\n(1 rest day)"]
-    E_M2 --> E_I3["3rd Instar\n(3 days)\nLight Day 1 -> Full"]
-    E_I3 --> E_M3["3rd Moult\n(1 rest day)"]
-    E_M3 --> E_I4["4th Instar\n(5 days)\nLight Day 1 -> Full"]
-    E_I4 --> E_M4["4th Moult\n(1 rest day)"]
-    E_M4 --> E_I5["5th Instar\n(7 days)\nHeavy Castor / Kesseru"]
-    E_I5 --> E_Spin["Spinning\n(3 days)\nDry Leaves / Baskets"]
-    E_Spin --> E_Harv["Cocoon Harvest\n(Day 36-39)"]
-    E_Harv --> E_Moth["Moth Emergence\n(Day 39-42)\nNatural Escape"]
+flowchart LR
+    Stage1["Stage 1: 115°C (60 min)\nPupal Stifling & Surface Desiccation"] --> Stage2["Stage 2: 100°C (60 min)\nRapid Moisture Extraction"]
+    Stage2 --> Stage3["Stage 3: 95°C (30 min)\nCore Pupal Evaporation"]
+    Stage3 --> Stage4["Stage 4: 90°C (60 min)\nConditioning to 40% Target Weight"]
+    Stage4 --> Storage["Dry Cocoon Storage\nMoisture-Proof Bags, Dark & Aerated"]
 ```
 
-#### Distinctive Eri Characteristics:
-- **Feed Policy (`FeedPolicy.lightThenFull`)**: On Day 1 following a moult, Eri larvae require a gentle morning feeding to wake their digestive tract before full rations are administered.
-- **Continuous Spinning (`FeedPolicy.untilAllSpin`)**: Eri larvae do not all mature synchronously; late 5th instar larvae continue to feed until each caterpillar enters cocooning.
-- **Eco-Friendly / Non-Violent (Ahimsa Silk)**: Because Eri cocoons have open peduncles, the adult moth can safely emerge without cutting fibers, allowing harvest of both intact silk shells and viable breeding moths.
+### 5.1 Temperature Curve & Thermal Objectives
+
+1. **Stage 1 ($115^\circ\text{C}$ for 60 minutes)**: Rapid stifling of the living pupae inside the cocoon shell. High heat terminates pupal development instantly before the moth can secrete alkaline proteases that cut silk fibers. Surface moisture is rapidly evaporated.
+2. **Stage 2 ($100^\circ\text{C}$ for 60 minutes)**: Sustained evaporation without boiling the inner pupal fluids. Prevents pupal rupture (*melted cocoons*) from staining the inner shell.
+3. **Stage 3 ($95^\circ\text{C}$ for 30 minutes)**: Gradual heat conduction into the core of the dried pupa, drawing out residual visceral moisture.
+4. **Stage 4 ($90^\circ\text{C}$ for 60 minutes)**: Final conditioning stage bringing the dried cocoon lot to exactly **$38\text{--}42\%$ of its original green weight** (target $40\%$).
+
+$$\text{Target Dry Weight (kg)} = \text{Fresh Green Weight (kg)} \times 0.40$$
+
+### 5.2 Dry Weight Verification
+
+After completing the 210-minute cycle, the operator weighs a representative sample. If the sample exceeds $42\%$ of green weight, an additional 30 minutes at $90^\circ\text{C}$ is triggered. Once stabilized, cocoons can be stored safely in insect-proof, dry conditions for up to 12 months without mold or dermestid beetle damage.
 
 ---
 
-### 2.3 Dynamic Adjustment Engine
+## 6. Cocoon Defect Triage, Analytics & Market Valuation
 
-Larval duration is not static; it fluctuates based on temperature, humidity, and feeding consistency.
-- **Thermal Velocity**: Temperatures above 28°C shorten instar durations but increase disease vulnerability. Temperatures below 22°C prolong larval stages, increasing leaf costs.
-- **Skipped Feed Accumulation**: Each missed feeding event stalls growth. The system automatically shifts predicted harvest windows when farmers log skipped feeds or when milestone observation records confirm a delay.
-
----
-
-## 3. Commercial Cocoon Reeling & Quality Grading
-
-The economic value of a sericulture harvest depends on the quantity of raw silk extracted and the percentage of clean, unblemished cocoons. The app features a full commercial analytics engine conforming to KALRO research standards.
+Economic viability hinges on sorting out unreelable cocoons before marketing or basin reeling. The platform embeds an interactive defect classifier and pricing engine.
 
 ```mermaid
 flowchart TD
-    HarvestLot["Harvested Green Cocoon Lot\n(Total Weight & Count)"] --> DefectSort["Sorting & Defect Segregation"]
+    Lot["Harvested Cocoon Lot\n(Gross Weight & Total Count)"] --> Sort["Comprehensive Sorting & Defect Triage"]
     
-    DefectSort --> DefectTypes["Classify 5 Defect Types:\n1. Double Cocoons (Mutts)\n2. Uzi Fly Pierced\n3. Stained & Soiled\n4. Flimsy & Thin Shelled\n5. Melted / Dead-Inside"]
-    DefectSort --> GoodLot["Good Reelable Cocoons\n(Total Weight - Defectives)"]
+    Sort --> D1["1. Thin Cocoons (Loose layers, low silk)"]
+    Sort --> D2["2. Framed Cocoons (Corner/frame impressions)"]
+    Sort --> D3["3. Irregular Cocoons (Deformed, weak worms)"]
+    Sort --> D4["4. Melted Cocoons (Dead rotting pupa inside)"]
+    Sort --> D5["5. Double Cocoons (Mutts - two worms)"]
+    Sort --> D6["6. Stained Cocoons (Urine/gut liquid soaked)"]
 
-    GoodLot --> ShellTest["Shell Ratio Testing:\nWeigh 20 Whole Cocoons\nCut & Weigh Empty Shells"]
-    GoodLot --> ReelingTest["Reeling Pilot:\nMeasure Raw Silk Yarn Yield\nCount Reeling Thread Breaks"]
+    Sort --> Reelable["Good Commercial Cocoons\n(Total Wt - Defective Wt)"]
 
-    ShellTest --> ShellRatio["Shell Ratio % (SR)\n[Shell Wt / Cocoon Wt] × 100"]
-    ReelingTest --> Renditta["Renditta (Reeling Efficiency)\nFresh Cocoon kg / Raw Silk kg"]
-    ReelingTest --> Reelability["Reelability %\n[Cocoons / (Cocoons + Breaks)] × 100"]
-    DefectTypes --> DefectRate["Defect Rate %\n[Defective Count / Total Count] × 100"]
+    Reelable --> ShellCalc["Shell Ratio Test:\nWeigh 20 whole cocoons\nCut & weigh empty shells"]
+    ShellCalc --> SR["Shell Ratio % (SR)\n[Empty Shell Wt / Whole Cocoon Wt] × 100"]
 
-    ShellRatio --> GradeEngine{"Commercial Grading Engine"}
-    DefectRate --> GradeEngine
+    D1 & D2 & D3 & D4 & D5 & D6 --> DefectSum["Total Defect Rate %\n[Defective Count / Total Count] × 100"]
 
-    GradeEngine -->|SR ≥ 21% & Defect ≤ 5%| GradeA["GRADE A\n(Premium Export & Machine Reeling)"]
-    GradeEngine -->|SR ≥ 17% & Defect ≤ 10%| GradeB["GRADE B\n(Standard Commercial Cottage Reeling)"]
-    GradeEngine -->|SR < 17% or Defect > 10%| GradeC["GRADE C\n(Substandard / Local Spinning Yarn)"]
+    SR & DefectSum --> GradeClassifier{"Commercial Grading Engine"}
+
+    GradeClassifier -->|SR ≥ 21% & Defect ≤ 5%| GA["GRADE A (KES 900–1,100 / kg)\nPremium Export & Automatic Machine Reeling"]
+    GradeClassifier -->|SR ≥ 17% & Defect ≤ 10%| GB["GRADE B (KES 700–850 / kg)\nStandard Commercial Cottage Basin Reeling"]
+    GradeClassifier -->|SR ≥ 13% & Defect ≤ 15%| GC["GRADE C (KES 500–650 / kg)\nLow-Grade / Local Hand Spinning Yarn"]
+    GradeClassifier -->|SR < 13% or Defect > 15%| Reject["REJECT (KES 200–350 / kg)\nSpun Silk Waste / Non-Reelable"]
 ```
 
-### 3.1 Mathematical Formulations
+### 6.1 Commercial Formulas
 
 #### 1. Shell Ratio Percentage ($SR\%$):
-Measures the proportion of silk shell weight relative to total green cocoon weight (cocoon + living pupa).
 $$SR\% = \left( \frac{\text{Empty Shell Weight (g)}}{\text{Total Whole Cocoon Weight (g)}} \right) \times 100$$
-*High commercial yields exceed 21% for bivoltine hybrids.*
 
 #### 2. Commercial Renditta ($R$):
-Represents the number of kilograms of fresh green cocoons required to reel exactly 1 kilogram of raw silk filament.
-$$R = \frac{\text{Fresh Cocoon Weight (kg)}}{\text{Raw Silk Yield (kg)}}$$
-*When raw silk yield data is pending, the engine estimates Renditta using the validated empirical formula:*
-$$R_{\text{estimated}} = \text{clamp}\left( \frac{100}{SR\% \times 0.80}, 4.0, 20.0 \right)$$
-*(A lower Renditta indicates superior silk content; premium Bombyx yields achieve $R \le 7.5$).*
+Number of kilograms of fresh green cocoons required to produce 1 kg of raw silk filament:
+$$R = \frac{\text{Fresh Cocoon Weight (kg)}}{\text{Raw Silk Yield (kg)}} \quad \text{or} \quad R_{\text{est}} = \text{clamp}\left( \frac{100}{SR\% \times 0.80}, 4.0, 20.0 \right)$$
 
 #### 3. Reelability Index ($RI\%$):
-Measures reeling continuity and filament strength based on the frequency of thread breaks during unwinding on the reeling basin.
-$$RI\% = \left( \frac{\text{Total Cocoons Reeled}}{\text{Total Cocoons Reeled} + \text{Total Thread Breaks}} \right) \times 100$$
+$$RI\% = \left( \frac{\text{Total Cocoons Reeled}}{\text{Total Cocoons Reeled} + \text{Basin Thread Breaks}} \right) \times 100$$
 
 #### 4. Effective Rearing Rate ($ERR\%$):
-Measures the overall survival and cocoon production efficiency against initial eggs/larvae brushed:
 $$ERR\% = \left( \frac{\text{Harvested Good Cocoons}}{\text{Total Eggs Branded}} \right) \times 100$$
 
-#### 5. Commercial Defect Classification:
-Defects are tracked across 5 categories:
-- **Double Cocoons (*Mutts*)**: Two larvae spinning simultaneously in one shell. Fibers are entangled and unreelable as standard warp filament.
-- **Uzi Fly Pierced**: Cocoons parasitized by *Exorista bombycis*. The uzi maggot bores through the shell upon pupation, severing continuous fibers.
-- **Stained / Soiled**: Damaged by gut liquid or crushed larvae during mounting.
-- **Flimsy / Thin-Shelled**: Underfed or diseased worms unable to secrete sufficient fibroin.
-- **Melted / Dead-Inside**: Larvae dying inside the cocoon, rotting against the inner shell wall.
+#### 5. Net Lot Valuation Formula:
+$$\text{Net Payout (KES)} = (\text{Reelable Weight (kg)} \times \text{Base Price}) \times \left(1 + \frac{SR\% - 18\%}{100}\right) \times \left(1 - \frac{\text{Defect Rate } \%}{100}\right)$$
 
 ---
 
-## 4. Sericulture Formula Engine
+## 7. Silkworm Pathology & Biosecurity Triage
 
-In addition to static metrics, the system embeds an on-device mathematical parser and evaluator (`FormulaEngine`) using a tokenizer and **Shunting-Yard Dijkstra algorithm** to convert infix expressions to Reverse Polish Notation (RPN).
+Silkworms are vulnerable to viral, microsporidian, bacterial, and fungal pathogens. The system provides immediate field diagnostic symptoms and containment protocols:
 
-### 4.1 Parser Architecture
+| Disease | Pathogen Type | Primary Visual Symptoms | Urgency & Quarantine Protocol | Corrective Field Action |
+|---|---|---|---|---|
+| **Grasserie** | Nuclear Polyhedrosis Virus (BmNPV) | Swollen intersegmental membranes, shining translucent skin, restless crawling to bed edges, milky hemolymph leaking from skin ruptures. | **Critical (Quarantine)**: Spreads rapidly through contaminated leaves and bed litter. | Isolate and incinerate diseased larvae. Do not touch healthy beds after handling. Dust slaked lime ($100\,\text{g/m}^2$) + $2\%$ bleaching powder immediately. |
+| **Pebrine** | Microsporidia (*Nosema bombycis*) | Microscopic pepper-like black spots on integument, uneven larval growth, sluggish movement, failure to moult. Transovarially transmitted. | **Catastrophic (Total Cull)**: Destroys entire seed generations if uncontained. | Immediately burn affected batch. Formalin fumigation ($2\%$) of rearing room and trays. Mother moth microscopic examination before egg dispatch. |
+| **Flacherie** | Bacterial / Infectious Flacherie Virus (BmIFV) | Flaccid body, digestive failure, translucent cephalothorax, dark foul-smelling vomit, liquid excreta, dead worms turning black and rotting. | **High**: Caused by poor ventilation, fermented leaves, or thermal stress ($> 28^\circ\text{C}$). | Remove decaying leaves. Improve cross-ventilation. Dust rearing bed with slaked lime. Reduce feeding density and adjust temperature. |
+| **Muscardine** | Fungal (*Beauveria bassiana*) | Limp larvae with oily specks initially; after death, carcass turns stiff and chalky white (covered with white mycelia and conidia). | **High**: Airborne spores germinate directly through cuticle in high humidity ($> 85\%$). | Dust Dithane M-45 ($2\%$) or Captan mixed with slaked lime ($98\%$). Reduce rearing house humidity below $70\%$ using ventilation and fans. |
+
+---
+
+## 8. Rural Financial Settlement & Connectivity Infrastructure
+
+### 8.1 M-PESA B2C Payout Engine
+
+To support immediate, transparent financial settlement when farmers deliver sorted green cocoons to station collection centres, the platform integrates an M-PESA B2C payout calculator conforming to the **Safaricom Daraja API** standard:
+* Validates Kenyan MSISDN phone numbers (`2547XXXXXXXX` or `2541XXXXXXXX`).
+* Calculates tiered M-PESA B2C disbursement charges and net bank settlements.
+* Generates cryptographic payment reference codes (`KALRO-B2C-YYYYMMDD-XXXX`).
+* Records payment ledgers offline in `FarmStore` SQLite and IndexedDB, ready for batch synchronization when connectivity resumes.
+
+### 8.2 Interactive Offline USSD Simulator (`*384*254#`)
+
+For farmers in remote regions who do not own smartphones, extension officers and farmers can simulate and navigate the official KALRO Sericulture USSD menu:
+* **Service Code**: `*384*254#`
+* **Multilingual Menu Tree**: English, Kiswahili, and Kikuyu.
+* **Core Functions**:
+  * `1`: Check Today's Feed Rations (by instar day).
+  * `2`: Report Daily Mortality or Disease Symptoms.
+  * `3`: Check Current Cocoon Buying Prices (Grade A/B/C).
+  * `4`: Request Extension Officer Visit or Grainage Egg Delivery.
+  * `5`: Query M-PESA Payout Status.
+
+---
+
+## 9. Mathematical Formula Engine
+
+The platform features an on-device mathematical parser and evaluator (`lib/services/formula_engine.dart`) using **Edsger Dijkstra's Shunting-Yard Algorithm** to parse infix mathematical expressions into Reverse Polish Notation (RPN) queues:
 
 ```mermaid
 graph LR
-    Input["Input Formula String\ne.g., '((totalWeightGrams / 1000) * pricePerKg) - totalCosts'"] --> Tokenizer["Tokenizer\nSplits into Operators, Numbers, Identifiers"]
-    Tokenizer --> ShuntingYard["Shunting-Yard Algorithm\nOperator Precedence (+, -, *, /, ^)\nAssociativity & Parens"]
-    ShuntingYard --> RPNQueue["Reverse Polish Notation (RPN) Queue"]
+    Input["Input Infix Expression\ne.g., '((totalWeightGrams / 1000) * pricePerKg) - costs'"] --> Tokenizer["Tokenizer Engine\nExtracts Numbers, Identifiers, Operators"]
+    Tokenizer --> ShuntingYard["Shunting-Yard Dijkstra Algorithm\nOperator Precedence, Associativity & Parentheses"]
+    ShuntingYard --> RPNQueue["RPN Stack Queue"]
     RPNQueue --> Evaluator["RPN Stack Evaluator\nBinds Real-Time Batch Variables"]
-    Evaluator --> Result["Calculated Metric Value (Double)"]
+    Evaluator --> DoubleResult["Evaluated Numeric Metric (Double)"]
 ```
 
-### 4.2 Built-in Presets
-
-| Identifier | Name | Mathematical Expression | Output Unit | Purpose |
-|---|---|---|---|---|
-| `avg_weight` | Average Cocoon Weight | `totalWeightGrams / cocoonCount` | `g` | Single cocoon weight average |
-| `err_percent` | Effective Rearing Rate | `(goodCount / eggCount) * 100` | `%` | Percentage of eggs producing harvestable cocoons |
-| `defect_rate` | Defect Rate | `(defectiveCount / cocoonCount) * 100` | `%` | Proportion of flawed or unreelable cocoons |
-| `est_silk_yield` | Estimated Silk Yield | `(totalWeightGrams / 1000) / renditta` | `kg` | Commercial raw silk output estimation |
-| `gross_revenue` | Gross Cocoon Revenue | `(totalWeightGrams / 1000) * pricePerKg` | `KES` | Commercial value of harvested green cocoons |
-| `net_margin` | Net Farm Margin | `((totalWeightGrams / 1000) * pricePerKg) - totalCosts` | `KES` | Farm profit after seed, leaf, and labor deductions |
+### Supported Token Operations:
+* **Binary Operators**: Addition (`+`), Subtraction (`-`), Multiplication (`*`), Division (`/`), Exponentiation (`^`).
+* **Unary Operators**: Negation (`-x`).
+* **Runtime Dynamic Variables**: `totalWeightGrams`, `cocoonCount`, `goodCount`, `defectiveCount`, `eggCount`, `shellWeightGrams`, `pricePerKg`, `totalCosts`, `renditta`.
 
 ---
 
-## 5. Daily Farm Operations & Routine Execution
+## 10. Data Persistence, Multi-Tenancy & Interoperability
 
-### 5.1 Minimalist "Today" Routine
+### 10.1 `FarmStore` SQLite Engine (Flutter Mobile)
 
-The primary operational screen (`RearingHubScreen`) is optimized for low cognitive burden during morning, afternoon, and evening rearing duties:
-- **Zero Dummy Data**: New app users see a calm, clean empty state directing them to register their first batch.
-- **Unified Routine Card (`TodayBatchWorkCard`)**:
-  - Displays variety badge (*Bombyx mori* or *Eri*), current stage, live population count, and room location.
-  - Highlights today's target feeding requirement (e.g. `Suggested: 350 g/feed · 3 feeds today`).
-  - Single-tap action: **"Feed larvae"** with instant checked confirmation state (**"Fed today"**).
-  - Quick action chips for logging larval mortality (`Deaths`) and climate status (`House`).
-- **Hands-Free Text-to-Speech Guidance**: A speaker icon triggers audible reading of today's tasks in English or Swahili, allowing farmers with dirty or wet hands to listen while preparing leaves.
+The Flutter application relies on a zero-dependency, native `sqlite3` transactional engine (`lib/services/farm_store.dart`):
+* **ACID Transactions**: Guarantees zero data loss during phone power cuts or battery depletion.
+* **Hybrid Schema**: Combines indexed relational columns (`id`, `batch_id`, `created_at`) with schema-free JSON payloads (`data TEXT`) and SQLite generated column extraction (`json_extract(data, '$.recordedAt')`).
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Farmer as Silkworm Rearer
-    participant Hub as Today's Routine (RearingHubScreen)
-    participant Audio as AudioGuidanceService (TTS)
-    participant Floor as FloorActions (Modal / Sheet)
-    participant DB as FarmStore (SQLite)
+### 10.2 Multi-Tenant IndexedDB Engine (React Web)
 
-    Farmer->>Hub: Opens Today Screen
-    Hub->>Hub: Evaluate active batches & today's plan
-    alt Audio Button Tapped
-        Farmer->>Hub: Taps Speaker Icon
-        Hub->>Audio: speakTodayPlan(species, instar, grams, isMoult, action)
-        Audio-->>Farmer: Speaks in Swahili or English
-    end
-    Farmer->>Hub: Taps "Feed larvae"
-    Hub->>Floor: Opens quick feed logger
-    Farmer->>Floor: Inputs feed quantity (accepts integers e.g. 50g)
-    Floor->>DB: Saves FeedLog record (transactional)
-    DB-->>Hub: Updates today's status to "Fed today"
-```
+The React web application utilizes an isolated multi-tenant IndexedDB store (`web_app/src/storage.ts`):
+* Accommodates multiple farmer or technician profiles on shared community computers.
+* Isolates records for batches, feeding logs, harvests, and financial ledgers per user profile.
+* Supports seamless switching between profiles and secure data purging.
 
-### 5.2 Flexible Grams & Feeding Logging
+### 10.3 Multi-Sheet Excel Engine (`.xlsx`)
 
-Feeding inputs throughout both mobile and web clients accept whole numbers and decimals without forced browser or regex restrictions (`TextInputType.numberWithOptions(decimal: true)` and HTML5 `step="any"`). Farmers can enter `20`, `50`, or `500` grams without decimal errors.
+The `ExcelExportService` compiles the entire farm or research station history into a standardized 6-sheet spreadsheet:
+1. `Batches`: ID, Species, Strain, Egg Count, Start Date, Status, Location, Caretaker.
+2. `Feeding_Ledger`: Batch ID, Timestamp, Leaf Type, Grams Fed, Instar Stage, Notes.
+3. `Health_Mortality`: Batch ID, Deaths, Cause/Disease, Biosecurity Treatment, Isolation.
+4. `Environment`: Temperature (°C), Relative Humidity (%), Ventilation, Natural Light.
+5. `Cocoon_Harvest`: Harvest Date, Cocoon Count, Total Weight, Shell Weight, Defect Count, Grade.
+6. `Financial_Ledger`: Transaction ID, Direction, Amount KES, Category, Receipt Number.
 
-### 5.3 Skipped Feed Tracking
+### 10.4 Cryptographic JSON Backup & Restore
 
-If leaf shortages, severe storms, or labor deficits prevent a scheduled feeding, farmers can log a skipped feed with explicit categories:
-- *Short Leaf / Orchard Deficit*
-- *Rain / Wet Leaves (Hazardous to Larvae)*
-- *Disease / Moult Rest*
-- *Labour Shortage*
-- *Pest / Contamination Alert*
+Exports all database collections into a signed JSON file verified with a **SHA-256** checksum. The system detects any payload tampering or bitrot prior to restoration.
 
 ---
 
-## 6. Leaf & Forage Inventory Management
+## 11. Design System & Modern Web Standards
 
-Silkworms cannot survive prolonged starvation; a 5th instar batch will collapse within 24 hours if forage is exhausted. The `LeafLedgerService` provides continuous consumption tracking and depletion forecasting.
+The web application (`web_app/`) adheres strictly to the **Google Chrome Modern Web Guidance** specifications:
 
-### 6.1 Multi-Forage Tracking
-- **Mulberry (*Morus*)**: Tracked in kilograms for *Bombyx mori*.
-- **Castor (*Ricinus communis*)**: Primary forage for *Eri*.
-- **Kesseru (*Heteropanax fragrans*)**: Evergreen perennial reserve forage for *Eri*.
-
-### 6.2 Depletion Forecasting Algorithm
-
-The forecaster calculates forward consumption for the next 14 rearing days:
-1. Iterates over active batches.
-2. Extracts species, instar day, and living larval count.
-3. Computes daily intake projection:
-   $$\text{Daily Intake (kg)} = \sum_{\text{batches}} \left( \frac{\text{Suggested Grams per Larva} \times \text{Live Larvae}}{1000} \right)$$
-4. Compares running consumption against current warehouse stocks.
-5. Emits an urgency state:
-   - `DepletionUrgency.safe`: $> 5$ days of stock remaining.
-   - `DepletionUrgency.warning`: $2–4$ days remaining (order or harvest immediately).
-   - `DepletionUrgency.critical`: $< 48$ hours remaining (starvation risk).
-   - `DepletionUrgency.exhausted`: Zero forage in storage.
-
----
-
-## 7. Data Architecture & Offline Storage
-
-### 7.1 `FarmStore` SQLite Engine (Flutter)
-
-The mobile database (`lib/services/farm_store.dart`) is built directly on native `sqlite3` without third-party ORM overhead:
-- **Zero Cloud Lockout**: 100% operational offline.
-- **Indexed Document Storage**: Records are saved in typed collections (`batches`, `feed_logs`, `mortality_logs`, `environment_logs`, `cocoon_harvests`, `leaf_movements`, `payments`, `producers`) using a hybrid schema:
-  - Strongly typed primary key (`id`).
-  - Indexed foreign keys (`batch_id`, `created_at`, `updated_at`).
-  - JSON payload (`data TEXT`) with SQLite generated column indexing (`json_extract(data, '$.recordedAt')`).
-
-### 7.2 Multi-Tenant IndexedDB Engine (Web App)
-
-The web client (`web_app/src/storage.ts`) utilizes an isolated multi-tenant IndexedDB store (`kalro_sericulture_multitenant_db`):
-- Multiple farmer accounts can coexist on a shared community or research station computer.
-- Each profile maintains isolated collections for batches, logs, harvests, and payments.
-- Supports switching profiles, editing metadata, and safe profile deletion.
+1. **Monochromatic High-Contrast Palette**:
+   * Pure black (`#000000`) and pure white (`#FFFFFF`) primary colors with neutral grayscale accents (`#FAFAFA`, `#F4F4F5`, `#E4E4E7`, `#27272A`, `#18181B`, `#09090B`).
+   * Eliminates low-contrast decorative colors for optimal legibility in direct equatorial sunlight.
+2. **`dark-mode` & Modern Color Tokens**:
+   * Embedded `<meta name="color-scheme" content="light dark" />`.
+   * Root CSS declaration `color-scheme: light dark;`.
+   * Dynamic CSS variables powered by standard `light-dark()` functions (e.g., `light-dark(#000000, #FFFFFF)`).
+3. **`browser-ui-theming`**:
+   * Standard W3C `scrollbar-color: light-dark(#D4D4D8, #3F3F46) transparent;` and `scrollbar-width: thin;`.
+   * High-contrast `::selection` theming for crisp text readability.
+4. **`improve-text-layout-and-legibility`**:
+   * `text-wrap: balance;` applied across all section titles, cards, and modal headings.
+   * `text-wrap: pretty;` on instructional body copy and biosecurity guides to prevent typographically jarring orphan words.
+5. **`soft-edge-content-fade`**:
+   * Horizontal scroll containers (e.g., navigation tabs, table headers) utilize CSS `mask-image` linear gradients to provide clear visual affordance when items overflow.
+6. **`defer-rendering-heavy-content`**:
+   * Below-the-fold cards and complex diagnostic trees employ `content-visibility: auto;` paired with `contain-intrinsic-size: auto none auto 240px;` to optimize layout rendering and scroll responsiveness.
+7. **`required-field-feedback`**:
+   * Form inputs apply `:user-invalid` and `:required:user-valid` pseudo-classes to avoid displaying aggressive red validation borders before the user has touched the field.
 
 ---
 
-## 8. Export, Backup & Interoperability
-
-### 8.1 Multi-Sheet Excel Engine (`.xlsx`)
-
-The `ExcelExportService` compiles the entire farm history into an unencrypted, standardized 6-sheet spreadsheet compatible with Microsoft Excel, LibreOffice Calc, and Google Sheets:
+## 12. Comprehensive Codebase Directory Map
 
 ```text
-Farm_Record_Workbook.xlsx
-├── 1. Batches           (Batch ID, Species, Strain, Egg Count, Start Date, Status, Location, Caretaker)
-├── 2. Feeding_Ledger    (Batch ID, Timestamp, Feed Type, Quantity in Grams, Instar Stage, Notes)
-├── 3. Health_Mortality  (Batch ID, Timestamp, Deaths Count, Reason/Disease, Treatment, Isolated, Notes)
-├── 4. Environment       (Batch ID, Timestamp, Temperature °C, Humidity %, Ventilation, Light Condition)
-├── 5. Cocoon_Harvest    (Batch ID, Harvest Date, Cocoon Count, Total Wt, Defective Count, Shell Wt, Grade)
-└── 6. Financial_Ledger  (Record ID, Timestamp, Direction, Amount KES, Category, Description, Receipt No)
-```
-
-### 8.2 Cryptographic Backup & Restore
-
-The `BackupService` exports all database collections into a single JSON structure signed with a SHA-256 cryptographic checksum:
-```json
-{
-  "version": 1,
-  "exportedAt": "2026-11-10T10:30:00.000Z",
-  "checksum": "a8f5b492c3...",
-  "payload": {
-    "batches": [...],
-    "feedLogs": [...],
-    "mortalityLogs": [...],
-    "environmentLogs": [...],
-    "cocoonHarvests": [...],
-    "leafInventory": [...],
-    "payments": [...]
-  }
-}
-```
-During restore, the service verifies the SHA-256 signature to prevent corruption or tampering before executing a database replacement.
-
----
-
-## 9. Codebase Directory Map
-
-```text
-/home/ian/Documents/Kalro/Kalro-App/
-├── lib/                                    # Native Flutter Cross-Platform Application
-│   ├── components/                         # Granular, Reusable UI Components
-│   │   ├── batch/                          # Batch list cards, tray QR dialogs, edit forms
-│   │   ├── buttons/                        # KalroPrimaryButton, high-contrast action buttons
-│   │   ├── cards/                          # Leaf depletion, KPI metrics, climate summary cards
-│   │   ├── dashboard/                      # Farm work overview, alerts banners
-│   │   ├── feeding/                        # Feeding log dialogs, gram inputs, skipped feed forms
-│   │   ├── harvest/                        # Cocoon sorting, defect counters, grading pills
-│   │   ├── health/                         # Mortality records, disease symptom selection
-│   │   ├── layout/                         # KalroToolbar, backgrounds, sunlight headers
-│   │   ├── lifecycle/                      # TodayBatchWorkCard, floor actions, milestone strips
-│   │   ├── navigation/                     # FarmerBottomBar, responsive shell routing
-│   │   └── profile/                        # ProfileHeader, farm settings, credential tiles
-│   ├── constants/                          # System colors, typography tokens, sericulture thresholds
-│   ├── l10n/                               # App localization (English & Kiswahili ARB catalogs)
-│   ├── models/                             # Immutable Domain Data Models
-│   │   ├── batch.dart                      # Batch entity, species, strain, stage, location
-│   │   ├── cocoon_harvest.dart             # Cocoon lot, weight, defects, reeling samples
-│   │   ├── cocoon_metrics.dart             # Renditta, shell ratio, grade, survival rate
-│   │   ├── feed_log.dart                   # Feeding event, leaf grams, feeding stage, skipped flag
-│   │   ├── mortality_log.dart              # Daily deaths, disease classification, isolation status
-│   │   ├── environment_log.dart            # Rearing house temperature (°C), RH%, ventilation
-│   │   ├── leaf_inventory.dart             # Stock weights for Mulberry, Castor, Kesseru
-│   │   ├── payment_record.dart             # Farm expenses, leaf purchases, cocoon sales
-│   │   └── species.dart                    # Species enum (Bombyx mori vs. Samia cynthia ricini)
-│   ├── screens/                            # Primary Application Views
-│   │   ├── rearing_hub_screen.dart         # "Today" routine dashboard (zero dummy data)
-│   │   ├── batches_screen.dart             # Active & historical batches list
-│   │   ├── create_batch_screen.dart        # Streamlined batch registration (presets removed)
-│   │   ├── batch_detail_screen.dart        # Individual batch lifecycle, feed history, QR tag
-│   │   ├── lifecycle_planner_screen.dart   # Interactive calendar of expected milestones
-│   │   ├── feeding_screen.dart             # Feeding logs history & quick log action
-│   │   ├── health_screen.dart              # Mortality records & environmental climate logs
-│   │   ├── harvest_screen.dart             # Cocoon sorting, defect classification & grading
-│   │   ├── inventory_screen.dart           # Leaf stock depletion & runout forecaster
-│   │   ├── finance_screen.dart             # Financial ledger & cocoon sales receipts
-│   │   ├── reports_screen.dart             # Report exports (Excel .xlsx, PDF, CSV)
-│   │   ├── farmer_profile_screen.dart      # Minimalist farmer settings, PIN, profile deletion
-│   │   └── field_guide_screen.dart         # Offline sericulture rearing manual & disease guide
-│   ├── services/                           # Business Logic & Infrastructure Repositories
-│   │   ├── farm_store.dart                 # SQLite transactional persistence engine
-│   │   ├── lifecycle_engine.dart           # Instar timeline predictor with climate adjustments
-│   │   ├── lifecycle_profiles.dart         # Stage definitions for Bombyx and Eri
-│   │   ├── rearing_day_service.dart        # Today's stage, feed rations, moult detection
-│   │   ├── cocoon_analytics_service.dart   # Renditta, shell %, defect rate & commercial grading
-│   │   ├── formula_engine.dart             # Shunting-yard RPN custom formula parser
-│   │   ├── leaf_ledger_service.dart        # 14-day leaf consumption & depletion forecaster
-│   │   ├── audio_guidance_service.dart     # Hands-free bilingual TTS voice synthesizer
-│   │   ├── excel_export_service.dart       # 6-sheet .xlsx Excel generator
-│   │   ├── backup_service.dart             # SHA-256 verified JSON database backup & restore
-│   │   └── sensor_manager_service.dart     # Environmental BLE & manual microclimate sync
-│   └── utils/                              # File utilities (atomic writes), math helpers, date formatters
+c:\Users\Ian\Documents\Apps\Kalro-App\
+├── lib/                                        # Native Flutter Cross-Platform Application
+│   ├── components/                             # Granular, Reusable UI Components
+│   │   ├── batch/                              # Batch list cards, tray QR dialogs, edit forms
+│   │   ├── buttons/                            # KalroPrimaryButton, high-contrast action buttons
+│   │   ├── cards/                              # Leaf depletion, KPI metrics, climate summary cards
+│   │   ├── dashboard/                          # Farm work overview, alerts banners
+│   │   ├── feeding/                            # Feeding log dialogs, gram inputs, skipped feed forms
+│   │   ├── harvest/                            # Cocoon sorting, defect counters, grading pills
+│   │   ├── health/                             # Mortality records, disease symptom selection
+│   │   ├── layout/                             # KalroToolbar, backgrounds, sunlight headers
+│   │   ├── lifecycle/                          # TodayBatchWorkCard, floor actions, milestone strips
+│   │   ├── navigation/                         # FarmerBottomBar, responsive shell routing
+│   │   └── profile/                            # ProfileHeader, farm settings, credential tiles
+│   ├── constants/                              # System colors, typography tokens, sericulture thresholds
+│   ├── l10n/                                   # Localization resources (English & Kiswahili ARB catalogs)
+│   ├── models/                                 # Immutable Domain Data Models
+│   │   ├── batch.dart                          # Batch entity, species, strain, stage, location
+│   │   ├── cocoon_harvest.dart                 # Cocoon lot, weight, defects, reeling samples
+│   │   ├── cocoon_metrics.dart                 # Renditta, shell ratio, grade, survival rate
+│   │   ├── feed_log.dart                       # Feeding event, leaf grams, feeding stage, skipped flag
+│   │   ├── mortality_log.dart                  # Daily deaths, disease classification, isolation status
+│   │   ├── environment_log.dart                # Rearing house temperature (°C), RH%, ventilation
+│   │   ├── leaf_inventory.dart                 # Stock weights for Mulberry, Castor, Kesseru
+│   │   ├── payment_record.dart                 # Farm expenses, leaf purchases, cocoon sales
+│   │   └── species.dart                        # Species enum (Bombyx mori vs. Samia cynthia ricini)
+│   ├── screens/                                # Primary Application Views
+│   │   ├── rearing_hub_screen.dart             # "Today" routine dashboard (zero dummy data)
+│   │   ├── batches_screen.dart                 # Active & historical batches list
+│   │   ├── create_batch_screen.dart            # Streamlined batch registration
+│   │   ├── batch_detail_screen.dart            # Individual batch lifecycle, feed history, QR tag
+│   │   ├── lifecycle_planner_screen.dart       # Interactive calendar of expected milestones
+│   │   ├── feeding_screen.dart                 # Feeding logs history & quick log action
+│   │   ├── health_screen.dart                  # Mortality records & environmental climate logs
+│   │   ├── harvest_screen.dart                 # Cocoon sorting, defect classification & grading
+│   │   ├── inventory_screen.dart               # Leaf stock depletion & runout forecaster
+│   │   ├── finance_screen.dart                 # Financial ledger & cocoon sales receipts
+│   │   ├── reports_screen.dart                 # Report exports (Excel .xlsx, PDF, CSV)
+│   │   ├── farmer_profile_screen.dart          # Minimalist farmer settings, PIN, profile deletion
+│   │   ├── field_guide_screen.dart             # Offline sericulture rearing manual & disease guide
+│   │   ├── bed_space_lime_screen.dart          # Bed space expansion & slaked lime calculator
+│   │   ├── breeding_pedigree_screen.dart       # Silkworm strain breeding & heterosis tracking
+│   │   ├── cocoon_grading_screen.dart          # Cocoon defect sorting & pricing
+│   │   ├── disease_triage_screen.dart          # Biosecurity symptom triage & containment
+│   │   ├── hot_air_drying_screen.dart          # 4-stage hot-air drying controller
+│   │   ├── mpesa_payout_screen.dart            # M-PESA B2C farmer payout engine
+│   │   └── ussd_dialer_screen.dart             # Offline *384*254# USSD simulator
+│   ├── services/                               # Business Logic & Infrastructure Repositories
+│   │   ├── farm_store.dart                     # SQLite transactional persistence engine
+│   │   ├── lifecycle_engine.dart               # Instar timeline predictor with climate adjustments
+│   │   ├── lifecycle_profiles.dart             # Stage definitions for Bombyx and Eri
+│   │   ├── rearing_day_service.dart            # Today's stage, feed rations, moult detection
+│   │   ├── cocoon_analytics_service.dart       # Renditta, shell %, defect rate & commercial grading
+│   │   ├── formula_engine.dart                 # Shunting-yard RPN custom formula parser
+│   │   ├── leaf_ledger_service.dart            # 14-day leaf consumption & depletion forecaster
+│   │   ├── audio_guidance_service.dart         # Hands-free bilingual TTS voice synthesizer
+│   │   ├── excel_export_service.dart           # 6-sheet .xlsx Excel generator
+│   │   ├── backup_service.dart                 # SHA-256 verified JSON database backup & restore
+│   │   └── sensor_manager_service.dart         # Environmental BLE & manual microclimate sync
+│   └── theme/                                  # KALRO sunlight-readable theme definitions
 │
-├── web_app/                                # React 19 + TypeScript Progressive Web App
+├── web_app/                                    # React 19 + TypeScript Progressive Web App
 │   ├── src/
-│   │   ├── components/                     # Modular Web Views (Today, Batches, Plan, Farm, Profile)
-│   │   │   ├── TodayView.tsx               # Minimalist routine cards, quick log modals
-│   │   │   ├── BatchRegistrationForm.tsx   # Simplified batch creation form (no presets)
-│   │   │   ├── BatchesView.tsx             # Batch list, status pills, QR dialog triggers
-│   │   │   ├── PlanView.tsx                # Visual lifecycle timeline & stage progress
-│   │   │   ├── FarmToolsView.tsx           # Leaf ledger, mortality, climate & cocoon analytics
-│   │   │   ├── ProfileView.tsx             # Multi-tenant profile management & deletion
-│   │   │   ├── QuickLogModal.tsx           # Flexible whole-number feed & climate logging
-│   │   │   └── QrCodeModal.tsx             # Printable tray QR code generator
-│   │   ├── storage.ts                      # Multi-tenant IndexedDB persistence layer
-│   │   ├── types.ts                        # TypeScript domain model definitions
-│   │   └── translations.ts                 # Bilingual EN/SW web dictionaries
-│   └── vite.config.ts                      # Vite build configuration
+│   │   ├── components/                         # Modular Web Views
+│   │   │   ├── TodayView.tsx                   # Minimalist routine cards, quick log modals
+│   │   │   ├── BatchesView.tsx                 # Batch list, status pills, QR dialog triggers
+│   │   │   ├── PlanView.tsx                    # Visual lifecycle timeline & stage progress
+│   │   │   ├── FarmToolsView.tsx               # Leaf ledger, mortality, climate & cocoon analytics
+│   │   │   ├── StationAgronomyView.tsx         # 5-tab Station Agronomy & Germplasm Hub
+│   │   │   ├── AuditDashboardView.tsx          # Traceability, quality control & audit reports
+│   │   │   ├── ProfileView.tsx                 # Multi-tenant profile management & deletion
+│   │   │   ├── QuickLogModal.tsx               # Flexible whole-number feed & climate logging
+│   │   │   ├── QrCodeModal.tsx                 # Printable tray QR code generator
+│   │   │   ├── DryingTimerModal.tsx            # 4-stage hot-air drying interactive timer
+│   │   │   └── Header.tsx                      # Modern navigation header with monochrome theme
+│   │   ├── constants.ts                        # Germplasm registry, feeding tables, user roles
+│   │   ├── storage.ts                          # Multi-tenant IndexedDB & LocalStorage engine
+│   │   ├── types.ts                            # TypeScript domain model definitions
+│   │   ├── translations.ts                     # Bilingual EN/SW web dictionaries
+│   │   ├── utils/                              # PDF generators, RPN formula parser, math helpers
+│   │   └── index.css                           # Monochromatic Modern Web Guidance CSS
+│   ├── index.html                              # PWA shell with color-scheme metadata
+│   ├── package.json                            # Web dependencies and build scripts
+│   └── vite.config.ts                          # Vite bundler configuration
 │
-└── test/                                   # Automated Quality Assurance Suite
-    ├── lifecycle_engine_test.dart          # Stage durations, Bombyx day 40 harvest, Eri day 39
-    ├── cocoon_analytics_service_test.dart  # Renditta math, shell ratio, Grade A/B/C validation
-    ├── formula_engine_test.dart            # Infix tokenization, RPN shunting-yard, precedence
-    ├── excel_export_service_test.dart      # Multi-sheet .xlsx structure verification
-    ├── farm_store_test.dart                # SQLite transactional read/write & json_extract
-    ├── rearing_day_service_test.dart       # Feed scaling, moult rest alerts, skipped feeds
-    ├── backup_service_test.dart            # Backup serialization, restore & checksum defense
-    ├── widget_test.dart                    # Main UI smoke tests, onboarding, navigation
-    └── feature_smoke_test.dart             # Full feature interaction & screen rendering tests
+├── test/                                       # Automated Quality Assurance Suite (113 Tests)
+│   ├── lifecycle_engine_test.dart              # Stage durations, Bombyx day 40 harvest, Eri day 39
+│   ├── cocoon_analytics_service_test.dart      # Renditta math, shell ratio, Grade A/B/C validation
+│   ├── formula_engine_test.dart                # Infix tokenization, RPN shunting-yard, precedence
+│   ├── excel_export_service_test.dart          # Multi-sheet .xlsx structure verification
+│   ├── farm_store_test.dart                    # SQLite transactional read/write & json_extract
+│   ├── rearing_day_service_test.dart           # Feed scaling, moult rest alerts, skipped feeds
+│   ├── backup_service_test.dart                # Backup serialization, restore & checksum defense
+│   ├── widget_test.dart                        # Main UI smoke tests, onboarding, navigation
+│   └── feature_smoke_test.dart                 # Full feature interaction & screen rendering tests
+│
+├── OVERVIEW.md                                 # Comprehensive Architectural & Agronomic Specification
+├── README.md                                   # Quickstart, Features & Registry Summary
+└── pubspec.yaml                                # Flutter package configuration & dependencies
 ```
 
 ---
 
-## 10. Operational Guidelines for Rural Deployment
+## 13. Operational Guidelines for Rural Deployment & Station Management
 
-1. **Ambient Sunlight Calibration**:
-   All interface palettes utilize dark emerald greens (`#1A332B`, `#0F4C3A`), high-contrast off-whites (`#F7FAF8`), and bold black typography. This guarantees legibility in direct sunlight or within semi-dark rearing huts.
-2. **Zero Network Prerequisite**:
-   Neither login nor routine usage ever polls an external server. The app is completely autonomous and stores all records locally on the handset.
-3. **Hardware Independence**:
-   The Flutter engine runs on Android 8.0+ (API 26+) with low RAM overhead (< 90 MB memory footprint), making it compatible with affordable devices commonly used in rural agricultural programs.
-4. **Data Ownership & Extension Services**:
-   When an agricultural extension officer visits a farm, the rearer can generate an Excel sheet or scan tray QR codes to transfer batch records without internet connectivity.
+1. **Sunlight Legibility & Contrast**:
+   Both Flutter and React clients adhere strictly to high-contrast monochrome design guidelines. Even in bright outdoor sunlight or dark mud-walled rearing sheds, critical figures (temperatures, feed weights, moult alerts) remain instantly readable.
+2. **Autonomous Offline Execution**:
+   The platform never halts due to lack of network connection. All data entry, calculations, and local exports function seamlessly without network requests.
+3. **Hardware Compatibility & Battery Optimization**:
+   The Flutter application targets devices starting from Android 8.0 (API 26) with minimal memory footprint (< 90 MB RAM), preventing app freezes on low-cost devices.
+4. **Data Portability for Extension Services**:
+   When agricultural extension agents or research scientists visit rural farms, data can be transferred via QR code scanning or exported to an unencrypted 6-sheet `.xlsx` workbook on an SD card or USB drive.
 
 ---
-*Developed for the Kenya Agricultural and Livestock Research Organization (KALRO) Sericulture Division.*
+*Developed for the Kenya Agricultural and Livestock Research Organization (KALRO) and the National Sericulture Research Centre (NSRC).*
