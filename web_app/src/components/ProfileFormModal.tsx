@@ -33,12 +33,12 @@ interface ProfileFormModalProps {
 }
 
 const AVATAR_COLORS = [
-  '#143D2B', // KALRO Forest Green
-  '#C68A14', // Field Gold
-  '#2B5775', // Slate Blue
-  '#4A148C', // Mulberry Purple
-  '#BF360C', // Terracotta
-  '#2E7D32', // Leaf Green
+  '#09090B', // Jet Black
+  '#27272A', // Deep Charcoal
+  '#3F3F46', // Neutral Granite
+  '#52525B', // Zinc Slate
+  '#71717A', // Cool Graphite
+  '#18181B', // Obsidian
 ];
 
 function generateSyncCode(county: string): string {

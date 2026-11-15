@@ -89,7 +89,7 @@ export const Header: React.FC<HeaderProps> = ({
               title="Lock Sericulture Station Terminal with PIN"
               style={{ display: 'inline-flex', alignItems: 'center' }}
             >
-              <Lock size={13} style={{ marginRight: '5px', color: 'var(--primary)' }} />
+              <Lock size={13} style={{ marginRight: '5px', color: 'currentColor' }} />
               <span className="btn-text-desktop">Lock Terminal</span>
               <span className="btn-text-mobile">Lock</span>
             </button>
