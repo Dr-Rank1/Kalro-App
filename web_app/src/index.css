@@ -1,41 +1,45 @@
 :root {
+  /* Google Chrome Modern Web Guidance: Native Dark Mode & Accent Color */
+  color-scheme: light dark;
+  accent-color: #143D2B;
+
   /* Institutional KALRO Palette - No violet, indigo, teal, terracotta, burnt orange, sage, or single blue on white */
   --primary: #143D2B;
   --primary-hover: #0D2B1E;
-  --primary-subtle: #EAF2ED;
+  --primary-subtle: light-dark(#EAF2ED, #183325);
   --header-bg: #0F291E;
 
   /* Field Gold Accent (Official Agricultural Standard) */
   --accent-gold: #C68A14;
   --accent-gold-hover: #A66F05;
-  --accent-gold-subtle: #FDF6E7;
+  --accent-gold-subtle: light-dark(#FDF6E7, #2D2008);
 
   /* Status Tokens */
-  --status-success: #196D3D;
-  --status-success-subtle: #E8F5EE;
-  --status-warning: #9A6200;
-  --status-warning-subtle: #FEF7E6;
-  --status-danger: #A72828;
-  --status-danger-subtle: #FDF0F0;
-  --status-info: #2B5775;
-  --status-info-subtle: #EBF3F8;
+  --status-success: light-dark(#196D3D, #34D399);
+  --status-success-subtle: light-dark(#E8F5EE, #132D1F);
+  --status-warning: light-dark(#9A6200, #FBBF24);
+  --status-warning-subtle: light-dark(#FEF7E6, #302206);
+  --status-danger: light-dark(#A72828, #F87171);
+  --status-danger-subtle: light-dark(#FDF0F0, #341212);
+  --status-info: light-dark(#2B5775, #60A5FA);
+  --status-info-subtle: light-dark(#EBF3F8, #11283B);
 
   /* Surfaces & Neutral Scale (Clean neutral grey/white, no cream) */
-  --bg-page: #F5F7F6;
-  --bg-card: #FFFFFF;
-  --bg-subtle: #EDF1EF;
-  --bg-muted: #E2E8E5;
+  --bg-page: light-dark(#F5F7F6, #0D1511);
+  --bg-card: light-dark(#FFFFFF, #14221B);
+  --bg-subtle: light-dark(#EDF1EF, #1B2D24);
+  --bg-muted: light-dark(#E2E8E5, #243A2F);
 
   /* Crisp 1px Borders - Used exclusively WITHOUT shadows */
-  --border-card: #D5DFD9;
-  --border-subtle: #E3E9E5;
-  --border-focus: #143D2B;
-  --border-divider: #E7ECE9;
+  --border-card: light-dark(#D5DFD9, #2B4437);
+  --border-subtle: light-dark(#E3E9E5, #22372C);
+  --border-focus: light-dark(#143D2B, #34D399);
+  --border-divider: light-dark(#E7ECE9, #20352A);
 
   /* High Legibility Typography */
-  --text-main: #142019;
-  --text-muted: #53635A;
-  --text-light: #7E8F86;
+  --text-main: light-dark(#142019, #ECF5F0);
+  --text-muted: light-dark(#53635A, #A1B5AA);
+  --text-light: light-dark(#7E8F86, #7B9285);
   --text-white: #FFFFFF;
 
   --font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -53,6 +57,38 @@
   --radius-md: 8px;
   --radius-lg: 12px;
   --radius-full: 9999px;
+
+  /* Standard Scrollbars (Google Chrome Modern Web Guidance) */
+  scrollbar-color: light-dark(#CBD5E1, #334B3E) light-dark(#F5F7F6, #0D1511);
+  scrollbar-width: thin;
+}
+
+/* Fallback for browsers without light-dark() support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary-subtle: #183325;
+    --accent-gold-subtle: #2D2008;
+    --status-success: #34D399;
+    --status-success-subtle: #132D1F;
+    --status-warning: #FBBF24;
+    --status-warning-subtle: #302206;
+    --status-danger: #F87171;
+    --status-danger-subtle: #341212;
+    --status-info: #60A5FA;
+    --status-info-subtle: #11283B;
+    --bg-page: #0D1511;
+    --bg-card: #14221B;
+    --bg-subtle: #1B2D24;
+    --bg-muted: #243A2F;
+    --border-card: #2B4437;
+    --border-subtle: #22372C;
+    --border-focus: #34D399;
+    --border-divider: #20352A;
+    --text-main: #ECF5F0;
+    --text-muted: #A1B5AA;
+    --text-light: #7B9285;
+    scrollbar-color: #334B3E #0D1511;
+  }
 }
 
 * {
@@ -68,6 +104,32 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
+}
+
+/* Browser UI Theming: Text Selection */
+::selection {
+  background-color: var(--primary);
+  color: var(--text-white);
+}
+
+/* Modern Web Guidance: Improve Text Layout and Legibility */
+h1, h2, h3, h4, h5, h6,
+.card-title,
+.section-title,
+.page-title,
+.metric-number,
+.stat-value {
+  text-wrap: balance;
+}
+
+p,
+li,
+blockquote,
+.metric-sub,
+.input-sub-hint,
+.banner-desc,
+.guide-text {
+  text-wrap: pretty;
 }
 
 /* Enforce tabular figures for all dynamic numerals */
@@ -89,20 +151,56 @@ th,
   white-space: nowrap;
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+/* Modern Web Guidance: Soft-Edge Content Fade for Horizontal Scrollers */
+.scroll-fade-x {
+  -webkit-mask-image: linear-gradient(to right, black calc(100% - 32px), transparent 100%);
+  mask-image: linear-gradient(to right, black calc(100% - 32px), transparent 100%);
 }
-::-webkit-scrollbar-track {
-  background: var(--bg-page);
+
+.scroll-fade-both-x {
+  -webkit-mask-image: linear-gradient(to right, transparent, black 32px, black calc(100% - 32px), transparent 100%);
+  mask-image: linear-gradient(to right, transparent, black 32px, black calc(100% - 32px), transparent 100%);
 }
-::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
-  border-radius: var(--radius-full);
+
+/* Modern Web Guidance: Form Input Validation After Interaction */
+input:user-invalid,
+select:user-invalid,
+textarea:user-invalid {
+  border-color: var(--status-danger) !important;
+  background-color: var(--status-danger-subtle) !important;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+
+input:required:user-valid,
+select:required:user-valid,
+textarea:required:user-valid {
+  border-color: var(--status-success) !important;
+}
+
+/* Modern Web Guidance: Defer Rendering Heavy Offscreen Content */
+.batch-item-card,
+.audit-log-item,
+.station-block-card,
+.history-row {
+  content-visibility: auto;
+  contain-intrinsic-size: auto none auto 240px;
+}
+
+/* Legacy Scrollbar Fallback for older browsers without standard scrollbar-color */
+@supports not (scrollbar-color: auto) {
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--bg-page);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: var(--radius-full);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94A3B8;
+  }
 }
 
 /* App Shell */

@@ -288,7 +288,7 @@ class _UssdDialerScreenState extends State<UssdDialerScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
-                    color: KalroColors.headerGreen.withOpacity(0.1),
+                    color: KalroColors.headerGreen.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(

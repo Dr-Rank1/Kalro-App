@@ -132,9 +132,9 @@ class _CocoonGradingScreenState extends State<CocoonGradingScreen> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
-                            color: gradeColor.withOpacity(0.12),
+                            color: gradeColor.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(6),
-                            border: Border.all(color: gradeColor.withOpacity(0.4)),
+                            border: Border.all(color: gradeColor.withValues(alpha: 0.4)),
                           ),
                           child: Text(
                             grade,

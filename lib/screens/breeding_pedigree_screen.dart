@@ -172,7 +172,7 @@ class _BreedingPedigreeScreenState extends State<BreedingPedigreeScreen> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
-                            color: isHybrid ? KalroColors.leaf.withOpacity(0.12) : KalroColors.warning.withOpacity(0.12),
+                            color: isHybrid ? KalroColors.leaf.withValues(alpha: 0.12) : KalroColors.warning.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
@@ -230,7 +230,7 @@ class _BreedingPedigreeScreenState extends State<BreedingPedigreeScreen> {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(
-                              color: KalroColors.headerGreen.withOpacity(0.1),
+                              color: KalroColors.headerGreen.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(

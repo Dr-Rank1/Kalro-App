@@ -281,7 +281,7 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
         </div>
 
         {/* Sub-Tabs Grid */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pt-3 text-xs font-medium">
+        <div className="station-subtabs scroll-fade-x flex items-center gap-1.5 overflow-x-auto pt-3 text-xs font-medium">
           {[
             { key: 'genebank', label: 'Genebank & Plots' },
             { key: 'quality', label: 'Cocoon Quality & Sorter' },

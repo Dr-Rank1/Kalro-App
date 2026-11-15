@@ -23,7 +23,7 @@ export const Navigation: React.FC<NavigationProps> = ({
 
   return (
     <nav className="nav-bar-container">
-      <div className="nav-bar-inner">
+      <div className="nav-bar-inner scroll-fade-x">
         {tabs.map((tab) => (
           <button
             key={tab.key}

@@ -178,7 +178,7 @@ class _MpesaPayoutScreenState extends State<MpesaPayoutScreen> {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(
-                              color: KalroColors.leaf.withOpacity(0.12),
+                              color: KalroColors.leaf.withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
@@ -360,7 +360,7 @@ class _MpesaPayoutScreenState extends State<MpesaPayoutScreen> {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: KalroColors.leaf.withOpacity(0.1),
+                          color: KalroColors.leaf.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(Icons.check, color: KalroColors.leaf, size: 18),

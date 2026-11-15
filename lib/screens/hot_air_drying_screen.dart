@@ -120,9 +120,9 @@ class _HotAirDryingScreenState extends State<HotAirDryingScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: KalroColors.warning.withOpacity(0.12),
+                  color: KalroColors.warning.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: KalroColors.warning.withOpacity(0.4)),
+                  border: Border.all(color: KalroColors.warning.withValues(alpha: 0.4)),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -162,7 +162,7 @@ class _HotAirDryingScreenState extends State<HotAirDryingScreen> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
-                            color: KalroColors.headerGreen.withOpacity(0.1),
+                            color: KalroColors.headerGreen.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
@@ -364,7 +364,7 @@ class _HotAirDryingScreenState extends State<HotAirDryingScreen> {
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? KalroColors.headerGreen.withOpacity(0.06)
+                          ? KalroColors.headerGreen.withValues(alpha: 0.06)
                           : Colors.white,
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
