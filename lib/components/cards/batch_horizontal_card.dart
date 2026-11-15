@@ -103,7 +103,9 @@ class BatchHorizontalCard extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            batch.species.label,
+                            batch.strain != null && batch.strain!.isNotEmpty
+                                ? '${batch.species.label} (${batch.strain})'
+                                : batch.species.label,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.poppins(

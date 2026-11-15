@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../components/components.dart';
+import '../constants/sericulture_kenya.dart';
 import '../models/batch.dart';
 import '../models/species.dart';
 import '../services/app_repositories.dart';
@@ -104,12 +105,13 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
   final _formKey = GlobalKey<FormState>();
   late Species _species;
   late DateTime _startDate;
+  late String _strain;
+  late String _cultivar;
   BatchStartingStage _startingStage = BatchStartingStage.hatchedInstar1;
 
   final _eggCountController = TextEditingController();
   final _batchTagController = TextEditingController();
   final _locationController = TextEditingController();
-  final _feedController = TextEditingController();
 
   bool _saving = false;
 
@@ -118,17 +120,17 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
     super.initState();
     _species = widget.copyFrom?.species ?? widget.initialSpecies ?? Species.bombyx;
     _startDate = widget.initialStartDate ?? DateTime.now();
+    _strain = widget.copyFrom?.strain ?? (_species == Species.bombyx ? 'KSK' : 'Samia ricini');
+    _cultivar = widget.copyFrom?.feedMaterial ?? (_species == Species.bombyx ? 'V1' : 'NUU 70');
 
     final copy = widget.copyFrom;
     if (copy != null) {
       _eggCountController.text = '${copy.eggCount}';
       _batchTagController.text = copy.batchTag ?? '';
       _locationController.text = copy.location ?? '';
-      _feedController.text = copy.feedMaterial ?? '';
     } else {
       _eggCountController.text = '';
-      _batchTagController.text = _suggestBatchTag(_species, _startDate);
-      _feedController.text = _species == Species.bombyx ? 'Mulberry' : 'Castor / kesseru';
+      _batchTagController.text = _suggestBatchTag(_species, _startDate, _strain);
     }
   }
 
@@ -137,12 +139,11 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
     _eggCountController.dispose();
     _batchTagController.dispose();
     _locationController.dispose();
-    _feedController.dispose();
     super.dispose();
   }
 
-  String _suggestBatchTag(Species species, DateTime date) {
-    final prefix = species == Species.bombyx ? 'BOM' : 'ERI';
+  String _suggestBatchTag(Species species, DateTime date, [String? strain]) {
+    final prefix = species == Species.bombyx ? (strain ?? 'KSK') : 'ERI';
     final month = date.month.toString().padLeft(2, '0');
     final day = date.day.toString().padLeft(2, '0');
     return 'BATCH-${date.year}-$month-$prefix-$day';
@@ -151,12 +152,17 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
   void _onSpeciesChanged(Species newSpecies) {
     setState(() {
       _species = newSpecies;
+      if (newSpecies == Species.bombyx) {
+        _strain = 'KSK';
+        _cultivar = 'V1';
+      } else {
+        _strain = 'Samia ricini';
+        _cultivar = 'NUU 70';
+      }
       if (_batchTagController.text.isEmpty ||
           _batchTagController.text.startsWith('BATCH-')) {
-        _batchTagController.text = _suggestBatchTag(newSpecies, _startDate);
+        _batchTagController.text = _suggestBatchTag(newSpecies, _startDate, _strain);
       }
-      _feedController.text =
-          newSpecies == Species.bombyx ? 'Mulberry' : 'Castor / kesseru';
     });
   }
 
@@ -171,7 +177,7 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
       setState(() {
         _startDate = picked;
         if (_batchTagController.text.startsWith('BATCH-')) {
-          _batchTagController.text = _suggestBatchTag(_species, picked);
+          _batchTagController.text = _suggestBatchTag(_species, picked, _strain);
         }
       });
     }
@@ -192,11 +198,14 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
         species: _species,
         startDate: _effectiveStartDate,
         eggCount: count,
-        location: _locationController.text.trim(),
-        feedMaterial: _feedController.text.trim(),
+        strain: _strain,
+        location: _locationController.text.trim().isNotEmpty
+            ? _locationController.text.trim()
+            : null,
+        feedMaterial: _cultivar,
         batchTag: _batchTagController.text.trim().isNotEmpty
             ? _batchTagController.text.trim()
-            : _suggestBatchTag(_species, _startDate),
+            : _suggestBatchTag(_species, _startDate, _strain),
       );
 
       final farm = widget.farmRepositories;
@@ -277,6 +286,87 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                       ),
                     ),
                   ],
+                ),
+                const SizedBox(height: 20),
+
+                // 1b. Silkworm Strain (Kenya Characterized Breed)
+                Text(
+                  'Silkworm Strain'.tr,
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: KalroColors.textDark,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: (_species == Species.bombyx
+                          ? KenyaSericultureBreeds.bombyxStrains
+                          : KenyaSericultureBreeds.eriStrains)
+                      .map((str) {
+                    final isSel = _strain == str;
+                    return ChoiceChip(
+                      label: Text(
+                        str,
+                        style: GoogleFonts.poppins(
+                          fontWeight: isSel ? FontWeight.w700 : FontWeight.w500,
+                          fontSize: 12,
+                        ),
+                      ),
+                      selected: isSel,
+                      selectedColor: KalroColors.leaf.withValues(alpha: 0.18),
+                      onSelected: (_) {
+                        setState(() {
+                          _strain = str;
+                          if (_batchTagController.text.isEmpty ||
+                              _batchTagController.text.startsWith('BATCH-')) {
+                            _batchTagController.text =
+                                _suggestBatchTag(_species, _startDate, str);
+                          }
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 20),
+
+                // 1c. Characterized Forage Cultivar
+                Text(
+                  _species == Species.bombyx
+                      ? 'Characterized Mulberry Variety'.tr
+                      : 'Characterized Castor Cultivar'.tr,
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: KalroColors.textDark,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                DropdownButtonFormField<String>(
+                  initialValue: _cultivar,
+                  decoration: InputDecoration(
+                    labelText: _species == Species.bombyx
+                        ? 'Mulberry Cultivar'.tr
+                        : 'Castor Cultivar'.tr,
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  ),
+                  items: (_species == Species.bombyx
+                          ? KenyaMulberryCultivars.characterized
+                          : KenyaCastorVarieties.characterized)
+                      .map((c) => DropdownMenuItem(
+                            value: c,
+                            child: Text(
+                              c,
+                              style: GoogleFonts.poppins(fontSize: 13),
+                            ),
+                          ))
+                      .toList(),
+                  onChanged: (val) {
+                    if (val != null) setState(() => _cultivar = val);
+                  },
                 ),
                 const SizedBox(height: 20),
 
@@ -391,12 +481,35 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
                       child: TextFormField(
                         controller: _locationController,
                         decoration: InputDecoration(
-                          labelText: 'Rearing Chamber (Optional)'.tr,
-                          hintText: 'e.g. House 1',
+                          labelText: 'Rearing Chamber / Stand'.tr,
+                          hintText: 'e.g. House 1 or Block C2',
                         ),
                       ),
                     ),
                   ],
+                ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: [
+                    'House 1',
+                    'House 2',
+                    'Block C2 (Ex-Thika)',
+                    'Block C3 (Ex-Embu)',
+                    'Block D1',
+                    'Highway Farm',
+                  ]
+                      .map((loc) => ActionChip(
+                            label: Text(loc, style: const TextStyle(fontSize: 11)),
+                            padding: EdgeInsets.zero,
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                            onPressed: () {
+                              _locationController.text = loc;
+                            },
+                          ))
+                      .toList(),
                 ),
                 const SizedBox(height: 28),
 
