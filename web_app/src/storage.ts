@@ -451,7 +451,18 @@ class StorageService {
     if (this.rxDbPromise) return this.rxDbPromise;
     if (typeof window === 'undefined') return null;
 
-    this.rxDbPromise = (async () => {
+    if ((window as any).__kalro_rxdb_promise__) {
+      this.rxDbPromise = (window as any).__kalro_rxdb_promise__;
+      return this.rxDbPromise;
+    }
+
+    let resolvePromise!: (db: RxDatabase | null) => void;
+    this.rxDbPromise = new Promise<RxDatabase | null>((resolve) => {
+      resolvePromise = resolve;
+    });
+    (window as any).__kalro_rxdb_promise__ = this.rxDbPromise;
+
+    (async () => {
       try {
         const storageAdapter = window.indexedDB
           ? getRxStorageDexie()
@@ -460,7 +471,6 @@ class StorageService {
         const db = await createRxDatabase({
           name: 'kalro_sericulture_rxdb_v1',
           storage: storageAdapter as any,
-          ignoreDuplicate: true,
         });
 
         await db.addCollections({
@@ -515,10 +525,10 @@ class StorageService {
           }
         });
 
-        return db;
+        resolvePromise(db);
       } catch (err) {
         console.warn('RxDB initialization notice:', err);
-        return null;
+        resolvePromise(null);
       }
     })();
 

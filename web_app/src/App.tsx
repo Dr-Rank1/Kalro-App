@@ -42,9 +42,6 @@ const DEFAULT_BLANK_PROFILE: FarmProfile = {
 };
 
 export function App() {
-  // Initialize storage defaults and clean any legacy demo profiles
-  storage.initDefaults();
-
   const [currentUser, setCurrentUser] = useState<UserAccount | null>(() => storage.getActiveUser());
   const [allUsers, setAllUsers] = useState<UserAccount[]>(() => storage.getAllUsers());
 
