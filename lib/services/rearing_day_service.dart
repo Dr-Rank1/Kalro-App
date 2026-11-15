@@ -282,6 +282,57 @@ class RearingDayService {
     return perHundred * (larvae / 100);
   }
 
+  /// NSRC Sericulture Manual Table 2.0 daily feeding schedule per 20,000 larvae (1 case).
+  static double nsrcDailyGramsBombyx(int instar, int dayOfStage, int larvae) {
+    if (larvae <= 0) return 0;
+    final scale = larvae / 20000.0;
+    double baseGramsFor20k;
+    switch (instar) {
+      case 1:
+        baseGramsFor20k = switch (dayOfStage) {
+          1 => 300.0,
+          2 => 400.0,
+          3 => 400.0,
+          _ => 300.0,
+        };
+      case 2:
+        baseGramsFor20k = switch (dayOfStage) {
+          1 => 700.0,
+          2 => 900.0,
+          3 => 1300.0,
+          _ => 1400.0,
+        };
+      case 3:
+        baseGramsFor20k = switch (dayOfStage) {
+          1 => 4000.0,
+          2 => 6000.0,
+          _ => 6000.0,
+        };
+      case 4:
+        baseGramsFor20k = switch (dayOfStage) {
+          1 => 24000.0,
+          2 => 36000.0,
+          3 => 48000.0,
+          4 => 60000.0,
+          _ => 80000.0,
+        };
+      case 5:
+        baseGramsFor20k = switch (dayOfStage) {
+          1 => 40000.0,
+          2 => 60000.0,
+          3 => 80000.0,
+          4 => 100000.0,
+          5 => 120000.0,
+          6 => 180000.0,
+          7 => 200000.0,
+          _ => 100000.0,
+        };
+      default:
+        baseGramsFor20k = 2000.0;
+    }
+    return baseGramsFor20k * scale;
+  }
+
   double _gramsFor({
     required Species species,
     required LifecycleStage stage,
@@ -289,6 +340,9 @@ class RearingDayService {
     required int larvae,
   }) {
     if (stage.feedPolicy == FeedPolicy.none) return 0;
+    if (species == Species.bombyx && stage.instarNumber != null) {
+      return nsrcDailyGramsBombyx(stage.instarNumber!, dayOfStage, larvae);
+    }
     final full = fullRationGrams(species, stage.instarNumber, larvae);
     if (stage.feedPolicy == FeedPolicy.lightThenFull && dayOfStage == 1) {
       return full * 0.5;

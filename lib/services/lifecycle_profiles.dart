@@ -79,17 +79,27 @@ class LifecycleProfile {
 /// Eri larval sheet is post-hatch; incubation is added before it.
 class LifecycleProfiles {
   static const _preMoultSigns = [
-    'Feeding decreases sharply or stops',
-    'Movement decreases; larvae stay still',
-    'Body may look swollen or dull',
-    'Many larvae change together',
+    'Silkworms stop feeding',
+    'Silkworm heads swell',
+    'Silkworms raise their heads upwards',
+    'Silkworms become completely immobile',
+    'Bed uncovered; dust agricultural slaked lime (50 g/m²)',
+  ];
+
+  static const postMoultSigns = [
+    'Shed skins visible on rearing bed',
+    'Worms become active and move around',
+    'Mouth parts become broader',
+    'Silkworm body dull with loose skin',
   ];
 
   static const _spinningSigns = [
-    'They stop eating and ignore fresh leaf',
-    'Body looks translucent or creamy around the head',
-    'Body is softer and slightly shrunken',
-    'They raise and wave the head, searching for a place to attach silk',
+    'Cease feeding after ~8 days in 5th instar',
+    'Appear creamish-translucent (full of silk)',
+    'Crawl restlessly in search of a corner to spin',
+    'Mount at 90–100 larvae/sq ft on rotary mountages',
+    'Maintain temperature <= 26°C and humidity 60–70%',
+    'Spread paper on floor to absorb voided urine',
   ];
 
   static const bombyx = LifecycleProfile(
