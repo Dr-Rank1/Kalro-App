@@ -1,50 +1,53 @@
 :root {
-  /* Google Chrome Modern Web Guidance: Native Dark Mode & Accent Color */
+  /* Google Chrome Modern Web Guidance: Native Dark Mode & Organic Enterprise Palette */
   color-scheme: light dark;
-  accent-color: light-dark(#000000, #FFFFFF);
+  accent-color: #16A34A;
 
-  /* Modern Monochromatic High-Contrast Palette - Predominantly Black & White */
-  --primary: light-dark(#000000, #FFFFFF);
-  --primary-hover: light-dark(#27272A, #E4E4E7);
-  --primary-subtle: light-dark(#F4F4F5, #18181B);
-  --header-bg: light-dark(rgba(255, 255, 255, 0.85), rgba(9, 9, 11, 0.85));
-  --text-on-primary: light-dark(#FFFFFF, #000000);
+  /* Primary Accent: Mulberry Green (#16A34A / Emerald 600) */
+  --primary: light-dark(#16A34A, #16A34A);
+  --primary-hover: light-dark(#15803D, #15803D);
+  --primary-subtle: light-dark(rgba(22, 163, 74, 0.12), rgba(22, 163, 74, 0.14));
+  --primary-wash: rgba(22, 163, 74, 0.10);
+  --primary-text: #4ADE80;
+  --header-bg: light-dark(rgba(248, 250, 252, 0.88), rgba(12, 17, 15, 0.88));
+  --text-on-primary: #FFFFFF;
 
-  /* Subtle Monochromatic Accent Scale */
-  --accent-gold: light-dark(#18181B, #FAFAFA);
-  --accent-gold-hover: light-dark(#27272A, #E4E4E7);
-  --accent-gold-subtle: light-dark(#F4F4F5, #18181B);
+  /* Secondary Accent: Raw Silk Gold (#F59E0B / Amber 500) */
+  --accent-gold: light-dark(#D97706, #F59E0B);
+  --accent-gold-hover: light-dark(#B45309, #D97706);
+  --accent-gold-subtle: light-dark(rgba(245, 158, 11, 0.12), rgba(245, 158, 11, 0.15));
 
-  /* Status Tokens - Refined Minimal Indicators */
-  --status-success: light-dark(#166534, #22C55E);
-  --status-success-subtle: light-dark(#F4F4F5, #142E1D);
-  --status-warning: light-dark(#854D0E, #EAB308);
-  --status-warning-subtle: light-dark(#F4F4F5, #2E2812);
-  --status-danger: light-dark(#991B1B, #EF4444);
-  --status-danger-subtle: light-dark(#FEF2F2, #341414);
-  --status-info: light-dark(#09090B, #94A3B8);
-  --status-info-subtle: light-dark(#F4F4F5, #18181B);
+  /* Status Tokens */
+  --status-success: light-dark(#15803D, #16A34A);
+  --status-success-subtle: light-dark(#DCFCE7, rgba(20, 83, 45, 0.40));
+  --status-warning: light-dark(#B45309, #F59E0B);
+  --status-warning-subtle: light-dark(#FEF3C7, rgba(120, 53, 15, 0.35));
+  --status-danger: light-dark(#BE123C, #E11D48);
+  --status-danger-subtle: light-dark(#FFE4E6, rgba(76, 5, 25, 0.40));
+  --status-info: light-dark(#0284C7, #38BDF8);
+  --status-info-subtle: light-dark(#E0F2FE, rgba(14, 116, 144, 0.30));
 
-  /* Surfaces & Neutral Scale: Deep Mulberry Charcoal #09090B & Elevated #121214 */
-  --bg-page: light-dark(#FAFAFA, #09090B);
-  --bg-card: light-dark(#FFFFFF, #121214);
-  --bg-card-elevated: light-dark(#F4F4F5, #18181B);
-  --bg-subtle: light-dark(#F4F4F5, #161619);
-  --bg-muted: light-dark(#E4E4E7, #222226);
+  /* Surfaces & Neutral Scale: Deep Loam #0C110F & Elevated Leaf #131A17 / #16201B */
+  --bg-page: light-dark(#F8FAFC, #0C110F);
+  --bg-card: light-dark(#FFFFFF, #131A17);
+  --bg-card-elevated: light-dark(#F1F5F9, #16201B);
+  --bg-subtle: light-dark(#F1F5F9, #1A2620);
+  --bg-muted: light-dark(#E2E8F0, #23332A);
+  --progress-track: light-dark(#E2E8F0, #1A2620);
 
-  /* "Silk Thread" Dividers: Ultra-thin 1px borders using low-opacity white/black */
-  --border-silk: light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.10));
-  --border-silk-subtle: light-dark(rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.05));
+  /* Organic Silk Borders: border-[#23332A] */
+  --border-silk: light-dark(rgba(0, 0, 0, 0.08), #23332A);
+  --border-silk-subtle: light-dark(rgba(0, 0, 0, 0.04), rgba(35, 51, 42, 0.5));
   --border-card: var(--border-silk);
   --border-subtle: var(--border-silk-subtle);
-  --border-focus: light-dark(#000000, #FFFFFF);
+  --border-focus: #16A34A;
   --border-divider: var(--border-silk);
 
-  /* High Legibility Typography: Crisp Silk White #FAFAFA & Muted Silver #A1A1AA */
-  --text-main: light-dark(#09090B, #FAFAFA);
-  --text-muted: light-dark(#52525B, #A1A1AA);
-  --text-silver: light-dark(#71717A, #A1A1AA);
-  --text-light: light-dark(#71717A, #71717A);
+  /* High Legibility Typography: Crisp Silk White #F8FAFC & Cool Sage/Silver #94A3B8 */
+  --text-main: light-dark(#0F172A, #F8FAFC);
+  --text-muted: light-dark(#64748B, #94A3B8);
+  --text-silver: light-dark(#64748B, #94A3B8);
+  --text-light: light-dark(#94A3B8, #94A3B8);
   --text-white: #FFFFFF;
 
   --font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -64,46 +67,47 @@
   --radius-xl: 18px;
   --radius-full: 9999px;
 
-  /* Standard Scrollbars (Google Chrome Modern Web Guidance) */
-  scrollbar-color: light-dark(#D4D4D8, #3F3F46) light-dark(#FAFAFA, #09090B);
+  /* Standard Scrollbars */
+  scrollbar-color: light-dark(#CBD5E1, #23332A) light-dark(#F8FAFC, #0C110F);
   scrollbar-width: thin;
 }
 
 /* Fallback for browsers without light-dark() support */
 @media (prefers-color-scheme: dark) {
   :root {
-    --primary: #FFFFFF;
-    --primary-hover: #E4E4E7;
-    --primary-subtle: #18181B;
-    --header-bg: rgba(9, 9, 11, 0.85);
-    --text-on-primary: #000000;
-    --accent-gold: #FAFAFA;
-    --accent-gold-hover: #E4E4E7;
-    --accent-gold-subtle: #18181B;
-    --status-success: #22C55E;
-    --status-success-subtle: #142E1D;
-    --status-warning: #EAB308;
-    --status-warning-subtle: #2E2812;
-    --status-danger: #EF4444;
-    --status-danger-subtle: #341414;
-    --status-info: #94A3B8;
-    --status-info-subtle: #18181B;
-    --bg-page: #09090B;
-    --bg-card: #121214;
-    --bg-card-elevated: #18181B;
-    --bg-subtle: #161619;
-    --bg-muted: #222226;
-    --border-silk: rgba(255, 255, 255, 0.10);
-    --border-silk-subtle: rgba(255, 255, 255, 0.05);
-    --border-card: rgba(255, 255, 255, 0.10);
-    --border-subtle: rgba(255, 255, 255, 0.05);
-    --border-focus: #FFFFFF;
-    --border-divider: rgba(255, 255, 255, 0.10);
-    --text-main: #FAFAFA;
-    --text-muted: #A1A1AA;
-    --text-silver: #A1A1AA;
-    --text-light: #71717A;
-    scrollbar-color: #3F3F46 #09090B;
+    --primary: #16A34A;
+    --primary-hover: #15803D;
+    --primary-subtle: rgba(22, 163, 74, 0.14);
+    --header-bg: rgba(12, 17, 15, 0.88);
+    --text-on-primary: #FFFFFF;
+    --accent-gold: #F59E0B;
+    --accent-gold-hover: #D97706;
+    --accent-gold-subtle: rgba(245, 158, 11, 0.15);
+    --status-success: #16A34A;
+    --status-success-subtle: rgba(20, 83, 45, 0.40);
+    --status-warning: #F59E0B;
+    --status-warning-subtle: rgba(120, 53, 15, 0.35);
+    --status-danger: #E11D48;
+    --status-danger-subtle: rgba(76, 5, 25, 0.40);
+    --status-info: #38BDF8;
+    --status-info-subtle: rgba(14, 116, 144, 0.30);
+    --bg-page: #0C110F;
+    --bg-card: #131A17;
+    --bg-card-elevated: #16201B;
+    --bg-subtle: #1A2620;
+    --bg-muted: #23332A;
+    --progress-track: #1A2620;
+    --border-silk: #23332A;
+    --border-silk-subtle: rgba(35, 51, 42, 0.5);
+    --border-card: #23332A;
+    --border-subtle: rgba(35, 51, 42, 0.5);
+    --border-focus: #16A34A;
+    --border-divider: #23332A;
+    --text-main: #F8FAFC;
+    --text-muted: #94A3B8;
+    --text-silver: #94A3B8;
+    --text-light: #94A3B8;
+    scrollbar-color: #23332A #0C110F;
   }
 }
 
@@ -365,29 +369,29 @@ textarea:required:user-valid {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #ffffff;
-  border: 1px solid #ffffff;
-  color: #000000;
+  background: var(--primary);
+  border: 1px solid var(--primary);
+  color: #ffffff;
   padding: 0.45rem 1rem;
   border-radius: var(--radius-sm);
   font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
 .header-action-btn:hover {
-  background: #E4E4E7;
-  border-color: #E4E4E7;
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
 }
 
 .header-action-btn:focus-visible {
-  outline: 2px solid #ffffff;
+  outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
 
 .header-action-btn:active {
-  background: #D4D4D8;
+  background: var(--primary-hover);
 }
 
 /* Responsive Adaptive Text Helpers */
@@ -484,18 +488,18 @@ textarea:required:user-valid {
 
 .nav-tab:hover {
   color: var(--text-main);
-  background-color: rgba(255, 255, 255, 0.04);
+  background-color: rgba(22, 163, 74, 0.08);
 }
 
 .nav-tab:focus-visible {
-  outline: 2px solid var(--text-main);
+  outline: 2px solid var(--primary);
   outline-offset: -2px;
 }
 
 .nav-tab.active {
-  color: var(--text-main);
-  border-bottom-color: var(--text-main);
-  background-color: rgba(255, 255, 255, 0.06);
+  color: #4ADE80;
+  border-bottom-color: #16A34A;
+  background-color: rgba(22, 163, 74, 0.10);
   font-weight: 600;
 }
 
@@ -513,9 +517,9 @@ textarea:required:user-valid {
 }
 
 .nav-tab.active .tab-badge {
-  background: var(--text-main);
-  border-color: var(--text-main);
-  color: var(--bg-card);
+  background: rgba(22, 163, 74, 0.25);
+  border-color: rgba(22, 163, 74, 0.45);
+  color: #4ADE80;
 }
 
 .tab-badge.start-here-badge {
@@ -819,20 +823,26 @@ textarea:required:user-valid {
 
 .alert-box.critical {
   background-color: var(--status-danger-subtle);
-  border: 1px solid #F5C6CB;
-  color: var(--status-danger);
+  border: 1px solid rgba(225, 29, 72, 0.25);
+  color: #FB7185;
 }
 
 .alert-box.warning {
   background-color: var(--status-warning-subtle);
-  border: 1px solid #FFE8A1;
-  color: var(--status-warning);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  color: #FBBF24;
 }
 
 .alert-box.info {
   background-color: var(--status-info-subtle);
-  border: 1px solid #BFD8E8;
-  color: var(--status-info);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  color: #7DD3FC;
+}
+
+.alert-box.success {
+  background-color: var(--status-success-subtle);
+  border: 1px solid rgba(22, 163, 74, 0.25);
+  color: #4ADE80;
 }
 
 /* Table Design - Border Only, Tabular Figures */
@@ -1011,49 +1021,102 @@ textarea:required:user-valid {
 
 .species-badge {
   font-size: 0.7rem;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
   padding: 2px 7px;
   border-radius: var(--radius-sm);
-  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .species-badge.bombyx {
-  background-color: var(--bg-subtle);
-  border-color: var(--border-card);
-  color: var(--text-main);
+  background-color: rgba(22, 163, 74, 0.12);
+  border: 1px solid rgba(22, 163, 74, 0.30);
+  color: #4ADE80;
 }
 
 .species-badge.eri {
-  background-color: var(--bg-muted);
-  border-color: var(--border-card);
-  color: var(--text-main);
+  background-color: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.30);
+  color: #FBBF24;
 }
 
 .status-badge {
   font-size: 0.7rem;
-  font-weight: 700;
+  font-weight: 600;
   padding: 2px 7px;
   border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .status-badge.active {
-  background-color: var(--bg-subtle);
-  border: 1px solid var(--border-card);
-  color: var(--text-main);
+  background-color: rgba(20, 83, 45, 0.40);
+  border: 1px solid rgba(74, 222, 128, 0.25);
+  color: #4ADE80;
+}
+
+.status-badge.moult {
+  background-color: rgba(120, 53, 15, 0.35);
+  border: 1px solid rgba(251, 191, 36, 0.25);
+  color: #FBBF24;
 }
 
 .status-badge.closed {
-  background-color: var(--bg-muted);
-  border: 1px solid var(--border-card);
+  background-color: var(--bg-subtle);
+  border: 1px solid var(--border-silk);
   color: var(--text-muted);
+}
+
+/* Soft Tinted Badges (Organic Enterprise Data Indicators) */
+.badge-soft {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.badge-soft-success {
+  background-color: rgba(20, 83, 45, 0.40);
+  color: #4ADE80;
+  border: 1px solid rgba(74, 222, 128, 0.20);
+}
+
+.badge-soft-warning {
+  background-color: rgba(120, 53, 15, 0.35);
+  color: #FBBF24;
+  border: 1px solid rgba(251, 191, 36, 0.20);
+}
+
+.badge-soft-danger {
+  background-color: rgba(76, 5, 25, 0.40);
+  color: #FB7185;
+  border: 1px solid rgba(251, 113, 133, 0.20);
+}
+
+.badge-soft-info {
+  background-color: rgba(14, 116, 144, 0.30);
+  color: #7DD3FC;
+  border: 1px solid rgba(125, 211, 252, 0.20);
+}
+
+.badge-soft-muted {
+  background-color: var(--bg-subtle);
+  color: var(--text-muted);
+  border: 1px solid var(--border-silk);
 }
 
 /* Onboarding Batch Creation Station for New Users */
 .first-batch-onboarding {
-  background-color: #ffffff;
-  border: 1px solid var(--border-card);
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-silk);
   border-radius: var(--radius-sm);
   padding: 1.75rem;
   margin-bottom: 1.5rem;
@@ -1140,8 +1203,8 @@ textarea:required:user-valid {
 }
 
 .form-card-section {
-  background: #ffffff;
-  border: 1px solid var(--border-card);
+  background: var(--bg-card);
+  border: 1px solid var(--border-silk);
   border-radius: var(--radius-md);
   padding: 1.1rem 1.25rem;
   display: flex;
@@ -2042,7 +2105,7 @@ textarea:required:user-valid {
 .progress-bar-bg {
   width: 100%;
   height: 6px;
-  background-color: var(--border-divider);
+  background-color: var(--progress-track);
   border-radius: var(--radius-full);
   overflow: hidden;
   margin: 0.5rem 0;
@@ -2050,7 +2113,7 @@ textarea:required:user-valid {
 
 .progress-bar-fill {
   height: 100%;
-  background-color: var(--primary);
+  background: linear-gradient(90deg, #16A34A 0%, #34D399 100%);
   border-radius: var(--radius-full);
   transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
@@ -2096,15 +2159,15 @@ textarea:required:user-valid {
   font-family: var(--font-family);
   font-size: 0.85rem;
   padding: 0.5rem 0.75rem;
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-silk);
   border-radius: var(--radius-sm);
-  background-color: #ffffff;
+  background-color: var(--bg-card);
   color: var(--text-main);
   transition: border-color 0.15s ease;
 }
 
 .form-control:hover {
-  border-color: #94A3B8;
+  border-color: var(--primary);
 }
 
 .form-control:focus {
@@ -2118,9 +2181,9 @@ textarea:required:user-valid {
 }
 
 .form-control:disabled {
-  background-color: #F1F5F9;
-  border-color: #E2E8F0;
-  color: #94A3B8;
+  background-color: var(--bg-muted);
+  border-color: var(--border-silk);
+  color: var(--text-muted);
   cursor: not-allowed;
 }
 
@@ -2128,8 +2191,8 @@ textarea:required:user-valid {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(15, 25, 20, 0.65);
-  backdrop-filter: blur(2px);
+  background-color: rgba(12, 17, 15, 0.75);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2138,15 +2201,16 @@ textarea:required:user-valid {
 }
 
 .modal-content {
-  background-color: #ffffff;
-  border: 1px solid var(--border-card);
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-silk);
   border-radius: var(--radius-sm);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.22);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
   width: 100%;
   max-width: 600px;
   max-height: 90vh;
   overflow-y: auto;
   padding: 1.5rem;
+  color: var(--text-main);
 }
 
 .modal-header {
@@ -2210,8 +2274,8 @@ textarea:required:user-valid {
 .empty-state {
   text-align: center;
   padding: 2.5rem 1.5rem;
-  background-color: #ffffff;
-  border: 1px dashed var(--border-card);
+  background-color: var(--bg-card);
+  border: 1px dashed var(--border-silk);
   border-radius: var(--radius-sm);
   color: var(--text-muted);
 }
@@ -2581,7 +2645,8 @@ textarea:required:user-valid {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.3px;
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: var(--bg-card-elevated);
+  border: 1px solid currentColor;
   padding: 1px 5px;
   border-radius: var(--radius-sm);
   margin-top: 1px;
@@ -2592,10 +2657,10 @@ textarea:required:user-valid {
   top: calc(100% + 8px);
   right: 0;
   width: 320px;
-  background-color: #ffffff;
-  border: 1px solid var(--border-card);
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-silk);
   border-radius: var(--radius-md);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.18), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
   z-index: 1000;
   overflow: hidden;
 }
@@ -2704,13 +2769,13 @@ textarea:required:user-valid {
 }
 
 .tenant-action-btn.secondary {
-  background-color: #ffffff;
+  background-color: var(--bg-card-elevated);
   color: var(--text-main);
-  border-color: var(--border-card);
+  border: 1px solid var(--border-silk);
 }
 
 .tenant-action-btn.secondary:hover {
-  background-color: var(--bg-page);
+  background-color: var(--bg-subtle);
 }
 
 /* ==========================================================================
@@ -2913,11 +2978,11 @@ textarea:required:user-valid {
   align-items: center;
   font-size: 0.65rem;
   font-weight: 700;
-  color: var(--primary);
-  background-color: #ffffff;
+  color: var(--primary-text);
+  background-color: var(--primary-wash);
   padding: 1px 6px;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--primary);
+  border: 1px solid rgba(22, 163, 74, 0.3);
   text-transform: uppercase;
 }
 
@@ -3040,9 +3105,10 @@ textarea:required:user-valid {
 
 /* Profile Creation & Editing Modal */
 .profile-form-modal {
-  background-color: #ffffff;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-silk);
   padding: 1.5rem;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.24);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
 }
 
 .profile-live-preview {
@@ -3178,12 +3244,12 @@ textarea:required:user-valid {
 
 .routine-card:hover {
   transform: translateY(-3px);
-  border-color: rgba(255, 255, 255, 0.25);
+  border-color: #23332A;
 }
 
 .routine-card.current {
-  border-color: rgba(255, 255, 255, 0.35);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
+  border-color: #16A34A;
+  box-shadow: 0 0 0 1px rgba(22, 163, 74, 0.35);
 }
 
 .routine-card.done {
@@ -3233,11 +3299,10 @@ textarea:required:user-valid {
   justify-content: space-between;
   align-items: flex-start;
   background: linear-gradient(
-    180deg,
-    rgba(9, 9, 11, 0.82) 0%,
-    rgba(9, 9, 11, 0) 35%,
-    rgba(9, 9, 11, 0) 60%,
-    rgba(9, 9, 11, 0.88) 100%
+    to top,
+    #0C110F 0%,
+    rgba(12, 17, 15, 0.60) 60%,
+    transparent 100%
   );
   pointer-events: none;
   transition: opacity 0.25s ease;
@@ -3247,11 +3312,11 @@ textarea:required:user-valid {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  background: rgba(9, 9, 11, 0.78);
+  background: rgba(12, 17, 15, 0.85);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #FAFAFA;
+  border: 1px solid rgba(35, 51, 42, 0.80);
+  color: #F8FAFC;
   font-size: 0.68rem;
   font-weight: 500;
   padding: 3px 8px;
@@ -3268,22 +3333,25 @@ textarea:required:user-valid {
   gap: 4px;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(35, 51, 42, 0.80);
 }
 
 .routine-status-pill.done {
-  background-color: rgba(255, 255, 255, 0.15);
-  color: #FAFAFA;
+  background-color: rgba(20, 83, 45, 0.40);
+  border-color: rgba(74, 222, 128, 0.25);
+  color: #4ADE80;
 }
 
 .routine-status-pill.pending {
-  background-color: rgba(9, 9, 11, 0.75);
-  color: var(--text-muted);
+  background-color: rgba(120, 53, 15, 0.35);
+  border-color: rgba(251, 191, 36, 0.25);
+  color: #FBBF24;
 }
 
 .routine-status-pill.active {
-  background-color: #FAFAFA;
-  color: #09090B;
+  background-color: rgba(22, 163, 74, 0.25);
+  border-color: rgba(74, 222, 128, 0.40);
+  color: #4ADE80;
 }
 
 .routine-body {
@@ -3520,9 +3588,10 @@ textarea:required:user-valid {
 /* Enhanced Quick Log Modal Styles */
 .quick-log-modal {
   max-width: 560px;
-  background-color: #ffffff;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-silk);
   padding: 1.5rem;
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.22);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.4);
 }
 
 .log-tab-row {
@@ -3916,8 +3985,8 @@ textarea:required:user-valid {
 
 /* Disease Selector Chips */
 .farm-chip-btn {
-  background-color: #ffffff;
-  border: 1px solid var(--border-card);
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-silk);
   color: var(--text-muted);
   padding: 0.4rem 0.85rem;
   border-radius: 9999px;
@@ -3928,8 +3997,9 @@ textarea:required:user-valid {
 }
 
 .farm-chip-btn:hover {
-  border-color: var(--text-main);
+  border-color: var(--primary);
   color: var(--text-main);
+  background-color: var(--bg-card-elevated);
 }
 
 .farm-chip-btn.active {

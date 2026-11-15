@@ -81,12 +81,12 @@ export const CountySelector: React.FC<CountySelectorProps> = ({
           justifyContent: 'space-between',
           cursor: 'pointer',
           textAlign: 'left',
-          backgroundColor: '#ffffff',
+          backgroundColor: 'var(--bg-card)',
           fontWeight: 600,
           color: 'var(--text-main)',
           padding: '8px 12px',
           minHeight: '42px',
-          borderColor: isOpen ? 'var(--primary)' : 'var(--border-card)',
+          borderColor: isOpen ? 'var(--primary)' : 'var(--border-silk)',
           boxShadow: isOpen ? '0 0 0 2px var(--primary-subtle)' : 'none',
         }}
         aria-haspopup="listbox"
@@ -159,10 +159,10 @@ export const CountySelector: React.FC<CountySelectorProps> = ({
             left: 0,
             right: 0,
             zIndex: 110,
-            backgroundColor: '#ffffff',
-            border: '1px solid var(--border-card)',
+            backgroundColor: 'var(--bg-card)',
+            border: '1px solid var(--border-silk)',
             borderRadius: 'var(--radius-md)',
-            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.12)',
+            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
             overflow: 'hidden',
             display: 'flex',
             flexDirection: 'column',
@@ -256,7 +256,7 @@ export const CountySelector: React.FC<CountySelectorProps> = ({
                       transition: 'background-color 0.1s ease',
                     }}
                     onMouseEnter={(e) => {
-                      if (!isSelected) (e.currentTarget as HTMLElement).style.backgroundColor = '#f4f7f5';
+                      if (!isSelected) (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-subtle)';
                     }}
                     onMouseLeave={(e) => {
                       if (!isSelected) (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
@@ -271,7 +271,7 @@ export const CountySelector: React.FC<CountySelectorProps> = ({
                             padding: '1px 5px',
                             borderRadius: '3px',
                             backgroundColor: isSelected ? 'var(--primary)' : 'var(--accent-gold-subtle)',
-                            color: isSelected ? '#ffffff' : 'var(--status-warning)',
+                            color: isSelected ? '#ffffff' : 'var(--accent-gold)',
                             fontWeight: 600,
                           }}
                         >
@@ -291,7 +291,7 @@ export const CountySelector: React.FC<CountySelectorProps> = ({
             style={{
               padding: '5px 12px',
               borderTop: '1px solid var(--border-divider)',
-              backgroundColor: '#fafafa',
+              backgroundColor: 'var(--bg-subtle)',
               fontSize: '0.68rem',
               color: 'var(--text-muted)',
               display: 'flex',

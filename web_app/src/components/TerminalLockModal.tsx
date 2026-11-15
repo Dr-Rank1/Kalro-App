@@ -131,21 +131,21 @@ export const TerminalLockModal: React.FC<TerminalLockModalProps> = ({
         style={{
           width: '100%',
           maxWidth: '440px',
-          backgroundColor: '#FFFFFF',
+          backgroundColor: 'var(--bg-card)',
           borderRadius: '12px',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.45)',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.55)',
           overflow: 'hidden',
-          border: '1px solid #CBD5E1',
+          border: '1px solid var(--border-silk)',
           animation: 'fadeEnter 0.2s ease-out',
         }}
       >
         {/* Institutional Header Banner */}
         <div
           style={{
-            backgroundColor: '#0F3826',
-            color: '#FFFFFF',
+            backgroundColor: '#0C110F',
+            color: 'var(--text-main)',
             padding: '1.25rem 1.5rem',
-            borderBottom: '3px solid #C68A14',
+            borderBottom: '3px solid var(--accent-gold)',
             display: 'flex',
             alignItems: 'center',
             gap: '12px',
@@ -156,24 +156,24 @@ export const TerminalLockModal: React.FC<TerminalLockModalProps> = ({
               width: '42px',
               height: '42px',
               borderRadius: '8px',
-              backgroundColor: 'rgba(255, 255, 255, 0.12)',
+              backgroundColor: 'rgba(245, 158, 11, 0.15)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#FCD34D',
+              color: 'var(--accent-gold)',
               flexShrink: 0,
             }}
           >
             <Lock size={22} />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: '0.72rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9AE6B4', fontWeight: 700 }}>
+            <div style={{ fontSize: '0.72rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--primary)', fontWeight: 700 }}>
               Security Protocol · Terminal Armed
             </div>
-            <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#FFFFFF', lineHeight: 1.25 }}>
+            <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-main)', lineHeight: 1.25 }}>
               KALRO Sericulture Facility
             </div>
-            <div style={{ fontSize: '0.75rem', color: '#E2E8F0', marginTop: '2px' }} className="truncate">
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }} className="truncate">
               {profile?.orgName || 'National Sericulture Research Centre, Thika'}
             </div>
           </div>
@@ -190,7 +190,7 @@ export const TerminalLockModal: React.FC<TerminalLockModalProps> = ({
                 fontWeight: 700,
                 textTransform: 'uppercase',
                 letterSpacing: '0.05em',
-                color: '#475569',
+                color: 'var(--text-muted)',
                 marginBottom: '6px',
               }}
             >
@@ -202,8 +202,8 @@ export const TerminalLockModal: React.FC<TerminalLockModalProps> = ({
                 alignItems: 'center',
                 gap: '10px',
                 padding: '8px 12px',
-                backgroundColor: '#F8FAFC',
-                border: '1px solid #E2E8F0',
+                backgroundColor: 'var(--bg-subtle)',
+                border: '1px solid var(--border-silk)',
                 borderRadius: '8px',
               }}
             >
@@ -212,7 +212,7 @@ export const TerminalLockModal: React.FC<TerminalLockModalProps> = ({
                   width: '36px',
                   height: '36px',
                   borderRadius: '50%',
-                  backgroundColor: selectedUser?.avatarColor || '#0F3826',
+                  backgroundColor: selectedUser?.avatarColor || 'var(--primary)',
                   color: '#FFFFFF',
                   fontWeight: 700,
                   fontSize: '0.85rem',
@@ -226,7 +226,7 @@ export const TerminalLockModal: React.FC<TerminalLockModalProps> = ({
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <strong style={{ fontSize: '0.9rem', color: '#0F172A' }}>
+                  <strong style={{ fontSize: '0.9rem', color: 'var(--text-main)' }}>
                     {selectedUser?.username || 'Staff Member'}
                   </strong>
                   {selectedUser?.staffId && (
@@ -236,15 +236,15 @@ export const TerminalLockModal: React.FC<TerminalLockModalProps> = ({
                         fontFamily: 'monospace',
                         padding: '1px 5px',
                         borderRadius: '3px',
-                        backgroundColor: '#E2E8F0',
-                        color: '#334155',
+                        backgroundColor: 'var(--bg-card-elevated)',
+                        color: 'var(--text-muted)',
                       }}
                     >
                       {selectedUser.staffId}
                     </span>
                   )}
                 </div>
-                <div style={{ fontSize: '0.74rem', color: '#64748B' }}>
+                <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
                   {roleMeta.label} · {selectedUser?.shift ? `${selectedUser.shift.toUpperCase()} SHIFT` : 'Duty Operator'}
                 </div>
               </div>
@@ -265,9 +265,9 @@ export const TerminalLockModal: React.FC<TerminalLockModalProps> = ({
                     fontSize: '0.76rem',
                     padding: '5px 8px',
                     borderRadius: '6px',
-                    border: '1px solid #CBD5E1',
-                    backgroundColor: '#FFFFFF',
-                    color: '#334155',
+                    border: '1px solid var(--border-silk)',
+                    backgroundColor: 'var(--bg-subtle)',
+                    color: 'var(--text-main)',
                     cursor: 'pointer',
                   }}
                 >
@@ -293,7 +293,7 @@ export const TerminalLockModal: React.FC<TerminalLockModalProps> = ({
                 fontWeight: 700,
                 textTransform: 'uppercase',
                 letterSpacing: '0.05em',
-                color: '#64748B',
+                color: 'var(--text-muted)',
                 marginBottom: '10px',
               }}
             >
@@ -317,10 +317,10 @@ export const TerminalLockModal: React.FC<TerminalLockModalProps> = ({
                       width: '18px',
                       height: '18px',
                       borderRadius: '50%',
-                      border: '2px solid #0F3826',
-                      backgroundColor: isFilled ? '#0F3826' : 'transparent',
+                      border: '2px solid var(--primary)',
+                      backgroundColor: isFilled ? 'var(--primary)' : 'transparent',
                       transition: 'all 0.15s ease',
-                      boxShadow: isFilled ? '0 0 0 3px rgba(15, 56, 38, 0.2)' : 'none',
+                      boxShadow: isFilled ? '0 0 0 3px rgba(22, 163, 74, 0.3)' : 'none',
                     }}
                   />
                 );
@@ -330,7 +330,7 @@ export const TerminalLockModal: React.FC<TerminalLockModalProps> = ({
             {errorMsg ? (
               <div
                 style={{
-                  color: '#DC2626',
+                  color: 'var(--status-danger)',
                   fontSize: '0.74rem',
                   fontWeight: 600,
                   display: 'flex',
@@ -344,8 +344,8 @@ export const TerminalLockModal: React.FC<TerminalLockModalProps> = ({
                 <span>{errorMsg}</span>
               </div>
             ) : (
-              <div style={{ fontSize: '0.72rem', color: '#94A3B8', marginTop: '4px' }}>
-                Default institutional PIN is <strong style={{ color: '#475569' }}>2026</strong>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                Default institutional PIN is <strong style={{ color: 'var(--text-main)' }}>2026</strong>
               </div>
             )}
           </div>
@@ -369,18 +369,18 @@ export const TerminalLockModal: React.FC<TerminalLockModalProps> = ({
                   height: '48px',
                   fontSize: '1.25rem',
                   fontWeight: 600,
-                  backgroundColor: '#F8FAFC',
-                  border: '1px solid #E2E8F0',
+                  backgroundColor: 'var(--bg-card-elevated)',
+                  border: '1px solid var(--border-silk)',
                   borderRadius: '8px',
-                  color: '#0F172A',
+                  color: 'var(--text-main)',
                   cursor: 'pointer',
                   transition: 'background 0.1s, transform 0.05s',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
-                onMouseDown={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = '#E2E8F0')}
-                onMouseUp={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = '#F8FAFC')}
+                onMouseDown={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-subtle)')}
+                onMouseUp={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-card-elevated)')}
               >
                 {digit}
               </button>
@@ -393,10 +393,10 @@ export const TerminalLockModal: React.FC<TerminalLockModalProps> = ({
                 height: '48px',
                 fontSize: '0.78rem',
                 fontWeight: 600,
-                backgroundColor: '#F1F5F9',
-                border: '1px solid #E2E8F0',
+                backgroundColor: 'var(--bg-subtle)',
+                border: '1px solid var(--border-silk)',
                 borderRadius: '8px',
-                color: '#64748B',
+                color: 'var(--text-muted)',
                 cursor: 'pointer',
               }}
             >
@@ -410,14 +410,14 @@ export const TerminalLockModal: React.FC<TerminalLockModalProps> = ({
                 height: '48px',
                 fontSize: '1.25rem',
                 fontWeight: 600,
-                backgroundColor: '#F8FAFC',
-                border: '1px solid #E2E8F0',
+                backgroundColor: 'var(--bg-card-elevated)',
+                border: '1px solid var(--border-silk)',
                 borderRadius: '8px',
-                color: '#0F172A',
+                color: 'var(--text-main)',
                 cursor: 'pointer',
               }}
-              onMouseDown={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = '#E2E8F0')}
-              onMouseUp={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = '#F8FAFC')}
+              onMouseDown={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-subtle)')}
+              onMouseUp={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-card-elevated)')}
             >
               0
             </button>
@@ -429,10 +429,10 @@ export const TerminalLockModal: React.FC<TerminalLockModalProps> = ({
                 height: '48px',
                 fontSize: '0.78rem',
                 fontWeight: 600,
-                backgroundColor: '#F1F5F9',
-                border: '1px solid #E2E8F0',
+                backgroundColor: 'var(--bg-subtle)',
+                border: '1px solid var(--border-silk)',
                 borderRadius: '8px',
-                color: '#64748B',
+                color: 'var(--text-muted)',
                 cursor: 'pointer',
               }}
             >
@@ -448,7 +448,7 @@ export const TerminalLockModal: React.FC<TerminalLockModalProps> = ({
             style={{
               width: '100%',
               padding: '10px 16px',
-              backgroundColor: '#0F3826',
+              backgroundColor: 'var(--primary)',
               color: '#FFFFFF',
               border: 'none',
               borderRadius: '8px',
@@ -476,12 +476,12 @@ export const TerminalLockModal: React.FC<TerminalLockModalProps> = ({
               gap: '6px',
               marginTop: '1.25rem',
               fontSize: '0.72rem',
-              color: '#64748B',
-              borderTop: '1px solid #F1F5F9',
+              color: 'var(--text-muted)',
+              borderTop: '1px solid var(--border-silk)',
               paddingTop: '0.85rem',
             }}
           >
-            <ShieldAlert size={13} style={{ color: '#0F3826' }} />
+            <ShieldAlert size={13} style={{ color: 'var(--primary)' }} />
             <span>Station Audit Ledger is locked &amp; tamper-resistant.</span>
           </div>
         </div>

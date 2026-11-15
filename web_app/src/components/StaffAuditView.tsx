@@ -169,7 +169,7 @@ export const StaffAuditView: React.FC<StaffAuditViewProps> = ({
         style={{
           padding: '1.25rem',
           marginBottom: '1rem',
-          backgroundColor: '#ffffff',
+          backgroundColor: 'var(--bg-card)',
           borderLeft: '4px solid var(--primary)',
         }}
       >
@@ -319,7 +319,7 @@ export const StaffAuditView: React.FC<StaffAuditViewProps> = ({
       {/* 3. Filter & Search Controls */}
       <div
         className="kalro-card"
-        style={{ padding: '0.85rem 1rem', marginBottom: '1rem', backgroundColor: '#ffffff' }}
+        style={{ padding: '0.85rem 1rem', marginBottom: '1rem', backgroundColor: 'var(--bg-card)' }}
       >
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem' }}>
           {/* Staff Filter */}

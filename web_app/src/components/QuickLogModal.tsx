@@ -415,9 +415,9 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
               style={{
                 fontSize: '0.72rem',
                 padding: '3px 8px',
-                border: '1px solid var(--border-card)',
+                border: '1px solid var(--border-silk)',
                 borderRadius: '4px',
-                backgroundColor: '#ffffff',
+                backgroundColor: 'var(--bg-subtle)',
                 color: 'var(--text-main)',
                 cursor: 'pointer',
                 fontWeight: 500,

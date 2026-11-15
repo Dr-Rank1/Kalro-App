@@ -5,20 +5,17 @@ import {
   Sun,
   Moon,
   Clock,
-  CheckCircle2,
   AlertTriangle,
   Thermometer,
   Droplets,
   Leaf,
   Plus,
   Building2,
-  Info,
   ShieldCheck,
   Check,
   Sparkles,
   ArrowRight,
   History,
-  Users,
 } from 'lucide-react';
 import {
   Batch,
@@ -167,7 +164,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
     feedTargetKg > 0 ? Math.min(100, Math.round((feedTodayKg / feedTargetKg) * 100)) : 100;
 
   // Total harvest kg
-  const totalHarvestWeightKg =
+  const _totalHarvestWeightKg =
     harvests.reduce((sum, h) => sum + h.totalWeightGrams, 0) / 1000.0;
 
   // Leaf coverage forecast
@@ -338,8 +335,8 @@ export const TodayView: React.FC<TodayViewProps> = ({
           flexWrap: 'wrap',
           gap: '12px',
           padding: '0.75rem 1rem',
-          backgroundColor: '#ffffff',
-          border: '1px solid var(--border-card)',
+          backgroundColor: 'var(--bg-card)',
+          border: '1px solid var(--border-silk)',
           borderRadius: 'var(--radius-md)',
           marginBottom: '1rem',
           boxShadow: 'var(--shadow-sm)',
@@ -485,8 +482,8 @@ export const TodayView: React.FC<TodayViewProps> = ({
         <div
           className="kalro-card"
           style={{
-            background: 'linear-gradient(135deg, #fdfbf7 0%, #f6f3ea 100%)',
-            border: '1px solid #e2d7be',
+            background: 'linear-gradient(135deg, rgba(22, 163, 74, 0.08) 0%, rgba(19, 26, 23, 0.95) 100%)',
+            border: '1px solid #23332A',
             marginBottom: '1.25rem',
             padding: '1rem 1.25rem',
           }}
@@ -537,7 +534,9 @@ export const TodayView: React.FC<TodayViewProps> = ({
           <span className="metric-label">Live Silkworms</span>
           <span className="metric-number tabular-nums">{totalLiveLarvae.toLocaleString()}</span>
           <span className="metric-sub">
-            {activeBatches.length} active {activeBatches.length === 1 ? 'lot' : 'lots'} in rearing
+            <span className="badge-soft badge-soft-success">
+              {activeBatches.length} Active {activeBatches.length === 1 ? 'Lot' : 'Lots'}
+            </span>
           </span>
         </div>
 
@@ -545,9 +544,13 @@ export const TodayView: React.FC<TodayViewProps> = ({
           <span className="metric-label">Feed Dispatched</span>
           <span className="metric-number tabular-nums">{feedTodayKg.toFixed(1)} kg</span>
           <span className="metric-sub">
-            {feedTargetKg > 0
-              ? `${feedProgressPct}% of ${feedTargetKg.toFixed(1)} kg target`
-              : 'All lots resting in moult'}
+            {feedTargetKg > 0 ? (
+              <span className={`badge-soft ${feedProgressPct >= 100 ? 'badge-soft-success' : 'badge-soft-info'}`}>
+                {feedProgressPct}% of {feedTargetKg.toFixed(1)} kg
+              </span>
+            ) : (
+              <span className="badge-soft badge-soft-warning">Resting in Moult</span>
+            )}
           </span>
         </div>
 
@@ -556,19 +559,22 @@ export const TodayView: React.FC<TodayViewProps> = ({
           <span className="metric-number tabular-nums">
             {activeBatches.length > 0 ? `${leafCoverage.daysOfCover} Days` : '--'}
           </span>
-          <span
-            className="metric-sub"
-            style={{
-              color:
-                activeBatches.length > 0 && leafCoverage.urgency === 'critical'
-                  ? 'var(--status-danger)'
-                  : activeBatches.length > 0 && leafCoverage.urgency === 'warning'
-                  ? 'var(--status-warning)'
-                  : 'var(--text-silver)',
-              fontWeight: 500,
-            }}
-          >
-            Buffer: {activeBatches.length > 0 ? leafCoverage.urgency.toUpperCase() : 'NO ACTIVE BATCH'}
+          <span className="metric-sub">
+            {activeBatches.length > 0 ? (
+              <span
+                className={`badge-soft ${
+                  leafCoverage.urgency === 'critical'
+                    ? 'badge-soft-danger'
+                    : leafCoverage.urgency === 'warning'
+                    ? 'badge-soft-warning'
+                    : 'badge-soft-success'
+                }`}
+              >
+                Buffer: {leafCoverage.urgency.toUpperCase()}
+              </span>
+            ) : (
+              <span className="badge-soft badge-soft-muted">NO ACTIVE BATCH</span>
+            )}
           </span>
         </div>
 
@@ -578,7 +584,13 @@ export const TodayView: React.FC<TodayViewProps> = ({
             {totalOriginalEggs > 0 ? `${avgSurvival.toFixed(1)}%` : '--'}
           </span>
           <span className="metric-sub">
-            {totalOriginalEggs > 0 ? 'Flock viability index' : 'Awaiting active rearing'}
+            {totalOriginalEggs > 0 ? (
+              <span className={`badge-soft ${avgSurvival >= 90 ? 'badge-soft-success' : avgSurvival >= 75 ? 'badge-soft-warning' : 'badge-soft-danger'}`}>
+                Viability Index
+              </span>
+            ) : (
+              <span className="badge-soft badge-soft-muted">Awaiting Rearing</span>
+            )}
           </span>
         </div>
 
@@ -590,9 +602,13 @@ export const TodayView: React.FC<TodayViewProps> = ({
               : '--'}
           </span>
           <span className="metric-sub">
-            {latestEnv
-              ? `${latestEnv.roomName ? `${latestEnv.roomName} · ` : ''}${latestEnv.humidityPercent}% RH`
-              : 'No reading today'}
+            {latestEnv ? (
+              <span className="badge-soft badge-soft-info">
+                {latestEnv.roomName ? `${latestEnv.roomName} · ` : ''}{latestEnv.humidityPercent}% RH
+              </span>
+            ) : (
+              <span className="badge-soft badge-soft-muted">No Reading Today</span>
+            )}
           </span>
         </div>
       </div>
@@ -906,7 +922,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
         )}
 
         {activeBatches.length === 0 ? (
-          <div className="empty-state" style={{ padding: '2rem 1.5rem', textAlign: 'center', backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-md)' }}>
+          <div className="empty-state" style={{ padding: '2rem 1.5rem', textAlign: 'center', backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-silk)', borderRadius: 'var(--radius-md)' }}>
             <div
               style={{
                 width: '52px',
@@ -1184,10 +1200,10 @@ export const TodayView: React.FC<TodayViewProps> = ({
                       style={{
                         fontSize: '0.74rem',
                         padding: '6px 10px',
-                        backgroundColor: 'rgba(15, 56, 38, 0.05)',
-                        border: '1px solid rgba(15, 56, 38, 0.15)',
+                        backgroundColor: 'rgba(22, 163, 74, 0.10)',
+                        border: '1px solid rgba(22, 163, 74, 0.25)',
                         borderRadius: 'var(--radius-sm)',
-                        color: 'var(--primary)',
+                        color: '#4ADE80',
                         marginBottom: '0.65rem',
                         display: 'flex',
                         alignItems: 'center',
@@ -1230,11 +1246,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
                       <div>
                         <div style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>Fed Today</div>
                         <span
-                          className="tabular-nums"
-                          style={{
-                            color: fed ? 'var(--status-success)' : 'var(--status-danger)',
-                            fontWeight: 600,
-                          }}
+                          className={`badge-soft ${fed ? 'badge-soft-success' : 'badge-soft-danger'}`}
                         >
                           {fed ? `${(batchFeedToday / 1000).toFixed(1)} kg logged` : 'Pending Feed'}
                         </span>

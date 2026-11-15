@@ -521,8 +521,8 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
                 <div
                   key={cultivar.code}
                   style={{
-                    backgroundColor: '#ffffff',
-                    border: '1px solid var(--border-card)',
+                    backgroundColor: 'var(--bg-card)',
+                    border: '1px solid var(--border-silk)',
                     borderRadius: 'var(--radius-sm)',
                     padding: '0.85rem',
                   }}
@@ -558,8 +558,8 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
                 <div
                   key={cv.code}
                   style={{
-                    backgroundColor: '#ffffff',
-                    border: '1px solid var(--border-card)',
+                    backgroundColor: 'var(--bg-card)',
+                    border: '1px solid var(--border-silk)',
                     borderRadius: 'var(--radius-sm)',
                     padding: '0.85rem',
                   }}
@@ -591,7 +591,7 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
             </p>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.75rem' }}>
-              <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.85rem' }}>
+              <div style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-silk)', borderRadius: 'var(--radius-sm)', padding: '0.85rem' }}>
                 <strong style={{ fontSize: '0.85rem', color: 'var(--primary)', display: 'block', marginBottom: '4px' }}>
                   Centre Genebank (Core Germplasm)
                 </strong>
@@ -603,7 +603,7 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
                 </ul>
               </div>
 
-              <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.85rem' }}>
+              <div style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-silk)', borderRadius: 'var(--radius-sm)', padding: '0.85rem' }}>
                 <strong style={{ fontSize: '0.85rem', color: 'var(--primary)', display: 'block', marginBottom: '4px' }}>
                   Station Genebanks
                 </strong>
@@ -614,7 +614,7 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
                 </ul>
               </div>
 
-              <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.85rem' }}>
+              <div style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-silk)', borderRadius: 'var(--radius-sm)', padding: '0.85rem' }}>
                 <strong style={{ fontSize: '0.85rem', color: 'var(--primary)', display: 'block', marginBottom: '4px' }}>
                   Research & Trial Blocks
                 </strong>
@@ -625,7 +625,7 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
                 </ul>
               </div>
 
-              <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.85rem' }}>
+              <div style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-silk)', borderRadius: 'var(--radius-sm)', padding: '0.85rem' }}>
                 <strong style={{ fontSize: '0.85rem', color: 'var(--primary)', display: 'block', marginBottom: '4px' }}>
                   Production Field Blocks
                 </strong>
@@ -863,7 +863,7 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
                 Field Methods for Moderating Temperature & Humidity in Kenya Rearing Houses
               </h4>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.75rem' }}>
-                <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.75rem' }}>
+                <div style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-silk)', borderRadius: 'var(--radius-sm)', padding: '0.75rem' }}>
                   <strong style={{ fontSize: '0.8rem', color: 'var(--text-main)', display: 'block', marginBottom: '2px' }}>
                     1. Wet Gunny Bags & Wall Hangings
                   </strong>
@@ -871,7 +871,7 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
                     Hang wet gunny bags or damp newspapers across room walls and windows. Promotes passive evaporative cooling to drop room heat by 2–4°C and boost humidity.
                   </p>
                 </div>
-                <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.75rem' }}>
+                <div style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-silk)', borderRadius: 'var(--radius-sm)', padding: '0.75rem' }}>
                   <strong style={{ fontSize: '0.8rem', color: 'var(--text-main)', display: 'block', marginBottom: '2px' }}>
                     2. Cemented Floor Water Sprinkling
                   </strong>
@@ -879,7 +879,7 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
                     Pour clean water directly onto cemented rearing house floors during peak afternoon heat (12:00 – 15:00) to moderate humidity for young chawki worms.
                   </p>
                 </div>
-                <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.75rem' }}>
+                <div style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-silk)', borderRadius: 'var(--radius-sm)', padding: '0.75rem' }}>
                   <strong style={{ fontSize: '0.8rem', color: 'var(--text-main)', display: 'block', marginBottom: '2px' }}>
                     3. Perimeter Floor Water Moat (Ant Barrier)
                   </strong>
@@ -1132,7 +1132,7 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
             </p>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.85rem' }}>
-              <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.95rem' }}>
+              <div style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-silk)', borderRadius: 'var(--radius-sm)', padding: '0.95rem' }}>
                 <strong style={{ fontSize: '0.85rem', color: 'var(--primary)', display: 'block', marginBottom: '4px' }}>
                   Signs of Entering Moult (Feeding Ceases)
                 </strong>
@@ -1145,7 +1145,7 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
                 </ul>
               </div>
 
-              <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.95rem' }}>
+              <div style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-silk)', borderRadius: 'var(--radius-sm)', padding: '0.95rem' }}>
                 <strong style={{ fontSize: '0.85rem', color: 'var(--primary)', display: 'block', marginBottom: '4px' }}>
                   Indicators of Getting Out of Moult (Resume Feeding)
                 </strong>
@@ -1157,7 +1157,7 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
                 </ul>
               </div>
 
-              <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.95rem' }}>
+              <div style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-silk)', borderRadius: 'var(--radius-sm)', padding: '0.95rem' }}>
                 <strong style={{ fontSize: '0.85rem', color: 'var(--primary)', display: 'block', marginBottom: '4px' }}>
                   Bed Cleaning & Waste Disposal Protocol
                 </strong>
@@ -1169,7 +1169,7 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
                 </ul>
               </div>
 
-              <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.95rem' }}>
+              <div style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-silk)', borderRadius: 'var(--radius-sm)', padding: '0.95rem' }}>
                 <strong style={{ fontSize: '0.85rem', color: 'var(--primary)', display: 'block', marginBottom: '4px' }}>
                   Silkworm Pests & Protection (Ants & Rats)
                 </strong>
@@ -1347,8 +1347,8 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
                 <div
                   key={i}
                   style={{
-                    backgroundColor: '#ffffff',
-                    border: '1px solid var(--border-card)',
+                    backgroundColor: 'var(--bg-card)',
+                    border: '1px solid var(--border-silk)',
                     borderRadius: 'var(--radius-sm)',
                     padding: '0.85rem',
                   }}
@@ -1376,7 +1376,7 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
               {/* Hot Air Drying Schedule */}
-              <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.95rem' }}>
+              <div style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-silk)', borderRadius: 'var(--radius-sm)', padding: '0.95rem' }}>
                 <strong style={{ fontSize: '0.85rem', color: 'var(--primary)', display: 'block', marginBottom: '6px' }}>
                   Procedure for Automatic Hot Air Drying of Cocoons
                 </strong>
@@ -1408,7 +1408,7 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
               </div>
 
               {/* Mounting & Harvesting Standards */}
-              <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.95rem' }}>
+              <div style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-silk)', borderRadius: 'var(--radius-sm)', padding: '0.95rem' }}>
                 <strong style={{ fontSize: '0.85rem', color: 'var(--primary)', display: 'block', marginBottom: '6px' }}>
                   Mounting, Harvesting & Transportation Operating Standards
                 </strong>
@@ -1555,7 +1555,7 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
                   </tr>
                 </thead>
                 <tbody>
-                  <tr style={{ backgroundColor: '#f4f8f5' }}>
+                  <tr style={{ backgroundColor: 'rgba(22, 163, 74, 0.12)' }}>
                     <td><strong>Bivoltine Sericulture (Mulberry)</strong></td>
                     <td className="tabular-nums">KES 480,000</td>
                     <td className="tabular-nums">KES 120,000</td>
