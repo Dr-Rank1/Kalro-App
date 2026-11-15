@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Thermometer, Droplets, Leaf, AlertTriangle, ShieldAlert } from 'lucide-react';
 import { BOMBYX_STAGES, ERI_STAGES } from '../constants';
 import { Batch, MilestoneStage, Species } from '../types';
 import { getCurrentStage, getBatchAgeDays } from '../utils';
@@ -371,17 +372,21 @@ export const PlanView: React.FC<PlanViewProps> = ({ batches, onSelectTab }) => {
                   {/* Clean Meta Chips */}
                   <div className="roadmap-simple-meta">
                     <span className="roadmap-chip">
-                      🌡️ <strong>{phase.temp}</strong>
+                      <Thermometer size={12} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }} />
+                      <strong>{phase.temp}</strong>
                     </span>
                     <span className="roadmap-chip">
-                      💧 <strong>{phase.humidity}</strong>
+                      <Droplets size={12} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }} />
+                      <strong>{phase.humidity}</strong>
                     </span>
                     <span className="roadmap-chip">
-                      🍃 <strong>{phase.feeding}</strong>
+                      <Leaf size={12} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }} />
+                      <strong>{phase.feeding}</strong>
                     </span>
                     {phase.keyNote && (
                       <span className="roadmap-chip alert">
-                        ⚠️ {phase.keyNote}
+                        <AlertTriangle size={12} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }} />
+                        {phase.keyNote}
                       </span>
                     )}
                   </div>
@@ -446,18 +451,21 @@ export const PlanView: React.FC<PlanViewProps> = ({ batches, onSelectTab }) => {
                   {/* Clean Meta Chips */}
                   <div className="roadmap-simple-meta">
                     <span className="roadmap-chip">
-                      🌡️ <strong>{stage.idealTemp}</strong>
+                      <Thermometer size={12} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }} />
+                      <strong>{stage.idealTemp}</strong>
                     </span>
                     <span className="roadmap-chip">
-                      💧 <strong>{stage.idealHumidity}</strong>
+                      <Droplets size={12} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }} />
+                      <strong>{stage.idealHumidity}</strong>
                     </span>
                     {stage.isMoult ? (
                       <span className="roadmap-chip alert">
-                        🛑 <strong>Moult Fasting (Zero Feed)</strong>
+                        <ShieldAlert size={12} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }} />
+                        <strong>Moult Fasting (Zero Feed)</strong>
                       </span>
                     ) : (
                       <span className="roadmap-chip">
-                        🍃{' '}
+                        <Leaf size={12} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }} />
                         <strong>
                           {stage.instarNumber ? `${stage.instarNumber <= 2 ? 'Chopped Leaf' : 'Shoots'}` : 'Care'}
                         </strong>

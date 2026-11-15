@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { UserRole, FarmProfile, UserAccount } from '../types';
 import { KENYA_COUNTIES, USER_ROLES } from '../constants';
-import { RefreshCw, Check, Trash2 } from 'lucide-react';
+import { RefreshCw, Check, Trash2, X } from 'lucide-react';
 import { CountySelector } from './CountySelector';
 
 export interface ProfileFormData {
@@ -171,7 +171,7 @@ export const ProfileFormModal: React.FC<ProfileFormModalProps> = ({
             </p>
           </div>
           <button onClick={onClose} className="modal-close-btn" aria-label="Close dialog">
-            ✕
+            <X size={18} />
           </button>
         </div>
 

@@ -24,6 +24,7 @@ import {
   Plus,
   Send,
   Building2,
+  X,
 } from 'lucide-react';
 
 interface StaffAuditViewProps {
@@ -419,15 +420,20 @@ export const StaffAuditView: React.FC<StaffAuditViewProps> = ({
               style={{
                 position: 'absolute',
                 right: '8px',
-                top: '6px',
+                top: '50%',
+                transform: 'translateY(-50%)',
                 background: 'none',
                 border: 'none',
-                fontSize: '0.85rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
                 color: 'var(--text-muted)',
                 cursor: 'pointer',
+                padding: 0,
               }}
+              aria-label="Clear search"
             >
-              ✕
+              <X size={14} />
             </button>
           )}
         </div>
@@ -652,8 +658,8 @@ export const StaffAuditView: React.FC<StaffAuditViewProps> = ({
                   Document rearing tray condition, room adjustments, or shift handovers.
                 </p>
               </div>
-              <button onClick={() => setShowHandoverModal(false)} className="modal-close-btn">
-                ✕
+              <button onClick={() => setShowHandoverModal(false)} className="modal-close-btn" aria-label="Close dialog">
+                <X size={18} />
               </button>
             </div>
 

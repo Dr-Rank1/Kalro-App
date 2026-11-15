@@ -531,7 +531,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
         </div>
       )}
 
-      {/* 2. Key Operational Metrics Strip (Border only, tabular numerals, clean) */}
+      {/* 2. Key Operational Metrics Strip (Single seamless horizontal glass card with silk dividers) */}
       <div className="operational-metric-strip">
         <div className="metric-col">
           <span className="metric-label">Live Silkworms</span>
@@ -542,11 +542,11 @@ export const TodayView: React.FC<TodayViewProps> = ({
         </div>
 
         <div className="metric-col">
-          <span className="metric-label">Feed Dispatched Today</span>
+          <span className="metric-label">Feed Dispatched</span>
           <span className="metric-number tabular-nums">{feedTodayKg.toFixed(1)} kg</span>
           <span className="metric-sub">
             {feedTargetKg > 0
-              ? `${feedProgressPct}% of ${feedTargetKg.toFixed(1)} kg daily target`
+              ? `${feedProgressPct}% of ${feedTargetKg.toFixed(1)} kg target`
               : 'All lots resting in moult'}
           </span>
         </div>
@@ -564,8 +564,8 @@ export const TodayView: React.FC<TodayViewProps> = ({
                   ? 'var(--status-danger)'
                   : activeBatches.length > 0 && leafCoverage.urgency === 'warning'
                   ? 'var(--status-warning)'
-                  : 'var(--status-success)',
-              fontWeight: 600,
+                  : 'var(--text-silver)',
+              fontWeight: 500,
             }}
           >
             Buffer: {activeBatches.length > 0 ? leafCoverage.urgency.toUpperCase() : 'NO ACTIVE BATCH'}
@@ -583,7 +583,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
         </div>
 
         <div className="metric-col">
-          <span className="metric-label">Rearing Chamber Climate</span>
+          <span className="metric-label">Chamber Climate</span>
           <span className="metric-number tabular-nums">
             {latestEnv
               ? `${latestEnv.temperatureCelsius.toFixed(1)}°C`
@@ -591,7 +591,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
           </span>
           <span className="metric-sub">
             {latestEnv
-              ? `${latestEnv.roomName ? `${latestEnv.roomName} · ` : ''}${latestEnv.humidityPercent}% RH (Hygrometer)`
+              ? `${latestEnv.roomName ? `${latestEnv.roomName} · ` : ''}${latestEnv.humidityPercent}% RH`
               : 'No reading today'}
           </span>
         </div>
@@ -1387,87 +1387,37 @@ export const TodayView: React.FC<TodayViewProps> = ({
             No shift operations logged yet today. Logs recorded via "Log Feeding", "House Climate", or "Record Loss" will appear here in real time.
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            {auditLogs.slice(0, 5).map((log) => {
+          <div className="activity-stream-list">
+            {auditLogs.slice(0, 6).map((log) => {
               const timeStr = new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
               const dateStr = new Date(log.timestamp).toLocaleDateString([], { month: 'short', day: 'numeric' });
               return (
-                <div
-                  key={log.id}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '8px 12px',
-                    borderRadius: 'var(--radius-sm)',
-                    border: '1px solid var(--border-subtle)',
-                    backgroundColor: '#ffffff',
-                    fontSize: '0.78rem',
-                    flexWrap: 'wrap',
-                    gap: '8px',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: '220px', flex: 1 }}>
-                    <span
-                      style={{
-                        fontSize: '0.72rem',
-                        fontFamily: 'monospace',
-                        color: 'var(--text-muted)',
-                        minWidth: '55px',
-                      }}
-                    >
+                <div key={log.id} className="activity-stream-row">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: '220px', flex: 1 }}>
+                    <span className="activity-timestamp">
                       {timeStr}
                     </span>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          padding: '2px 7px',
-                          borderRadius: '3px',
-                          fontSize: '0.68rem',
-                          fontWeight: 700,
-                          backgroundColor:
-                            log.actionType === 'feed_log'
-                              ? 'rgba(46, 125, 50, 0.12)'
-                              : log.actionType === 'climate_check'
-                              ? 'rgba(43, 87, 117, 0.12)'
-                              : log.actionType === 'mortality_log'
-                              ? 'rgba(191, 54, 12, 0.12)'
-                              : log.actionType === 'shift_handover'
-                              ? 'rgba(198, 138, 20, 0.15)'
-                              : 'rgba(20, 61, 43, 0.1)',
-                          color:
-                            log.actionType === 'feed_log'
-                              ? '#2E7D32'
-                              : log.actionType === 'climate_check'
-                              ? '#2B5775'
-                              : log.actionType === 'mortality_log'
-                              ? '#BF360C'
-                              : log.actionType === 'shift_handover'
-                              ? '#C68A14'
-                              : '#143D2B',
-                        }}
-                      >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span className="activity-action-title">
                         {log.title}
                       </span>
                       {log.roomName && (
-                        <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                        <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
                           [{log.roomName}]
                         </span>
                       )}
                     </div>
 
-                    <span style={{ color: 'var(--text-main)', flex: 1 }} className="truncate">
+                    <span className="activity-details truncate" style={{ flex: 1 }}>
                       {log.details}
                     </span>
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.74rem' }}>
-                    <span style={{ color: 'var(--text-muted)' }}>by</span>
-                    <strong style={{ color: 'var(--primary)' }}>{log.operatorName}</strong>
-                    <span style={{ color: 'var(--text-muted)', fontSize: '0.68rem' }}>({dateStr})</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.74rem', color: 'var(--text-muted)' }}>
+                    <span>by</span>
+                    <span style={{ color: 'var(--text-main)', fontWeight: 500 }}>{log.operatorName}</span>
+                    <span style={{ fontSize: '0.7rem' }}>({dateStr})</span>
                   </div>
                 </div>
               );

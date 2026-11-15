@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { X } from 'lucide-react';
 import { Header } from './components/Header';
 import { Navigation, NavTab } from './components/Navigation';
 import { TodayView } from './components/TodayView';
@@ -708,7 +709,7 @@ export function App() {
                 className="modal-close-btn"
                 aria-label="Close dialog"
               >
-                ✕
+                <X size={18} />
               </button>
             </div>
             <BatchRegistrationForm

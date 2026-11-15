@@ -746,8 +746,8 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
                           )}
                         </span>
                         {currentStockKg < feedKg && feedKg > 0 && (
-                          <span style={{ color: 'var(--status-warning)', fontWeight: 600 }}>
-                            ⚠️ Feed exceeds stored stockpile
+                          <span style={{ color: 'var(--status-warning)', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                            <AlertTriangle size={12} /> Feed exceeds stored stockpile
                           </span>
                         )}
                       </div>
@@ -1075,7 +1075,7 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
                           color: avgCocoonWeight >= 1.8 ? 'var(--status-success)' : '#8c5d07',
                         }}
                       >
-                        ({avgCocoonWeight >= 1.8 ? '✓ Grade A Benchmark' : 'Grade B Commercial'})
+                        ({avgCocoonWeight >= 1.8 ? 'Grade A Benchmark' : 'Grade B Commercial'})
                       </span>
                     </div>
                   )}

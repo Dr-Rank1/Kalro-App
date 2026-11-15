@@ -1,5 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import {
+  Leaf as LeafIcon,
+  Thermometer,
+  ShieldAlert,
+  Package,
+  TrendingUp,
+  FileText,
+  Download,
+  Database,
+  Check,
+  AlertTriangle,
+  Home,
+  Wind,
+  Droplets,
+  Flame,
+  X,
+} from 'lucide-react';
+import {
   Batch,
   FeedLog,
   MortalityLog,
@@ -321,22 +338,25 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
       {/* 5 Clean Tabs */}
       <div className="farm-tabs-bar">
         {[
-          { key: 'leaf', label: 'Forage & Feed', icon: '🍃' },
-          { key: 'climate', label: 'Climate & Housing', icon: '🌡️' },
-          { key: 'health', label: 'Health & Pathology', icon: '🩺' },
-          { key: 'harvest', label: 'Cocoon & Reeling', icon: '🧺' },
-          { key: 'finance', label: 'Economics & Reports', icon: '📊' },
-        ].map((tab) => (
-          <button
-            key={tab.key}
-            type="button"
-            onClick={() => setActiveTab(tab.key as FarmTab)}
-            className={`farm-tab-btn ${activeTab === tab.key ? 'active' : ''}`}
-          >
-            <span>{tab.icon}</span>
-            <span>{tab.label}</span>
-          </button>
-        ))}
+          { key: 'leaf', label: 'Forage & Feed', Icon: LeafIcon },
+          { key: 'climate', label: 'Climate & Housing', Icon: Thermometer },
+          { key: 'health', label: 'Health & Pathology', Icon: ShieldAlert },
+          { key: 'harvest', label: 'Cocoon & Reeling', Icon: Package },
+          { key: 'finance', label: 'Economics & Reports', Icon: TrendingUp },
+        ].map((tab) => {
+          const TabIcon = tab.Icon;
+          return (
+            <button
+              key={tab.key}
+              type="button"
+              onClick={() => setActiveTab(tab.key as FarmTab)}
+              className={`farm-tab-btn ${activeTab === tab.key ? 'active' : ''}`}
+            >
+              <TabIcon size={14} style={{ marginRight: '6px' }} />
+              <span>{tab.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* ===================================================================
@@ -633,7 +653,7 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
                 className="btn-primary"
                 onClick={() => setShowAddLeaf(!showAddLeaf)}
               >
-                {showAddLeaf ? '✕ Cancel' : '+ Add Leaf Harvest'}
+                {showAddLeaf ? 'Cancel' : '+ Add Leaf Harvest'}
               </button>
             </div>
 
@@ -710,7 +730,11 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
 
               {/* Status Badge */}
               <div className={`farm-climate-badge ${climateEval.status}`}>
-                {climateEval.status === 'optimal' ? '✓ ' : '⚠ '}
+                {climateEval.status === 'optimal' ? (
+                  <Check size={13} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
+                ) : (
+                  <AlertTriangle size={13} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
+                )}
                 {climateEval.title}
               </div>
             </div>
@@ -875,36 +899,36 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
             </p>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.85rem' }}>
-              <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.95rem' }}>
-                <strong style={{ fontSize: '0.85rem', color: 'var(--primary)', display: 'block', marginBottom: '4px' }}>
-                  🏠 Roof & Ceiling Insulation
+              <div style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-silk)', borderRadius: 'var(--radius-sm)', padding: '0.95rem' }}>
+                <strong style={{ fontSize: '0.85rem', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                  <Home size={14} /> Roof & Ceiling Insulation
                 </strong>
                 <p style={{ fontSize: '0.78rem', color: 'var(--text-main)', margin: 0, lineHeight: 1.45 }}>
                   Corrugated iron sheets generate severe heat spikes. Install false ceilings made of papyrus mats, plywood, or thatch to buffer indoor temperature within 23–26°C.
                 </p>
               </div>
 
-              <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.95rem' }}>
-                <strong style={{ fontSize: '0.85rem', color: 'var(--primary)', display: 'block', marginBottom: '4px' }}>
-                  💨 20-Mesh Wire Louvers
+              <div style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-silk)', borderRadius: 'var(--radius-sm)', padding: '0.95rem' }}>
+                <strong style={{ fontSize: '0.85rem', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                  <Wind size={14} /> 20-Mesh Wire Louvers
                 </strong>
                 <p style={{ fontSize: '0.78rem', color: 'var(--text-main)', margin: 0, lineHeight: 1.45 }}>
                   Windows must have double screens: glass/wood shutters for cold nights, and 20-mesh nylon wire screens to maintain cross-ventilation while excluding Uzi flies.
                 </p>
               </div>
 
-              <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.95rem' }}>
-                <strong style={{ fontSize: '0.85rem', color: 'var(--primary)', display: 'block', marginBottom: '4px' }}>
-                  💧 Passive Evaporative Cooling
+              <div style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-silk)', borderRadius: 'var(--radius-sm)', padding: '0.95rem' }}>
+                <strong style={{ fontSize: '0.85rem', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                  <Droplets size={14} /> Passive Evaporative Cooling
                 </strong>
                 <p style={{ fontSize: '0.78rem', color: 'var(--text-main)', margin: 0, lineHeight: 1.45 }}>
                   In hot zones (Machakos, Kitui, Siaya), hang damp hessian/gunny sacks over air inlets and sprinkle verandah floors with water to drop room temperatures by 3–4°C.
                 </p>
               </div>
 
-              <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.95rem' }}>
-                <strong style={{ fontSize: '0.85rem', color: 'var(--primary)', display: 'block', marginBottom: '4px' }}>
-                  🔥 Chimney Charcoal Warming
+              <div style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-silk)', borderRadius: 'var(--radius-sm)', padding: '0.95rem' }}>
+                <strong style={{ fontSize: '0.85rem', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                  <Flame size={14} /> Chimney Charcoal Warming
                 </strong>
                 <p style={{ fontSize: '0.78rem', color: 'var(--text-main)', margin: 0, lineHeight: 1.45 }}>
                   In cold highlands (Meru, Nyeri, Limuru), nocturnal temperatures drop below 17°C. Use enclosed charcoal braziers with external chimneys to warm rooms without lethal carbon monoxide buildup.
@@ -1086,7 +1110,11 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
                     <div className="farm-sop-text">
                       <div className="farm-sop-title">
                         {sop.title}
-                        {isDone && <span style={{ color: 'var(--status-success)', fontSize: '0.74rem' }}>✓ Completed</span>}
+                        {isDone && (
+                          <span style={{ color: 'var(--status-success)', fontSize: '0.74rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            <Check size={12} /> Completed
+                          </span>
+                        )}
                       </div>
                       <p className="farm-sop-desc">{sop.desc}</p>
                     </div>
@@ -1597,7 +1625,7 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
                 className="btn-primary"
                 onClick={() => setShowAddPay(!showAddPay)}
               >
-                {showAddPay ? '✕ Cancel' : '+ Record Transaction'}
+                {showAddPay ? 'Cancel' : '+ Record Transaction'}
               </button>
             </div>
 
@@ -1698,8 +1726,8 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.85rem' }}>
               <div className="farm-export-box primary">
                 <div>
-                  <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700, color: 'var(--primary)' }}>
-                    📄 Official PDF Report
+                  <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700, color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <FileText size={16} /> Official PDF Report
                   </h4>
                   <p style={{ fontSize: '0.78rem', color: 'var(--text-main)', margin: '4px 0 0.75rem' }}>
                     Formatted document with farm KPIs, batch registers, and KALRO signature lines.
@@ -1717,8 +1745,8 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
 
               <div className="farm-export-box">
                 <div>
-                  <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700 }}>
-                    📊 Export CSV
+                  <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Download size={16} /> Export CSV
                   </h4>
                   <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '4px 0 0.75rem' }}>
                     Comma-separated table of all active and completed rearing lots.
@@ -1736,8 +1764,8 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
 
               <div className="farm-export-box">
                 <div>
-                  <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700 }}>
-                    💾 Backup Data (JSON)
+                  <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Database size={16} /> Backup Data (JSON)
                   </h4>
                   <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '4px 0 0.75rem' }}>
                     Complete cryptographic station database snapshot for offline restore.

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Activity, Layers, Sprout, ClipboardList, Shield } from 'lucide-react';
 
 export type NavTab = 'today' | 'batches' | 'station' | 'audit' | 'you';
 
@@ -13,31 +14,47 @@ export const Navigation: React.FC<NavigationProps> = ({
   onSelectTab,
   activeBatchesCount = 0,
 }) => {
-  const tabs: { key: NavTab; label: string; badge?: number }[] = [
-    { key: 'today', label: 'Operations Today' },
-    { key: 'batches', label: 'Silkworm Batches', badge: activeBatchesCount > 0 ? activeBatchesCount : undefined },
-    { key: 'station', label: 'Station & Agronomy Hub' },
-    { key: 'audit', label: 'Staff Audit Log' },
-    { key: 'you', label: 'Station & Security' },
+  const tabs: {
+    key: NavTab;
+    label: string;
+    icon: React.ComponentType<{ size?: number; className?: string }>;
+    badge?: number;
+  }[] = [
+    { key: 'today', label: 'Operations Today', icon: Activity },
+    {
+      key: 'batches',
+      label: 'Silkworm Batches',
+      icon: Layers,
+      badge: activeBatchesCount > 0 ? activeBatchesCount : undefined,
+    },
+    { key: 'station', label: 'Station & Agronomy Hub', icon: Sprout },
+    { key: 'audit', label: 'Staff Audit Log', icon: ClipboardList },
+    { key: 'you', label: 'Station & Security', icon: Shield },
   ];
 
   return (
-    <nav className="nav-bar-container">
+    <nav className="nav-bar-container" aria-label="Main Navigation">
       <div className="nav-bar-inner scroll-fade-x">
-        {tabs.map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => onSelectTab(tab.key)}
-            className={`nav-tab ${activeTab === tab.key ? 'active' : ''}`}
-          >
-            <span>{tab.label}</span>
-            {tab.badge !== undefined && (
-              <span className="tab-badge tabular-nums">
-                {tab.badge}
-              </span>
-            )}
-          </button>
-        ))}
+        {tabs.map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.key;
+          return (
+            <button
+              key={tab.key}
+              onClick={() => onSelectTab(tab.key)}
+              className={`nav-tab ${isActive ? 'active' : ''}`}
+              aria-current={isActive ? 'page' : undefined}
+            >
+              <Icon size={14} />
+              <span>{tab.label}</span>
+              {tab.badge !== undefined && (
+                <span className="tab-badge tabular-nums">
+                  {tab.badge}
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
     </nav>
   );

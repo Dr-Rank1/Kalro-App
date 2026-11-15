@@ -490,7 +490,7 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
                   <div className="flex justify-between font-mono text-[11px] text-gray-600">
                     <span>{pruningDaysToHatch} Days Until Eggs Arrive</span>
                     <span className={pruningDaysToHatch >= 45 && pruningDaysToHatch <= 60 ? 'text-emerald-700 font-bold' : 'text-amber-700 font-bold'}>
-                      {pruningDaysToHatch >= 45 && pruningDaysToHatch <= 60 ? '✓ Optimal Pruning Window' : '⚠ Non-Optimal Pruning'}
+                      {pruningDaysToHatch >= 45 && pruningDaysToHatch <= 60 ? 'Optimal Pruning Window' : 'Non-Optimal Pruning'}
                     </span>
                   </div>
                 </div>
@@ -1132,7 +1132,7 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
 
               {mpesaReceipt && (
                 <div className="p-3 bg-white border-2 border-dashed border-emerald-400 rounded-lg text-xs space-y-1 font-mono">
-                  <span className="font-bold text-emerald-800">✓ Safaricom Daraja M-Pesa Confirmation:</span>
+                  <span className="font-bold text-emerald-800">Safaricom Daraja M-Pesa Confirmation:</span>
                   <div>Transaction Reference: <strong>{mpesaReceipt}</strong></div>
                   <div>Recipient: {farmerName} ({farmerPhone})</div>
                   <div>Amount: KES {(grossCocoonKg * payoutRatePerKg).toLocaleString()}</div>
@@ -1289,7 +1289,7 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
 
               {(ussdStep === 'moult' || ussdStep === 'harvest') && (
                 <div className="space-y-2 text-xs">
-                  <div className="text-emerald-400 font-bold">✓ ASANTE (SUCCESS)</div>
+                  <div className="text-emerald-400 font-bold">ASANTE (SUCCESS)</div>
                   <div className="text-[11px] text-gray-300">{ussdNotice}</div>
                   <button
                     type="button"

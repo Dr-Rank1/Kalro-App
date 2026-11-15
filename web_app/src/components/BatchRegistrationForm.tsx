@@ -462,8 +462,8 @@ export const BatchRegistrationForm: React.FC<BatchRegistrationFormProps> = ({
             <span>
               Forage Capacity Check: <strong>{profile.mulberryAcreage || 1} acre(s)</strong> at {profile.orgName} (Annual forage: ~{((profile.mulberryAcreage || 1) * 16000).toLocaleString()} kg)
             </span>
-            <span style={{ color: 'var(--status-success)', fontWeight: 600 }}>
-              ✓ Farm supports this batch demand ({totalForageKg} kg)
+            <span style={{ color: 'var(--status-success)', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <CheckCircle2 size={13} /> Farm supports this batch demand ({totalForageKg} kg)
             </span>
           </div>
         )}
