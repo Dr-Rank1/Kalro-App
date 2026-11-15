@@ -55,8 +55,8 @@ void main() {
     expect(plan.dayOfStage, 1);
     expect(plan.stopFeeding, isFalse);
     expect(plan.suggestedGrams, greaterThan(0));
-    // 400 larvae / 100 * 20g = 80g
-    expect(plan.suggestedGrams, 80.0);
+    // NSRC Chapter 3 standard: 300g / 20,000 larvae for 1st instar -> 400 larvae = 6.0g
+    expect(plan.suggestedGrams, 6.0);
 
     // Verify feeding can be logged immediately
     await repositories.leafInventory.save(
@@ -77,7 +77,7 @@ void main() {
 
     final feeds = await repositories.feedLogs.getByBatchId(batch.id);
     expect(feeds.length, 1);
-    expect(feeds.first.quantityGrams, 80.0);
+    expect(feeds.first.quantityGrams, 6.0);
     expect(feeds.first.wasSkipped, isFalse);
   });
 
@@ -101,8 +101,8 @@ void main() {
     expect(plan, isNotNull);
     expect(plan!.stage.key, 'instar3');
     expect(plan.stopFeeding, isFalse);
-    // 400 larvae / 100 * 80g = 320g
-    expect(plan.suggestedGrams, 320.0);
+    // NSRC Chapter 3 standard: 4,000g / 20,000 larvae for 3rd instar -> 400 larvae = 80.0g
+    expect(plan.suggestedGrams, 80.0);
   });
 
   test('farmers can log skipped feeds with reasons due to varied factors', () async {

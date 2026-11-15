@@ -27,6 +27,7 @@ export 'records/record_summary_bar.dart';
 export 'forms/kalro_date_row.dart';
 export 'forms/kalro_species_dropdown.dart';
 export 'harvest/cocoon_harvest_section.dart';
+export 'harvest/cocoon_camera_overlay_widget.dart';
 export 'health/environment_log_section.dart';
 export 'health/mortality_log_section.dart';
 export 'inventory/batch_inventory_tile.dart';

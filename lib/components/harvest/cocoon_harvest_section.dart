@@ -14,6 +14,7 @@ import '../cards/kalro_section_header.dart';
 import '../records/record_empty_state.dart';
 import '../records/record_log_tile.dart';
 import '../records/record_summary_bar.dart';
+import 'cocoon_camera_overlay_widget.dart';
 import 'package:kalro/l10n/translator.dart';
 
 class CocoonHarvestSection extends StatefulWidget {
@@ -91,6 +92,47 @@ class _CocoonHarvestSectionState extends State<CocoonHarvestSection> {
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                   ),
+                ),
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: KalroColors.primaryGreen,
+                    side: BorderSide(color: KalroColors.primaryGreen),
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  icon: const Icon(Icons.camera_alt_outlined, size: 18),
+                  label: Text(
+                    'AI Camera Scan (Triage Defects)'.tr,
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  onPressed: () async {
+                    final tally = await showDialog<CocoonVisionTally>(
+                      context: context,
+                      builder: (ctx) => Dialog.fullscreen(
+                        child: CocoonCameraOverlayWidget(
+                          onApplyTally: (t) => Navigator.of(ctx).pop(t),
+                          onClose: () => Navigator.of(ctx).pop(),
+                        ),
+                      ),
+                    );
+                    if (tally != null) {
+                      countController.text = tally.totalDetected.toString();
+                      defectiveController.text = tally.totalDefects.toString();
+                      final defectSummary = [
+                        if (tally.thinCount > 0) 'Thin: ${tally.thinCount}',
+                        if (tally.framedCount > 0) 'Framed: ${tally.framedCount}',
+                        if (tally.irregularCount > 0) 'Irreg: ${tally.irregularCount}',
+                        if (tally.meltedCount > 0) 'Melted: ${tally.meltedCount}',
+                        if (tally.doubleCount > 0) 'Double: ${tally.doubleCount}',
+                        if (tally.stainedCount > 0) 'Stained: ${tally.stainedCount}',
+                      ].join(', ');
+                      notesController.text =
+                          'AI Triage: $defectSummary (${tally.commercialGrade})';
+                    }
+                  },
                 ),
                 SizedBox(height: 16),
                 TextField(

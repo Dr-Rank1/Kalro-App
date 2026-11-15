@@ -1,6 +1,9 @@
 import '../models/batch.dart';
 import '../models/cocoon_harvest.dart';
 import '../models/cocoon_metrics.dart';
+import 'cocoon_vision_service.dart';
+
+export 'cocoon_vision_service.dart';
 
 class CocoonAnalyticsService {
   const CocoonAnalyticsService();
@@ -111,6 +114,84 @@ class CocoonAnalyticsService {
       stainedCount: stainedCount,
       flimsyCount: flimsyCount,
       meltedCount: meltedCount,
+    );
+  }
+
+  /// Computes CocoonMetrics directly from automated computer vision inspection tallies.
+  CocoonMetrics computeFromVisionTally(
+    Batch batch,
+    CocoonVisionTally tally, {
+    double totalWeightGrams = 0.0,
+    double? shellWeightGrams,
+    double? reeledWeightGrams,
+    int? breakCount,
+  }) {
+    final cocoonCount = tally.totalDetected;
+    final defectiveCount = tally.totalDefects;
+    final goodCount = (cocoonCount - defectiveCount).clamp(0, cocoonCount);
+    final avgWeight = cocoonCount > 0 ? totalWeightGrams / cocoonCount : 0.0;
+    final defectRate = tally.defectRatePercent;
+
+    double? shellRatio;
+    if (shellWeightGrams != null && shellWeightGrams > 0 && avgWeight > 0) {
+      shellRatio = ((shellWeightGrams / avgWeight) * 100).clamp(0.0, 100.0);
+    }
+
+    final survival =
+        batch.eggCount > 0 ? (goodCount / batch.eggCount) * 100 : 0.0;
+    final yieldPer100 =
+        batch.eggCount > 0 ? (totalWeightGrams / batch.eggCount) * 100 : 0.0;
+
+    double? renditta;
+    if (reeledWeightGrams != null && reeledWeightGrams > 0) {
+      renditta = totalWeightGrams / reeledWeightGrams;
+    } else if (shellRatio != null && shellRatio > 0) {
+      renditta = (100.0 / (shellRatio * 0.80)).clamp(4.0, 20.0);
+    }
+
+    double? reelability;
+    if (cocoonCount > 0 && breakCount != null) {
+      reelability =
+          ((cocoonCount / (cocoonCount + breakCount)) * 100).clamp(0.0, 100.0);
+    }
+
+    String grade = 'Ungraded';
+    if (shellRatio != null) {
+      if (shellRatio >= 21.0 && defectRate <= 5.0) {
+        grade = 'Grade A';
+      } else if (shellRatio >= 17.0 && defectRate <= 10.0) {
+        grade = 'Grade B';
+      } else {
+        grade = 'Grade C';
+      }
+    } else {
+      // Vision-only classification if shell weight sample is pending
+      if (defectRate <= 5.0 && cocoonCount > 0) {
+        grade = 'Grade A (Vision-Estimated)';
+      } else if (defectRate <= 10.0) {
+        grade = 'Grade B (Vision-Estimated)';
+      } else {
+        grade = 'Grade C (Vision-Estimated)';
+      }
+    }
+
+    return CocoonMetrics(
+      cocoonCount: cocoonCount,
+      totalWeightGrams: totalWeightGrams,
+      defectiveCount: defectiveCount,
+      averageCocoonWeightGrams: avgWeight,
+      defectRatePercent: defectRate,
+      shellRatioPercent: shellRatio,
+      survivalPercent: survival,
+      yieldPer100EggsGrams: yieldPer100,
+      renditta: renditta,
+      reelabilityPercent: reelability,
+      commercialGrade: grade,
+      doubleCount: tally.doubleCount,
+      uziCount: 0,
+      stainedCount: tally.stainedCount,
+      flimsyCount: tally.thinCount,
+      meltedCount: tally.meltedCount,
     );
   }
 }

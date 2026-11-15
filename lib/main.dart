@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -12,5 +13,9 @@ void main() async {
   await initializeDateFormatting('en');
   final notifications = NotificationService();
   await notifications.initialize();
-  runApp(KalroApp(notificationService: notifications));
+  runApp(
+    ProviderScope(
+      child: KalroApp(notificationService: notifications),
+    ),
+  );
 }
