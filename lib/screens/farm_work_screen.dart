@@ -8,13 +8,21 @@ import '../services/leaf_ledger_service.dart';
 import '../services/role_access.dart';
 import '../services/user_preferences.dart';
 import '../theme/kalro_colors.dart';
+import 'bed_space_lime_screen.dart';
+import 'breeding_pedigree_screen.dart';
+import 'cocoon_grading_screen.dart';
+import 'disease_triage_screen.dart';
 import 'feeding_screen.dart';
 import 'field_guide_screen.dart';
 import 'finance_screen.dart';
+import 'genebank_orchard_screen.dart';
 import 'harvest_screen.dart';
 import 'health_screen.dart';
+import 'hot_air_drying_screen.dart';
 import 'inventory_screen.dart';
+import 'mpesa_payout_screen.dart';
 import 'reports_screen.dart';
+import 'ussd_dialer_screen.dart';
 
 import 'package:kalro/l10n/translator.dart';
 
@@ -307,6 +315,76 @@ class _FarmWorkScreenState extends State<FarmWorkScreen> {
                         ),
                       ),
                     ),
+
+                  const SizedBox(height: 18),
+
+                  // Station & Agronomy Suite
+                  _SectionHeader(title: 'Station & Agronomy Hub'.tr),
+                  const SizedBox(height: 8),
+                  _ModernFarmTile(
+                    icon: Icons.park_outlined,
+                    color: KalroColors.leaf,
+                    title: 'Genebank & Field Blocks'.tr,
+                    subtitle: '11 Mulberry cultivars, 7 castor, plot digital twin'.tr,
+                    badge: '98 Accessions',
+                    onTap: () => _open(const GenebankOrchardScreen()),
+                  ),
+                  _ModernFarmTile(
+                    icon: Icons.fact_check_outlined,
+                    color: KalroColors.headerGreen,
+                    title: 'Cocoon Quality & Grading'.tr,
+                    subtitle: '7 Defect sorter, Shell Ratio (SR%) & renditta'.tr,
+                    badge: 'SR% Engine',
+                    onTap: () => _open(const CocoonGradingScreen()),
+                  ),
+                  _ModernFarmTile(
+                    icon: Icons.device_thermostat_outlined,
+                    color: KalroColors.danger,
+                    title: 'Hot Air Cocoon Drying'.tr,
+                    subtitle: '4-Stage 115°C -> 90°C chamber timer & 40% target'.tr,
+                    badge: '4 Stages',
+                    onTap: () => _open(const HotAirDryingScreen()),
+                  ),
+                  _ModernFarmTile(
+                    icon: Icons.space_dashboard_outlined,
+                    color: KalroColors.accentBrown,
+                    title: 'Bed Space & Slaked Lime'.tr,
+                    subtitle: '40k Larvae bed expansion & 50 g/m² moult dosing'.tr,
+                    badge: '50 g/m²',
+                    onTap: () => _open(const BedSpaceLimeScreen()),
+                  ),
+                  _ModernFarmTile(
+                    icon: Icons.medical_services_outlined,
+                    color: KalroColors.warning,
+                    title: 'Disease & Pest Triage'.tr,
+                    subtitle: 'Table 4 diagnostics, formalin & chlorine mixer'.tr,
+                    badge: 'Table 4',
+                    onTap: () => _open(const DiseaseTriageScreen()),
+                  ),
+                  _ModernFarmTile(
+                    icon: Icons.payments_outlined,
+                    color: KalroColors.leaf,
+                    title: 'Daraja M-Pesa Cocoon Payouts'.tr,
+                    subtitle: 'Direct farmer B2C payment & ledger logging'.tr,
+                    badge: 'B2C Live',
+                    onTap: () => _open(const MpesaPayoutScreen()),
+                  ),
+                  _ModernFarmTile(
+                    icon: Icons.dialpad_outlined,
+                    color: KalroColors.info,
+                    title: 'USSD *384# & Audio Guides'.tr,
+                    subtitle: 'Feature phone portal & Gikuyu/Kikamba audio'.tr,
+                    badge: '*384#',
+                    onTap: () => _open(const UssdDialerScreen()),
+                  ),
+                  _ModernFarmTile(
+                    icon: Icons.biotech_outlined,
+                    color: KalroColors.headerGreen,
+                    title: 'Breeding & Strain Pedigree'.tr,
+                    subtitle: 'KSK, ATK, ICIPE, KINSHOSHOWA & Eri pedigree'.tr,
+                    badge: 'NSRC Strains',
+                    onTap: () => _open(const BreedingPedigreeScreen()),
+                  ),
                 ],
               );
             },

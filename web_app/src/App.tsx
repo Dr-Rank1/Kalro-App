@@ -3,6 +3,7 @@ import { Header } from './components/Header';
 import { Navigation, NavTab } from './components/Navigation';
 import { TodayView } from './components/TodayView';
 import { BatchesView } from './components/BatchesView';
+import { StationAgronomyView } from './components/StationAgronomyView';
 import { StaffAuditView } from './components/StaffAuditView';
 import { ProfileView } from './components/ProfileView';
 import { QuickLogModal } from './components/QuickLogModal';
@@ -46,7 +47,7 @@ export function App() {
   const [currentUser, setCurrentUser] = useState<UserAccount | null>(() => storage.getActiveUser());
   const [allUsers, setAllUsers] = useState<UserAccount[]>(() => storage.getAllUsers());
 
-  const VALID_TABS: NavTab[] = ['today', 'batches', 'audit', 'you'];
+  const VALID_TABS: NavTab[] = ['today', 'batches', 'station', 'audit', 'you'];
 
   const [isTerminalLocked, setIsTerminalLocked] = useState<boolean>(false);
 
@@ -568,6 +569,30 @@ export function App() {
               onOpenQr={(b) => setQrModalBatch(b)}
               onToast={showToast}
               onRequireProfile={() => handleOpenCreateProfile(() => handleSelectTab('batches'))}
+            />
+          )}
+
+          {activeTab === 'station' && (
+            <StationAgronomyView
+              batches={batches}
+              profile={profile}
+              payments={payments}
+              onAddPayment={(pay) => {
+                storage.addPayment(pay);
+                setPayments(storage.getPayments());
+                storage.addAuditLog({
+                  id: 'aud-' + Date.now(),
+                  timestamp: new Date().toISOString(),
+                  operatorId: currentUser?.id,
+                  operatorName: currentUser?.username || 'Authorized Officer',
+                  operatorRole: currentUser?.role || 'station_manager',
+                  actionType: 'batch_updated',
+                  title: 'Cocoon Procurement Payout',
+                  details: `${pay.direction === 'inflow' ? 'Received' : 'Disbursed'} KES ${pay.amount.toLocaleString()} for ${pay.category} (${pay.partyName})`,
+                });
+                setAuditLogs(storage.getAuditLogs());
+              }}
+              onToast={showToast}
             />
           )}
 

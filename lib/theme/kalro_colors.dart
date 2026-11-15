@@ -22,6 +22,7 @@ abstract final class KalroColors {
   static const rest = Color(0xFFC46B3A);
   static const harvest = Color(0xFF914D2B);
   static const success = Color(0xFF2E7D57);
+  static const warning = Color(0xFFD97706);
   static const danger = Color(0xFFB42318);
   static const info = Color(0xFF2B6CB0);
   static const darkBackground = Color(0xFF101915);
