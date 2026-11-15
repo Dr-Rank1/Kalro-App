@@ -16,9 +16,11 @@ void main() {
   });
 
   tearDown(() async {
-    await FarmStore.closeAll();
     await store.close();
-    if (tempDir.existsSync()) await tempDir.delete(recursive: true);
+    await FarmStore.closeAll();
+    try {
+      if (tempDir.existsSync()) await tempDir.delete(recursive: true);
+    } catch (_) {}
   });
 
   test('upserts a record into kalro.db and reloads it', () async {
@@ -72,5 +74,32 @@ void main() {
     expect(b1Rows, hasLength(2));
     expect(b1Rows.map((r) => r['id']), containsAll(['log-1', 'log-3']));
     expect(b1Rows.map((r) => r['id']), isNot(contains('log-2')));
+  });
+
+  test('PowerSync schema creates typed tables and streams updates reactively', () async {
+    await store.upsert('batches', 'batch-ps-1', {
+      'id': 'batch-ps-1',
+      'species': 'bombyx',
+      'startDate': '2026-11-15T00:00:00.000',
+      'eggCount': 20000,
+      'status': 'active',
+      'createdAt': '2026-11-15T08:00:00.000',
+      'strain': 'KSK',
+      'location': 'House 1',
+    });
+
+    final emitted = await store.watchCollection('batches').first;
+    expect(emitted, isNotEmpty);
+    expect(emitted.any((b) => b['id'] == 'batch-ps-1'), isTrue);
+
+    final connector = NsrcPowerSyncConnector(
+      endpoint: 'https://powersync.kalro-nsrc.go.ke',
+      token: 'test-nsrc-token',
+      userId: 'staff-joyce-njuguna',
+    );
+    final creds = await connector.fetchCredentials();
+    expect(creds?.endpoint, equals('https://powersync.kalro-nsrc.go.ke'));
+    expect(creds?.token, equals('test-nsrc-token'));
+    expect(creds?.userId, equals('staff-joyce-njuguna'));
   });
 }

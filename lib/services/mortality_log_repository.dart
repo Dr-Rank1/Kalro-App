@@ -83,5 +83,22 @@ class MortalityLogRepository {
     return [for (final row in rows) MortalityLog.fromJson(row)];
   }
 
+  Stream<List<MortalityLog>> watchAll() {
+    return _store.watchCollection(collection).map(
+      (rows) => [for (final row in rows) MortalityLog.fromJson(row)],
+    );
+  }
+
+  Stream<List<MortalityLog>> watchByBatchId(String batchId) {
+    return _store.watchCollectionWhere(
+      collection,
+      jsonKey: 'batchId',
+      value: batchId,
+    ).map(
+      (rows) => [for (final row in rows) MortalityLog.fromJson(row)]
+        ..sort((a, b) => b.recordedAt.compareTo(a.recordedAt)),
+    );
+  }
+
   void invalidateCache() => _cache = null;
 }

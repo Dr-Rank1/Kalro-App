@@ -15,7 +15,7 @@ import { BatchRegistrationForm } from './components/BatchRegistrationForm';
 import { LeafStockModal } from './components/LeafStockModal';
 import { TerminalLockModal } from './components/TerminalLockModal';
 import { downloadSingleBatchPdf, downloadStaffAuditPdf } from './utils/pdfGenerator';
-import { storage } from './storage';
+import { storage, SyncStatus } from './storage';
 import {
   AuditLogEntry,
   Batch,
@@ -82,6 +82,38 @@ export function App() {
   const [leafMovements, setLeafMovements] = useState<LeafMovement[]>(() => storage.getLeafMovements());
   const [payments, setPayments] = useState<PaymentRecord[]>(() => storage.getPayments());
   const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>(() => storage.getAuditLogs());
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>(() => storage.syncStatus$.value);
+
+  // Subscribe to RxDB / PowerSync observables for active-active reactive UI updates
+  useEffect(() => {
+    const subBatches = storage.batches$.subscribe((b) => setBatches(b));
+    const subFeed = storage.feedLogs$.subscribe((f) => setFeedLogs(f));
+    const subMort = storage.mortalityLogs$.subscribe((m) => setMortalityLogs(m));
+    const subEnv = storage.envLogs$.subscribe((e) => setEnvLogs(e));
+    const subHarvest = storage.harvests$.subscribe((h) => setHarvests(h));
+    const subInv = storage.inventory$.subscribe((i) => setInventory(i));
+    const subLeafMove = storage.leafMovements$.subscribe((l) => setLeafMovements(l));
+    const subPayments = storage.payments$.subscribe((p) => setPayments(p));
+    const subAudit = storage.auditLogs$.subscribe((a) => setAuditLogs(a));
+    const subUsers = storage.users$.subscribe((u) => setAllUsers(u));
+    const subProfile = storage.profile$.subscribe((p) => setProfile(p));
+    const subSync = storage.syncStatus$.subscribe((s) => setSyncStatus(s));
+
+    return () => {
+      subBatches.unsubscribe();
+      subFeed.unsubscribe();
+      subMort.unsubscribe();
+      subEnv.unsubscribe();
+      subHarvest.unsubscribe();
+      subInv.unsubscribe();
+      subLeafMove.unsubscribe();
+      subPayments.unsubscribe();
+      subAudit.unsubscribe();
+      subUsers.unsubscribe();
+      subProfile.unsubscribe();
+      subSync.unsubscribe();
+    };
+  }, []);
 
   // Modal States
   const [quickLogState, setQuickLogState] = useState<{
@@ -481,6 +513,7 @@ export function App() {
         currentUser={currentUser}
         allUsers={allUsers}
         activeBatchesCount={activeBatchesCount}
+        syncStatus={syncStatus}
         onOpenReportModal={() => {
           if (!profile) {
             showToast('Please set up a farm profile before exporting reports.');

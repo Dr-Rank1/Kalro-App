@@ -82,5 +82,22 @@ class FeedLogRepository {
     return [for (final row in rows) FeedLog.fromJson(row)];
   }
 
+  Stream<List<FeedLog>> watchAll() {
+    return _store.watchCollection(collection).map(
+      (rows) => [for (final row in rows) FeedLog.fromJson(row)],
+    );
+  }
+
+  Stream<List<FeedLog>> watchByBatchId(String batchId) {
+    return _store.watchCollectionWhere(
+      collection,
+      jsonKey: 'batchId',
+      value: batchId,
+    ).map(
+      (rows) => [for (final row in rows) FeedLog.fromJson(row)]
+        ..sort((a, b) => b.recordedAt.compareTo(a.recordedAt)),
+    );
+  }
+
   void invalidateCache() => _cache = null;
 }

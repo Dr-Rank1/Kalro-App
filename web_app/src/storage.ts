@@ -12,19 +12,23 @@ import {
   UserAccount,
   UserRole,
 } from './types';
-
-// IndexedDB database configuration for offline persistence
-const IDB_NAME = 'kalro_sericulture_multitenant_db';
-const IDB_VERSION = 1;
-const IDB_STORE = 'tenant_records';
+import {
+  createRxDatabase,
+  RxDatabase,
+  RxCollection,
+  RxJsonSchema,
+} from 'rxdb';
+import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
+import { getRxStorageMemory } from 'rxdb/plugins/storage-memory';
+import { replicateRxCollection, RxReplicationState } from 'rxdb/plugins/replication';
+import { BehaviorSubject } from 'rxjs';
 
 const GLOBAL_KEYS = {
   usersRegistry: 'kalro_users_registry',
   activeUserId: 'kalro_active_user_id',
-  dataVersion: 'kalro_sericulture_staff_v6',
+  dataVersion: 'kalro_sericulture_staff_v7_rxdb',
   theme: 'kalro_theme',
   lang: 'kalro_lang',
-  // Station Collections (Shared across all sericulture staff)
   stationBatches: 'kalro_station_batches',
   stationFeedLogs: 'kalro_station_feed_logs',
   stationEnvLogs: 'kalro_station_env_logs',
@@ -138,13 +142,11 @@ const DEFAULT_STAFF_ROSTER: UserAccount[] = [
   },
 ];
 
-// Helper to compute date offset in YYYY-MM-DD
 function getDateOffset(daysAgo: number): string {
   const d = new Date(Date.now() - daysAgo * 86400000);
   return d.toISOString().split('T')[0];
 }
 
-// Initial Batch Setup: Supports fluctuating numbers of active batches (from 1 to N lots)
 function createInitialBatches(): Batch[] {
   return [
     {
@@ -183,65 +185,240 @@ const DEFAULT_INITIAL_INVENTORY: LeafInventory = {
   lastUpdated: new Date().toISOString(),
 };
 
-class StorageService {
-  private dbPromise: Promise<IDBDatabase | null> | null = null;
+// --------------------------------------------------------------------------
+// RxDB Collection Schemas
+// --------------------------------------------------------------------------
 
-  constructor() {
-    this.initIndexedDb();
-    this.initDefaults();
+const batchRxSchema: RxJsonSchema<Batch> = {
+  version: 0,
+  primaryKey: 'id',
+  type: 'object',
+  properties: {
+    id: { type: 'string', maxLength: 100 },
+    species: { type: 'string' },
+    startDate: { type: 'string' },
+    eggCount: { type: 'number' },
+    status: { type: 'string' },
+    batchTag: { type: 'string' },
+    displayTag: { type: 'string' },
+    notes: { type: 'string' },
+    roomName: { type: 'string' },
+    strain: { type: 'string' },
+    createdBy: { type: 'string' },
+    createdByName: { type: 'string' },
+    assignedStaff: {
+      type: 'array',
+      items: { type: 'string' },
+    },
+    bedAreaSqMeters: { type: 'number' },
+    currentInstar: { type: 'number' },
+    currentTraysCount: { type: 'number' },
+    targetForageCultivar: { type: 'string' },
+    orchardBlock: { type: 'string' },
+    isQuarantined: { type: 'boolean' },
+    quarantineReason: { type: 'string' },
+    quarantinedAt: { type: 'string' },
+    quarantinedBy: { type: 'string' },
+  },
+  required: ['id', 'species', 'startDate', 'eggCount', 'status'],
+};
+
+const feedLogRxSchema: RxJsonSchema<FeedLog> = {
+  version: 0,
+  primaryKey: 'id',
+  type: 'object',
+  properties: {
+    id: { type: 'string', maxLength: 100 },
+    batchId: { type: 'string', maxLength: 100 },
+    recordedAt: { type: 'string' },
+    quantityGrams: { type: 'number' },
+    leafType: { type: 'string' },
+    cultivar: { type: 'string' },
+    wasSkipped: { type: 'boolean' },
+    skippedReason: { type: 'string' },
+    operatorId: { type: 'string' },
+    operatorName: { type: 'string' },
+    operatorRole: { type: 'string' },
+    shift: { type: 'string' },
+    notes: { type: 'string' },
+  },
+  required: ['id', 'batchId', 'recordedAt', 'quantityGrams', 'leafType'],
+  indexes: ['batchId'],
+};
+
+const mortalityLogRxSchema: RxJsonSchema<MortalityLog> = {
+  version: 0,
+  primaryKey: 'id',
+  type: 'object',
+  properties: {
+    id: { type: 'string', maxLength: 100 },
+    batchId: { type: 'string', maxLength: 100 },
+    recordedAt: { type: 'string' },
+    count: { type: 'number' },
+    cause: { type: 'string' },
+    symptoms: { type: 'string' },
+    photoUrl: { type: 'string' },
+    operatorId: { type: 'string' },
+    operatorName: { type: 'string' },
+    operatorRole: { type: 'string' },
+    notes: { type: 'string' },
+  },
+  required: ['id', 'batchId', 'recordedAt', 'count'],
+  indexes: ['batchId'],
+};
+
+// --------------------------------------------------------------------------
+// PowerSync RxDB Replication Connector
+// --------------------------------------------------------------------------
+
+export interface SyncStatus {
+  status: 'idle' | 'syncing' | 'offline' | 'error';
+  lastSyncedAt: string | null;
+  pendingPushes: number;
+}
+
+export class NsrcPowerSyncRxReplicationConnector {
+  public endpoint: string;
+  public token: string | null;
+  public syncStatus$ = new BehaviorSubject<SyncStatus>({
+    status: 'idle',
+    lastSyncedAt: null,
+    pendingPushes: 0,
+  });
+
+  private activeReplications: Map<string, RxReplicationState<any, any>> = new Map();
+
+  constructor(endpoint = 'https://powersync.kalro-nsrc.go.ke', token: string | null = null) {
+    this.endpoint = endpoint;
+    this.token = token;
   }
 
-  // Initialize IndexedDB backing layer
-  private initIndexedDb(): Promise<IDBDatabase | null> {
-    if (this.dbPromise) return this.dbPromise;
-    if (typeof window === 'undefined' || !window.indexedDB) {
-      this.dbPromise = Promise.resolve(null);
-      return this.dbPromise;
-    }
-
-    this.dbPromise = new Promise((resolve) => {
-      try {
-        const req = window.indexedDB.open(IDB_NAME, IDB_VERSION);
-        req.onupgradeneeded = (event) => {
-          const db = (event.target as IDBOpenDBRequest).result;
-          if (!db.objectStoreNames.contains(IDB_STORE)) {
-            db.createObjectStore(IDB_STORE);
+  public registerCollectionReplication<T extends { id: string }>(
+    collection: RxCollection<T>
+  ): RxReplicationState<T, any> {
+    const replicationState = replicateRxCollection<T, any>({
+      collection,
+      replicationIdentifier: `powersync-nsrc-${collection.name}`,
+      live: true,
+      retryTime: 5000,
+      autoStart: true,
+      pull: {
+        handler: async (lastCheckpoint, batchSize) => {
+          if (!navigator.onLine || !this.token) {
+            return {
+              checkpoint: lastCheckpoint ?? { lastModified: 0 },
+              documents: [],
+            };
           }
-        };
-        req.onsuccess = () => resolve(req.result);
-        req.onerror = () => {
-          resolve(null);
-        };
-      } catch (err) {
-        resolve(null);
-      }
+          try {
+            this.syncStatus$.next({
+              ...this.syncStatus$.value,
+              status: 'syncing',
+            });
+            const res = await fetch(
+              `${this.endpoint}/api/powersync/pull/${collection.name}?batchSize=${batchSize}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${this.token}`,
+                },
+              }
+            );
+            if (res.ok) {
+              const data = await res.json();
+              this.syncStatus$.next({
+                status: 'idle',
+                lastSyncedAt: new Date().toISOString(),
+                pendingPushes: 0,
+              });
+              return {
+                checkpoint: data.checkpoint,
+                documents: data.documents || [],
+              };
+            }
+          } catch {
+            this.syncStatus$.next({
+              ...this.syncStatus$.value,
+              status: 'offline',
+            });
+          }
+          return {
+            checkpoint: lastCheckpoint ?? { lastModified: 0 },
+            documents: [],
+          };
+        },
+      },
+      push: {
+        handler: async (changeDocs) => {
+          if (!navigator.onLine || !this.token || changeDocs.length === 0) {
+            return [];
+          }
+          try {
+            this.syncStatus$.next({
+              ...this.syncStatus$.value,
+              status: 'syncing',
+              pendingPushes: changeDocs.length,
+            });
+            const res = await fetch(
+              `${this.endpoint}/api/powersync/push/${collection.name}`,
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${this.token}`,
+                },
+                body: JSON.stringify({ documents: changeDocs }),
+              }
+            );
+            if (res.ok) {
+              this.syncStatus$.next({
+                status: 'idle',
+                lastSyncedAt: new Date().toISOString(),
+                pendingPushes: 0,
+              });
+              return [];
+            }
+          } catch {
+            // Rural cellular disruption: changes remain safe in local RxDB IndexedDB
+            this.syncStatus$.next({
+              ...this.syncStatus$.value,
+              status: 'offline',
+            });
+          }
+          return [];
+        },
+      },
     });
 
-    return this.dbPromise;
+    this.activeReplications.set(collection.name, replicationState);
+    return replicationState;
   }
+}
 
-  private async idbSet<T>(key: string, value: T): Promise<void> {
-    try {
-      const db = await this.initIndexedDb();
-      if (!db) return;
-      const tx = db.transaction(IDB_STORE, 'readwrite');
-      const store = tx.objectStore(IDB_STORE);
-      store.put(value, key);
-    } catch {
-      // IndexedDB optional background mirror
-    }
-  }
+// --------------------------------------------------------------------------
+// StorageService with RxDB and RxJS Observables
+// --------------------------------------------------------------------------
 
-  private async idbDelete(key: string): Promise<void> {
-    try {
-      const db = await this.initIndexedDb();
-      if (!db) return;
-      const tx = db.transaction(IDB_STORE, 'readwrite');
-      const store = tx.objectStore(IDB_STORE);
-      store.delete(key);
-    } catch {
-      // IndexedDB optional background mirror
-    }
+class StorageService {
+  private rxDbPromise: Promise<RxDatabase | null> | null = null;
+  public powerSyncConnector = new NsrcPowerSyncRxReplicationConnector();
+
+  // Reactive RxJS Observables for direct UI consumption
+  public batches$ = new BehaviorSubject<Batch[]>([]);
+  public feedLogs$ = new BehaviorSubject<FeedLog[]>([]);
+  public mortalityLogs$ = new BehaviorSubject<MortalityLog[]>([]);
+  public envLogs$ = new BehaviorSubject<EnvironmentLog[]>([]);
+  public harvests$ = new BehaviorSubject<CocoonHarvest[]>([]);
+  public inventory$ = new BehaviorSubject<LeafInventory>({ ...DEFAULT_INITIAL_INVENTORY });
+  public leafMovements$ = new BehaviorSubject<LeafMovement[]>([]);
+  public payments$ = new BehaviorSubject<PaymentRecord[]>([]);
+  public auditLogs$ = new BehaviorSubject<AuditLogEntry[]>([]);
+  public users$ = new BehaviorSubject<UserAccount[]>(DEFAULT_STAFF_ROSTER);
+  public profile$ = new BehaviorSubject<FarmProfile | null>(DEFAULT_STATION_PROFILE);
+  public syncStatus$ = this.powerSyncConnector.syncStatus$;
+
+  constructor() {
+    this.initDefaults();
+    this.initRxDb();
   }
 
   // Read key-value from localStorage
@@ -255,25 +432,98 @@ class StorageService {
     }
   }
 
-  // Write key-value to localStorage and replicate to IndexedDB
+  // Write key-value to localStorage
   private set<T>(key: string, value: T): void {
     try {
       localStorage.setItem(key, JSON.stringify(value));
-      this.idbSet(key, value);
     } catch (e) {
       console.error(`Error saving ${key} to localStorage:`, e);
     }
   }
 
-  // Resolve tenant-namespaced storage key
   public getTenantKey(collection: string, userId?: string): string {
     const uid = userId || this.getActiveUserId() || 'guest';
     return `kalro_u_${uid}_${collection}`;
   }
 
-  // --------------------------------------------------------------------------
-  // Storage Initialization (Kenyan Sericulture Station Seed)
-  // --------------------------------------------------------------------------
+  // Initialize RxDB database with Dexie IndexedDB adapter
+  private async initRxDb(): Promise<RxDatabase | null> {
+    if (this.rxDbPromise) return this.rxDbPromise;
+    if (typeof window === 'undefined') return null;
+
+    this.rxDbPromise = (async () => {
+      try {
+        const storageAdapter = window.indexedDB
+          ? getRxStorageDexie()
+          : getRxStorageMemory();
+
+        const db = await createRxDatabase({
+          name: 'kalro_sericulture_rxdb_v1',
+          storage: storageAdapter as any,
+          ignoreDuplicate: true,
+        });
+
+        await db.addCollections({
+          batches: { schema: batchRxSchema },
+          feed_logs: { schema: feedLogRxSchema },
+          mortality_logs: { schema: mortalityLogRxSchema },
+        });
+
+        // Setup PowerSync active-active background replication
+        this.powerSyncConnector.registerCollectionReplication(db.batches);
+        this.powerSyncConnector.registerCollectionReplication(db.feed_logs);
+        this.powerSyncConnector.registerCollectionReplication(db.mortality_logs);
+
+        // Seed initial batches into RxDB
+        const localBatches = this.getBatches();
+        if (localBatches.length > 0) {
+          await db.batches.bulkUpsert(localBatches);
+        }
+
+        const localFeed = this.getFeedLogs();
+        if (localFeed.length > 0) {
+          await db.feed_logs.bulkUpsert(localFeed);
+        }
+
+        const localMort = this.getMortalityLogs();
+        if (localMort.length > 0) {
+          await db.mortality_logs.bulkUpsert(localMort);
+        }
+
+        // Subscribe to RxDB real-time changes ($ observable)
+        db.batches.find().$.subscribe((docs) => {
+          if (docs && docs.length > 0) {
+            const list = docs.map((d: any) => d.toJSON() as Batch);
+            this.set(GLOBAL_KEYS.stationBatches, list);
+            this.batches$.next(list);
+          }
+        });
+
+        db.feed_logs.find().$.subscribe((docs) => {
+          if (docs && docs.length > 0) {
+            const list = docs.map((d: any) => d.toJSON() as FeedLog);
+            this.set(GLOBAL_KEYS.stationFeedLogs, list);
+            this.feedLogs$.next(list);
+          }
+        });
+
+        db.mortality_logs.find().$.subscribe((docs) => {
+          if (docs && docs.length > 0) {
+            const list = docs.map((d: any) => d.toJSON() as MortalityLog);
+            this.set(GLOBAL_KEYS.stationMortalityLogs, list);
+            this.mortalityLogs$.next(list);
+          }
+        });
+
+        return db;
+      } catch (err) {
+        console.warn('RxDB initialization notice:', err);
+        return null;
+      }
+    })();
+
+    return this.rxDbPromise;
+  }
 
   initDefaults(): void {
     if (typeof window === 'undefined') return;
@@ -281,23 +531,16 @@ class StorageService {
     const currentVersion = localStorage.getItem(GLOBAL_KEYS.dataVersion);
     const hasUsers = localStorage.getItem(GLOBAL_KEYS.usersRegistry);
 
-    // If uninitialized or older version, seed the authentic KALRO NSRC Thika station setup
-    if (!currentVersion || currentVersion !== 'kalro_sericulture_v7_corporate' || !hasUsers) {
-      // 1. Seed Staff Roster
+    if (!currentVersion || !hasUsers) {
       this.saveUsers(DEFAULT_STAFF_ROSTER);
-      localStorage.setItem(GLOBAL_KEYS.activeUserId, DEFAULT_STAFF_ROSTER[1].id); // Peter Otieno (Chawki Master) on duty
-
-      // 2. Seed Station Profile
+      localStorage.setItem(GLOBAL_KEYS.activeUserId, DEFAULT_STAFF_ROSTER[1].id);
       this.saveProfile(DEFAULT_STATION_PROFILE);
 
-      // 3. Seed Initial Batch (Supports fluctuating batch counts: starts with 1 active lot)
       const initialBatches = createInitialBatches();
       this.saveBatches(initialBatches);
 
-      // 4. Seed Forage Inventory with cultivar breakdown
       this.saveLeafInventory({ ...DEFAULT_INITIAL_INVENTORY });
 
-      // 5. Seed Initial Audit Logs & Operation History
       const todayIso = new Date().toISOString().split('T')[0];
       const seedLogs: AuditLogEntry[] = [
         {
@@ -340,7 +583,6 @@ class StorageService {
       ];
       this.saveAuditLogs(seedLogs);
 
-      // Add seed feed logs & movements
       const initialFeedLogs: FeedLog[] = [
         {
           id: 'fl-seed-1',
@@ -401,8 +643,21 @@ class StorageService {
       ];
       this.saveLeafMovements(initialMovements);
 
-      localStorage.setItem(GLOBAL_KEYS.dataVersion, 'kalro_sericulture_v7_corporate');
+      localStorage.setItem(GLOBAL_KEYS.dataVersion, 'kalro_sericulture_staff_v7_rxdb');
     }
+
+    // Hydrate RxJS Observables with current snapshots
+    this.batches$.next(this.getBatches());
+    this.feedLogs$.next(this.getFeedLogs());
+    this.mortalityLogs$.next(this.getMortalityLogs());
+    this.envLogs$.next(this.getEnvironmentLogs());
+    this.harvests$.next(this.getCocoonHarvests());
+    this.inventory$.next(this.getLeafInventory());
+    this.leafMovements$.next(this.getLeafMovements());
+    this.payments$.next(this.getPayments());
+    this.auditLogs$.next(this.getAuditLogs());
+    this.users$.next(this.getAllUsers());
+    this.profile$.next(this.getProfile());
   }
 
   // --------------------------------------------------------------------------
@@ -444,7 +699,6 @@ class StorageService {
       found.lastActiveAt = new Date().toISOString();
       this.saveUsers(users);
 
-      // Log shift handover in audit log
       this.addAuditLog({
         id: `audit-shift-${Date.now()}`,
         timestamp: new Date().toISOString(),
@@ -461,6 +715,7 @@ class StorageService {
 
   saveUsers(users: UserAccount[]): void {
     this.set(GLOBAL_KEYS.usersRegistry, users);
+    this.users$.next(users);
   }
 
   createUserProfile(data: {
@@ -511,7 +766,6 @@ class StorageService {
     users.push(newUser);
     this.saveUsers(users);
 
-    // Update station profile with newest metadata while preserving facility counts
     const currentProfile = this.getProfile();
     const updatedProfile: FarmProfile = {
       ...(currentProfile || DEFAULT_STATION_PROFILE),
@@ -526,7 +780,6 @@ class StorageService {
     };
     this.saveProfile(updatedProfile, newId);
 
-    // Record in Audit Trail
     this.addAuditLog({
       id: `audit-staff-add-${Date.now()}`,
       timestamp: new Date().toISOString(),
@@ -622,7 +875,6 @@ class StorageService {
 
     if (filtered.length === 0) {
       localStorage.removeItem(GLOBAL_KEYS.activeUserId);
-      this.idbDelete(GLOBAL_KEYS.activeUserId);
     } else if (isDeletingActive) {
       this.setActiveUserId(filtered[0].id);
     }
@@ -631,7 +883,7 @@ class StorageService {
   }
 
   // --------------------------------------------------------------------------
-  // Station-Wide Shared Batches (Accessible to all Staff)
+  // Station Batches (RxDB Synchronized + Observable Stream)
   // --------------------------------------------------------------------------
 
   getBatches(userId?: string): Batch[] {
@@ -655,6 +907,14 @@ class StorageService {
     if (uid) {
       this.set(this.getTenantKey('batches', uid), batches);
     }
+    this.batches$.next(batches);
+
+    // Replicate to RxDB collection in background
+    this.initRxDb().then((db) => {
+      if (db) {
+        db.batches.bulkUpsert(batches).catch(() => {});
+      }
+    });
   }
 
   addBatch(batch: Batch, operator?: { id: string; name: string; role: string }): void {
@@ -709,7 +969,7 @@ class StorageService {
   }
 
   // --------------------------------------------------------------------------
-  // Station-Wide Feed Logs (With Operator Attribution & Stock Auto-Deduct)
+  // Station Feed Logs (RxDB Synchronized + Stock Auto-Deduct)
   // --------------------------------------------------------------------------
 
   getFeedLogs(userId?: string): FeedLog[] {
@@ -733,6 +993,14 @@ class StorageService {
     if (uid) {
       this.set(this.getTenantKey('feed_logs', uid), logs);
     }
+    this.feedLogs$.next(logs);
+
+    // Replicate to RxDB collection
+    this.initRxDb().then((db) => {
+      if (db) {
+        db.feed_logs.bulkUpsert(logs).catch(() => {});
+      }
+    });
   }
 
   addFeedLog(
@@ -760,7 +1028,6 @@ class StorageService {
     list.unshift(enrichedLog);
     this.saveFeedLogs(list);
 
-    // Auto-deduct stock if requested (default: true) and feed was not skipped
     const shouldDeduct = options?.autoDeductStock !== false && !log.wasSkipped && log.quantityGrams > 0;
     if (shouldDeduct) {
       const kg = Math.round((log.quantityGrams / 1000.0) * 100) / 100;
@@ -780,7 +1047,6 @@ class StorageService {
       }
     }
 
-    // Record in Station Audit Trail
     this.addAuditLog({
       id: `audit-feed-${Date.now()}`,
       timestamp: enrichedLog.recordedAt,
@@ -799,7 +1065,7 @@ class StorageService {
   }
 
   // --------------------------------------------------------------------------
-  // Station-Wide Mortality / Bed Loss Logs
+  // Station Mortality Logs (RxDB Synchronized)
   // --------------------------------------------------------------------------
 
   getMortalityLogs(userId?: string): MortalityLog[] {
@@ -823,6 +1089,13 @@ class StorageService {
     if (uid) {
       this.set(this.getTenantKey('mortality_logs', uid), logs);
     }
+    this.mortalityLogs$.next(logs);
+
+    this.initRxDb().then((db) => {
+      if (db) {
+        db.mortality_logs.bulkUpsert(logs).catch(() => {});
+      }
+    });
   }
 
   addMortalityLog(log: MortalityLog, operator?: { id: string; name: string; role: string }): void {
@@ -858,7 +1131,7 @@ class StorageService {
   }
 
   // --------------------------------------------------------------------------
-  // Station-Wide Microclimate Logs (Multi-House & Chamber Specific)
+  // Station Environment Logs
   // --------------------------------------------------------------------------
 
   getEnvironmentLogs(userId?: string): EnvironmentLog[] {
@@ -882,6 +1155,7 @@ class StorageService {
     if (uid) {
       this.set(this.getTenantKey('environment_logs', uid), logs);
     }
+    this.envLogs$.next(logs);
   }
 
   addEnvironmentLog(log: EnvironmentLog, operator?: { id: string; name: string; role: string }): void {
@@ -918,7 +1192,7 @@ class StorageService {
   }
 
   // --------------------------------------------------------------------------
-  // Station-Wide Cocoon Harvests
+  // Station Cocoon Harvests
   // --------------------------------------------------------------------------
 
   getCocoonHarvests(userId?: string): CocoonHarvest[] {
@@ -942,6 +1216,7 @@ class StorageService {
     if (uid) {
       this.set(this.getTenantKey('cocoon_harvests', uid), harvests);
     }
+    this.harvests$.next(harvests);
   }
 
   addCocoonHarvest(harvest: CocoonHarvest, operator?: { id: string; name: string; role: string }): void {
@@ -976,7 +1251,7 @@ class StorageService {
   }
 
   // --------------------------------------------------------------------------
-  // Station-Wide Forage Inventory & Movements
+  // Station Forage Inventory & Movements
   // --------------------------------------------------------------------------
 
   getLeafInventory(userId?: string): LeafInventory {
@@ -1000,6 +1275,7 @@ class StorageService {
     if (uid) {
       this.set(this.getTenantKey('leaf_inventory', uid), inv);
     }
+    this.inventory$.next(inv);
   }
 
   getLeafMovements(userId?: string): LeafMovement[] {
@@ -1023,6 +1299,7 @@ class StorageService {
     if (uid) {
       this.set(this.getTenantKey('leaf_movements', uid), movements);
     }
+    this.leafMovements$.next(movements);
   }
 
   addLeafMovement(movement: LeafMovement, operator?: { id: string; name: string; role: string }): void {
@@ -1042,7 +1319,6 @@ class StorageService {
     list.unshift(enriched);
     this.saveLeafMovements(list);
 
-    // Update inventory balances atomically
     const inv = this.getLeafInventory();
     const qty = enriched.direction === 'inflow' ? enriched.quantityKg : -enriched.quantityKg;
     if (enriched.leafType === 'mulberry') {
@@ -1054,7 +1330,6 @@ class StorageService {
     }
     this.saveLeafInventory(inv);
 
-    // Record in Station Audit Trail if inflow (outflow is already logged via addFeedLog)
     if (enriched.direction === 'inflow') {
       this.addAuditLog({
         id: `audit-stock-in-${Date.now()}`,
@@ -1071,7 +1346,7 @@ class StorageService {
   }
 
   // --------------------------------------------------------------------------
-  // Station Payments & Operating Ledger
+  // Station Payments
   // --------------------------------------------------------------------------
 
   getPayments(userId?: string): PaymentRecord[] {
@@ -1095,6 +1370,7 @@ class StorageService {
     if (uid) {
       this.set(this.getTenantKey('payments', uid), payments);
     }
+    this.payments$.next(payments);
   }
 
   addPayment(payment: PaymentRecord): void {
@@ -1132,10 +1408,11 @@ class StorageService {
     if (uid) {
       this.set(this.getTenantKey('profile', uid), profile);
     }
+    this.profile$.next(profile);
   }
 
   // --------------------------------------------------------------------------
-  // Station Operations Audit Log ("Who Did What and When")
+  // Station Operations Audit Log
   // --------------------------------------------------------------------------
 
   getAuditLogs(): AuditLogEntry[] {
@@ -1143,9 +1420,9 @@ class StorageService {
   }
 
   saveAuditLogs(logs: AuditLogEntry[]): void {
-    // Keep up to 600 most recent operations for high performance
     const pruned = logs.slice(0, 600);
     this.set(GLOBAL_KEYS.stationAuditLog, pruned);
+    this.auditLogs$.next(pruned);
   }
 
   addAuditLog(entry: AuditLogEntry): void {

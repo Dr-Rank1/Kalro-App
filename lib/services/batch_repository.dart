@@ -92,6 +92,12 @@ class BatchRepository {
     return [for (final row in rows) Batch.fromJson(row)];
   }
 
+  Stream<List<Batch>> watchAll() {
+    return _store.watchCollection(collection).map(
+      (rows) => [for (final row in rows) Batch.fromJson(row)],
+    );
+  }
+
   Future<Directory> storageDirectory() async {
     return _storageDirectory ?? await getApplicationDocumentsDirectory();
   }

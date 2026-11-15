@@ -1,13 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FarmProfile, UserAccount } from '../types';
 import { USER_ROLES } from '../constants';
-import { FileText, ChevronDown, Check, UserPlus, Trash2, Lock } from 'lucide-react';
+import { FileText, ChevronDown, Check, UserPlus, Trash2, Lock, RefreshCw, CloudOff } from 'lucide-react';
+import { SyncStatus } from '../storage';
 
 interface HeaderProps {
   profile: FarmProfile | null;
   currentUser: UserAccount | null;
   allUsers: UserAccount[];
   activeBatchesCount: number;
+  syncStatus?: SyncStatus;
   onOpenReportModal: () => void;
   onSwitchUser: (userId: string) => void;
   onOpenNewUserModal: () => void;
@@ -21,6 +23,7 @@ export const Header: React.FC<HeaderProps> = ({
   currentUser,
   allUsers,
   activeBatchesCount,
+  syncStatus,
   onOpenReportModal,
   onSwitchUser,
   onOpenNewUserModal,
@@ -79,6 +82,46 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="header-batch-pill" title="Batches currently in active rearing">
               <span className="tabular-nums font-bold">{activeBatchesCount}</span>
               <span style={{ marginLeft: '5px' }}>Active {activeBatchesCount === 1 ? 'Lot' : 'Lots'}</span>
+            </div>
+          )}
+
+          {/* Offline-First PowerSync Status Indicator */}
+          {syncStatus && (
+            <div
+              className="header-batch-pill"
+              title={
+                syncStatus.status === 'syncing'
+                  ? 'Replicating data with NSRC Central PostgreSQL...'
+                  : syncStatus.status === 'offline'
+                  ? 'Offline-first: changes safely buffered in RxDB IndexedDB'
+                  : 'PowerSync replication active and up to date'
+              }
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '5px',
+                fontSize: '0.74rem',
+              }}
+            >
+              {syncStatus.status === 'syncing' ? (
+                <>
+                  <RefreshCw
+                    size={11}
+                    style={{ animation: 'spin 1.5s linear infinite' }}
+                  />
+                  <span>Syncing</span>
+                </>
+              ) : syncStatus.status === 'offline' ? (
+                <>
+                  <CloudOff size={11} />
+                  <span>Offline</span>
+                </>
+              ) : (
+                <>
+                  <Check size={11} />
+                  <span>PowerSync</span>
+                </>
+              )}
             </div>
           )}
 
