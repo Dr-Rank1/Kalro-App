@@ -134,15 +134,15 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
                             vertical: 6,
                           ),
                           decoration: BoxDecoration(
-                            color: KalroColors.peach.withValues(alpha: 0.7),
-                            borderRadius: BorderRadius.circular(20),
+                            color: KalroColors.primaryGreen.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
                             slide.tabLabel,
                             style: GoogleFonts.poppins(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
-                              color: KalroColors.accentBrown,
+                              color: KalroColors.headerGreen,
                             ),
                           ),
                         ),

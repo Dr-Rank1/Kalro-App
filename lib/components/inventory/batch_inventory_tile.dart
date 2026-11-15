@@ -34,7 +34,7 @@ class BatchInventoryTile extends StatelessWidget {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: KalroColors.peach.withValues(alpha: 0.35),
+                  color: KalroColors.primaryGreen.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(

@@ -53,20 +53,13 @@ class LeafDepletionCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(10),
         border: Border.all(
           color: forecast.urgency != DepletionUrgency.safe
               ? statusColor.withValues(alpha: 0.5)
               : KalroColors.divider,
-          width: forecast.urgency != DepletionUrgency.safe ? 1.5 : 1,
+          width: 1,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

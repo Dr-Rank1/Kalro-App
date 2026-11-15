@@ -41,8 +41,8 @@ class TodayPlanCard extends StatelessWidget {
     final child = Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: KalroColors.softShadow,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: KalroColors.divider),
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(
@@ -50,24 +50,18 @@ class TodayPlanCard extends StatelessWidget {
         children: [
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [header, header.withValues(alpha: 0.82)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+            color: header,
             child: Row(
               children: [
                 Container(
-                  width: 54,
-                  height: 54,
+                  width: 44,
+                  height: 44,
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.16),
-                    shape: BoxShape.circle,
+                    color: Colors.white.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.35),
+                      color: Colors.white.withValues(alpha: 0.25),
                     ),
                   ),
                   child: Column(
@@ -181,14 +175,21 @@ class TodayPlanCard extends StatelessWidget {
                 const SizedBox(height: 14),
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(14),
+                  padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: stop
-                        ? KalroColors.peach.withValues(alpha: 0.55)
+                        ? KalroColors.rest.withValues(alpha: 0.1)
                         : harvest
-                        ? KalroColors.peach.withValues(alpha: 0.35)
-                        : KalroColors.headerGreen.withValues(alpha: 0.07),
-                    borderRadius: BorderRadius.circular(16),
+                        ? KalroColors.harvest.withValues(alpha: 0.1)
+                        : KalroColors.headerGreen.withValues(alpha: 0.06),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: stop
+                          ? KalroColors.rest.withValues(alpha: 0.25)
+                          : harvest
+                          ? KalroColors.harvest.withValues(alpha: 0.25)
+                          : KalroColors.divider,
+                    ),
                   ),
                   child: Row(
                     children: [
@@ -307,12 +308,11 @@ class ReadinessChecklist extends StatelessWidget {
     if (signs.isEmpty) return const SizedBox.shrink();
 
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: KalroColors.softShadow,
-        border: Border.all(color: KalroColors.peach),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: KalroColors.divider),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

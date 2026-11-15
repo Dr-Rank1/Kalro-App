@@ -117,13 +117,13 @@ class _FeedingScreenState extends State<FeedingScreen> {
                                   margin: const EdgeInsets.only(bottom: 16),
                                   decoration: BoxDecoration(
                                     color: isRest
-                                        ? KalroColors.peach.withValues(alpha: 0.6)
+                                        ? KalroColors.harvest.withValues(alpha: 0.1)
                                         : KalroColors.headerGreen.withValues(alpha: 0.08),
-                                    borderRadius: BorderRadius.circular(14),
+                                    borderRadius: BorderRadius.circular(10),
                                     border: Border.all(
                                       color: isRest
                                           ? KalroColors.harvest.withValues(alpha: 0.3)
-                                          : KalroColors.headerGreen.withValues(alpha: 0.2),
+                                          : KalroColors.divider,
                                     ),
                                   ),
                                   child: Row(

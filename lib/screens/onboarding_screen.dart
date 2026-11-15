@@ -36,7 +36,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final _pinController = TextEditingController();
   final _confirmPinController = TextEditingController();
   var _saving = false;
-  String _language = 'English';
+  final String _language = 'English';
 
   static const _roles = [
     (UserRole.asr, 'Adopted Seed Rearer', Icons.egg_outlined),

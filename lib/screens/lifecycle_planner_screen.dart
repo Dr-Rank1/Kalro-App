@@ -139,14 +139,14 @@ class _LifecyclePlannerScreenState extends State<LifecyclePlannerScreen> {
         children: [
           if (widget.asTab)
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
               child: KalroToolbar(
                 title: 'Plan'.tr,
                 subtitle: 'Hatch, moult rest days, harvest window, moths.'.tr,
               ),
             ),
           Padding(
-            padding: EdgeInsets.fromLTRB(20, 16, 20, 8),
+            padding: EdgeInsets.fromLTRB(16, 12, 16, 8),
             child: Row(
               children: [
                 Expanded(
@@ -185,7 +185,7 @@ class _LifecyclePlannerScreenState extends State<LifecyclePlannerScreen> {
       body: Container(
         decoration: const BoxDecoration(
           color: KalroColors.background,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         ),
         child: body,
       ),
@@ -199,7 +199,7 @@ class _LifecyclePlannerScreenState extends State<LifecyclePlannerScreen> {
         final events = bundle.events;
         if (events.isEmpty) {
           return ListView(
-            padding: EdgeInsets.fromLTRB(20, 8, 20, 24),
+            padding: EdgeInsets.fromLTRB(16, 8, 16, 88),
             children: [
               WeekStrip(days: bundle.week),
               SizedBox(height: 16),
@@ -219,7 +219,7 @@ class _LifecyclePlannerScreenState extends State<LifecyclePlannerScreen> {
         return RefreshIndicator(
           onRefresh: () async => _reload(),
           child: ListView(
-            padding: EdgeInsets.fromLTRB(20, 8, 20, 24),
+            padding: EdgeInsets.fromLTRB(16, 8, 16, 88),
             children: [
               WeekStrip(days: bundle.week),
               SizedBox(height: 16),
@@ -266,7 +266,7 @@ class _LifecyclePlannerScreenState extends State<LifecyclePlannerScreen> {
     );
 
     return ListView(
-      padding: EdgeInsets.fromLTRB(20, 8, 20, 24),
+      padding: EdgeInsets.fromLTRB(16, 8, 16, 88),
       children: [
         Text(
           'Pick species and start date, then test weather and leaf scenarios before you start eggs.'
@@ -388,15 +388,15 @@ class _TabChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: selected ? KalroColors.headerGreen : Colors.white,
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(8),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(8),
         child: Container(
           alignment: Alignment.center,
-          padding: EdgeInsets.symmetric(vertical: 10),
+          padding: EdgeInsets.symmetric(vertical: 9),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color: selected ? KalroColors.headerGreen : KalroColors.divider,
             ),
@@ -434,7 +434,7 @@ class _FarmEventTile extends StatelessWidget {
 
     return KalroOutlineCard(
       onTap: onTap,
-      padding: EdgeInsets.all(14),
+      padding: EdgeInsets.all(12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -443,11 +443,18 @@ class _FarmEventTile extends StatelessWidget {
             padding: EdgeInsets.symmetric(vertical: 6),
             decoration: BoxDecoration(
               color: event.isOverdue
-                  ? Color(0xFFFFE8E8)
+                  ? const Color(0xFFFFE8E8)
                   : event.isToday
-                  ? KalroColors.peach.withValues(alpha: 0.5)
+                  ? KalroColors.headerGreen.withValues(alpha: 0.1)
                   : KalroColors.background,
               borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: event.isOverdue
+                    ? Colors.red.shade200
+                    : event.isToday
+                    ? KalroColors.headerGreen.withValues(alpha: 0.3)
+                    : KalroColors.divider,
+              ),
             ),
             child: Column(
               children: [
@@ -460,7 +467,9 @@ class _FarmEventTile extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                     color: event.isOverdue
                         ? Colors.red.shade700
-                        : KalroColors.accentBrown,
+                        : event.isToday
+                        ? KalroColors.headerGreen
+                        : KalroColors.textMuted,
                   ),
                 ),
                 Text(
@@ -509,7 +518,7 @@ class _FarmEventTile extends StatelessWidget {
                     event.conditionNote!,
                     style: GoogleFonts.poppins(
                       fontSize: 11,
-                      color: KalroColors.accentBrown,
+                      color: KalroColors.primaryGreen,
                     ),
                   ),
                 ],

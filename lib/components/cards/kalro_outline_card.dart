@@ -25,15 +25,8 @@ class KalroOutlineCard extends StatelessWidget {
         child: Container(
           padding: padding,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(10),
             border: Border.all(color: KalroColors.divider),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
-                blurRadius: 6,
-                offset: Offset(0, 2),
-              ),
-            ],
           ),
           child: child,
         ),

@@ -56,16 +56,15 @@ class BatchGridCard extends StatelessWidget {
 
     return Material(
       color: Colors.white,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(10),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(10),
         child: Ink(
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: KalroColors.softShadow,
-            border: Border.all(color: accent.withValues(alpha: 0.18)),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: KalroColors.divider),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,12 +84,13 @@ class BatchGridCard extends StatelessWidget {
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 3,
+                      horizontal: 7,
+                      vertical: 2.5,
                     ),
                     decoration: BoxDecoration(
-                      color: accent.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(20),
+                      color: accent.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: accent.withValues(alpha: 0.25)),
                     ),
                     child: Text(
                       harvest

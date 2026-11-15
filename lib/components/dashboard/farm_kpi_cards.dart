@@ -20,31 +20,32 @@ class FarmKpiCards extends StatelessWidget {
     String? subtitle,
   }) {
     return Container(
-      width: 156,
-      padding: const EdgeInsets.all(16),
+      width: 148,
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: KalroColors.softShadow,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: KalroColors.divider),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(7),
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(12),
+              color: color.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, color: color, size: 22),
+            child: Icon(icon, color: color, size: 20),
           ),
           const Spacer(),
           Text(
             value,
             style: GoogleFonts.poppins(
-              fontSize: 20,
+              fontSize: 18,
               fontWeight: FontWeight.w700,
               color: KalroColors.textDark,
+              fontFeatures: const [FontFeature.tabularFigures()],
             ),
           ),
           const SizedBox(height: 2),
@@ -84,7 +85,7 @@ class FarmKpiCards extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final harvestKg = summary.totalHarvestWeightGrams / 1000;
     return SizedBox(
-      height: 168,
+      height: 148,
       child: ListView(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),

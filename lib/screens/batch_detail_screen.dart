@@ -227,8 +227,8 @@ class _BatchDetailScreenState extends State<BatchDetailScreen>
                     controller: _tabController,
                     labelColor: Colors.white,
                     unselectedLabelColor: Colors.white70,
-                    indicatorColor: KalroColors.peach,
-                    indicatorWeight: 3,
+                    indicatorColor: Colors.white,
+                    indicatorWeight: 2.5,
                     tabs: [
                       Tab(text: 'Today'.tr),
                       Tab(text: 'Timeline'.tr),
@@ -380,8 +380,8 @@ class _BatchDetailScreenState extends State<BatchDetailScreen>
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: KalroColors.softShadow,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: KalroColors.divider),
                         ),
                         child: MilestoneTimeline(
                           milestones: milestones,
@@ -449,8 +449,8 @@ class _BatchDetailScreenState extends State<BatchDetailScreen>
                         ),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: KalroColors.softShadow,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: KalroColors.divider),
                         ),
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<BatchStatus>(
@@ -510,38 +510,38 @@ class _BatchDetailScreenState extends State<BatchDetailScreen>
             children: [
               Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 5,
+                  horizontal: 10,
+                  vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: KalroColors.peach,
-                  borderRadius: BorderRadius.circular(20),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
                   batch.species.label.tr,
                   style: GoogleFonts.poppins(
-                    color: KalroColors.textDark,
+                    color: KalroColors.headerGreen,
                     fontWeight: FontWeight.w700,
-                    fontSize: 12,
+                    fontSize: 11,
                   ),
                 ),
               ),
               const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 5,
+                  horizontal: 10,
+                  vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.18),
-                  borderRadius: BorderRadius.circular(20),
+                  color: Colors.white.withValues(alpha: 0.16),
+                  borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
                   batch.status.label.tr,
                   style: GoogleFonts.poppins(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
-                    fontSize: 12,
+                    fontSize: 11,
                   ),
                 ),
               ),
@@ -559,12 +559,12 @@ class _BatchDetailScreenState extends State<BatchDetailScreen>
           ),
           const Spacer(),
           ClipRRect(
-            borderRadius: BorderRadius.circular(99),
+            borderRadius: BorderRadius.circular(3),
             child: LinearProgressIndicator(
               value: progress,
-              minHeight: 6,
+              minHeight: 5,
               backgroundColor: Colors.white.withValues(alpha: 0.2),
-              color: KalroColors.peach,
+              color: const Color(0xFF4CAF50),
             ),
           ),
           const SizedBox(height: 12),
@@ -657,29 +657,23 @@ class _BatchDetailScreenState extends State<BatchDetailScreen>
 
   Widget _buildGridItem(IconData icon, String label, String value) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: KalroColors.divider),
       ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(7),
             decoration: BoxDecoration(
-              color: KalroColors.background,
-              borderRadius: BorderRadius.circular(12),
+              color: KalroColors.primaryGreen.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, color: KalroColors.primaryGreen, size: 20),
+            child: Icon(icon, color: KalroColors.primaryGreen, size: 18),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -714,60 +708,74 @@ class _BatchDetailScreenState extends State<BatchDetailScreen>
       children: [
         Expanded(
           child: Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: KalroColors.primaryGreen.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(16),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: KalroColors.divider),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.health_and_safety, color: KalroColors.primaryGreen),
-                const SizedBox(height: 12),
-                Text(
-                  'Survival'.tr,
-                  style: GoogleFonts.poppins(
-                    fontSize: 12,
-                    color: KalroColors.primaryGreen,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Survival Rate'.tr,
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: KalroColors.textMuted,
+                      ),
+                    ),
+                    Icon(Icons.shield_outlined, color: KalroColors.primaryGreen, size: 18),
+                  ],
                 ),
+                const SizedBox(height: 8),
                 Text(
                   '${metrics.survivalRatePercent.toStringAsFixed(1)}%',
                   style: GoogleFonts.poppins(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: KalroColors.textDark,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: KalroColors.primaryGreen,
                   ),
                 ),
               ],
             ),
           ),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: 12),
         Expanded(
           child: Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: Colors.orange.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(16),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: KalroColors.divider),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.warning_amber, color: Colors.orange),
-                const SizedBox(height: 12),
-                Text(
-                  'Mortality'.tr,
-                  style: GoogleFonts.poppins(
-                    fontSize: 12,
-                    color: Colors.orange,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Mortality'.tr,
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: KalroColors.textMuted,
+                      ),
+                    ),
+                    Icon(Icons.warning_amber_rounded, color: KalroColors.rest, size: 18),
+                  ],
                 ),
+                const SizedBox(height: 8),
                 Text(
                   '${metrics.totalMortality}',
                   style: GoogleFonts.poppins(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
                     color: KalroColors.textDark,
                   ),
                 ),

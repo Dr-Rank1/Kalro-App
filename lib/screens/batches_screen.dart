@@ -227,7 +227,7 @@ class _BatchesScreenState extends State<BatchesScreen> {
                 final unfilteredClosed = _closed(all);
 
                 return ListView(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 88),
+                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 88),
                   children: [
                     KalroToolbar(
                       title: l10n?.batchesTitle ?? 'Batches',
@@ -235,14 +235,16 @@ class _BatchesScreenState extends State<BatchesScreen> {
                           l10n?.batchesSubtitle ??
                           'Create cycles and log feeding, health, and harvest.',
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 14),
                     TextField(
                       onChanged: (value) => setState(() => _query = value),
                       decoration: InputDecoration(
                         hintText: 'Search name, house, caretaker'.tr,
-                        prefixIcon: const Icon(Icons.search),
+                        prefixIcon: const Icon(Icons.search, size: 20),
                         filled: true,
                         fillColor: Colors.white,
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -432,24 +434,24 @@ class _FilterChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: selected ? KalroColors.headerGreen : Colors.white,
-      borderRadius: BorderRadius.circular(20),
+      color: selected ? KalroColors.primaryGreen : Colors.white,
+      borderRadius: BorderRadius.circular(8),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(8),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: selected ? KalroColors.headerGreen : KalroColors.divider,
+              color: selected ? KalroColors.primaryGreen : KalroColors.divider,
             ),
           ),
           child: Text(
             label,
             style: GoogleFonts.poppins(
               fontSize: 12,
-              fontWeight: FontWeight.w600,
+              fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
               color: selected ? Colors.white : KalroColors.textDark,
             ),
           ),

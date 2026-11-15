@@ -18,9 +18,9 @@ class RecordSummaryBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: KalroColors.background,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: KalroColors.divider),
       ),
@@ -30,8 +30,8 @@ class RecordSummaryBar extends StatelessWidget {
             if (i > 0)
               Container(
                 width: 1,
-                height: 28,
-                margin: EdgeInsets.symmetric(horizontal: 10),
+                height: 26,
+                margin: const EdgeInsets.symmetric(horizontal: 8),
                 color: KalroColors.divider,
               ),
             Expanded(
@@ -41,15 +41,17 @@ class RecordSummaryBar extends StatelessWidget {
                     items[i].value,
                     style: GoogleFonts.poppins(
                       fontWeight: FontWeight.w700,
-                      fontSize: 14,
+                      fontSize: 15,
                       color: KalroColors.textDark,
                     ),
                   ),
+                  const SizedBox(height: 1),
                   Text(
                     items[i].label,
                     textAlign: TextAlign.center,
                     style: GoogleFonts.poppins(
-                      fontSize: 10,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
                       color: KalroColors.textMuted,
                     ),
                   ),

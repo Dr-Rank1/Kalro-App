@@ -306,8 +306,8 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(18),
-                        boxShadow: KalroColors.softShadow,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: KalroColors.divider),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -338,8 +338,8 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(18),
-                        boxShadow: KalroColors.softShadow,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: KalroColors.divider),
                       ),
                       child: Row(
                         children: [
@@ -395,8 +395,8 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: KalroColors.softShadow,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: KalroColors.divider),
                     ),
                     child: Column(
                       children: [
@@ -416,20 +416,27 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                                   ),
                                 ),
                               ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: KalroColors.primaryGreen.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Text(
-                                  'English',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: KalroColors.primaryGreen,
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  _LangChip(
+                                    label: 'EN',
+                                    selected: _language == 'en',
+                                    onTap: () {
+                                      setState(() => _language = 'en');
+                                      widget.onLanguageChanged('en');
+                                    },
                                   ),
-                                ),
+                                  const SizedBox(width: 6),
+                                  _LangChip(
+                                    label: 'SW',
+                                    selected: _language == 'sw',
+                                    onTap: () {
+                                      setState(() => _language = 'sw');
+                                      widget.onLanguageChanged('sw');
+                                    },
+                                  ),
+                                ],
                               ),
                             ],
                           ),

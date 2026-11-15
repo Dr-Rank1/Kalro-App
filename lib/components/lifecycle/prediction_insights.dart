@@ -29,7 +29,7 @@ class PredictionScenarioBar extends StatelessWidget {
           FilterChip(
             label: Text('Recorded'.tr),
             selected: selected == null,
-            selectedColor: KalroColors.peach,
+            selectedColor: KalroColors.primaryGreen.withValues(alpha: 0.12),
             checkmarkColor: KalroColors.primaryGreen,
             labelStyle: GoogleFonts.poppins(fontSize: 12),
             onSelected: (_) => onSelected(null),
@@ -39,7 +39,7 @@ class PredictionScenarioBar extends StatelessWidget {
           return FilterChip(
             label: Text(scenario.label),
             selected: isSelected,
-            selectedColor: KalroColors.peach,
+            selectedColor: KalroColors.primaryGreen.withValues(alpha: 0.12),
             checkmarkColor: KalroColors.primaryGreen,
             labelStyle: GoogleFonts.poppins(fontSize: 12),
             onSelected: (_) => onSelected(scenario),
@@ -118,7 +118,7 @@ class PredictionConditionsBanner extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: KalroColors.peach),
+        border: Border.all(color: KalroColors.divider),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -219,22 +219,21 @@ class LifecyclePlanHomeCard extends StatelessWidget {
         onTap: onOpenPlanner,
         borderRadius: BorderRadius.circular(12),
         child: Container(
-          padding: const EdgeInsets.all(18),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: KalroColors.softShadow,
+            borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: KalroColors.headerGreen.withValues(alpha: 0.12),
+              color: KalroColors.divider,
             ),
           ),
           child: Row(
             children: [
               Container(
-                width: 48,
-                height: 48,
+                width: 44,
+                height: 44,
                 decoration: BoxDecoration(
-                  color: KalroColors.headerGreen.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(14),
+                  color: KalroColors.headerGreen.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Icon(
                   Icons.auto_graph_outlined,

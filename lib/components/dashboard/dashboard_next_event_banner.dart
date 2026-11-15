@@ -20,28 +20,29 @@ class DashboardNextEventBanner extends StatelessWidget {
 
     return Material(
       color: Colors.white,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(10),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         child: Container(
-          padding: EdgeInsets.all(16),
+          padding: EdgeInsets.all(14),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: KalroColors.peach),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: KalroColors.divider),
           ),
           child: Row(
             children: [
               Container(
-                width: 44,
-                height: 44,
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
-                  color: KalroColors.peach.withValues(alpha: 0.35),
-                  borderRadius: BorderRadius.circular(10),
+                  color: KalroColors.primaryGreen.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
                   Icons.notifications_active_outlined,
-                  color: KalroColors.accentBrown,
+                  color: KalroColors.primaryGreen,
+                  size: 20,
                 ),
               ),
               SizedBox(width: 14),

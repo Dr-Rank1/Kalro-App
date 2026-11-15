@@ -295,11 +295,11 @@ class _LeafDemandCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: KalroColors.softShadow,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: KalroColors.divider),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

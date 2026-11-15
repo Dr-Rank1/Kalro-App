@@ -102,54 +102,45 @@ class _RearingHubScreenState extends State<RearingHubScreen> {
               child: RefreshIndicator(
                 onRefresh: () async => _reload(),
                 child: ListView(
-                  padding: const EdgeInsets.only(top: 12, bottom: 100),
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: KalroWelcomeHeader(
-                        displayName: summary.displayName,
-                      ),
+                    KalroWelcomeHeader(
+                      displayName: summary.displayName,
                     ),
                     const SizedBox(height: 16),
                     if (active.isEmpty) ...[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: _MinimalEmptyBatchCard(
-                          canEdit: widget.canEdit,
-                          onCreateBatch: widget.canEdit
-                              ? () async {
-                                  await Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (_) => CreateBatchScreen(
-                                        repository: widget.repositories.batches,
-                                        producers: widget.repositories.producers,
-                                        farmRepositories: widget.repositories,
-                                      ),
+                      _MinimalEmptyBatchCard(
+                        canEdit: widget.canEdit,
+                        onCreateBatch: widget.canEdit
+                            ? () async {
+                                await Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => CreateBatchScreen(
+                                      repository: widget.repositories.batches,
+                                      producers: widget.repositories.producers,
+                                      farmRepositories: widget.repositories,
                                     ),
-                                  );
-                                  _reload();
-                                  widget.onBatchChanged();
-                                }
-                              : null,
-                          onOpenGuide: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => const FieldGuideScreen(),
-                              ),
-                            );
-                          },
-                        ),
+                                  ),
+                                );
+                                _reload();
+                                widget.onBatchChanged();
+                              }
+                            : null,
+                        onOpenGuide: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const FieldGuideScreen(),
+                            ),
+                          );
+                        },
                       ),
                     ] else ...[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Text(
-                          'Today’s Routine'.tr,
-                          style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: KalroColors.textDark,
-                          ),
+                      Text(
+                        'Today’s Routine'.tr,
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: KalroColors.textDark,
                         ),
                       ),
                       const SizedBox(height: 10),
@@ -157,7 +148,7 @@ class _RearingHubScreenState extends State<RearingHubScreen> {
                         final plan = plans[batch.id];
                         if (plan == null) return const SizedBox.shrink();
                         return Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                          padding: const EdgeInsets.only(bottom: 12),
                           child: TodayBatchWorkCard(
                             batch: batch,
                             plan: plan,
@@ -198,16 +189,13 @@ class _RearingHubScreenState extends State<RearingHubScreen> {
                       }),
                       if (summary.alerts.isNotEmpty) ...[
                         const SizedBox(height: 16),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: DashboardAlertsBanner(
-                            alerts: summary.alerts.take(2).toList(),
-                            onAlertTap: (alert) {
-                              if (alert.batchId != null) {
-                                _openBatch(alert.batchId!);
-                              }
-                            },
-                          ),
+                        DashboardAlertsBanner(
+                          alerts: summary.alerts.take(2).toList(),
+                          onAlertTap: (alert) {
+                            if (alert.batchId != null) {
+                              _openBatch(alert.batchId!);
+                            }
+                          },
                         ),
                       ],
                     ],
@@ -236,38 +224,38 @@ class _MinimalEmptyBatchCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: KalroColors.softShadow,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: KalroColors.divider),
       ),
       child: Column(
         children: [
           Container(
-            width: 64,
-            height: 64,
+            width: 52,
+            height: 52,
             decoration: BoxDecoration(
-              color: KalroColors.leaf.withValues(alpha: 0.12),
+              color: KalroColors.leaf.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
               Icons.eco_outlined,
-              size: 32,
+              size: 26,
               color: KalroColors.primaryGreen,
             ),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 14),
           Text(
             'No active rearing cycle'.tr,
             textAlign: TextAlign.center,
             style: GoogleFonts.poppins(
-              fontSize: 18,
+              fontSize: 16,
               fontWeight: FontWeight.w700,
               color: KalroColors.textDark,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Text(
             'Create your first batch to start recording daily feeding, room climate, and lifecycle progress.'.tr,
             textAlign: TextAlign.center,
@@ -277,14 +265,14 @@ class _MinimalEmptyBatchCard extends StatelessWidget {
               height: 1.4,
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           if (canEdit && onCreateBatch != null) ...[
             SizedBox(
               width: double.infinity,
-              height: 48,
+              height: 44,
               child: FilledButton.icon(
                 onPressed: onCreateBatch,
-                icon: const Icon(Icons.add, size: 20),
+                icon: const Icon(Icons.add, size: 18),
                 label: Text(
                   'Create First Batch'.tr,
                   style: GoogleFonts.poppins(
@@ -296,17 +284,17 @@ class _MinimalEmptyBatchCard extends StatelessWidget {
                   backgroundColor: KalroColors.primaryGreen,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
           ],
           if (onOpenGuide != null)
             TextButton.icon(
               onPressed: onOpenGuide,
-              icon: const Icon(Icons.menu_book_outlined, size: 18, color: KalroColors.headerGreen),
+              icon: const Icon(Icons.menu_book_outlined, size: 16, color: KalroColors.headerGreen),
               label: Text(
                 'Explore KALRO Field Guide'.tr,
                 style: GoogleFonts.poppins(

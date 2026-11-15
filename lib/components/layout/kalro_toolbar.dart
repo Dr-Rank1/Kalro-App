@@ -38,7 +38,7 @@ class KalroToolbar extends StatelessWidget {
             icon: Icon(Icons.menu, color: KalroColors.textDark),
           )
         else
-          SizedBox(width: 8),
+          const SizedBox.shrink(),
 
         Expanded(
           child: Column(
@@ -47,19 +47,21 @@ class KalroToolbar extends StatelessWidget {
               Text(
                 title,
                 style: GoogleFonts.poppins(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
                   color: KalroColors.textDark,
                 ),
               ),
-              if (subtitle != null)
+              if (subtitle != null) ...[
+                const SizedBox(height: 2),
                 Text(
                   subtitle!,
                   style: GoogleFonts.poppins(
-                    fontSize: 13,
+                    fontSize: 12,
                     color: KalroColors.textMuted,
                   ),
                 ),
+              ],
             ],
           ),
         ),

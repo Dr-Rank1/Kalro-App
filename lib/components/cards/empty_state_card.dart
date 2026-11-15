@@ -23,11 +23,11 @@ class EmptyStateCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(28),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: KalroColors.softShadow,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: KalroColors.divider),
       ),
       child: Column(
         children: [

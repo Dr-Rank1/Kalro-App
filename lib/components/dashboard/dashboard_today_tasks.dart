@@ -44,40 +44,40 @@ class DashboardTodayTasks extends StatelessWidget {
           final accent = task.isOverdue ? KalroColors.danger : color;
 
           return Padding(
-            padding: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.only(bottom: 8),
             child: Material(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(10),
               child: InkWell(
                 onTap: onTaskTap == null ? null : () => onTaskTap!(task),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(10),
                 child: Ink(
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: KalroColors.softShadow,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: KalroColors.divider),
                   ),
                   child: Row(
                     children: [
                       Container(
-                        width: 5,
-                        height: 72,
+                        width: 4,
+                        height: 64,
                         decoration: BoxDecoration(
                           color: accent,
                           borderRadius: const BorderRadius.horizontal(
-                            left: Radius.circular(16),
+                            left: Radius.circular(10),
                           ),
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(12),
+                        padding: const EdgeInsets.all(10),
                         child: Container(
-                          width: 40,
-                          height: 40,
+                          width: 38,
+                          height: 38,
                           decoration: BoxDecoration(
-                            color: accent.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(12),
+                            color: accent.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          child: Icon(icon, color: accent, size: 20),
+                          child: Icon(icon, color: accent, size: 18),
                         ),
                       ),
                       Expanded(

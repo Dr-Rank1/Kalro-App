@@ -17,7 +17,7 @@ class FeedLogTile extends StatelessWidget {
     return RecordLogTile(
       icon: Icons.restaurant_outlined,
       iconColor: KalroColors.primaryGreen,
-      iconBackground: KalroColors.peach.withValues(alpha: 0.35),
+      iconBackground: KalroColors.primaryGreen.withValues(alpha: 0.08),
       title: '${formatGrams(log.quantityGrams)} · ${log.feedType}'.tr,
       subtitle: log.feedingStage?.trim().isNotEmpty == true
           ? log.feedingStage

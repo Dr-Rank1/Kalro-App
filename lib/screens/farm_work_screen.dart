@@ -94,28 +94,21 @@ class _FarmWorkScreenState extends State<FarmWorkScreen> {
             builder: (context, snapshot) {
               final stats = snapshot.data;
               return ListView(
-                padding: const EdgeInsets.fromLTRB(20, 12, 20, 100),
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
                 children: [
                   KalroToolbar(
                     title: 'Farm'.tr,
                     subtitle: 'Log work, leaf, money, and the field guide.'.tr,
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 14),
 
                   // Station Overview KPI Card
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: KalroColors.divider),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.03),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
                     ),
                     child: Row(
                       children: [
@@ -367,24 +360,28 @@ class _ModernFarmTile extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 8),
       child: Material(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(10),
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
-          child: Padding(
+          borderRadius: BorderRadius.circular(10),
+          child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: KalroColors.divider),
+            ),
             child: Row(
               children: [
                 Container(
-                  width: 42,
-                  height: 42,
+                  width: 40,
+                  height: 40,
                   decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(12),
+                    color: color.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(icon, color: color, size: 22),
+                  child: Icon(icon, color: color, size: 20),
                 ),
-                const SizedBox(width: 14),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -392,7 +389,7 @@ class _ModernFarmTile extends StatelessWidget {
                       Text(
                         title,
                         style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                           fontSize: 14,
                           color: KalroColors.textDark,
                         ),
@@ -401,7 +398,7 @@ class _ModernFarmTile extends StatelessWidget {
                       Text(
                         subtitle,
                         style: GoogleFonts.poppins(
-                          fontSize: 11,
+                          fontSize: 12,
                           color: KalroColors.textMuted,
                         ),
                       ),
@@ -414,7 +411,7 @@ class _ModernFarmTile extends StatelessWidget {
                     margin: const EdgeInsets.only(right: 6),
                     decoration: BoxDecoration(
                       color: color.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
                       badge!,
@@ -428,7 +425,7 @@ class _ModernFarmTile extends StatelessWidget {
                 const Icon(
                   Icons.chevron_right,
                   color: KalroColors.textLight,
-                  size: 20,
+                  size: 18,
                 ),
               ],
             ),

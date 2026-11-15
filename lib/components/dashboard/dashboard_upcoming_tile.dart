@@ -22,7 +22,11 @@ class DashboardUpcomingTile extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(10),
-        child: Padding(
+        child: Ink(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: KalroColors.divider),
+          ),
           padding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           child: Row(
             children: [
@@ -81,12 +85,16 @@ class _DateBadge extends StatelessWidget {
     final day = date.day.toString();
 
     final background = isOverdue
-        ? Color(0xFFFFE8E8)
+        ? const Color(0xFFFFE8E8)
         : isToday
-        ? KalroColors.peach.withValues(alpha: 0.5)
+        ? KalroColors.headerGreen.withValues(alpha: 0.1)
         : KalroColors.background;
 
-    final accent = isOverdue ? Colors.red.shade700 : KalroColors.accentBrown;
+    final accent = isOverdue
+        ? Colors.red.shade700
+        : isToday
+        ? KalroColors.headerGreen
+        : KalroColors.textMuted;
 
     return Container(
       width: 48,
@@ -94,6 +102,13 @@ class _DateBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: background,
         borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: isOverdue
+              ? Colors.red.shade200
+              : isToday
+              ? KalroColors.headerGreen.withValues(alpha: 0.3)
+              : KalroColors.divider,
+        ),
       ),
       child: Column(
         children: [

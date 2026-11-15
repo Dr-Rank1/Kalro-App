@@ -252,7 +252,7 @@ class _CreateBatchScreenState extends State<CreateBatchScreen> {
           child: Form(
             key: _formKey,
             child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               children: [
                 // 1. Silkworm Variety
                 Text(
@@ -550,26 +550,25 @@ class _VarietyCard extends StatelessWidget {
     final isBom = species == Species.bombyx;
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(10),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
         decoration: BoxDecoration(
           color: selected
-              ? KalroColors.leaf.withValues(alpha: 0.12)
+              ? KalroColors.leaf.withValues(alpha: 0.08)
               : Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(10),
           border: Border.all(
             color: selected ? KalroColors.primaryGreen : KalroColors.divider,
-            width: selected ? 2 : 1,
+            width: selected ? 1.5 : 1,
           ),
-          boxShadow: selected ? KalroColors.softShadow : null,
         ),
         child: Row(
           children: [
             Icon(
               isBom ? Icons.spa_outlined : Icons.eco_outlined,
               color: selected ? KalroColors.primaryGreen : KalroColors.textMuted,
-              size: 22,
+              size: 20,
             ),
             const SizedBox(width: 8),
             Expanded(

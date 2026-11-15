@@ -18,8 +18,8 @@ class WeekStrip extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(12, 12, 12, 10),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: KalroColors.softShadow,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: KalroColors.divider),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -80,7 +80,7 @@ class _DayCell extends StatelessWidget {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: color.withValues(alpha: day.kind == WeekDayKind.empty ? 1 : 0.18),
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
             '${day.date.day}',

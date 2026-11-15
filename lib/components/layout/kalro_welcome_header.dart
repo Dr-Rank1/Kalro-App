@@ -39,19 +39,24 @@ class KalroWelcomeHeader extends StatelessWidget {
             icon: const Icon(Icons.menu_rounded, color: KalroColors.textDark),
           )
         else
-          CircleAvatar(
-            radius: 24,
-            backgroundColor: KalroColors.peach,
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: KalroColors.primaryGreen.withValues(alpha: 0.1),
+              border: Border.all(color: KalroColors.divider),
+            ),
             child: ClipOval(
               child: Image.asset(
                 'assets/images/kalro_app_icon.png',
-                width: 40,
-                height: 40,
+                width: 38,
+                height: 38,
                 fit: BoxFit.cover,
               ),
             ),
           ),
-        const SizedBox(width: 4),
+        const SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,12 +64,13 @@ class KalroWelcomeHeader extends StatelessWidget {
               Text(
                 '$_greeting, $displayName',
                 style: GoogleFonts.poppins(
-                  fontSize: 18,
+                  fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: KalroColors.textDark,
                   height: 1.2,
                 ),
               ),
+              const SizedBox(height: 2),
               Text(
                 date,
                 style: GoogleFonts.poppins(

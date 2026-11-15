@@ -204,7 +204,7 @@ class FloorActionsBar extends StatelessWidget {
                             onSelected: (_) {
                               setModal(() => selectedReason = opt.label);
                             },
-                            selectedColor: KalroColors.peach,
+                            selectedColor: KalroColors.primaryGreen.withValues(alpha: 0.12),
                           );
                         }).toList(),
                       ),
@@ -653,7 +653,7 @@ class FloorActionsBar extends StatelessWidget {
       label: Text(label),
       selected: selected,
       onSelected: (_) => onTap(),
-      selectedColor: KalroColors.peach,
+      selectedColor: KalroColors.primaryGreen.withValues(alpha: 0.12),
     );
   }
 
@@ -673,84 +673,140 @@ class FloorActionsBar extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
+        // Primary Action
+        if (fedToday)
+          FilledButton.icon(
+            onPressed: () => _openFeedOptions(context),
+            icon: const Icon(Icons.check_circle_rounded, size: 16),
+            label: Text(
+              fedGramsToday != null && fedGramsToday! > 0
+                  ? Translator.fill('✓ Fed {g} g today · Tap to adjust', {
+                      'g': '${fedGramsToday!.round()}',
+                    })
+                  : '✓ Fed today · Tap to adjust'.tr,
+              style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600),
+            ),
+            style: FilledButton.styleFrom(
+              backgroundColor: KalroColors.leaf,
+              foregroundColor: Colors.white,
+              minimumSize: const Size.fromHeight(40),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+          )
+        else if (skippedToday)
+          FilledButton.icon(
+            onPressed: () => _openFeedOptions(context),
+            icon: const Icon(Icons.pause_circle_filled, size: 16),
+            label: Text(
+              Translator.fill('⏸ Non-feeding / Moult ({r})', {
+                'r': (skipReason ?? 'Rest').tr,
+              }),
+              style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600),
+            ),
+            style: FilledButton.styleFrom(
+              backgroundColor: KalroColors.headerGreen.withValues(alpha: 0.12),
+              foregroundColor: KalroColors.textDark,
+              minimumSize: const Size.fromHeight(40),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+          )
+        else
+          FilledButton.icon(
+            onPressed: () => _feed(context, grams: feedGrams),
+            icon: const Icon(Icons.eco_outlined, size: 16),
+            label: Text(
+              Translator.fill('Feed larvae ({g} g)', {'g': '${feedGrams.round()}'}),
+              style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600),
+            ),
+            style: FilledButton.styleFrom(
+              backgroundColor: KalroColors.primaryGreen,
+              foregroundColor: Colors.white,
+              minimumSize: const Size.fromHeight(40),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+          ),
+        const SizedBox(height: 8),
+
+        // Secondary Action Row
+        Row(
           children: [
-            if (fedToday) ...[
-              FilledButton.icon(
+            Expanded(
+              child: OutlinedButton(
                 onPressed: () => _openFeedOptions(context),
-                icon: const Icon(Icons.check_circle_rounded, size: 18),
-                label: Text(
-                  fedGramsToday != null && fedGramsToday! > 0
-                      ? Translator.fill('✓ Fed {g} g', {
-                          'g': '${fedGramsToday!.round()}',
-                        })
-                      : '✓ Fed today'.tr,
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  side: const BorderSide(color: KalroColors.divider),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                 ),
-                style: FilledButton.styleFrom(
-                  backgroundColor: KalroColors.leaf,
-                  foregroundColor: Colors.white,
-                ),
-              ),
-              OutlinedButton.icon(
-                onPressed: () => _openFeedOptions(context),
-                icon: const Icon(Icons.add, size: 18),
-                label: Text('Log more'.tr),
-              ),
-            ] else if (skippedToday) ...[
-              FilledButton.icon(
-                onPressed: () => _openFeedOptions(context),
-                icon: const Icon(Icons.pause_circle_filled, size: 18),
-                label: Text(
-                  Translator.fill('⏸ Skipped ({r})', {
-                    'r': (skipReason ?? 'Rest').tr,
-                  }),
-                ),
-                style: FilledButton.styleFrom(
-                  backgroundColor: KalroColors.peach,
-                  foregroundColor: KalroColors.textDark,
+                child: Text(
+                  'Options'.tr,
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: KalroColors.textDark,
+                  ),
                 ),
               ),
-              OutlinedButton.icon(
-                onPressed: () => _openFeedOptions(context),
-                icon: const Icon(Icons.eco_outlined, size: 18),
-                label: Text('Feed larvae instead'.tr),
-              ),
-            ] else ...[
-              FilledButton.icon(
-                onPressed: () => _openFeedOptions(context),
-                icon: const Icon(Icons.eco_outlined, size: 18),
-                label: Text('Feed larvae'.tr),
-                style: FilledButton.styleFrom(
-                  backgroundColor: KalroColors.leaf,
-                  foregroundColor: Colors.white,
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: OutlinedButton(
+                onPressed: () => _deaths(context),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  side: const BorderSide(color: KalroColors.divider),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                ),
+                child: Text(
+                  'Deaths'.tr,
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: KalroColors.textDark,
+                  ),
                 ),
               ),
-              OutlinedButton.icon(
-                onPressed: () => _openFeedOptions(context),
-                icon: const Icon(Icons.tune_outlined, size: 18),
-                label: Text('Options / Skip'.tr),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: OutlinedButton(
+                onPressed: () => _house(context),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  side: const BorderSide(color: KalroColors.divider),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                ),
+                child: Text(
+                  'Chamber'.tr,
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: KalroColors.textDark,
+                  ),
+                ),
+              ),
+            ),
+            if (onMarkStage != null) ...[
+              const SizedBox(width: 8),
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () => onMarkStage!(),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    side: BorderSide(color: KalroColors.leaf.withValues(alpha: 0.5)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  child: Text(
+                    plan.stage.isMoult ? 'In Moult'.tr : 'Next'.tr,
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: KalroColors.leaf,
+                    ),
+                  ),
+                ),
               ),
             ],
-            OutlinedButton.icon(
-              onPressed: () => _deaths(context),
-              icon: const Icon(Icons.healing_outlined, size: 18),
-              label: Text('Deaths'.tr),
-            ),
-            OutlinedButton.icon(
-              onPressed: () => _house(context),
-              icon: const Icon(Icons.thermostat_outlined, size: 18),
-              label: Text('House'.tr),
-            ),
-            if (onMarkStage != null)
-              OutlinedButton.icon(
-                onPressed: () => onMarkStage!(),
-                icon: const Icon(Icons.visibility_outlined, size: 18),
-                label: Text(
-                  plan.stage.isMoult ? 'I see moult'.tr : 'Mark stage'.tr,
-                ),
-              ),
           ],
         ),
       ],

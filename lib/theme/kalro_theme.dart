@@ -29,21 +29,23 @@ abstract final class KalroTheme {
         centerTitle: true,
         titleTextStyle: GoogleFonts.poppins(
           color: Colors.white,
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
+          fontSize: 16,
+          fontWeight: FontWeight.w700,
         ),
       ),
       cardTheme: CardThemeData(
         color: KalroColors.cardWhite,
         elevation: 0,
-        shadowColor: Colors.black.withValues(alpha: 0.06),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: const BorderSide(color: KalroColors.divider),
+        ),
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: Colors.white,
         elevation: 0,
-        height: 68,
-        indicatorColor: KalroColors.peach.withValues(alpha: 0.7),
+        height: 64,
+        indicatorColor: KalroColors.primaryGreen.withValues(alpha: 0.12),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           final selected = states.contains(WidgetState.selected);
           return GoogleFonts.poppins(
@@ -55,7 +57,7 @@ abstract final class KalroTheme {
         iconTheme: WidgetStateProperty.resolveWith((states) {
           final selected = states.contains(WidgetState.selected);
           return IconThemeData(
-            size: 22,
+            size: 20,
             color: selected ? KalroColors.navActive : KalroColors.navInactive,
           );
         }),
@@ -63,12 +65,13 @@ abstract final class KalroTheme {
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: KalroColors.buttonGreen,
         foregroundColor: Colors.white,
-        elevation: 2,
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(14))),
       ),
       tabBarTheme: TabBarThemeData(
         labelColor: Colors.white,
         unselectedLabelColor: Colors.white70,
-        indicatorColor: KalroColors.peach,
+        indicatorColor: Colors.white,
         indicatorSize: TabBarIndicatorSize.label,
         labelStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 13),
         unselectedLabelStyle: GoogleFonts.poppins(fontWeight: FontWeight.w500, fontSize: 13),
@@ -81,28 +84,40 @@ abstract final class KalroTheme {
         filled: true,
         fillColor: Colors.white,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: KalroColors.divider),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: KalroColors.divider),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: KalroColors.primaryGreen, width: 1.5),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        labelStyle: GoogleFonts.poppins(color: KalroColors.textMuted),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        labelStyle: GoogleFonts.poppins(fontSize: 13, color: KalroColors.textMuted),
+        hintStyle: GoogleFonts.poppins(fontSize: 13, color: KalroColors.textLight),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: KalroColors.buttonGreen,
           foregroundColor: Colors.white,
           elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          textStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+          minimumSize: const Size.fromHeight(46),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          textStyle: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: KalroColors.textDark,
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          side: const BorderSide(color: KalroColors.divider),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          textStyle: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600),
         ),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
@@ -112,7 +127,7 @@ abstract final class KalroTheme {
         selectedLabelStyle: GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w600),
         unselectedLabelStyle: GoogleFonts.poppins(fontSize: 11),
         type: BottomNavigationBarType.fixed,
-        elevation: 8,
+        elevation: 0,
       ),
     );
   }
@@ -142,20 +157,23 @@ abstract final class KalroTheme {
         centerTitle: true,
         titleTextStyle: GoogleFonts.poppins(
           color: Colors.white,
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
+          fontSize: 16,
+          fontWeight: FontWeight.w700,
         ),
       ),
       cardTheme: CardThemeData(
         color: KalroColors.darkCard,
         elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: const BorderSide(color: KalroColors.darkDivider),
+        ),
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: KalroColors.darkSurface,
         elevation: 0,
-        height: 68,
-        indicatorColor: KalroColors.primaryGreen.withValues(alpha: 0.6),
+        height: 64,
+        indicatorColor: KalroColors.primaryGreen.withValues(alpha: 0.35),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           final selected = states.contains(WidgetState.selected);
           return GoogleFonts.poppins(
@@ -167,7 +185,7 @@ abstract final class KalroTheme {
         iconTheme: WidgetStateProperty.resolveWith((states) {
           final selected = states.contains(WidgetState.selected);
           return IconThemeData(
-            size: 22,
+            size: 20,
             color: selected ? Colors.white : KalroColors.darkTextMuted,
           );
         }),
@@ -175,7 +193,8 @@ abstract final class KalroTheme {
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: KalroColors.leaf,
         foregroundColor: Colors.white,
-        elevation: 2,
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(14))),
       ),
       dividerTheme: const DividerThemeData(
         color: KalroColors.darkDivider,
@@ -185,28 +204,30 @@ abstract final class KalroTheme {
         filled: true,
         fillColor: KalroColors.darkSurface,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: KalroColors.darkDivider),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: KalroColors.darkDivider),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: KalroColors.leaf, width: 1.5),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        labelStyle: GoogleFonts.poppins(color: KalroColors.darkTextMuted),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        labelStyle: GoogleFonts.poppins(fontSize: 13, color: KalroColors.darkTextMuted),
+        hintStyle: GoogleFonts.poppins(fontSize: 13, color: KalroColors.darkTextMuted),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: KalroColors.leaf,
           foregroundColor: Colors.white,
           elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          textStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+          minimumSize: const Size.fromHeight(46),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          textStyle: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600),
         ),
       ),
     );

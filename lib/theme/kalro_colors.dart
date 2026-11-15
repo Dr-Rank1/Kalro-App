@@ -31,11 +31,5 @@ abstract final class KalroColors {
   static const darkTextMuted = Color(0xFFA0ABA5);
   static const darkDivider = Color(0xFF2B3D35);
 
-  static List<BoxShadow> get softShadow => const [
-        BoxShadow(
-          color: Color(0x14000000),
-          blurRadius: 20,
-          offset: Offset(0, 8),
-        ),
-      ];
+  static List<BoxShadow> get softShadow => const [];
 }

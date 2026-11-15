@@ -148,7 +148,7 @@ class _FeedLogSectionState extends State<FeedLogSection> {
                             onSelected: (_) {
                               setModal(() => selectedReason = opt.label);
                             },
-                            selectedColor: KalroColors.peach,
+                            selectedColor: KalroColors.primaryGreen.withValues(alpha: 0.12),
                           );
                         }).toList(),
                       ),
@@ -380,8 +380,8 @@ class _FeedLogSectionState extends State<FeedLogSection> {
                         ? KalroColors.harvest
                         : KalroColors.primaryGreen,
                     iconBackground: log.wasSkipped
-                        ? KalroColors.peach.withValues(alpha: 0.5)
-                        : KalroColors.peach.withValues(alpha: 0.35),
+                        ? KalroColors.harvest.withValues(alpha: 0.12)
+                        : KalroColors.primaryGreen.withValues(alpha: 0.08),
                     title: log.wasSkipped
                         ? Translator.fill('Skipped · {reason}', {
                             'reason': (log.skipReason ?? 'Did not feed').tr,

@@ -45,8 +45,8 @@ class PaymentRecordTile extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: (isReceivable ? KalroColors.peach : KalroColors.divider)
-                  .withValues(alpha: isReceivable ? 0.4 : 0.6),
+              color: (isReceivable ? KalroColors.primaryGreen : KalroColors.divider)
+                  .withValues(alpha: isReceivable ? 0.1 : 0.6),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(

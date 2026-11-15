@@ -25,7 +25,7 @@ class BatchStatusChips extends StatelessWidget {
         return FilterChip(
           label: Text(status.label),
           selected: selected,
-          selectedColor: KalroColors.peach,
+          selectedColor: KalroColors.primaryGreen.withValues(alpha: 0.12),
           checkmarkColor: KalroColors.primaryGreen,
           labelStyle: GoogleFonts.poppins(fontSize: 13),
           onSelected: selected ? null : (_) => onSelected(status),
