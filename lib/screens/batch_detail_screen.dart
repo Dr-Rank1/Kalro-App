@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../models/batch.dart';
 import '../models/batch_status.dart';
 import '../services/batch_metrics_service.dart';
 import '../services/lifecycle_engine.dart';
+import '../services/pdf_export_service.dart';
 import '../services/prediction_adjuster.dart';
 import '../services/app_repositories.dart';
 import '../services/lifecycle_planning_service.dart';
@@ -151,6 +153,40 @@ class _BatchDetailScreenState extends State<BatchDetailScreen>
     _reload();
   }
 
+  Future<void> _exportBatchPdf(Batch batch) async {
+    try {
+      final feed = await widget.repositories.feedLogs.getByBatchId(batch.id);
+      final deaths = await widget.repositories.mortalityLogs.getByBatchId(batch.id);
+      final env = await widget.repositories.environmentLogs.getByBatchId(batch.id);
+      final harvests = await widget.repositories.cocoonHarvests.getByBatchId(batch.id);
+
+      final file = await const PdfExportService().exportCycleReport(
+        batch: batch,
+        feedLogs: feed,
+        mortalityLogs: deaths,
+        environmentLogs: env,
+        harvests: harvests,
+      );
+
+      if (!mounted) return;
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(file.path, mimeType: 'application/pdf')],
+          text: 'KALRO Lot ${batch.batchTag ?? batch.id} Report'.tr,
+        ),
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Lot PDF exported successfully'.tr)),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not export PDF: $e'.tr)),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -209,6 +245,11 @@ class _BatchDetailScreenState extends State<BatchDetailScreen>
                   backgroundColor: KalroColors.headerGreen,
                   title: Text(batch.species.label.tr),
                   actions: [
+                    IconButton(
+                      icon: const Icon(Icons.picture_as_pdf_outlined, color: Colors.white),
+                      tooltip: 'Export Lot PDF'.tr,
+                      onPressed: () => _exportBatchPdf(batch),
+                    ),
                     IconButton(
                       icon: const Icon(Icons.qr_code_2_outlined, color: Colors.white),
                       tooltip: 'Rearing Tray Tag'.tr,

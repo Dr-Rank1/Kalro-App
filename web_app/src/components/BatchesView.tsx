@@ -59,14 +59,22 @@ export const BatchesView: React.FC<BatchesViewProps> = ({
   };
 
   const handleExportBatchPdf = (batch: Batch) => {
-    if (!profile) {
-      onToast?.('Please set up a farm profile before exporting batch PDFs.');
-      return;
-    }
+    const effectiveProfile: FarmProfile = profile || {
+      id: 'default-nsrc',
+      orgName: 'KALRO National Sericulture Research Centre (NSRC)',
+      managerName: 'Station Research Officer',
+      phone: '+254 700 000 000',
+      email: 'sericulture@kalro.org',
+      county: 'Kiambu',
+      subCounty: 'Thika East',
+      ward: 'NSRC Thika Research Stand',
+      syncCode: '000000',
+      houseCount: 4,
+    };
     try {
       downloadSingleBatchPdf({
         batch,
-        profile,
+        profile: effectiveProfile,
         feedLogs,
         mortalityLogs,
         envLogs,
