@@ -693,7 +693,7 @@ export const StaffAuditView: React.FC<StaffAuditViewProps> = ({
                     value={handoverNote}
                     onChange={(e) => setHandoverNote(e.target.value)}
                     className="form-control"
-                    placeholder="e.g. Midday shift handover from Peter to Mary: Bed 1 and 2 fed 18kg TR-10 shoots. Cross draft louvers opened due to 26°C peak temperature. All 4 batches in good health."
+                    placeholder="e.g. Midday shift handover from Peter to Mary: Bed 1 and 2 fed 18kg V1 / Thika shoots. Wet gunny bags hung on walls due to 26°C peak temperature. All 4 batches in good health."
                     required
                   />
                 </div>

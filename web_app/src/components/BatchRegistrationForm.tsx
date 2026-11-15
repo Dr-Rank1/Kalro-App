@@ -4,8 +4,16 @@ import {
   ChevronUp,
   CheckCircle2,
   Building2,
+  Layers,
 } from 'lucide-react';
 import { Batch, FarmProfile, Species } from '../types';
+import {
+  KENYA_SERICULTURE_BREEDS,
+  KENYA_MULBERRY_CULTIVARS,
+  KENYA_CASTOR_VARIETIES,
+  KENYA_ORCHARD_BLOCKS,
+  MULBERRY_EVALUATION_ACCESSIONS_COUNT,
+} from '../constants';
 
 interface BatchRegistrationFormProps {
   onSuccess: (batch: Batch) => void;
@@ -42,7 +50,10 @@ export const BatchRegistrationForm: React.FC<BatchRegistrationFormProps> = ({
 
   // State
   const [species, setSpecies] = useState<Species>('bombyx');
-  const [count, setCount] = useState<number | ''>('');
+  const [strain, setStrain] = useState<string>('KSK (Kenyan Station Strain)');
+  const [cultivar, setCultivar] = useState<string>('V1');
+  const [orchardBlock, setOrchardBlock] = useState<string>('Station Block C3 (V1)');
+  const [count, setCount] = useState<number | ''>(20000);
   const [startDate, setStartDate] = useState<string>(
     new Date().toISOString().split('T')[0]
   );
@@ -59,8 +70,14 @@ export const BatchRegistrationForm: React.FC<BatchRegistrationFormProps> = ({
     setSpecies(newSpecies);
     setLotTag(getNextTag(newSpecies));
     if (newSpecies === 'bombyx') {
+      setStrain('KSK (Kenyan Station Strain)');
+      setCultivar('V1');
+      setOrchardBlock('Station Block C3 (V1)');
       setGrainageSource('KALRO National Sericulture Research Centre, Thika');
     } else {
+      setStrain('Samia ricini (Kenyan Eri Strain)');
+      setCultivar('NUU 70');
+      setOrchardBlock('Station Block D1 (NUU 70 Castor)');
       setGrainageSource('KALRO Sericulture Sub-Centre, Kibos');
     }
   };
@@ -91,11 +108,12 @@ export const BatchRegistrationForm: React.FC<BatchRegistrationFormProps> = ({
     e.preventDefault();
     const finalCount = typeof count === 'number' && count > 0 ? count : 400;
 
-    const defaultDisplayName = isBombyx
-      ? `CSR2 × CSR4 Bivoltine (${finalCount.toLocaleString()} eggs)`
-      : `Samia ricini Eri (${finalCount.toLocaleString()} eggs)`;
+    const defaultDisplayName = `${strain.split(' (')[0]} · ${cultivar} (${finalCount.toLocaleString()} ${isBombyx ? 'eggs' : 'larvae'})`;
 
     const compiledNotes = [
+      `Silkworm Strain: ${strain}`,
+      `Forage Variety: ${cultivar}`,
+      `Genebank / Block: ${orchardBlock}`,
       grainageSource ? `Seed Source: ${grainageSource}` : '',
       notes ? notes.trim() : '',
     ]
@@ -111,6 +129,9 @@ export const BatchRegistrationForm: React.FC<BatchRegistrationFormProps> = ({
       batchTag: lotTag.trim() || `LOT-${Date.now().toString().slice(-4)}`,
       displayTag: defaultDisplayName,
       roomName: roomName.trim() || 'Rearing House',
+      strain,
+      targetForageCultivar: cultivar,
+      orchardBlock,
       notes: compiledNotes,
     };
 
@@ -119,11 +140,11 @@ export const BatchRegistrationForm: React.FC<BatchRegistrationFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit} className="simple-batch-form">
-      {/* 1. Variety Selection */}
+      {/* 1. Species & Characterized Silkworm Strain */}
       <div className="form-card-section">
         <label className="section-label">
           <span className="step-num">1</span>
-          <span>Choose Silkworm Variety</span>
+          <span>Silkworm Strain & Characterized Forage Variety</span>
         </label>
         <div className="species-grid-simple">
           <button
@@ -133,11 +154,11 @@ export const BatchRegistrationForm: React.FC<BatchRegistrationFormProps> = ({
           >
             <div className="species-card-content">
               <div className="species-card-head">
-                <span className="species-name">Bombyx mori (Mulberry)</span>
+                <span className="species-name">Bombyx mori (Mulberry Silkworm)</span>
                 {isBombyx && <CheckCircle2 size={18} className="selected-icon" />}
               </div>
               <p className="species-sub">
-                Bivoltine hybrid (CSR2 × CSR4). Produces uniform reelable white silk. Standard 35-day cycle.
+                Characterized Kenyan strains (KSK, ATK, ICIPE, Kinshoshowa, CSR2×CSR4). Fed on characterized Morus alba cultivars.
               </p>
             </div>
           </button>
@@ -149,14 +170,139 @@ export const BatchRegistrationForm: React.FC<BatchRegistrationFormProps> = ({
           >
             <div className="species-card-content">
               <div className="species-card-head">
-                <span className="species-name">Eri Silkworm (Castor)</span>
+                <span className="species-name">Samia ricini (Kenyan Eri Silkworm)</span>
                 {!isBombyx && <CheckCircle2 size={18} className="selected-icon eri" />}
               </div>
               <p className="species-sub">
-                Samia ricini fed on Castor or Kesseru. Hardy thermal spun cocoons. 34-day rearing cycle.
+                Hardy thermal spun cocoons. Fed on characterized castor cultivars (NUU 70, KC series, KMC8).
               </p>
             </div>
           </button>
+        </div>
+
+        {/* Strain & Cultivar Selectors */}
+        <div className="two-col-grid" style={{ marginTop: '0.85rem' }}>
+          <div className="input-group">
+            <label className="input-label" htmlFor="strainSelect">
+              Silkworm Strain
+            </label>
+            <select
+              id="strainSelect"
+              value={strain}
+              onChange={(e) => setStrain(e.target.value)}
+              className="simple-input"
+            >
+              {isBombyx ? (
+                <>
+                  <option value="KSK (Kenyan Station Strain)">KSK (Kenyan Station Strain)</option>
+                  <option value="ATK (Kenyan Station Bivoltine)">ATK (Kenyan Station Bivoltine)</option>
+                  <option value="ICIPE Bivoltine Strain">ICIPE Bivoltine Strain</option>
+                  <option value="Kinshoshowa Bivoltine Strain">Kinshoshowa Bivoltine Strain</option>
+                  <option value="CSR2 × CSR4 Bivoltine Double Hybrid">CSR2 × CSR4 Bivoltine Double Hybrid</option>
+                </>
+              ) : (
+                <option value="Samia ricini (Kenyan Eri Strain)">Samia ricini (Kenyan Eri Strain)</option>
+              )}
+            </select>
+            <span className="input-sub-hint">
+              {isBombyx ? 'Official station-stabilized and characterized bivoltine strains' : 'Hardened multi-crop eri silkworm'}
+            </span>
+          </div>
+
+          <div className="input-group">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <label className="input-label" htmlFor="cultivarSelect" style={{ margin: 0 }}>
+                {isBombyx ? 'Characterized Mulberry Cultivar' : 'Characterized Castor Variety'}
+              </label>
+              {isBombyx && (
+                <span style={{ fontSize: '0.7rem', color: 'var(--primary)', fontWeight: 600 }}>
+                  +{MULBERRY_EVALUATION_ACCESSIONS_COUNT} in evaluation
+                </span>
+              )}
+            </div>
+            <select
+              id="cultivarSelect"
+              value={cultivar}
+              onChange={(e) => setCultivar(e.target.value)}
+              className="simple-input"
+            >
+              {isBombyx ? (
+                <>
+                  <optgroup label="Characterized Mulberry Varieties (NSRC Thika)">
+                    <option value="V1">V1 (High moisture, premier commercial)</option>
+                    <option value="Thika">Thika (Station adapted selection)</option>
+                    <option value="Embu">Embu (Drought tolerant, Centre Genebank)</option>
+                    <option value="Ithaanga">Ithaanga (Sub-humid adapted, Centre Genebank)</option>
+                    <option value="Limuru">Limuru (Cold tolerant highland, Centre Genebank)</option>
+                    <option value="Thailand">Thailand (Broad leaf, high biomass shoot stand)</option>
+                    <option value="Ichinose">Ichinose (Tender Morus alba, high protein)</option>
+                    <option value="Kanva 2">Kanva 2 / M-5 (National commercial benchmark)</option>
+                    <option value="S54">S54 (Fast rooting, high crude protein)</option>
+                    <option value="S36">S36 (High sucrose, premier chawki leaf)</option>
+                    <option value="Unknown 2">Unknown 2 (Characterized research accession)</option>
+                  </optgroup>
+                </>
+              ) : (
+                <>
+                  <optgroup label="Characterized Castor Varieties (Samia ricini Host)">
+                    <option value="NUU 70">NUU 70 (Premier drought-hardy Kenyan accession)</option>
+                    <option value="KC6">KC6 (High branching density, tender flushing)</option>
+                    <option value="KC 14">KC 14 (Broad robust lamina, drought resilient)</option>
+                    <option value="KC 2">KC 2 (Early maturing vegetative flush)</option>
+                    <option value="KC 24">KC 24 (Low ricin content, chawki safe)</option>
+                    <option value="KC 15">KC 15 (Dense canopy, high biomass late-age)</option>
+                    <option value="KMC8">KMC8 (Kenyan Modified Castor line 8)</option>
+                  </optgroup>
+                </>
+              )}
+            </select>
+            <span className="input-sub-hint">
+              {isBombyx ? 'Final characterized Morus alba adoption cultivars' : 'Kenyan castor varieties for Eri feeding'}
+            </span>
+          </div>
+        </div>
+
+        {/* Source Orchard / Genebank Block */}
+        <div style={{ marginTop: '0.85rem' }}>
+          <label className="input-label" htmlFor="orchardBlockSelect">
+            Source Orchard Stand / Station Research Block
+          </label>
+          <select
+            id="orchardBlockSelect"
+            value={orchardBlock}
+            onChange={(e) => setOrchardBlock(e.target.value)}
+            className="simple-input"
+          >
+            <optgroup label="Centre Genebank (Core Germplasm)">
+              <option value="Centre Genebank: Ex-Embu Mulberry">Centre Genebank: Ex-Embu Mulberry</option>
+              <option value="Centre Genebank: Ex-Thika Mulberry">Centre Genebank: Ex-Thika Mulberry</option>
+              <option value="Centre Genebank: Ex-Limuru Mulberry">Centre Genebank: Ex-Limuru Mulberry</option>
+              <option value="Centre Genebank: Ex-Ithanga Mulberry">Centre Genebank: Ex-Ithanga Mulberry</option>
+            </optgroup>
+            <optgroup label="Station Genebanks">
+              <option value="Old Genebank Block">Old Genebank Block</option>
+              <option value="New Genebank Block (98 Accessions under evaluation)">New Genebank Block (98 Accessions under evaluation)</option>
+            </optgroup>
+            <optgroup label="Research Blocks">
+              <option value="Research Block: Collections">Research Block: Collections</option>
+              <option value="Research Block: Irrigated">Research Block: Irrigated</option>
+              <option value="Research Block: Non-Irrigated">Research Block: Non-Irrigated</option>
+              <option value="Research Block: Selections">Research Block: Selections</option>
+              <option value="Research Block: Cross Selections">Research Block: Cross Selections</option>
+              <option value="Research Block: Line Selections">Research Block: Line Selections</option>
+            </optgroup>
+            <optgroup label="Station Field Blocks & Highway Farm">
+              <option value="Station Block C2 (Kanva 2)">Station Block C2 (Kanva 2)</option>
+              <option value="Station Block C3 (V1)">Station Block C3 (V1)</option>
+              <option value="Station Block C4 (S36)">Station Block C4 (S36)</option>
+              <option value="Station Block D1 (NUU 70 Castor)">Station Block D1 (NUU 70 Castor)</option>
+              <option value="Station Block D2 (KC Series Castor)">Station Block D2 (KC Series Castor)</option>
+              <option value="Station Block D3 (KMC8 Castor)">Station Block D3 (KMC8 Castor)</option>
+              <option value="Station Block D4 (Thailand Mulberry)">Station Block D4 (Thailand Mulberry)</option>
+              <option value="Highway Farm Block (Commercial Mulberry)">Highway Farm Block (Commercial Mulberry)</option>
+            </optgroup>
+          </select>
+          <span className="input-sub-hint">Traceability: links forage harvest origin to larval feeding</span>
         </div>
       </div>
 

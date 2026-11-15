@@ -515,20 +515,25 @@ export function generateSingleBatchPdf(data: SingleBatchReportData): jsPDF {
   doc.setFont('helvetica', 'normal');
   doc.text(`${lotTag} (${displayTitle})`, margin + 38, y + 6);
 
+  const strainLabel = batch.strain || (batch.species === 'bombyx' ? 'KSK / CSR2 × CSR4 Bivoltine' : 'Samia ricini (Kenyan Eri)');
+  const forageLabel = batch.targetForageCultivar
+    ? `${batch.targetForageCultivar}${batch.orchardBlock ? ` • ${batch.orchardBlock}` : ''}`
+    : (batch.species === 'bombyx' ? 'Characterized Mulberry (V1 / Thika / Kanva 2)' : 'Castor (NUU 70 / KC Series)');
+
   doc.setFont('helvetica', 'bold');
   doc.text('Species & Strain:', margin + 4, y + 11);
   doc.setFont('helvetica', 'normal');
-  doc.text(speciesLabel, margin + 38, y + 11);
+  doc.text(`${speciesLabel} • ${strainLabel}`, margin + 38, y + 11);
 
   doc.setFont('helvetica', 'bold');
-  doc.text('Rearing Facility:', margin + 4, y + 16);
+  doc.text('Forage & Stand:', margin + 4, y + 16);
   doc.setFont('helvetica', 'normal');
-  doc.text(`${batch.roomName || 'Rearing House 1 - Bay A'} • Station: ${profile.orgName}`, margin + 38, y + 16);
+  doc.text(forageLabel.length > 55 ? forageLabel.slice(0, 53) + '...' : forageLabel, margin + 38, y + 16);
 
   doc.setFont('helvetica', 'bold');
-  doc.text('Grainage / Notes:', margin + 4, y + 21);
+  doc.text('Rearing Facility:', margin + 4, y + 21);
   doc.setFont('helvetica', 'normal');
-  doc.text(batch.notes ? (batch.notes.length > 60 ? batch.notes.slice(0, 58) + '...' : batch.notes) : 'Certified KALRO NSRC DFL Stock', margin + 38, y + 21);
+  doc.text(`${batch.roomName || 'Rearing House 1 - Bay A'} • Station: ${profile.orgName}`, margin + 38, y + 21);
 
   // Right column
   const rightColX = margin + 120;
@@ -580,12 +585,12 @@ export function generateSingleBatchPdf(data: SingleBatchReportData): jsPDF {
     margin: { left: margin, right: margin },
     head: [['Rearing Parameter', 'Lot Metric', 'KALRO Protocol Standard', 'Status']],
     body: [
-      ['Initial DFLs / Egg Count', `${batch.eggCount.toLocaleString()} eggs`, 'Certified Disease-Free Layings (DFLs)', 'Verified'],
-      ['Current Surviving Population', `${liveCount.toLocaleString()} larvae`, 'Density: 45 larvae per sq. ft.', liveCount > 0 ? 'Active' : 'Closed'],
+      ['Initial DFLs / Egg Count', `${batch.eggCount.toLocaleString()} eggs`, 'Certified Disease-Free Layings (DFLs - NSRC Thika)', 'Verified'],
+      ['Current Surviving Population', `${liveCount.toLocaleString()} larvae`, 'Density: 90-100 larvae/sq.ft. mounting', liveCount > 0 ? 'Active' : 'Closed'],
       ['Larval Survival Rate', `${survivalPercent}% (${totalMortality.toLocaleString()} total loss)`, '85.0% - 92.0% benchmark', Number(survivalPercent) >= 85 ? 'Optimal' : 'Needs Review'],
-      ['Current Instar & Cycle Day', `Day ${stage.dayStart} of ${maxDays} (${stage.name})`, 'CSR2×CSR4: 40-Day Standard', stage.isMoult ? 'In Moult Fasting' : 'Active Feeding'],
-      ['Total Forage Dispatched', `${(totalFeedGrams / 1000).toFixed(2)} kg fresh shoots`, `${batch.species === 'bombyx' ? 'Kanva-2 / S-13' : 'Castor GRC-1'} leaves`, 'Within Budget'],
-      ['Chamber Microclimate Target', `${stage.idealTemp} Temp / ${stage.idealHumidity} RH`, 'Strict hygiene & cross-draft ventilation', 'Monitored'],
+      ['Current Instar & Cycle Day', `Day ${stage.dayStart} of ${maxDays} (${stage.name})`, `${batch.strain || 'Bivoltine'}: ${maxDays}-Day Cycle`, stage.isMoult ? 'In Moult Fasting' : 'Active Feeding'],
+      ['Total Forage Dispatched', `${(totalFeedGrams / 1000).toFixed(2)} kg fresh shoots`, `${batch.species === 'bombyx' ? (batch.targetForageCultivar || 'V1 / Thika / Kanva 2') : (batch.targetForageCultivar || 'NUU 70 / KC6')} leaves`, 'Within Budget'],
+      ['Chamber Microclimate Target', `${stage.idealTemp} Temp / ${stage.idealHumidity} RH`, 'NSRC Table 1 microclimate standard', 'Monitored'],
       ['Cocoon Harvest Output', totalHarvestWeightKg > 0 ? `${totalHarvestWeightKg.toFixed(2)} kg commercial yield` : 'Larval Rearing in Progress', 'Min 35–40 kg / 20k DFLs', totalHarvestWeightKg > 0 ? 'Harvested' : 'Pending Spinning'],
     ],
     theme: 'plain',

@@ -17,12 +17,12 @@ export const LeafStockModal: React.FC<LeafStockModalProps> = ({
   onSave,
 }) => {
   const [leafType, setLeafType] = useState<LeafType>('mulberry');
-  const [cultivar, setCultivar] = useState<string>('S-13');
+  const [cultivar, setCultivar] = useState<string>('V1');
   const [quantityKg, setQuantityKg] = useState<number | ''>(25);
   const [sourcePlot, setSourcePlot] = useState<string>(
-    profile?.orgName ? `${profile.orgName} - Block A` : 'Station Orchard Block A'
+    profile?.orgName ? `${profile.orgName} - Genebank Block C2` : 'Station Genebank Block C2 (V1)'
   );
-  const [notes, setNotes] = useState<string>('Morning harvest, high leaf moisture (74%)');
+  const [notes, setNotes] = useState<string>('Early morning harvest, high leaf moisture (75-80%)');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   if (!isOpen) return null;
@@ -30,9 +30,9 @@ export const LeafStockModal: React.FC<LeafStockModalProps> = ({
   const handleTypeChange = (newType: LeafType) => {
     setLeafType(newType);
     if (newType === 'mulberry') {
-      setCultivar('S-13');
+      setCultivar('V1');
     } else if (newType === 'castor') {
-      setCultivar('GRC-1');
+      setCultivar('NUU 70');
     } else {
       setCultivar('Heteropanax fragrans');
     }

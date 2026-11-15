@@ -229,7 +229,7 @@ export function isFedToday(batchId: string, feedLogs: FeedLog[], now = new Date(
 // Leaf Withering Index based on elapsed hours since harvest
 export function calculateLeafWithering(
   harvestTimestamp?: string,
-  cultivar = 'S-13'
+  cultivar = 'V1'
 ): {
   elapsedHours: number;
   estimatedMoisturePct: number;
@@ -247,8 +247,8 @@ export function calculateLeafWithering(
   const harvestedAt = new Date(harvestTimestamp);
   const diffHours = Math.max(0, (Date.now() - harvestedAt.getTime()) / (1000 * 60 * 60));
 
-  // Baseline initial moisture
-  const initialMoisture = cultivar.includes('S-13') ? 78 : 74;
+  // Baseline initial moisture: V1 & Thika tender chawki leaves start at ~78-80%
+  const initialMoisture = (cultivar.includes('V1') || cultivar.includes('Thika') || cultivar.includes('NUU 70')) ? 78 : 74;
   // Withering rate: ~1.2% moisture loss per hour in tropical chamber conditions
   const moisture = Math.max(50, Number((initialMoisture - diffHours * 1.2).toFixed(1)));
 

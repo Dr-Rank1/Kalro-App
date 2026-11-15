@@ -105,9 +105,10 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
     selectedBatch?.species === 'eri' ? 'castor' : 'mulberry'
   );
   const [cultivar, setCultivar] = useState<string>(
-    selectedBatch?.species === 'eri'
-      ? 'GRC-1'
-      : ((currentStage?.instarNumber || 1) <= 3 ? 'S-13' : 'TR-10')
+    selectedBatch?.targetForageCultivar ||
+      (selectedBatch?.species === 'eri'
+        ? 'NUU 70'
+        : ((currentStage?.instarNumber || 1) <= 3 ? 'V1' : 'Kanva 2'))
   );
   const [feedingShift, setFeedingShift] = useState<'morning' | 'midday' | 'evening'>('morning');
   const [wasSkipped, setWasSkipped] = useState<boolean>(false);
@@ -119,11 +120,11 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
     if (selectedBatch) {
       if (selectedBatch.species === 'eri') {
         setLeafType('castor');
-        setCultivar('GRC-1');
+        setCultivar(selectedBatch.targetForageCultivar || 'NUU 70');
       } else {
         setLeafType('mulberry');
         const st = getCurrentStage(selectedBatch);
-        setCultivar((st?.instarNumber || 1) <= 3 ? 'S-13' : 'TR-10');
+        setCultivar(selectedBatch.targetForageCultivar || ((st?.instarNumber || 1) <= 3 ? 'V1' : 'Kanva 2'));
       }
     }
   }, [selectedBatchId]);
@@ -610,8 +611,8 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
                         onChange={(e) => {
                           const lt = e.target.value as LeafType;
                           setLeafType(lt);
-                          if (lt === 'mulberry') setCultivar('S-13');
-                          else if (lt === 'castor') setCultivar('GRC-1');
+                          if (lt === 'mulberry') setCultivar(selectedBatch?.targetForageCultivar || 'V1');
+                          else if (lt === 'castor') setCultivar(selectedBatch?.targetForageCultivar || 'NUU 70');
                           else setCultivar('Heteropanax fragrans');
                         }}
                         className="form-control"

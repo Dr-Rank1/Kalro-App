@@ -233,7 +233,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
       alerts.push({
         type: 'warning',
         message: `Forage Replenishment Notice: ${leafCoverage.daysOfCover} days of forage remaining.`,
-        sub: 'Schedule early morning plot harvest of Kanva-2 / S-13 shoots before afternoon heat.',
+        sub: 'Schedule early morning plot harvest of V1 / Thika shoots before afternoon heat.',
       });
     }
 
@@ -241,7 +241,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
       alerts.push({
         type: 'info',
         message: `${moultBatches.length} Lot${moultBatches.length > 1 ? 's' : ''} in Inactive Moult Period`,
-        sub: 'Withhold all leaf feed for moulting lots. Dust beds with dry slaked lime and bleaching powder (97:3). Maintain 24–25°C.',
+        sub: 'Withhold all leaf feed for moulting lots. Dust beds with dry slaked agricultural lime powder (NSRC Table 4 standard). Maintain 24–25°C.',
       });
     }
 
@@ -1124,13 +1124,15 @@ export const TodayView: React.FC<TodayViewProps> = ({
 
               // Specific Forage Cultivar Recommendation
               const isChawki = (stage.instarNumber || 1) <= 3;
-              const recommendedCultivar = b.species === 'bombyx'
-                ? isChawki
-                  ? 'S-13 Mulberry (Tender Chawki Shoots, 75-80% Moisture)'
-                  : 'TR-10 / Kanva-2 Mulberry (High-Protein Mature Whole Shoots)'
-                : isChawki
-                  ? 'GRC-1 Giant Red Castor (Tender Top Leaves)'
-                  : 'GRC-1 / Local Green Castor (Semi-Mature Foliage)';
+              const recommendedCultivar = b.targetForageCultivar
+                ? `${b.targetForageCultivar}${b.orchardBlock ? ` (${b.orchardBlock})` : ''}`
+                : b.species === 'bombyx'
+                  ? isChawki
+                    ? 'V1 / Thika Mulberry (Tender 3rd-4th leaves, 75-80% Moisture)'
+                    : 'Kanva 2 / S36 / Embu Mulberry (High-Protein Mature Shoots)'
+                  : isChawki
+                    ? 'NUU 70 / KC6 Castor (Tender Top Leaves)'
+                    : 'NUU 70 / KC 14 / KMC8 Castor (Semi-Mature Foliage)';
 
               const isSingle = filteredBatches.length === 1;
 
@@ -1139,7 +1141,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
                   <div className="batch-card-inner">
                     <div className="batch-tag-row">
                       <span className={`species-badge ${b.species}`}>
-                        {b.species === 'bombyx' ? 'Bombyx mori' : 'Eri Silkworm'}
+                        {b.strain ? `${b.strain} • ` : ''}{b.species === 'bombyx' ? 'Bombyx mori' : 'Samia ricini'}
                       </span>
                       <span className={`status-badge ${stage.isMoult ? 'moult' : 'active'}`}>
                         {stage.name}
@@ -1165,11 +1167,11 @@ export const TodayView: React.FC<TodayViewProps> = ({
                     {/* Instar-Specific Guidance Banner */}
                     {stage.isMoult ? (
                       <div className="moult-alert-strip">
-                        <strong>Moult Fasting:</strong> Withhold all leaves. Dust bed with 97:3 slaked lime to prevent flacherie. Maintain 24–25°C.
+                        <strong>Moult Fasting (NSRC Protocol):</strong> Withhold all leaves (18–24h for young instars, up to 48h for 4th). Dust bed with dry slaked agricultural lime powder to regulate humidity and manage pathogens. Maintain 24–25°C.
                       </div>
                     ) : stage.isHarvest ? (
                       <div className="spinning-alert-strip">
-                        <strong>Mounting Stage:</strong> Worms are ready to spin. Place onto chandrika spinning frames in a quiet room.
+                        <strong>Mounting Stage (NSRC Standards):</strong> Worms ready to spin. Mount at 90–100 larvae/ft² onto rotary mountages or bamboo folding frames. Spread absorbent paper on floor. Maintain &le;26°C and 60–70% RH.
                       </div>
                     ) : (
                       <div className="instar-guidance-box">
@@ -1705,13 +1707,13 @@ export const TodayView: React.FC<TodayViewProps> = ({
               {/* Cultivar tags */}
               <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', fontSize: '0.7rem' }}>
                 <span style={{ backgroundColor: 'var(--bg-subtle)', border: '1px solid var(--border-subtle)', padding: '2px 6px', borderRadius: '4px' }}>
-                  <strong>S-13 (Chawki):</strong> {(inventory.mulberryByType?.['S-13'] ?? (inventory.mulberryKg * 0.35)).toFixed(1)} kg
+                  <strong>V1 (Chawki):</strong> {(inventory.mulberryByType?.['V1'] ?? (inventory.mulberryKg * 0.35)).toFixed(1)} kg
                 </span>
                 <span style={{ backgroundColor: 'var(--bg-subtle)', border: '1px solid var(--border-subtle)', padding: '2px 6px', borderRadius: '4px' }}>
-                  <strong>TR-10 (Late Age):</strong> {(inventory.mulberryByType?.['TR-10'] ?? (inventory.mulberryKg * 0.40)).toFixed(1)} kg
+                  <strong>Thika / Embu:</strong> {(inventory.mulberryByType?.['Thika'] ?? (inventory.mulberryKg * 0.40)).toFixed(1)} kg
                 </span>
                 <span style={{ backgroundColor: 'var(--bg-subtle)', border: '1px solid var(--border-subtle)', padding: '2px 6px', borderRadius: '4px' }}>
-                  <strong>Kanva-2 / M-5:</strong> {(inventory.mulberryByType?.['Kanva-2'] ?? (inventory.mulberryKg * 0.25)).toFixed(1)} kg
+                  <strong>Kanva 2 / S36:</strong> {(inventory.mulberryByType?.['Kanva 2'] ?? (inventory.mulberryKg * 0.25)).toFixed(1)} kg
                 </span>
               </div>
             </div>
@@ -1737,10 +1739,10 @@ export const TodayView: React.FC<TodayViewProps> = ({
               {/* Variety tags */}
               <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', fontSize: '0.7rem' }}>
                 <span style={{ backgroundColor: 'var(--bg-subtle)', border: '1px solid var(--border-subtle)', padding: '2px 6px', borderRadius: '4px' }}>
-                  <strong>GRC-1 (Giant Red):</strong> {(inventory.castorByType?.['GRC-1'] ?? (inventory.castorKg * 0.60)).toFixed(1)} kg
+                  <strong>NUU 70 (Chawki):</strong> {(inventory.castorByType?.['NUU 70'] ?? (inventory.castorKg * 0.60)).toFixed(1)} kg
                 </span>
                 <span style={{ backgroundColor: 'var(--bg-subtle)', border: '1px solid var(--border-subtle)', padding: '2px 6px', borderRadius: '4px' }}>
-                  <strong>Local Green Castor:</strong> {(inventory.castorByType?.['Local Green'] ?? (inventory.castorKg * 0.40)).toFixed(1)} kg
+                  <strong>KC6 / KC 14:</strong> {(inventory.castorByType?.['KC6'] ?? (inventory.castorKg * 0.40)).toFixed(1)} kg
                 </span>
               </div>
             </div>

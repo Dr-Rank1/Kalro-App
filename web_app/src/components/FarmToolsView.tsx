@@ -11,7 +11,19 @@ import {
   LeafType,
   FarmProfile,
 } from '../types';
-import { DISEASE_LIBRARY } from '../constants';
+import {
+  DISEASE_LIBRARY,
+  PEST_LIBRARY,
+  KENYA_MULBERRY_CULTIVARS,
+  KENYA_CASTOR_VARIETIES,
+  KENYA_ORCHARD_BLOCKS,
+  MULBERRY_EVALUATION_ACCESSIONS_COUNT,
+  DEFECTIVE_COCOON_TYPES,
+  COCOON_HOT_AIR_DRYING_SCHEDULE,
+  MOUNTING_AND_HARVEST_STANDARDS,
+  MOULTING_RULES,
+  NSRC_FEEDING_SCHEDULE,
+} from '../constants';
 import {
   formatCurrency,
   formatDate,
@@ -337,13 +349,13 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
             <div className="farm-stat-card">
               <div className="farm-stat-label">Mulberry Stock (Bombyx)</div>
               <div className="farm-stat-number tabular-nums">{inventory.mulberryKg.toFixed(1)} kg</div>
-              <div className="farm-stat-sub">Kanva-2, S-13 & V-1 cultivars</div>
+              <div className="farm-stat-sub">11 Characterized Varieties (V1, Thika, Embu...)</div>
             </div>
 
             <div className="farm-stat-card">
               <div className="farm-stat-label">Castor Stock (Eri)</div>
               <div className="farm-stat-number tabular-nums">{inventory.castorKg.toFixed(1)} kg</div>
-              <div className="farm-stat-sub">GRC-1 red non-toxic cultivar</div>
+              <div className="farm-stat-sub">7 Characterized Cultivars (NUU 70, KC6...)</div>
             </div>
 
             <div className="farm-stat-card">
@@ -470,35 +482,137 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
             </div>
           </div>
 
-          {/* KALRO Forage Cultivation Standards */}
+          {/* Characterized Mulberry Cultivars (NSRC Thika) */}
           <div className="kalro-card" style={{ marginBottom: 0 }}>
-            <h3 className="card-title">KALRO Forage Agronomy & Cultivation Standards</h3>
-            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '2px 0 1rem' }}>
-              Standard operating procedures for establishing and maintaining sericulture forage in Kenya.
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.4rem' }}>
+              <div>
+                <h3 className="card-title" style={{ margin: 0 }}>Characterized Mulberry Varieties (NSRC Thika)</h3>
+                <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>
+                  Characterized accessions adopted for Kenya sericulture commercial adoption and research trials.
+                </p>
+              </div>
+              <span className="roadmap-day-pill" style={{ backgroundColor: 'var(--primary)', color: '#ffffff' }}>
+                +{MULBERRY_EVALUATION_ACCESSIONS_COUNT} Accessions in Evaluation
+              </span>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.75rem', marginTop: '0.75rem' }}>
+              {KENYA_MULBERRY_CULTIVARS.map((cultivar) => (
+                <div
+                  key={cultivar.code}
+                  style={{
+                    backgroundColor: '#ffffff',
+                    border: '1px solid var(--border-card)',
+                    borderRadius: 'var(--radius-sm)',
+                    padding: '0.85rem',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '3px' }}>
+                    <strong style={{ fontSize: '0.88rem', color: 'var(--primary)' }}>
+                      {cultivar.name}
+                    </strong>
+                    <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                      {cultivar.harvestTiming}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-main)', marginBottom: '4px', fontWeight: 500 }}>
+                    {cultivar.leafQuality}
+                  </div>
+                  <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
+                    {cultivar.notes}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Characterized Castor Varieties (Samia ricini Eri Host) */}
+          <div className="kalro-card" style={{ marginBottom: 0 }}>
+            <h3 className="card-title">Characterized Castor Varieties (Eri Silkworm Host)</h3>
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '2px 0 0.75rem' }}>
+              Screened Ricinus communis selections providing high palatability and survival for Samia ricini rearing.
             </p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
-              <div style={{ backgroundColor: '#fcfdfc', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '1rem' }}>
-                <h4 style={{ margin: '0 0 0.4rem', color: 'var(--primary)', fontSize: '0.95rem' }}>
-                  🌿 Mulberry (Morus alba · Kanva-2 / S-13)
-                </h4>
-                <ul style={{ margin: 0, paddingLeft: '1.15rem', fontSize: '0.8rem', lineHeight: 1.55, color: 'var(--text-main)' }}>
-                  <li><strong>Field Spacing:</strong> Paired row <code>(150 + 90) cm × 60 cm</code> or <code>90 cm × 90 cm</code> (4,840 plants per acre).</li>
-                  <li><strong>Pruning Schedule:</strong> Bottom pruning (cut 10-15 cm above collar) 70-75 days prior to rearing; crown pruning after 2-3 batches.</li>
-                  <li><strong>Soil & Fertility:</strong> 20 tons Farm Yard Manure (FYM)/ha/year + 300:120:120 kg NPK split across 5 crop applications.</li>
-                  <li><strong>Harvest Timing:</strong> Pluck early morning (6:00 - 8:00 AM) when leaf moisture is {'>'}70%. Never feed hot, dewy, or wilted leaves.</li>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '0.75rem' }}>
+              {KENYA_CASTOR_VARIETIES.map((cv) => (
+                <div
+                  key={cv.code}
+                  style={{
+                    backgroundColor: '#ffffff',
+                    border: '1px solid var(--border-card)',
+                    borderRadius: 'var(--radius-sm)',
+                    padding: '0.85rem',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '3px' }}>
+                    <strong style={{ fontSize: '0.88rem', color: 'var(--primary)' }}>
+                      {cv.name}
+                    </strong>
+                    <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                      {cv.foliageYield}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-main)', marginBottom: '3px', fontWeight: 500 }}>
+                    {cv.use}
+                  </div>
+                  <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
+                    {cv.notes}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Station Genebanks & Research Blocks */}
+          <div className="kalro-card" style={{ marginBottom: 0 }}>
+            <h3 className="card-title">Genebank & Research Block Infrastructure</h3>
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '2px 0 0.75rem' }}>
+              Official station germplasm repositories, irrigation blocks, and clonal evaluation stands at NSRC Thika.
+            </p>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.75rem' }}>
+              <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.85rem' }}>
+                <strong style={{ fontSize: '0.85rem', color: 'var(--primary)', display: 'block', marginBottom: '4px' }}>
+                  Centre Genebank (Core Germplasm)
+                </strong>
+                <ul style={{ margin: 0, paddingLeft: '1.1rem', fontSize: '0.76rem', color: 'var(--text-main)', lineHeight: 1.5 }}>
+                  <li>Ex-Embu Mulberry (Drought-hardy)</li>
+                  <li>Ex-Thika Mulberry (Station accession)</li>
+                  <li>Ex-Limuru Mulberry (Highland cold-tolerant)</li>
+                  <li>Ex-Ithanga Mulberry (Sub-humid adapted)</li>
                 </ul>
               </div>
 
-              <div style={{ backgroundColor: '#fcfdfc', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '1rem' }}>
-                <h4 style={{ margin: '0 0 0.4rem', color: 'var(--primary)', fontSize: '0.95rem' }}>
-                  🌱 Castor & Kesseru (Samia cynthia ricini)
-                </h4>
-                <ul style={{ margin: 0, paddingLeft: '1.15rem', fontSize: '0.8rem', lineHeight: 1.55, color: 'var(--text-main)' }}>
-                  <li><strong>Cultivars:</strong> GRC-1 red cultivar or local non-toxic red-stem castor; Kesseru (<em>Heteropanax</em>) for dry seasons.</li>
-                  <li><strong>Field Spacing:</strong> <code>90 cm × 90 cm</code>. Intercrop with cowpeas, beans, or green grams for soil nitrogen.</li>
-                  <li><strong>Harvesting Rules:</strong> Pluck mature, fully expanded middle leaves; retain the top 4 leaves to sustain plant photosynthesis.</li>
-                  <li><strong>Biosecurity / Spray Alert:</strong> Zero chemical insecticides within 30 days of rearing. Residues cause 100% larval mortality.</li>
+              <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.85rem' }}>
+                <strong style={{ fontSize: '0.85rem', color: 'var(--primary)', display: 'block', marginBottom: '4px' }}>
+                  Station Genebanks
+                </strong>
+                <ul style={{ margin: 0, paddingLeft: '1.1rem', fontSize: '0.76rem', color: 'var(--text-main)', lineHeight: 1.5 }}>
+                  <li>Old Genebank (Foundational germplasm)</li>
+                  <li>New Genebank (98 accessions in evaluation)</li>
+                  <li>Highway Farm (Commercial multiplication)</li>
+                </ul>
+              </div>
+
+              <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.85rem' }}>
+                <strong style={{ fontSize: '0.85rem', color: 'var(--primary)', display: 'block', marginBottom: '4px' }}>
+                  Research & Trial Blocks
+                </strong>
+                <ul style={{ margin: 0, paddingLeft: '1.1rem', fontSize: '0.76rem', color: 'var(--text-main)', lineHeight: 1.5 }}>
+                  <li>1. Collections & 2. Irrigated Drip Stand</li>
+                  <li>3. Selections & 4. Non-Irrigated Rainfed</li>
+                  <li>5. Cross Selections & 6. Line Selections</li>
+                </ul>
+              </div>
+
+              <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.85rem' }}>
+                <strong style={{ fontSize: '0.85rem', color: 'var(--primary)', display: 'block', marginBottom: '4px' }}>
+                  Production Field Blocks
+                </strong>
+                <ul style={{ margin: 0, paddingLeft: '1.1rem', fontSize: '0.76rem', color: 'var(--text-main)', lineHeight: 1.5 }}>
+                  <li>Blocks C2, C3, C4 (Mulberry shoots)</li>
+                  <li>Blocks D1, D2, D3, D4 (Castor & Mulberry)</li>
+                  <li>Highway Farm Demonstration Stand</li>
                 </ul>
               </div>
             </div>
@@ -534,8 +648,8 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
                       onChange={(e) => setLeafType(e.target.value as LeafType)}
                       className="form-control"
                     >
-                      <option value="mulberry">Mulberry (Kanva-2 / S-13)</option>
-                      <option value="castor">Castor (GRC-1 Cultivar)</option>
+                      <option value="mulberry">Mulberry (Characterized Morus alba)</option>
+                      <option value="castor">Castor (NUU 70 / KC / KMC8)</option>
                       <option value="kesseru">Kesseru (Heteropanax)</option>
                     </select>
                   </div>
@@ -561,7 +675,7 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
                       value={leafReason}
                       onChange={(e) => setLeafReason(e.target.value)}
                       className="form-control"
-                      placeholder="e.g. Mulberry Plot 1"
+                      placeholder="e.g. Block C3 (V1) or Centre Genebank"
                     />
                   </div>
                 </div>
@@ -657,74 +771,99 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
 
           {/* Environmental Target Matrix */}
           <div className="kalro-card" style={{ marginBottom: 0 }}>
-            <h3 className="card-title">Official KALRO Microclimate Benchmark Matrix</h3>
+            <h3 className="card-title">NSRC Table 1: Temperature & Humidity Standards for Silkworm Instars</h3>
             <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '2px 0 0.85rem' }}>
-              Target physiological thresholds for bivoltine silkworm rearing in Kenya.
+              Official physiological thresholds from NSRC Sericulture Manual (A Manual Guide for Sericulture in Kenya).
             </p>
 
             <div className="kalro-table-wrap">
               <table className="kalro-table">
                 <thead>
                   <tr>
-                    <th>Rearing Phase</th>
-                    <th>Target Temp (°C)</th>
-                    <th>Target RH (%)</th>
-                    <th>Airflow / Lighting</th>
-                    <th>Bed Environment & Critical Rules</th>
+                    <th>Instar Stage</th>
+                    <th>Temperature (°C)</th>
+                    <th>Humidity (%)</th>
+                    <th>Forage & Bed Management Protocols</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td><strong>Egg Incubation</strong></td>
+                    <td><strong>Egg Incubation (10–12 Days)</strong></td>
                     <td className="tabular-nums"><strong>25.0°C</strong></td>
-                    <td className="tabular-nums"><strong>80%</strong></td>
-                    <td>Darkness (Day 1-9)</td>
-                    <td>Expose to 16h bright light on Day 10 for uniform 95%+ hatch</td>
+                    <td className="tabular-nums"><strong>80 – 85%</strong></td>
+                    <td>1 Case = 20,000 silkworms (20 egg sheets/cards). Black-box on day 9; uniform light on day 10.</td>
                   </tr>
                   <tr>
                     <td><strong>1st Instar (Chawki)</strong></td>
-                    <td className="tabular-nums"><strong>26.0 - 28.0°C</strong></td>
-                    <td className="tabular-nums"><strong>80 - 85%</strong></td>
-                    <td>Gentle draft-free</td>
-                    <td>Paraffin paper tent to retain leaf succulence; 0.5 cm chopped leaf</td>
+                    <td className="tabular-nums"><strong>26.0 – 28.0°C</strong></td>
+                    <td className="tabular-nums"><strong>85%</strong></td>
+                    <td>Brush newly hatched worms onto paraffin paper; feed chopped 3rd & 4th top tender leaves (0.5 cm²).</td>
                   </tr>
                   <tr>
                     <td><strong>2nd Instar (Chawki)</strong></td>
-                    <td className="tabular-nums"><strong>26.0 - 27.0°C</strong></td>
-                    <td className="tabular-nums"><strong>78 - 80%</strong></td>
-                    <td>Gentle ventilation</td>
-                    <td>Expand bed space to 1.5 m² per 20,000; keep bed dry during moult</td>
+                    <td className="tabular-nums"><strong>26.0 – 28.0°C</strong></td>
+                    <td className="tabular-nums"><strong>85%</strong></td>
+                    <td>Feed 3rd & 4th leaves below glossy leaves, chopped (1.5 cm); expand bed space.</td>
                   </tr>
                   <tr>
                     <td><strong>3rd Instar</strong></td>
-                    <td className="tabular-nums"><strong>25.0 - 26.0°C</strong></td>
-                    <td className="tabular-nums"><strong>75%</strong></td>
-                    <td>Active ventilation</td>
-                    <td>Transition to whole leaves; net bed cleaning prior to 3rd moult</td>
+                    <td className="tabular-nums"><strong>24.0 – 26.0°C</strong></td>
+                    <td className="tabular-nums"><strong>80%</strong></td>
+                    <td>Leaves on green part of young shoot; bed space 4.0 – 8.0 m² per 20,000; net clean after moult.</td>
                   </tr>
                   <tr>
                     <td><strong>4th Instar</strong></td>
-                    <td className="tabular-nums"><strong>24.0 - 25.0°C</strong></td>
-                    <td className="tabular-nums"><strong>70 - 75%</strong></td>
-                    <td>High cross-ventilation</td>
-                    <td>Shoot rearing on racks; slaked lime dusting during moult rest</td>
+                    <td className="tabular-nums"><strong>24.0 – 25.0°C</strong></td>
+                    <td className="tabular-nums"><strong>75%</strong></td>
+                    <td>Shoot feeding begins: good whole shoots (1.0 – 1.5 m); bed space 8.0 – 16.0 m² per 20,000; 4th moult takes up to 48h.</td>
                   </tr>
                   <tr>
-                    <td><strong>5th Instar (Peak)</strong></td>
-                    <td className="tabular-nums"><strong>23.0 - 24.0°C</strong></td>
-                    <td className="tabular-nums"><strong>65 - 70%</strong></td>
-                    <td>Continuous airflow</td>
-                    <td>Avoid bed dampness; worms generate heavy metabolic heat and moisture</td>
+                    <td><strong>5th Instar (Peak Feeding)</strong></td>
+                    <td className="tabular-nums"><strong>23.0 – 24.0°C</strong></td>
+                    <td className="tabular-nums"><strong>70%</strong></td>
+                    <td>85% of lifetime leaf consumed; feed whole shoots 3–4 times daily; bed space 16.0 – 34.0 m² per 20,000.</td>
                   </tr>
                   <tr>
-                    <td><strong>Spinning (Mounting)</strong></td>
-                    <td className="tabular-nums"><strong>24.0 - 25.0°C</strong></td>
-                    <td className="tabular-nums"><strong>60 - 65%</strong></td>
-                    <td>Dim light, dry breeze</td>
-                    <td>45 worms/ft² on Chandrike frames; dry air prevents stained cocoons</td>
+                    <td><strong>Mounting & Cocooning</strong></td>
+                    <td className="tabular-nums"><strong>&le; 26.0°C</strong></td>
+                    <td className="tabular-nums"><strong>60 – 70%</strong></td>
+                    <td>Mounting density 90–100 larvae/ft² on rotary mountages. Temperature &gt;26°C or RH &gt;70% severely degrades reelability.</td>
                   </tr>
                 </tbody>
               </table>
+            </div>
+
+            {/* Station Climate Moderation & Trench Engineering Guide */}
+            <div style={{ marginTop: '1rem', borderTop: '1px solid var(--border-divider)', paddingTop: '0.85rem' }}>
+              <h4 style={{ fontSize: '0.85rem', fontWeight: 700, margin: '0 0 0.5rem', color: 'var(--primary)' }}>
+                Field Methods for Moderating Temperature & Humidity in Kenya Rearing Houses
+              </h4>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.75rem' }}>
+                <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.75rem' }}>
+                  <strong style={{ fontSize: '0.8rem', color: 'var(--text-main)', display: 'block', marginBottom: '2px' }}>
+                    1. Wet Gunny Bags & Wall Hangings
+                  </strong>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.45 }}>
+                    Hang wet gunny bags or damp newspapers across room walls and windows. Promotes passive evaporative cooling to drop room heat by 2–4°C and boost humidity.
+                  </p>
+                </div>
+                <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.75rem' }}>
+                  <strong style={{ fontSize: '0.8rem', color: 'var(--text-main)', display: 'block', marginBottom: '2px' }}>
+                    2. Cemented Floor Water Sprinkling
+                  </strong>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.45 }}>
+                    Pour clean water directly onto cemented rearing house floors during peak afternoon heat (12:00 – 15:00) to moderate humidity for young chawki worms.
+                  </p>
+                </div>
+                <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.75rem' }}>
+                  <strong style={{ fontSize: '0.8rem', color: 'var(--text-main)', display: 'block', marginBottom: '2px' }}>
+                    3. Perimeter Floor Water Moat (Ant Barrier)
+                  </strong>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.45 }}>
+                    Construct a shallow perimeter water trench along the rearing room floor edge. Holds standing water to elevate room humidity while completely halting ant invasions.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -818,7 +957,7 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
             {/* Quick Symptom Chips */}
             <div style={{ marginBottom: '0.75rem' }}>
               <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: 600, display: 'block', marginBottom: '4px' }}>
-                Quick Symptom Matcher:
+                Quick Symptom Matcher (NSRC Table 4):
               </span>
               <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
                 <button
@@ -826,35 +965,35 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
                   onClick={() => setSelectedDiseaseIdx(0)}
                   className={`farm-chip-btn ${selectedDiseaseIdx === 0 ? 'active' : ''}`}
                 >
-                  🔘 Pepper spots on skin (Pebrine)
+                  Milky body, oily skin & falls off bed (Grasserie)
                 </button>
                 <button
                   type="button"
                   onClick={() => setSelectedDiseaseIdx(1)}
                   className={`farm-chip-btn ${selectedDiseaseIdx === 1 ? 'active' : ''}`}
                 >
-                  🔘 Milky fluid & hanging upside down (Grasserie)
+                  Pepper spots on skin & irregular moult (Pebrine)
                 </button>
                 <button
                   type="button"
                   onClick={() => setSelectedDiseaseIdx(2)}
                   className={`farm-chip-btn ${selectedDiseaseIdx === 2 ? 'active' : ''}`}
                 >
-                  🔘 Soft flaccid body & vomits (Flacherie)
+                  Flaccid body, empty gut & vomit fluids (Flacherie)
                 </button>
                 <button
                   type="button"
                   onClick={() => setSelectedDiseaseIdx(3)}
                   className={`farm-chip-btn ${selectedDiseaseIdx === 3 ? 'active' : ''}`}
                 >
-                  🔘 Chalky-white mummified corpse (Muscardine)
+                  Limp body then stiff chalk-white cadaver (Muscardine)
                 </button>
                 <button
                   type="button"
                   onClick={() => setSelectedDiseaseIdx(4)}
                   className={`farm-chip-btn ${selectedDiseaseIdx === 4 ? 'active' : ''}`}
                 >
-                  🔘 Black cuticular scar / fly (Uzi Fly)
+                  Black cuticular necrotic scars (Uzi Fly)
                 </button>
               </div>
             </div>
@@ -954,6 +1093,63 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
                   </div>
                 );
               })}
+            </div>
+          </div>
+
+          {/* NSRC Moulting & Bed Cleaning Operating Protocols */}
+          <div className="kalro-card" style={{ marginBottom: 0 }}>
+            <h3 className="card-title">NSRC Moulting & Bed Cleaning Operating Protocols</h3>
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '2px 0 0.85rem' }}>
+              Standard operating procedures for managing larval skin shedding and bed hygiene (A Manual Guide for Sericulture in Kenya).
+            </p>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.85rem' }}>
+              <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.95rem' }}>
+                <strong style={{ fontSize: '0.85rem', color: 'var(--primary)', display: 'block', marginBottom: '4px' }}>
+                  Signs of Entering Moult (Feeding Ceases)
+                </strong>
+                <ul style={{ margin: 0, paddingLeft: '1.1rem', fontSize: '0.76rem', color: 'var(--text-main)', lineHeight: 1.5 }}>
+                  <li>Silkworms completely stop feeding and cease moving.</li>
+                  <li>Heads swell noticeably compared to body segments.</li>
+                  <li>Silkworms elevate their heads upwards in a rigid posture.</li>
+                  <li>Duration: 18–24 hours in Instars 1–3; up to 48 hours in Instar 4.</li>
+                  <li><strong>Bed Care:</strong> Keep bed completely dry and uncovered. Apply agricultural lime (slaked lime powder) to absorb humidity and suppress viral infections.</li>
+                </ul>
+              </div>
+
+              <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.95rem' }}>
+                <strong style={{ fontSize: '0.85rem', color: 'var(--primary)', display: 'block', marginBottom: '4px' }}>
+                  Indicators of Getting Out of Moult (Resume Feeding)
+                </strong>
+                <ul style={{ margin: 0, paddingLeft: '1.1rem', fontSize: '0.76rem', color: 'var(--text-main)', lineHeight: 1.5 }}>
+                  <li>Shed head capsules and loose skin visible on the rearing bed.</li>
+                  <li>Worms become active and start crawling searching for forage.</li>
+                  <li>Mouth parts become visibly broader and integument appears dull.</li>
+                  <li>Resume feeding only when 95%+ of worms have emerged from moult.</li>
+                </ul>
+              </div>
+
+              <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.95rem' }}>
+                <strong style={{ fontSize: '0.85rem', color: 'var(--primary)', display: 'block', marginBottom: '4px' }}>
+                  Bed Cleaning & Waste Disposal Protocol
+                </strong>
+                <ul style={{ margin: 0, paddingLeft: '1.1rem', fontSize: '0.76rem', color: 'var(--text-main)', lineHeight: 1.5 }}>
+                  <li><strong>Purpose:</strong> Remove frass (faecal matter), dead worms, and leaf remnants that promote fungal/bacterial growth.</li>
+                  <li><strong>Frequency:</strong> After every moult for young instars (1st–3rd); every other day for late instars (4th–5th).</li>
+                  <li><strong>Mesh Net Technique:</strong> Spread nylon mesh net over silkworms; add and spread fresh leaves on top. Worms crawl through net onto leaves within 1–2 hours. Transfer net to clean bed.</li>
+                  <li><strong>Sanitation:</strong> All bed frass and leaf waste must be immediately buried or discarded in an enclosed compost pit.</li>
+                </ul>
+              </div>
+
+              <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.95rem' }}>
+                <strong style={{ fontSize: '0.85rem', color: 'var(--primary)', display: 'block', marginBottom: '4px' }}>
+                  Silkworm Pests & Protection (Ants & Rats)
+                </strong>
+                <ul style={{ margin: 0, paddingLeft: '1.1rem', fontSize: '0.76rem', color: 'var(--text-main)', lineHeight: 1.5 }}>
+                  <li><strong>Ants:</strong> Highly destructive predators attacking young chawki and immobile moulting worms. Construct a shallow water perimeter trench around the cemented rearing room floor, or place rearing rack legs in water ant wells.</li>
+                  <li><strong>Rats & Rodents:</strong> Attack spinning larvae, pupae, and stored cocoons. Install 20-mesh wire screens on all doors/windows and fit metallic kick plates on door bases.</li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
@@ -1111,48 +1307,93 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
             </div>
           </div>
 
-          {/* Cocoon Sorting & Defect Identification Guide */}
+          {/* NSRC Chapter 3: Cocoon Sorting & Defect Identification Guide */}
           <div className="kalro-card" style={{ marginBottom: 0 }}>
-            <h3 className="card-title">Commercial Sorting & Defect Guide</h3>
+            <h3 className="card-title">NSRC Chapter 3: Cocoon Sorting & Defective Cocoon Guide</h3>
             <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '2px 0 1rem' }}>
-              Remove all defective cocoons before delivering to the reeling mill to preserve high Renditta and maximum payout.
+              Cocoon market prices are determined by Shell Ratio % and unreelable defective percentage. Separate all defective cocoons before marketing.
             </p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.85rem' }}>
-              <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.85rem' }}>
-                <strong style={{ fontSize: '0.85rem', color: 'var(--text-main)', display: 'block', marginBottom: '3px' }}>
-                  👥 Double Cocoons
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '0.85rem' }}>
+              {DEFECTIVE_COCOON_TYPES.map((defect, i) => (
+                <div
+                  key={i}
+                  style={{
+                    backgroundColor: '#ffffff',
+                    border: '1px solid var(--border-card)',
+                    borderRadius: 'var(--radius-sm)',
+                    padding: '0.85rem',
+                  }}
+                >
+                  <strong style={{ fontSize: '0.85rem', color: 'var(--primary)', display: 'block', marginBottom: '3px' }}>
+                    {defect.type}
+                  </strong>
+                  <p style={{ fontSize: '0.76rem', color: 'var(--text-main)', margin: '0 0 4px', lineHeight: 1.45 }}>
+                    <strong>Cause:</strong> {defect.cause}
+                  </p>
+                  <p style={{ fontSize: '0.74rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.4 }}>
+                    <strong>Reeling Impact:</strong> {defect.reelingImpact}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* NSRC Automatic Hot Air Drying Procedure & Mounting Standards */}
+          <div className="kalro-card" style={{ marginBottom: 0 }}>
+            <h3 className="card-title">NSRC Automatic Hot Air Cocoon Drying & Mounting Standards</h3>
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '2px 0 1rem' }}>
+              Standard operating procedures for stifling pupae, drying cocoons, and mounting mature worms (A Manual Guide for Sericulture in Kenya).
+            </p>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
+              {/* Hot Air Drying Schedule */}
+              <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.95rem' }}>
+                <strong style={{ fontSize: '0.85rem', color: 'var(--primary)', display: 'block', marginBottom: '6px' }}>
+                  Procedure for Automatic Hot Air Drying of Cocoons
                 </strong>
-                <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.4 }}>
-                  Two larvae spin together. Filaments are inextricably entangled. Cannot be automatically reeled; diverted to dupion or hand-spun silk.
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '0 0 8px', lineHeight: 1.4 }}>
+                  Kills pupae, lowers moisture content, and stabilizes shelf life. Target: <strong>40% drying weight</strong>. Sun drying is forbidden because UV radiation turns cocoons yellow and ruins silk reelability.
                 </p>
+                <div className="kalro-table-wrap">
+                  <table className="kalro-table" style={{ fontSize: '0.75rem' }}>
+                    <thead>
+                      <tr>
+                        <th>Stage</th>
+                        <th>Temperature</th>
+                        <th>Duration</th>
+                        <th>Purpose</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {COCOON_HOT_AIR_DRYING_SCHEDULE.map((s) => (
+                        <tr key={s.step}>
+                          <td><strong>Step {s.step}</strong></td>
+                          <td className="tabular-nums"><strong>{s.temperature}</strong></td>
+                          <td className="tabular-nums">{s.duration}</td>
+                          <td>{s.purpose}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
 
-              <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.85rem' }}>
-                <strong style={{ fontSize: '0.85rem', color: 'var(--text-main)', display: 'block', marginBottom: '3px' }}>
-                  💧 Stained & Soiled Cocoons
+              {/* Mounting & Harvesting Standards */}
+              <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.95rem' }}>
+                <strong style={{ fontSize: '0.85rem', color: 'var(--primary)', display: 'block', marginBottom: '6px' }}>
+                  Mounting, Harvesting & Transportation Operating Standards
                 </strong>
-                <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.4 }}>
-                  Caused by excessive bed humidity, larvae urinating during mounting, or decomposing pupae. Stains degrade silk color and gum structure.
-                </p>
-              </div>
-
-              <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.85rem' }}>
-                <strong style={{ fontSize: '0.85rem', color: 'var(--status-danger)', display: 'block', marginBottom: '3px' }}>
-                  🪰 Pierced (Uzi Maggot) Cocoons
-                </strong>
-                <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.4 }}>
-                  Uzi fly maggot eats through pupa and cuts an exit hole through the shell. The continuous filament is cut into thousands of fragments; reelability is 0%.
-                </p>
-              </div>
-
-              <div style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-sm)', padding: '0.85rem' }}>
-                <strong style={{ fontSize: '0.85rem', color: 'var(--text-main)', display: 'block', marginBottom: '3px' }}>
-                  🍂 Flimsy / Thin-Shelled
-                </strong>
-                <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.4 }}>
-                  Undernourished worms or high temperatures during 5th instar produce fragile papery shells with SR% {'<'} 15%. Flattens easily during transport.
-                </p>
+                <ul style={{ margin: 0, paddingLeft: '1.15rem', fontSize: '0.76rem', color: 'var(--text-main)', lineHeight: 1.55 }}>
+                  <li><strong>Mounting Density:</strong> {MOUNTING_AND_HARVEST_STANDARDS.mountingDensity}. Overcrowding produces unreelable double cocoons.</li>
+                  <li><strong>Mounting Microclimate:</strong> {MOUNTING_AND_HARVEST_STANDARDS.mountingClimate}</li>
+                  <li><strong>Urine Absorption:</strong> {MOUNTING_AND_HARVEST_STANDARDS.floorProtection}</li>
+                  <li><strong>Mountage Types:</strong> {MOUNTING_AND_HARVEST_STANDARDS.mountageTypes}</li>
+                  <li><strong>Harvest Timing:</strong> {MOUNTING_AND_HARVEST_STANDARDS.harvestTiming}</li>
+                  <li><strong>Pupal Confirmation:</strong> {MOUNTING_AND_HARVEST_STANDARDS.pupalConfirmation}</li>
+                  <li><strong>De-flossing:</strong> {MOUNTING_AND_HARVEST_STANDARDS.deFlossing}</li>
+                  <li><strong>Transportation:</strong> {MOUNTING_AND_HARVEST_STANDARDS.transportRules}</li>
+                </ul>
               </div>
             </div>
           </div>
@@ -1240,7 +1481,7 @@ export const FarmToolsView: React.FC<FarmToolsViewProps> = ({
           <div className="kalro-card" style={{ marginBottom: 0 }}>
             <h3 className="card-title">KALRO 1-Acre Sericulture Commercial Enterprise Model</h3>
             <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '2px 0 1rem' }}>
-              Economic projections based on 1 acre of established Kanva-2 / S-13 mulberry supporting 4 rearing cycles per year.
+              Economic projections based on 1 acre of established V1 / Thika / Kanva 2 mulberry supporting 4 rearing cycles per year.
             </p>
 
             <div className="farm-stat-grid" style={{ marginBottom: '1rem' }}>

@@ -24,6 +24,7 @@ export interface Batch {
   displayTag?: string;
   notes?: string;
   roomName?: string;
+  strain?: string;
   // Operator Attribution & Institutional Tracking
   createdBy?: string;
   createdByName?: string;

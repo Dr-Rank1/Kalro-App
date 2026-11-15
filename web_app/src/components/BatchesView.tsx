@@ -362,9 +362,29 @@ export const BatchesView: React.FC<BatchesViewProps> = ({
                 <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginTop: '0.35rem' }}>
                   {selectedBatch.displayTag || selectedBatch.batchTag}
                 </h3>
-                <span style={{ fontSize: '0.76rem', color: 'var(--text-muted)' }}>
-                  ID: {selectedBatch.id} • Room: {selectedBatch.roomName || 'Rearing House 1'}
-                </span>
+                <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '2px' }}>
+                  <span>ID: {selectedBatch.id}</span>
+                  <span>•</span>
+                  <span>Room: {selectedBatch.roomName || 'Rearing House 1'}</span>
+                  {selectedBatch.strain && (
+                    <>
+                      <span>•</span>
+                      <span>Strain: <strong>{selectedBatch.strain}</strong></span>
+                    </>
+                  )}
+                  {selectedBatch.targetForageCultivar && (
+                    <>
+                      <span>•</span>
+                      <span>Forage: <strong>{selectedBatch.targetForageCultivar}</strong></span>
+                    </>
+                  )}
+                  {selectedBatch.orchardBlock && (
+                    <>
+                      <span>•</span>
+                      <span>Stand: <strong>{selectedBatch.orchardBlock}</strong></span>
+                    </>
+                  )}
+                </div>
               </div>
               <button onClick={() => setSelectedBatch(null)} className="modal-close-btn" aria-label="Close modal">
                 <X size={18} />
