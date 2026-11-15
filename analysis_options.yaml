@@ -14,6 +14,7 @@ analyzer:
     - ios/**
     - web/**
     - web_app/**
+    - backend_api/**
     - windows/**
     - linux/**
 include: package:flutter_lints/flutter.yaml

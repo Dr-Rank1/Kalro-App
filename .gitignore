@@ -59,3 +59,11 @@ crashlytics-build.properties
 .cody/
 .windsurf/
 CLAUDE.md
+
+# Node / Next.js / Web
+node_modules/
+**/node_modules/
+.next/
+**/.next/
+*.local
+.env*.local
