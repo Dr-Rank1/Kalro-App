@@ -4,7 +4,6 @@ import 'package:kalro/models/batch.dart';
 import 'package:kalro/models/batch_status.dart';
 import 'package:kalro/models/species.dart';
 import 'package:kalro/services/cocoon_analytics_service.dart';
-import 'package:kalro/services/cocoon_vision_service.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

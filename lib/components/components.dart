@@ -6,6 +6,7 @@ export 'batch/milestone_timeline.dart';
 export 'buttons/kalro_buttons.dart';
 export 'buttons/kalro_primary_button.dart';
 export 'cards/batch_horizontal_card.dart';
+export 'cards/climate_summary_card.dart';
 export 'cards/dashboard_stat_grid.dart';
 export 'dashboard/dashboard_alerts_banner.dart';
 export 'dashboard/dashboard_next_event_banner.dart';

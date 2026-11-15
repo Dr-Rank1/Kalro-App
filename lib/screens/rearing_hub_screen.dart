@@ -187,6 +187,12 @@ class _RearingHubScreenState extends State<RearingHubScreen> {
                           ),
                         );
                       }),
+                      const SizedBox(height: 12),
+                      ClimateSummaryCard(
+                        batchId: active.isNotEmpty ? active.first.id : null,
+                        environmentLogRepository: widget.repositories.environmentLogs,
+                        roomName: active.isNotEmpty ? active.first.location : null,
+                      ),
                       if (summary.alerts.isNotEmpty) ...[
                         const SizedBox(height: 16),
                         DashboardAlertsBanner(
