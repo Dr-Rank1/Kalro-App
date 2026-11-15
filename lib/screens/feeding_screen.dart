@@ -90,7 +90,7 @@ class _FeedingScreenState extends State<FeedingScreen> {
                             return DropdownMenuItem(
                               value: b,
                               child: Text(
-                                '${b.species.label} - ${b.eggCount} larvae'.tr,
+                                '${b.displayTag} (${b.strain != null ? "${b.strain} · " : ""}${b.species.label})',
                               ),
                             );
                           }).toList(),

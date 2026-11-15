@@ -21,7 +21,7 @@ class FloorLogService {
   static String defaultFeedType(Batch batch) {
     final custom = batch.feedMaterial?.trim();
     if (custom != null && custom.isNotEmpty) return custom;
-    return batch.species == Species.bombyx ? 'Mulberry' : 'Castor / kesseru';
+    return batch.species == Species.bombyx ? 'Mulberry (V1)' : 'Castor (NUU 70)';
   }
 
   Future<bool> logSuggestedFeed({

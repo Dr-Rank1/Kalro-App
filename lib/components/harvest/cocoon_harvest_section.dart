@@ -113,9 +113,39 @@ class _CocoonHarvestSectionState extends State<CocoonHarvestSection> {
                 SizedBox(height: 12),
                 TextField(
                   controller: defectiveController,
-                  decoration: InputDecoration(labelText: 'Defective count'.tr),
+                  decoration: InputDecoration(
+                    labelText: 'Defective count (NSRC Chapter 3)'.tr,
+                    hintText: 'Thin, framed, irregular, melted, double, stained, pierced',
+                  ),
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                ),
+                const SizedBox(height: 6),
+                Wrap(
+                  spacing: 4,
+                  runSpacing: 4,
+                  children: [
+                    'Thin',
+                    'Framed',
+                    'Irregular',
+                    'Melted',
+                    'Double',
+                    'Stained',
+                    'Pierced',
+                  ]
+                      .map((d) => ActionChip(
+                            label: Text(d, style: const TextStyle(fontSize: 10)),
+                            padding: EdgeInsets.zero,
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                            onPressed: () {
+                              final current = notesController.text.trim();
+                              notesController.text = current.isEmpty
+                                  ? 'Defects: $d'
+                                  : '$current, $d';
+                            },
+                          ))
+                      .toList(),
                 ),
                 SizedBox(height: 12),
                 TextField(
