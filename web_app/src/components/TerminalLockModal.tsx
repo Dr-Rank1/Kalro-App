@@ -142,7 +142,7 @@ export const TerminalLockModal: React.FC<TerminalLockModalProps> = ({
         {/* Institutional Header Banner */}
         <div
           style={{
-            backgroundColor: '#0C110F',
+            backgroundColor: '#F8FAFC',
             color: 'var(--text-main)',
             padding: '1.25rem 1.5rem',
             borderBottom: '3px solid var(--accent-gold)',

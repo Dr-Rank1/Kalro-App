@@ -265,14 +265,14 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-gray-100">
           <div>
             <div className="flex items-center gap-2">
-              <span className="inline-block w-2.5 h-2.5 rounded-full bg-[#1A332B]" />
-              <h1 className="text-xl font-bold text-[#1A2E26]">Station & Agronomy Hub</h1>
-              <span className="text-xs bg-emerald-100 text-[#1A332B] font-semibold px-2 py-0.5 rounded-md">
+              <span className="inline-block w-2.5 h-2.5 rounded-full bg-[#16A34A]" />
+              <h1 className="text-xl font-bold text-gray-900">Station & Agronomy Hub</h1>
+              <span className="text-xs bg-emerald-100 text-emerald-800 font-semibold px-2 py-0.5 rounded-md">
                 KALRO NSRC Thika
               </span>
             </div>
             <p className="text-xs text-gray-500 mt-1">
-              Kenyan Sericulture standards: Genebank digital twin, cocoon grading, 4-stage drying, disease triage, M-Pesa, and USSD.
+              Kenyan Sericulture standards: Genebank plots, cocoon grading, 4-stage drying, disease triage, M-Pesa payouts, and USSD.
             </p>
           </div>
           <div className="flex items-center gap-2 text-xs text-gray-600 bg-gray-50 p-2 rounded-lg border border-gray-200">
@@ -297,7 +297,7 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
               onClick={() => setSubTab(tab.key as StationSubTab)}
               className={`min-h-[48px] min-w-[48px] px-3.5 py-2 rounded-lg transition-all whitespace-nowrap focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center justify-center ${
                 subTab === tab.key
-                  ? 'bg-[#1A332B] text-white font-semibold'
+                  ? 'bg-[#16A34A] text-white font-semibold'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
@@ -308,7 +308,7 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
       </div>
 
       {/* ------------------------------------------------------------- */}
-      {/* 1. GENEBANK & FIELD BLOCKS DIGITAL TWIN */}
+      {/* 1. GENEBANK & FIELD BLOCKS */}
       {/* ------------------------------------------------------------- */}
       {subTab === 'genebank' && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -334,7 +334,7 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
                     onClick={() => setSelectedOrchardBlock(blk.code)}
                     className={`min-h-[48px] min-w-[48px] text-xs px-3.5 py-2 rounded-lg border text-left transition-all focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center ${
                       selectedOrchardBlock === blk.code
-                        ? 'border-[#1A332B] bg-[#1A332B] text-white font-semibold'
+                        ? 'border-[#16A34A] bg-[#16A34A] text-white font-semibold'
                         : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'
                     }`}
                   >
@@ -653,7 +653,7 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
                   setSubTab('finance');
                   onToast(`Navigated to M-Pesa Payout with ${commercialGrade} payout value.`);
                 }}
-                className="w-full min-h-[48px] min-w-[48px] py-3 bg-[#1A332B] text-white font-semibold rounded-lg text-xs hover:bg-[#214641] transition-all focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center justify-center"
+                className="w-full min-h-[48px] min-w-[48px] py-3 bg-[#16A34A] text-white font-semibold rounded-lg text-xs hover:bg-[#15803D] transition-all focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center justify-center"
               >
                 Disburse M-Pesa Payment →
               </button>
@@ -691,7 +691,7 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
                       key={st.step}
                       className={`p-3 rounded-lg border text-center transition-all ${
                         isActive
-                          ? 'border-[#1A332B] bg-[#1A332B] text-white font-semibold shadow-sm'
+                          ? 'border-[#16A34A] bg-[#16A34A] text-white font-semibold shadow-sm'
                           : isDone
                           ? 'border-emerald-300 bg-emerald-50 text-emerald-900'
                           : 'border-gray-200 bg-gray-50 text-gray-700'
@@ -707,12 +707,12 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
               </div>
 
               {/* Main Live Countdown Display */}
-              <div className="bg-gray-900 text-white rounded-xl p-6 text-center space-y-3">
-                <div className="text-xs text-gray-400 tracking-wider uppercase font-semibold">
+              <div className="bg-white border-2 border-emerald-500/25 text-gray-900 rounded-xl p-6 text-center space-y-3 shadow-sm">
+                <div className="text-xs text-gray-500 tracking-wider uppercase font-semibold">
                   Stage {currentDryingStepIndex + 1} of 4: {COCOON_HOT_AIR_DRYING_SCHEDULE[currentDryingStepIndex].temperature} (
                   {COCOON_HOT_AIR_DRYING_SCHEDULE[currentDryingStepIndex].purpose})
                 </div>
-                <div className="text-5xl font-extrabold font-mono tracking-wider tabular-nums text-emerald-400">
+                <div className="text-5xl font-extrabold font-mono tracking-wider tabular-nums text-emerald-700">
                   {formatTimer(dryingTimeRemainingSeconds)}
                 </div>
                 <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
@@ -735,7 +735,7 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
                       setDryingTimeRemainingSeconds(getStepMinutes(COCOON_HOT_AIR_DRYING_SCHEDULE[next].duration) * 60);
                       onToast(`Switched to Stage ${next + 1}: ${COCOON_HOT_AIR_DRYING_SCHEDULE[next].temperature}`);
                     }}
-                    className="min-h-[48px] min-w-[48px] px-4 py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-xs focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center justify-center"
+                    className="min-h-[48px] min-w-[48px] px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 border border-gray-300 rounded-lg text-xs font-semibold focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center justify-center"
                   >
                     Next Stage →
                   </button>
@@ -745,7 +745,7 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
                       setIsDryingRunning(false);
                       setDryingTimeRemainingSeconds(getStepMinutes(COCOON_HOT_AIR_DRYING_SCHEDULE[currentDryingStepIndex].duration) * 60);
                     }}
-                    className="min-h-[48px] min-w-[48px] px-4 py-2.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-xs focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center justify-center"
+                    className="min-h-[48px] min-w-[48px] px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 border border-gray-300 rounded-lg text-xs font-semibold focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center justify-center"
                   >
                     Reset Timer
                   </button>
@@ -1324,7 +1324,7 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
                   onClick={() => setSelectedAudioLang(lang.code as typeof selectedAudioLang)}
                   className={`min-h-[48px] min-w-[48px] px-3.5 py-2 rounded-lg border text-xs font-semibold focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center justify-center ${
                     selectedAudioLang === lang.code
-                      ? 'bg-[#1A332B] text-white border-[#1A332B]'
+                      ? 'bg-[#16A34A] text-white border-[#16A34A]'
                       : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
                   }`}
                 >
@@ -1371,7 +1371,7 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
                         }
                         onToast(`Playing audio guide in ${selectedAudioLang.toUpperCase()}`);
                       }}
-                      className="min-h-[48px] min-w-[48px] px-3.5 py-2 bg-[#1A332B] text-white rounded-lg font-semibold text-xs hover:bg-[#214641] focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center justify-center gap-1.5"
+                      className="min-h-[48px] min-w-[48px] px-3.5 py-2 bg-[#16A34A] text-white rounded-lg font-semibold text-xs hover:bg-[#15803D] focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center justify-center gap-1.5"
                     >
                       ▶ Play Audio
                     </button>

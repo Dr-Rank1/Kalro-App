@@ -11,11 +11,9 @@ import {
   Leaf,
   Plus,
   Building2,
-  ShieldCheck,
-  Check,
-  Sparkles,
   ArrowRight,
   History,
+  Layers,
 } from 'lucide-react';
 import {
   Batch,
@@ -263,13 +261,6 @@ export const TodayView: React.FC<TodayViewProps> = ({
     }
   }
 
-  // Routine Checklist States
-  const morningFedCount = activeBatches.filter((b) => {
-    const stage = getCurrentStage(b);
-    return stage.isMoult || isFedToday(b.id, feedLogs, now);
-  }).length;
-  const morningRoutineDone = activeBatches.length > 0 && morningFedCount === activeBatches.length;
-
   return (
     <div>
       {/* 1. Operational Command Header */}
@@ -484,8 +475,8 @@ export const TodayView: React.FC<TodayViewProps> = ({
         <div
           className="kalro-card"
           style={{
-            background: 'linear-gradient(135deg, rgba(22, 163, 74, 0.08) 0%, rgba(19, 26, 23, 0.95) 100%)',
-            border: '1px solid #23332A',
+            background: 'linear-gradient(135deg, rgba(22, 163, 74, 0.05) 0%, #FFFFFF 100%)',
+            border: '1px solid #E2E8F0',
             marginBottom: '24px',
             padding: '16px 20px',
           }}
@@ -615,232 +606,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
         </div>
       </div>
 
-      {/* 3. Today's Rearing House Routine (Practical Daily Sericulture Checklist) */}
-      <div className="kalro-card" style={{ marginBottom: '24px' }}>
-        <div className="card-header-flex">
-          <div>
-            <h3 className="card-title">Today's Rearing Routine</h3>
-            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-              Standard daily agronomic protocol for silkworm rearing houses
-            </p>
-          </div>
-          <span
-            style={{
-              fontSize: '0.75rem',
-              color: 'var(--text-muted)',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-            }}
-          >
-            <Clock size={14} />
-            <span>Shift: {shift.timeWindow}</span>
-          </span>
-        </div>
-
-        <div className="routine-grid">
-          {/* Routine 1: Morning Feed */}
-          <div className={`routine-card ${shift.isMorning ? 'current' : ''} ${morningRoutineDone ? 'done' : ''}`}>
-            <div className="routine-img-wrapper">
-              <img
-                src="/images/routine/morning_feed.jpg"
-                alt="Morning feeding of fresh mulberry leaves to silkworms"
-                className="routine-img"
-                loading="lazy"
-              />
-              <div className="routine-img-overlay">
-                <span className="routine-time-badge">
-                  <Sunrise size={12} />
-                  <span>07:00 – 09:30</span>
-                </span>
-                <span className={`routine-status-pill ${morningRoutineDone ? 'done' : dueBatches.length > 0 ? 'pending' : 'active'}`}>
-                  {morningRoutineDone ? (
-                    <>
-                      <Check size={11} />
-                      <span>Done</span>
-                    </>
-                  ) : (
-                    <span>{dueBatches.length > 0 ? `${dueBatches.length} Due` : 'Ready'}</span>
-                  )}
-                </span>
-              </div>
-            </div>
-
-            <div className="routine-body">
-              <div className="routine-title-row">
-                <h4 className="routine-title">
-                  <Sunrise size={16} style={{ color: 'var(--primary)' }} />
-                  <span>1. Morning Feed</span>
-                </h4>
-                {shift.isMorning && <span className="routine-current-tag">Now</span>}
-              </div>
-              <p className="routine-desc">
-                Feed succulent morning leaves with high moisture content. Chop leaves finely (0.5–1 cm) for Chawki instars.
-              </p>
-              <div className="routine-action-row">
-                <span className="routine-meta-text">
-                  {morningFedCount}/{activeBatches.length} lots fed
-                </span>
-                <button
-                  type="button"
-                  onClick={() => onOpenQuickLog(undefined, 'feed')}
-                  className="btn-accent routine-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
-                >
-                  + Log Feed
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Routine 2: Midday Climate & Hygiene */}
-          <div className={`routine-card ${shift.isMidday ? 'current' : ''} ${envLoggedToday ? 'done' : ''}`}>
-            <div className="routine-img-wrapper">
-              <img
-                src="/images/routine/midday_climate.jpg"
-                alt="Analog wet and dry bulb hygrometer and thermometer in rearing house"
-                className="routine-img"
-                loading="lazy"
-              />
-              <div className="routine-img-overlay">
-                <span className="routine-time-badge">
-                  <Sun size={12} />
-                  <span>12:00 – 14:00</span>
-                </span>
-                <span className={`routine-status-pill ${envLoggedToday ? 'done' : 'pending'}`}>
-                  {envLoggedToday ? (
-                    <>
-                      <Check size={11} />
-                      <span>Recorded</span>
-                    </>
-                  ) : (
-                    <span>Pending</span>
-                  )}
-                </span>
-              </div>
-            </div>
-
-            <div className="routine-body">
-              <div className="routine-title-row">
-                <h4 className="routine-title">
-                  <Thermometer size={16} style={{ color: 'var(--status-info)' }} />
-                  <span>2. Midday Climate Check</span>
-                </h4>
-                {shift.isMidday && <span className="routine-current-tag">Now</span>}
-              </div>
-              <p className="routine-desc">
-                Inspect dry bulb thermometer and wet hygrometer at 12:00 PM. Target: 24–26°C and 75–80% RH.
-              </p>
-              <div className="routine-action-row">
-                <span className="routine-meta-text">
-                  {latestEnv
-                    ? `${latestEnv.roomName ? `${latestEnv.roomName}: ` : ''}${latestEnv.temperatureCelsius.toFixed(1)}°C / ${latestEnv.humidityPercent}%`
-                    : 'No log today'}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => onOpenQuickLog(undefined, 'climate')}
-                  className="btn-secondary routine-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
-                >
-                  + Log Climate
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Routine 3: Bed Sanitation & Spacing */}
-          <div className="routine-card">
-            <div className="routine-img-wrapper">
-              <img
-                src="/images/routine/bed_cleaning.jpg"
-                alt="Mesh cleaning nets on tiered sericulture rearing racks"
-                className="routine-img"
-                loading="lazy"
-              />
-              <div className="routine-img-overlay">
-                <span className="routine-time-badge">
-                  <Sparkles size={12} />
-                  <span>14:00 – 16:30</span>
-                </span>
-                <span className="routine-status-pill done">
-                  <span>Daily</span>
-                </span>
-              </div>
-            </div>
-
-            <div className="routine-body">
-              <div className="routine-title-row">
-                <h4 className="routine-title">
-                  <ShieldCheck size={16} style={{ color: 'var(--status-info)' }} />
-                  <span>3. Tray Cleaning & Spacing</span>
-                </h4>
-              </div>
-              <p className="routine-desc">
-                Spread mesh cleaning nets before feeding to separate larvae from frass. For moulting lots, withhold leaf and dust bed with 97:3 slaked lime.
-              </p>
-              <div className="routine-action-row">
-                <span className="routine-meta-text">
-                  {moultBatches.length > 0 ? `${moultBatches.length} lot(s) in moult` : 'Normal active beds'}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => onOpenQuickLog(undefined, 'mortality')}
-                  className="btn-secondary routine-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
-                >
-                  Record Loss
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Routine 4: Evening Rations */}
-          <div className={`routine-card ${shift.isEvening ? 'current' : ''}`}>
-            <div className="routine-img-wrapper">
-              <img
-                src="/images/routine/evening_feed.jpg"
-                alt="Late-age silkworms feeding on mulberry shoots in evening light"
-                className="routine-img"
-                loading="lazy"
-              />
-              <div className="routine-img-overlay">
-                <span className="routine-time-badge">
-                  <Moon size={12} />
-                  <span>17:00 – 19:30</span>
-                </span>
-                <span className={`routine-status-pill ${shift.isEvening ? 'active' : 'pending'}`}>
-                  <span>{shift.isEvening ? 'Active Shift' : 'Scheduled'}</span>
-                </span>
-              </div>
-            </div>
-
-            <div className="routine-body">
-              <div className="routine-title-row">
-                <h4 className="routine-title">
-                  <Moon size={16} style={{ color: 'var(--accent-gold)' }} />
-                  <span>4. Evening Rations</span>
-                </h4>
-                {shift.isEvening && <span className="routine-current-tag">Now</span>}
-              </div>
-              <p className="routine-desc">
-                Provide heavy night feed of fresh whole leaves or shoots. Silkworms feed most actively during cooler night hours.
-              </p>
-              <div className="routine-action-row">
-                <span className="routine-meta-text">
-                  Stored leaf: {leafCoverage.totalStockKg.toFixed(1)} kg
-                </span>
-                <button
-                  type="button"
-                  onClick={() => onOpenQuickLog(undefined, 'feed')}
-                  className="btn-accent routine-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
-                >
-                  + Log Feed
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 4. Active Station Notices / Alerts */}
+      {/* 3. Active Station Notices / Alerts */}
       {alerts.length > 0 && (
         <div className="kalro-card" style={{ marginBottom: '24px' }}>
           <div className="card-header-flex">
@@ -924,195 +690,57 @@ export const TodayView: React.FC<TodayViewProps> = ({
         )}
 
         {activeBatches.length === 0 ? (
-          <div className="empty-state" style={{ padding: '2rem 1.5rem', textAlign: 'center', backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-silk)', borderRadius: 'var(--radius-md)' }}>
+          <div className="empty-state" style={{ padding: '3rem 1.5rem', textAlign: 'center', backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-silk)', borderRadius: 'var(--radius-md)' }}>
             <div
               style={{
-                width: '52px',
-                height: '52px',
+                width: '56px',
+                height: '56px',
                 borderRadius: '50%',
                 backgroundColor: 'var(--primary-subtle)',
                 color: 'var(--primary)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                margin: '0 auto 12px',
+                margin: '0 auto 1rem',
               }}
             >
-              <Sparkles size={26} />
+              <Layers size={28} />
             </div>
 
-            <h4 style={{ fontSize: '1.2rem', fontWeight: 700, margin: '0 0 6px', color: 'var(--text-main)' }}>
-              {profile ? `Welcome to Today's Operations, ${profile.managerName}!` : 'No Active Silkworm Batches Today'}
+            <h4 style={{ fontSize: '1.25rem', fontWeight: 700, margin: '0 0 0.5rem', color: 'var(--text-main)' }}>
+              No Active Silkworm Batches
             </h4>
 
             {profile && (
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'var(--bg-subtle)', border: '1px solid var(--border-subtle)', padding: '4px 12px', borderRadius: 'var(--radius-full)', fontSize: '0.76rem', color: 'var(--text-muted)', marginBottom: '14px', flexWrap: 'wrap', justifyContent: 'center' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'var(--bg-subtle)', border: '1px solid var(--border-subtle)', padding: '4px 12px', borderRadius: 'var(--radius-full)', fontSize: '0.76rem', color: 'var(--text-muted)', marginBottom: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
                 <Building2 size={13} color="var(--primary)" />
                 <span style={{ fontWeight: 600, color: 'var(--text-main)' }}>{profile.orgName}</span>
                 <span>•</span>
                 <span>{profile.county} County</span>
                 <span>•</span>
                 <span>{profile.houseCount} Rearing {profile.houseCount === 1 ? 'House' : 'Houses'}</span>
-                <span>•</span>
-                <span>{profile.mulberryAcreage} Acre(s) Mulberry</span>
               </div>
             )}
 
-            <p style={{ maxWidth: '520px', margin: '0 auto 24px', fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.55 }}>
-              {profile
-                ? 'Your farm profile is active. Follow these 3 essential daily operations to synchronize your rearing cycles, microclimate calibration, and forage runway:'
-                : 'All previous rearing cycles are completed or no rearing cycle is active yet. Start a new lot to activate daily feeding schedules, tray microclimate tracking, and forage allocation.'}
+            <p style={{ maxWidth: '480px', margin: '0 auto 1.5rem', fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+              Register your disease-free eggs (DFLs) to begin tracking daily feeding rations, chamber microclimate, and cocoon harvests.
             </p>
 
-            {/* 3 Synchronized Core Operations Cards */}
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-                gap: '16px',
-                marginBottom: '24px',
-                textAlign: 'left',
+            <button
+              type="button"
+              onClick={() => {
+                if (onOpenAddBatch) {
+                  onOpenAddBatch();
+                } else {
+                  onSelectTab('batches');
+                }
               }}
+              className="btn-accent min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+              style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.88rem', padding: '12px 24px' }}
             >
-              {/* Step 1: Start Batch */}
-              <div
-                style={{
-                  background: 'var(--bg-subtle)',
-                  border: '1px solid var(--border-silk)',
-                  borderRadius: 'var(--radius-sm)',
-                  padding: '16px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  gap: '12px',
-                }}
-              >
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--primary)', marginBottom: '6px' }}>
-                    <Plus size={16} />
-                    <span style={{ fontSize: '0.76rem', fontWeight: 700, textTransform: 'uppercase' }}>
-                      1. Start Rearing Batch
-                    </span>
-                  </div>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0 0 12px', lineHeight: 1.45 }}>
-                    Register your disease-free eggs (DFLs) to activate daily feeding rations, tray spacing schedules, and stage tracking.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (onOpenAddBatch) {
-                      onOpenAddBatch();
-                    } else {
-                      onSelectTab('batches');
-                    }
-                  }}
-                  className="btn-accent min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
-                  style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem', padding: '12px 16px' }}
-                >
-                  <Plus size={16} />
-                  + Register First Batch
-                </button>
-              </div>
-
-              {/* Step 2: Record Climate */}
-              <div
-                style={{
-                  background: 'var(--bg-subtle)',
-                  border: '1px solid var(--border-silk)',
-                  borderRadius: 'var(--radius-sm)',
-                  padding: '16px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  gap: '12px',
-                }}
-              >
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--status-info)', marginBottom: '6px' }}>
-                    <Thermometer size={16} />
-                    <span style={{ fontSize: '0.76rem', fontWeight: 700, textTransform: 'uppercase' }}>
-                      2. Rearing Room Climate
-                    </span>
-                  </div>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0 0 12px', lineHeight: 1.45 }}>
-                    Calibrate and log chamber temperature (24–26°C) and relative humidity (75–85%) before larvae brush onto rearing trays.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => onOpenQuickLog(undefined, 'climate')}
-                  className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
-                  style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem', padding: '12px 16px' }}
-                >
-                  <Thermometer size={16} />
-                  Record House Climate
-                </button>
-              </div>
-
-              {/* Step 3: Record Leaf Stock */}
-              <div
-                style={{
-                  background: 'var(--bg-subtle)',
-                  border: '1px solid var(--border-silk)',
-                  borderRadius: 'var(--radius-sm)',
-                  padding: '16px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  gap: '12px',
-                }}
-              >
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--status-success)', marginBottom: '6px' }}>
-                    <Leaf size={16} />
-                    <span style={{ fontSize: '0.76rem', fontWeight: 700, textTransform: 'uppercase' }}>
-                      3. Forage Leaf Stock
-                    </span>
-                  </div>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0 0 12px', lineHeight: 1.45 }}>
-                    Log freshly harvested mulberry from your {profile?.mulberryAcreage || 1} acre plot into leaf storage to calculate forage runway.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (onOpenAddLeaf) {
-                      onOpenAddLeaf();
-                    } else {
-                      onSelectTab('today');
-                    }
-                  }}
-                  className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
-                  style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem', padding: '12px 16px' }}
-                >
-                  <Plus size={16} />
-                  + Record Leaf Stock
-                </button>
-              </div>
-            </div>
-
-            {/* Quick Cross-Nav Links */}
-            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', borderTop: '1px solid var(--border-divider)', paddingTop: '16px' }}>
-              <button
-                type="button"
-                onClick={() => onSelectTab('batches')}
-                className="roadmap-tag-pill min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
-                style={{ fontSize: '0.82rem', padding: '12px 20px', cursor: 'pointer', background: 'var(--bg-subtle)', border: '1px solid var(--border-subtle)', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
-              >
-                <span>Silkworm Batch Registry</span>
-                <ArrowRight size={14} />
-              </button>
-              <button
-                type="button"
-                onClick={() => onSelectTab('audit')}
-                className="roadmap-tag-pill min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
-                style={{ fontSize: '0.82rem', padding: '12px 20px', cursor: 'pointer', background: 'var(--bg-subtle)', border: '1px solid var(--border-subtle)', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
-              >
-                <span>Staff Operations Audit Ledger</span>
-                <ArrowRight size={14} />
-              </button>
-            </div>
+              <Plus size={16} />
+              + Register New Batch
+            </button>
           </div>
         ) : filteredBatches.length === 0 ? (
           <div className="empty-state" style={{ padding: '2rem 1rem', textAlign: 'center' }}>
@@ -1749,34 +1377,6 @@ export const TodayView: React.FC<TodayViewProps> = ({
               {leafCoverage.daysOfCover > 0 ? `${leafCoverage.daysOfCover} days buffer remaining` : 'No active consumption'}
             </span>
           </div>
-        </div>
-      </div>
-
-      {/* 7. Sericulture Advisory Field Note (KALRO Best Practices) */}
-      <div className="agronomy-tip-box">
-        <div
-          style={{
-            width: '32px',
-            height: '32px',
-            borderRadius: '50%',
-            backgroundColor: 'rgba(20, 61, 43, 0.1)',
-            color: 'var(--primary)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0,
-            marginTop: '2px',
-          }}
-        >
-          <Sparkles size={16} />
-        </div>
-        <div>
-          <h4 style={{ margin: 0, fontSize: '0.86rem', fontWeight: 700, color: 'var(--primary)' }}>
-            KALRO Sericulture Field Advisory
-          </h4>
-          <p style={{ margin: '3px 0 0', fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
-            {shift.advice} Always ensure rearing tray nets are dusted with slaked lime during high humidity spells to protect the rearing beds against muscardine fungal contamination.
-          </p>
         </div>
       </div>
     </div>
