@@ -23,25 +23,32 @@ class EnvironmentLogRepository {
     return List.unmodifiable(_cache!);
   }
 
-  Future<List<EnvironmentLog>> getByBatchId(String batchId) async {
+  Future<List<EnvironmentLog>> getByBatchId(String batchId, {int? limit}) async {
     if (_cache != null) {
-      return _cache!.where((log) => log.batchId == batchId).toList()
+      final filtered = _cache!.where((log) => log.batchId == batchId).toList()
         ..sort((a, b) => b.recordedAt.compareTo(a.recordedAt));
+      if (limit != null && filtered.length > limit) {
+        return filtered.take(limit).toList();
+      }
+      return filtered;
     }
     final rows = await _store.getCollectionWhere(
       collection,
       jsonKey: 'batchId',
       value: batchId,
+      limit: limit,
+      descending: true,
     );
     return [for (final row in rows) EnvironmentLog.fromJson(row)]
       ..sort((a, b) => b.recordedAt.compareTo(a.recordedAt));
   }
 
   Future<EnvironmentLog?> latestForBatch(String batchId) async {
-    final logs = await getByBatchId(batchId);
+    final logs = await getByBatchId(batchId, limit: 1);
     return logs.isEmpty ? null : logs.first;
   }
 
+  /// Saves a single environment log without reading the entire historical dataset into memory.
   Future<EnvironmentLog> create({
     required String batchId,
     required DateTime recordedAt,
@@ -65,15 +72,27 @@ class EnvironmentLogRepository {
       roomName: roomName?.trim().isEmpty == true ? null : roomName?.trim(),
     );
 
-    final logs = await getAll();
-    _cache = [...logs, log];
+    if (_cache != null) {
+      _cache = [..._cache!, log];
+    }
     await _store.upsert(collection, log.id, log.toJson());
     return log;
   }
 
+  /// Bulk inserts BLE telemetry or historical climate batches within a single SQLite transaction.
+  Future<void> insertAll(List<EnvironmentLog> logs) async {
+    if (logs.isEmpty) return;
+    if (_cache != null) {
+      _cache = [..._cache!, ...logs];
+    }
+    final records = [for (final log in logs) log.toJson()];
+    await _store.upsertAll(collection, records);
+  }
+
   Future<void> delete(String id) async {
-    final logs = await getAll();
-    _cache = logs.where((log) => log.id != id).toList();
+    if (_cache != null) {
+      _cache = _cache!.where((log) => log.id != id).toList();
+    }
     await _store.delete(collection, id);
   }
 
@@ -83,4 +102,8 @@ class EnvironmentLogRepository {
   }
 
   void invalidateCache() => _cache = null;
+
+  void dispose() {
+    _cache = null;
+  }
 }

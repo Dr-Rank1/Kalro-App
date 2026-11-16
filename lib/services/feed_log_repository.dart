@@ -56,16 +56,22 @@ class FeedLogRepository {
       skipReason: skipReason?.trim().isEmpty == true ? null : skipReason?.trim(),
     );
 
-    final logs = await getAll();
-    _cache = [...logs, log];
+    if (_cache != null) {
+      _cache = [..._cache!, log];
+    }
     await _store.upsert(collection, log.id, log.toJson());
     return log;
   }
 
   Future<void> delete(String id) async {
-    final logs = await getAll();
-    _cache = logs.where((log) => log.id != id).toList();
+    if (_cache != null) {
+      _cache = _cache!.where((log) => log.id != id).toList();
+    }
     await _store.delete(collection, id);
+  }
+
+  void dispose() {
+    _cache = null;
   }
 
   Future<double> totalQuantityForBatch(String batchId) async {

@@ -73,7 +73,7 @@ export const DeleteProfileModal: React.FC<DeleteProfileModalProps> = ({
               </p>
             </div>
           </div>
-          <button onClick={onClose} className="modal-close-btn" aria-label="Close dialog">
+          <button onClick={onClose} className="modal-close-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]" aria-label="Close dialog">
             <X size={18} />
           </button>
         </div>
@@ -181,7 +181,7 @@ export const DeleteProfileModal: React.FC<DeleteProfileModalProps> = ({
 
         {/* Modal Footer */}
         <div className="modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-          <button type="button" onClick={onClose} className="btn-secondary">
+          <button type="button" onClick={onClose} className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]" style={{ minHeight: '48px', padding: '0.5rem 1rem' }}>
             Cancel
           </button>
           <button
@@ -190,8 +190,8 @@ export const DeleteProfileModal: React.FC<DeleteProfileModalProps> = ({
               onConfirmDelete(user.id);
               onClose();
             }}
-            className="btn-danger"
-            style={{ padding: '0.55rem 1.1rem', fontSize: '0.85rem' }}
+            className="btn-danger min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+            style={{ padding: '0.55rem 1.25rem', fontSize: '0.85rem', minHeight: '48px', display: 'inline-flex', alignItems: 'center' }}
           >
             <Trash2 size={14} style={{ marginRight: '6px' }} />
             Delete Profile

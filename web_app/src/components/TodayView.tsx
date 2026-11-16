@@ -296,29 +296,31 @@ export const TodayView: React.FC<TodayViewProps> = ({
         <div className="ops-actions">
           <button
             onClick={() => onOpenQuickLog(undefined, 'feed')}
-            className="btn-accent"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+            className="btn-accent min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '12px 20px', fontSize: '0.85rem' }}
           >
-            <Plus size={15} />
+            <Plus size={16} />
             Log Feeding
           </button>
           <button
             onClick={() => onOpenQuickLog(undefined, 'mortality')}
-            className="btn-secondary"
+            className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+            style={{ padding: '12px 20px', fontSize: '0.85rem' }}
           >
             Record Loss
           </button>
           <button
             onClick={() => onOpenQuickLog(undefined, 'climate')}
-            className="btn-secondary"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+            className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '12px 20px', fontSize: '0.85rem' }}
           >
-            <Thermometer size={14} />
+            <Thermometer size={16} />
             House Climate
           </button>
           <button
             onClick={() => onOpenQuickLog(undefined, 'harvest')}
-            className="btn-secondary"
+            className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+            style={{ padding: '12px 20px', fontSize: '0.85rem' }}
           >
             Log Harvest
           </button>
@@ -399,13 +401,13 @@ export const TodayView: React.FC<TodayViewProps> = ({
             <select
               value={currentUser?.id || ''}
               onChange={(e) => onSwitchUser(e.target.value)}
-              className="form-control"
+              className="form-control min-h-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
               style={{
-                fontSize: '0.76rem',
-                padding: '0.35rem 0.6rem',
-                height: 'auto',
+                fontSize: '0.82rem',
+                padding: '8px 12px',
+                height: '48px',
                 width: 'auto',
-                minWidth: '155px',
+                minWidth: '160px',
               }}
               title="Switch active sericulture operator on duty"
             >
@@ -420,19 +422,19 @@ export const TodayView: React.FC<TodayViewProps> = ({
           <button
             type="button"
             onClick={() => onSelectTab('audit')}
-            className="btn-secondary"
+            className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
             style={{
-              fontSize: '0.76rem',
-              padding: '0.35rem 0.75rem',
+              fontSize: '0.82rem',
+              padding: '12px 16px',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '5px',
+              gap: '6px',
             }}
             title="View complete chronological audit trail of all staff operations"
           >
-            <History size={13} />
+            <History size={14} />
             <span>Staff Audit Ledger ({auditLogs?.length || 0})</span>
-            <ArrowRight size={12} />
+            <ArrowRight size={13} />
           </button>
         </div>
       </div>
@@ -484,16 +486,16 @@ export const TodayView: React.FC<TodayViewProps> = ({
           style={{
             background: 'linear-gradient(135deg, rgba(22, 163, 74, 0.08) 0%, rgba(19, 26, 23, 0.95) 100%)',
             border: '1px solid #23332A',
-            marginBottom: '1.25rem',
-            padding: '1rem 1.25rem',
+            marginBottom: '24px',
+            padding: '16px 20px',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div
                 style={{
-                  width: '38px',
-                  height: '38px',
+                  width: '40px',
+                  height: '40px',
                   borderRadius: '50%',
                   backgroundColor: 'var(--accent-gold)',
                   color: '#ffffff',
@@ -506,10 +508,10 @@ export const TodayView: React.FC<TodayViewProps> = ({
                 <Building2 size={20} />
               </div>
               <div>
-                <h4 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 700, color: '#4a3805' }}>
+                <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700, color: '#FDE68A' }}>
                   Set Up Your Farm Profile
                 </h4>
-                <p style={{ margin: '2px 0 0', fontSize: '0.78rem', color: '#685116' }}>
+                <p style={{ margin: '4px 0 0', fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>
                   Register your station details, rearing house bays, and mulberry acreage to get personalized forage forecasts and customized report headers.
                 </p>
               </div>
@@ -518,8 +520,8 @@ export const TodayView: React.FC<TodayViewProps> = ({
               <button
                 type="button"
                 onClick={onOpenCreateProfile}
-                className="btn-accent"
-                style={{ padding: '6px 14px', fontSize: '0.78rem', whiteSpace: 'nowrap' }}
+                className="btn-accent min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                style={{ padding: '12px 20px', fontSize: '0.85rem', whiteSpace: 'nowrap' }}
               >
                 + Set Up Profile
               </button>
@@ -614,24 +616,24 @@ export const TodayView: React.FC<TodayViewProps> = ({
       </div>
 
       {/* 3. Today's Rearing House Routine (Practical Daily Sericulture Checklist) */}
-      <div className="kalro-card" style={{ marginBottom: '1.25rem' }}>
+      <div className="kalro-card" style={{ marginBottom: '24px' }}>
         <div className="card-header-flex">
           <div>
             <h3 className="card-title">Today's Rearing Routine</h3>
-            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '4px' }}>
               Standard daily agronomic protocol for silkworm rearing houses
             </p>
           </div>
           <span
             style={{
-              fontSize: '0.74rem',
+              fontSize: '0.75rem',
               color: 'var(--text-muted)',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '4px',
+              gap: '6px',
             }}
           >
-            <Clock size={13} />
+            <Clock size={14} />
             <span>Shift: {shift.timeWindow}</span>
           </span>
         </div>
@@ -667,7 +669,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
             <div className="routine-body">
               <div className="routine-title-row">
                 <h4 className="routine-title">
-                  <Sunrise size={14} style={{ color: 'var(--primary)' }} />
+                  <Sunrise size={16} style={{ color: 'var(--primary)' }} />
                   <span>1. Morning Feed</span>
                 </h4>
                 {shift.isMorning && <span className="routine-current-tag">Now</span>}
@@ -682,7 +684,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
                 <button
                   type="button"
                   onClick={() => onOpenQuickLog(undefined, 'feed')}
-                  className="btn-accent routine-btn"
+                  className="btn-accent routine-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
                 >
                   + Log Feed
                 </button>
@@ -720,7 +722,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
             <div className="routine-body">
               <div className="routine-title-row">
                 <h4 className="routine-title">
-                  <Thermometer size={14} style={{ color: 'var(--status-info)' }} />
+                  <Thermometer size={16} style={{ color: 'var(--status-info)' }} />
                   <span>2. Midday Climate Check</span>
                 </h4>
                 {shift.isMidday && <span className="routine-current-tag">Now</span>}
@@ -737,7 +739,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
                 <button
                   type="button"
                   onClick={() => onOpenQuickLog(undefined, 'climate')}
-                  className="btn-secondary routine-btn"
+                  className="btn-secondary routine-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
                 >
                   + Log Climate
                 </button>
@@ -768,7 +770,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
             <div className="routine-body">
               <div className="routine-title-row">
                 <h4 className="routine-title">
-                  <ShieldCheck size={14} style={{ color: '#2B5775' }} />
+                  <ShieldCheck size={16} style={{ color: 'var(--status-info)' }} />
                   <span>3. Tray Cleaning & Spacing</span>
                 </h4>
               </div>
@@ -782,7 +784,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
                 <button
                   type="button"
                   onClick={() => onOpenQuickLog(undefined, 'mortality')}
-                  className="btn-secondary routine-btn"
+                  className="btn-secondary routine-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
                 >
                   Record Loss
                 </button>
@@ -813,7 +815,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
             <div className="routine-body">
               <div className="routine-title-row">
                 <h4 className="routine-title">
-                  <Moon size={14} style={{ color: 'var(--accent-gold)' }} />
+                  <Moon size={16} style={{ color: 'var(--accent-gold)' }} />
                   <span>4. Evening Rations</span>
                 </h4>
                 {shift.isEvening && <span className="routine-current-tag">Now</span>}
@@ -828,7 +830,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
                 <button
                   type="button"
                   onClick={() => onOpenQuickLog(undefined, 'feed')}
-                  className="btn-accent routine-btn"
+                  className="btn-accent routine-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
                 >
                   + Log Feed
                 </button>
@@ -840,7 +842,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
 
       {/* 4. Active Station Notices / Alerts */}
       {alerts.length > 0 && (
-        <div className="kalro-card" style={{ marginBottom: '1.25rem' }}>
+        <div className="kalro-card" style={{ marginBottom: '24px' }}>
           <div className="card-header-flex">
             <h3 className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <AlertTriangle size={18} style={{ color: 'var(--accent-gold)' }} />
@@ -874,8 +876,8 @@ export const TodayView: React.FC<TodayViewProps> = ({
           </div>
           <button
             onClick={() => onSelectTab('batches')}
-            className="btn-secondary"
-            style={{ fontSize: '0.78rem', padding: '0.35rem 0.85rem' }}
+            className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+            style={{ fontSize: '0.85rem', padding: '12px 20px' }}
           >
             Manage All Batches
           </button>
@@ -886,7 +888,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
           <div className="batch-filter-bar">
             <button
               type="button"
-              className={`batch-filter-btn ${batchFilter === 'all' ? 'active' : ''}`}
+              className={`batch-filter-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A] ${batchFilter === 'all' ? 'active' : ''}`}
               onClick={() => setBatchFilter('all')}
             >
               <span>All Active</span>
@@ -894,7 +896,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
             </button>
             <button
               type="button"
-              className={`batch-filter-btn ${batchFilter === 'due' ? 'active' : ''}`}
+              className={`batch-filter-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A] ${batchFilter === 'due' ? 'active' : ''}`}
               onClick={() => setBatchFilter('due')}
             >
               <span>Feeding Due</span>
@@ -902,7 +904,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
             </button>
             <button
               type="button"
-              className={`batch-filter-btn ${batchFilter === 'moult' ? 'active' : ''}`}
+              className={`batch-filter-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A] ${batchFilter === 'moult' ? 'active' : ''}`}
               onClick={() => setBatchFilter('moult')}
             >
               <span>In Moult</span>
@@ -911,7 +913,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
             {spinningBatches.length > 0 && (
               <button
                 type="button"
-                className={`batch-filter-btn ${batchFilter === 'spinning' ? 'active' : ''}`}
+                className={`batch-filter-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A] ${batchFilter === 'spinning' ? 'active' : ''}`}
                 onClick={() => setBatchFilter('spinning')}
               >
                 <span>Spinning</span>
@@ -967,21 +969,22 @@ export const TodayView: React.FC<TodayViewProps> = ({
               style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-                gap: '14px',
-                marginBottom: '1.75rem',
+                gap: '16px',
+                marginBottom: '24px',
                 textAlign: 'left',
               }}
             >
               {/* Step 1: Start Batch */}
               <div
                 style={{
-                  background: '#fcfdfc',
-                  border: '1px solid var(--border-subtle)',
+                  background: 'var(--bg-subtle)',
+                  border: '1px solid var(--border-silk)',
                   borderRadius: 'var(--radius-sm)',
-                  padding: '1rem',
+                  padding: '16px',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
+                  gap: '12px',
                 }}
               >
                 <div>
@@ -991,7 +994,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
                       1. Start Rearing Batch
                     </span>
                   </div>
-                  <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '0 0 12px', lineHeight: 1.45 }}>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0 0 12px', lineHeight: 1.45 }}>
                     Register your disease-free eggs (DFLs) to activate daily feeding rations, tray spacing schedules, and stage tracking.
                   </p>
                 </div>
@@ -1004,10 +1007,10 @@ export const TodayView: React.FC<TodayViewProps> = ({
                       onSelectTab('batches');
                     }
                   }}
-                  className="btn-accent"
-                  style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.82rem', padding: '8px 12px' }}
+                  className="btn-accent min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                  style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem', padding: '12px 16px' }}
                 >
-                  <Plus size={15} />
+                  <Plus size={16} />
                   + Register First Batch
                 </button>
               </div>
@@ -1015,13 +1018,14 @@ export const TodayView: React.FC<TodayViewProps> = ({
               {/* Step 2: Record Climate */}
               <div
                 style={{
-                  background: '#fcfdfc',
-                  border: '1px solid var(--border-subtle)',
+                  background: 'var(--bg-subtle)',
+                  border: '1px solid var(--border-silk)',
                   borderRadius: 'var(--radius-sm)',
-                  padding: '1rem',
+                  padding: '16px',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
+                  gap: '12px',
                 }}
               >
                 <div>
@@ -1031,17 +1035,17 @@ export const TodayView: React.FC<TodayViewProps> = ({
                       2. Rearing Room Climate
                     </span>
                   </div>
-                  <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '0 0 12px', lineHeight: 1.45 }}>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0 0 12px', lineHeight: 1.45 }}>
                     Calibrate and log chamber temperature (24–26°C) and relative humidity (75–85%) before larvae brush onto rearing trays.
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => onOpenQuickLog(undefined, 'climate')}
-                  className="btn-secondary"
-                  style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '5px', fontSize: '0.82rem', padding: '8px 12px' }}
+                  className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                  style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem', padding: '12px 16px' }}
                 >
-                  <Thermometer size={14} />
+                  <Thermometer size={16} />
                   Record House Climate
                 </button>
               </div>
@@ -1049,13 +1053,14 @@ export const TodayView: React.FC<TodayViewProps> = ({
               {/* Step 3: Record Leaf Stock */}
               <div
                 style={{
-                  background: '#fcfdfc',
-                  border: '1px solid var(--border-subtle)',
+                  background: 'var(--bg-subtle)',
+                  border: '1px solid var(--border-silk)',
                   borderRadius: 'var(--radius-sm)',
-                  padding: '1rem',
+                  padding: '16px',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
+                  gap: '12px',
                 }}
               >
                 <div>
@@ -1065,7 +1070,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
                       3. Forage Leaf Stock
                     </span>
                   </div>
-                  <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '0 0 12px', lineHeight: 1.45 }}>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0 0 12px', lineHeight: 1.45 }}>
                     Log freshly harvested mulberry from your {profile?.mulberryAcreage || 1} acre plot into leaf storage to calculate forage runway.
                   </p>
                 </div>
@@ -1078,34 +1083,34 @@ export const TodayView: React.FC<TodayViewProps> = ({
                       onSelectTab('today');
                     }
                   }}
-                  className="btn-secondary"
-                  style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '5px', fontSize: '0.82rem', padding: '8px 12px' }}
+                  className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                  style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem', padding: '12px 16px' }}
                 >
-                  <Plus size={14} />
+                  <Plus size={16} />
                   + Record Leaf Stock
                 </button>
               </div>
             </div>
 
             {/* Quick Cross-Nav Links */}
-            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap', borderTop: '1px solid var(--border-divider)', paddingTop: '1rem' }}>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', borderTop: '1px solid var(--border-divider)', paddingTop: '16px' }}>
               <button
                 type="button"
                 onClick={() => onSelectTab('batches')}
-                className="roadmap-tag-pill"
-                style={{ fontSize: '0.78rem', padding: '6px 14px', cursor: 'pointer', background: 'var(--bg-subtle)', border: '1px solid var(--border-subtle)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                className="roadmap-tag-pill min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                style={{ fontSize: '0.82rem', padding: '12px 20px', cursor: 'pointer', background: 'var(--bg-subtle)', border: '1px solid var(--border-subtle)', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
               >
                 <span>Silkworm Batch Registry</span>
-                <ArrowRight size={13} />
+                <ArrowRight size={14} />
               </button>
               <button
                 type="button"
                 onClick={() => onSelectTab('audit')}
-                className="roadmap-tag-pill"
-                style={{ fontSize: '0.78rem', padding: '6px 14px', cursor: 'pointer', background: 'var(--bg-subtle)', border: '1px solid var(--border-subtle)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                className="roadmap-tag-pill min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                style={{ fontSize: '0.82rem', padding: '12px 20px', cursor: 'pointer', background: 'var(--bg-subtle)', border: '1px solid var(--border-subtle)', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
               >
                 <span>Staff Operations Audit Ledger</span>
-                <ArrowRight size={13} />
+                <ArrowRight size={14} />
               </button>
             </div>
           </div>
@@ -1117,8 +1122,8 @@ export const TodayView: React.FC<TodayViewProps> = ({
             <button
               type="button"
               onClick={() => setBatchFilter('all')}
-              className="btn-secondary"
-              style={{ marginTop: '10px', fontSize: '0.75rem' }}
+              className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+              style={{ marginTop: '16px', fontSize: '0.85rem', padding: '12px 24px' }}
             >
               Reset Filter
             </button>
@@ -1303,61 +1308,63 @@ export const TodayView: React.FC<TodayViewProps> = ({
                     })()}
 
                     {/* Card Action Buttons */}
-                    <div style={{ display: 'flex', gap: '0.4rem', marginTop: 'auto', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', gap: '8px', marginTop: 'auto', flexWrap: 'wrap' }}>
                       <button
                         type="button"
                         onClick={() => onOpenQuickLog(b.id, 'feed')}
-                        className="btn-accent"
-                        style={{ flex: 1, minWidth: '100px', fontSize: '0.78rem', padding: '0.45rem' }}
+                        className="btn-accent min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                        style={{ flex: 1, minWidth: '100px', fontSize: '0.85rem', padding: '12px 16px' }}
                       >
                         + Log Feed
                       </button>
                       <button
                         type="button"
                         onClick={() => onOpenQuickLog(b.id, 'mortality')}
-                        className="btn-secondary"
-                        style={{ flex: 1, minWidth: '100px', fontSize: '0.78rem', padding: '0.45rem' }}
+                        className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                        style={{ flex: 1, minWidth: '100px', fontSize: '0.85rem', padding: '12px 16px' }}
                       >
                         Record Loss
                       </button>
                       <button
                         type="button"
                         onClick={() => onOpenQuickLog(b.id, 'climate')}
-                        className="btn-secondary"
-                        style={{ fontSize: '0.78rem', padding: '0.45rem 0.65rem' }}
+                        className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                        style={{ fontSize: '0.85rem', padding: '12px 16px' }}
                         title="Record chamber microclimate"
                       >
-                        <Thermometer size={13} style={{ marginRight: '3px' }} />
+                        <Thermometer size={14} style={{ marginRight: '4px' }} />
                         Climate
                       </button>
                       {onExportBatchPdf && (
                         <button
                           type="button"
                           onClick={() => onExportBatchPdf(b)}
-                          className="btn-secondary"
-                          style={{ padding: '0.45rem 0.65rem', display: 'inline-flex', alignItems: 'center', gap: '3px' }}
+                          className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                          style={{ padding: '12px 16px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                           title="Download verified PDF report for this batch"
                           aria-label={`Export PDF dossier for batch ${b.batchTag || b.id}`}
                         >
-                          <FileText size={13} />
-                          <span style={{ fontSize: '0.72rem', fontWeight: 600 }}>PDF</span>
+                          <FileText size={14} />
+                          <span style={{ fontSize: '0.82rem', fontWeight: 600 }}>PDF</span>
                         </button>
                       )}
                     </div>
 
                     {/* Synchronized Station Links */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', paddingTop: '6px', borderTop: '1px solid var(--border-divider)', fontSize: '0.72rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', paddingTop: '8px', borderTop: '1px solid var(--border-divider)', fontSize: '0.78rem' }}>
                       <button
                         type="button"
                         onClick={() => onSelectTab('batches')}
-                        style={{ background: 'none', border: 'none', color: 'var(--primary)', padding: 0, cursor: 'pointer', textDecoration: 'underline', fontWeight: 600 }}
+                        className="focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                        style={{ background: 'none', border: 'none', color: 'var(--primary)', padding: '12px 8px', cursor: 'pointer', textDecoration: 'underline', fontWeight: 600, minHeight: '48px', display: 'inline-flex', alignItems: 'center' }}
                       >
                         Lot Dossier &amp; Trays →
                       </button>
                       <button
                         type="button"
                         onClick={() => onSelectTab('audit')}
-                        style={{ background: 'none', border: 'none', color: 'var(--text-muted)', padding: 0, cursor: 'pointer', textDecoration: 'underline' }}
+                        className="focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                        style={{ background: 'none', border: 'none', color: 'var(--text-muted)', padding: '12px 8px', cursor: 'pointer', textDecoration: 'underline', minHeight: '48px', display: 'inline-flex', alignItems: 'center' }}
                       >
                         Shift Audit History →
                       </button>
@@ -1385,11 +1392,11 @@ export const TodayView: React.FC<TodayViewProps> = ({
           <button
             type="button"
             onClick={() => onSelectTab('audit')}
-            className="btn-secondary"
-            style={{ fontSize: '0.76rem', padding: '0.35rem 0.75rem', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+            className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+            style={{ fontSize: '0.85rem', padding: '12px 20px', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
           >
             <span>View Full Operations Ledger</span>
-            <ArrowRight size={13} />
+            <ArrowRight size={14} />
           </button>
         </div>
 
@@ -1454,8 +1461,8 @@ export const TodayView: React.FC<TodayViewProps> = ({
             </div>
             <button
               onClick={() => onOpenQuickLog(undefined, 'climate')}
-              className="btn-secondary"
-              style={{ fontSize: '0.75rem', padding: '0.3rem 0.65rem' }}
+              className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+              style={{ fontSize: '0.85rem', padding: '12px 20px' }}
               title="Record microclimate thermometer and hygrometer reading"
             >
               + Log Climate
@@ -1467,18 +1474,19 @@ export const TodayView: React.FC<TodayViewProps> = ({
             <div
               style={{
                 display: 'flex',
-                gap: '6px',
-                margin: '0.65rem 0 0.15rem',
+                gap: '8px',
+                margin: '12px 0 8px',
                 overflowX: 'auto',
-                paddingBottom: '2px',
+                paddingBottom: '4px',
               }}
             >
               <button
                 type="button"
                 onClick={() => setSelectedHouseTab('all')}
+                className="min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
                 style={{
-                  padding: '4px 10px',
-                  fontSize: '0.74rem',
+                  padding: '12px 18px',
+                  fontSize: '0.82rem',
                   borderRadius: 'var(--radius-sm)',
                   border: selectedHouseTab === 'all' ? '1px solid var(--primary)' : '1px solid var(--border-subtle)',
                   background: selectedHouseTab === 'all' ? 'var(--primary)' : 'var(--bg-subtle)',
@@ -1486,6 +1494,9 @@ export const TodayView: React.FC<TodayViewProps> = ({
                   fontWeight: selectedHouseTab === 'all' ? 700 : 500,
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
               >
                 All Houses
@@ -1498,9 +1509,10 @@ export const TodayView: React.FC<TodayViewProps> = ({
                     key={house}
                     type="button"
                     onClick={() => setSelectedHouseTab(house)}
+                    className="min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
                     style={{
-                      padding: '4px 10px',
-                      fontSize: '0.74rem',
+                      padding: '12px 18px',
+                      fontSize: '0.82rem',
                       borderRadius: 'var(--radius-sm)',
                       border: isSelected ? '1px solid var(--primary)' : '1px solid var(--border-subtle)',
                       background: isSelected ? 'var(--primary)' : 'var(--bg-subtle)',
@@ -1509,7 +1521,8 @@ export const TodayView: React.FC<TodayViewProps> = ({
                       cursor: 'pointer',
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '5px',
+                      justifyContent: 'center',
+                      gap: '6px',
                       whiteSpace: 'nowrap',
                     }}
                   >
@@ -1518,7 +1531,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
                       <span
                         className="tabular-nums"
                         style={{
-                          fontSize: '0.68rem',
+                          fontSize: '0.72rem',
                           fontWeight: 600,
                           opacity: isSelected ? 1 : 0.85,
                         }}
@@ -1625,15 +1638,15 @@ export const TodayView: React.FC<TodayViewProps> = ({
                 Harvested reserves in humidified storage
               </p>
             </div>
-            <div style={{ display: 'flex', gap: '6px' }}>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
               {onOpenAddLeaf && (
                 <button
                   type="button"
                   onClick={onOpenAddLeaf}
-                  className="btn-accent"
-                  style={{ fontSize: '0.75rem', padding: '0.3rem 0.65rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                  className="btn-accent min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                  style={{ fontSize: '0.85rem', padding: '12px 18px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                 >
-                  <Plus size={12} />
+                  <Plus size={15} />
                   + Harvest Stock
                 </button>
               )}
@@ -1641,8 +1654,8 @@ export const TodayView: React.FC<TodayViewProps> = ({
                 <button
                   type="button"
                   onClick={onOpenAddLeaf}
-                  className="btn-secondary"
-                  style={{ fontSize: '0.75rem', padding: '0.3rem 0.65rem' }}
+                  className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                  style={{ fontSize: '0.85rem', padding: '12px 18px' }}
                 >
                   Adjust Cultivars
                 </button>

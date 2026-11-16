@@ -118,7 +118,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 
             <button
               onClick={onOpenCreateProfile}
-              className="btn-accent"
+              className="btn-accent min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
               style={{ padding: '0.6rem 1.4rem', fontSize: '0.9rem' }}
             >
               <UserPlus size={16} style={{ marginRight: '8px' }} />
@@ -206,16 +206,16 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           </div>
 
           <div className="profile-header-actions">
-            <button onClick={onOpenEditProfile} className="btn-secondary profile-edit-btn">
-              <Edit2 size={13} style={{ marginRight: '5px' }} />
+            <button onClick={onOpenEditProfile} className="btn-secondary profile-edit-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]">
+              <Edit2 size={14} style={{ marginRight: '6px' }} />
               Edit Profile
             </button>
             <button
               onClick={() => handleDeleteClick(currentUser)}
-              className="btn-danger-outline profile-delete-btn"
+              className="btn-danger-outline profile-delete-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
               title="Delete this farm profile"
             >
-              <Trash2 size={13} style={{ marginRight: '5px' }} />
+              <Trash2 size={14} style={{ marginRight: '6px' }} />
               Delete Profile
             </button>
           </div>
@@ -297,10 +297,10 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           </div>
           <button
             onClick={onOpenCreateProfile}
-            className="btn-accent"
-            style={{ fontSize: '0.78rem', padding: '0.35rem 0.75rem' }}
+            className="btn-accent min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+            style={{ fontSize: '0.8rem', padding: '0.5rem 0.95rem' }}
           >
-            <Plus size={13} style={{ marginRight: '4px' }} />
+            <Plus size={15} style={{ marginRight: '5px' }} />
             Register Staff
           </button>
         </div>
@@ -355,25 +355,26 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   {!isActive ? (
                     <button
                       onClick={() => onSwitchUser(user.id)}
-                      className="btn-secondary"
-                      style={{ fontSize: '0.75rem', padding: '0.3rem 0.65rem' }}
+                      className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                      style={{ fontSize: '0.78rem', padding: '0.45rem 0.85rem' }}
                       title={`Assume shift duty as ${user.username}`}
                     >
                       Take Over Shift
                     </button>
                   ) : (
-                    <span style={{ fontSize: '0.72rem', color: 'var(--primary)', fontWeight: 600 }}>
+                    <span style={{ fontSize: '0.76rem', color: 'var(--primary)', fontWeight: 600 }}>
                       Current Duty
                     </span>
                   )}
 
                   <button
                     onClick={() => handleDeleteClick(user)}
-                    className="btn-icon-subtle-danger"
+                    className="btn-icon-subtle-danger min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                    style={{ minHeight: '48px', minWidth: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                     title={`Delete profile for "${user.username}"`}
                     aria-label={`Delete profile for ${user.username}`}
                   >
-                    <Trash2 size={13} />
+                    <Trash2 size={15} />
                   </button>
                 </div>
               </div>
@@ -394,10 +395,10 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           {onLockTerminal && (
             <button
               onClick={onLockTerminal}
-              className="btn-accent"
-              style={{ fontSize: '0.78rem', padding: '0.35rem 0.85rem', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+              className="btn-accent min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+              style={{ fontSize: '0.8rem', padding: '0.5rem 1rem', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
             >
-              <Lock size={13} />
+              <Lock size={14} />
               Lock Terminal Now
             </button>
           )}
@@ -433,8 +434,8 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   setEditingPin(!editingPin);
                   setNewPinValue(currentUser.pinCode || '2026');
                 }}
-                className="btn-secondary"
-                style={{ fontSize: '0.72rem', padding: '2px 8px', marginLeft: 'auto' }}
+                className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                style={{ fontSize: '0.78rem', padding: '0.45rem 0.85rem', marginLeft: 'auto' }}
               >
                 {editingPin ? 'Cancel' : 'Change PIN'}
               </button>
@@ -442,15 +443,15 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 
             {editingPin && (
               <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border-divider)' }}>
-                <div style={{ display: 'flex', gap: '6px' }}>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                   <input
                     type="password"
                     maxLength={6}
                     value={newPinValue}
                     onChange={(e) => setNewPinValue(e.target.value.replace(/\D/g, ''))}
                     placeholder="Enter 4-digit PIN"
-                    className="simple-input"
-                    style={{ fontSize: '0.85rem', padding: '4px 8px', width: '130px', textAlign: 'center', fontFamily: 'monospace' }}
+                    className="simple-input min-h-[48px]"
+                    style={{ fontSize: '0.88rem', padding: '8px 12px', width: '150px', textAlign: 'center', fontFamily: 'monospace' }}
                   />
                   <button
                     type="button"
@@ -466,14 +467,14 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                       setPinNotice('Security PIN updated successfully.');
                       setTimeout(() => setPinNotice(null), 3500);
                     }}
-                    className="btn-primary"
-                    style={{ fontSize: '0.75rem', padding: '4px 10px' }}
+                    className="btn-primary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                    style={{ fontSize: '0.8rem', padding: '0.5rem 1rem' }}
                   >
                     Save PIN
                   </button>
                 </div>
                 {pinNotice && (
-                  <div style={{ fontSize: '0.72rem', color: 'var(--status-success)', marginTop: '4px' }}>
+                  <div style={{ fontSize: '0.74rem', color: 'var(--status-success)', marginTop: '6px' }}>
                     {pinNotice}
                   </div>
                 )}
@@ -517,17 +518,17 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         </div>
 
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
-          <button onClick={onExportActiveUserBackup} className="btn-accent" style={{ flex: 1, minWidth: '180px' }}>
-            <Download size={14} style={{ marginRight: '6px' }} />
+          <button onClick={onExportActiveUserBackup} className="btn-accent min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]" style={{ flex: 1, minWidth: '180px' }}>
+            <Download size={15} style={{ marginRight: '6px' }} />
             Download Backup File
           </button>
 
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="btn-secondary"
+            className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
             style={{ flex: 1, minWidth: '180px' }}
           >
-            <Upload size={14} style={{ marginRight: '6px' }} />
+            <Upload size={15} style={{ marginRight: '6px' }} />
             Restore from Backup
           </button>
           <input
@@ -540,7 +541,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         </div>
 
         {importStatus && (
-          <div style={{ marginTop: '0.75rem', padding: '0.5rem 0.75rem', background: 'var(--status-success-subtle)', border: '1px solid #BAE3CC', color: 'var(--status-success)', borderRadius: 'var(--radius-sm)', fontSize: '0.78rem' }}>
+          <div style={{ marginTop: '0.75rem', padding: '0.5rem 0.75rem', background: 'var(--status-success-subtle)', border: '1px solid var(--border-subtle)', color: 'var(--status-success)', borderRadius: 'var(--radius-sm)', fontSize: '0.78rem' }}>
             {importStatus}
           </div>
         )}
@@ -566,10 +567,10 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   onClearActiveUserRecords();
                 }
               }}
-              className="btn-secondary"
-              style={{ fontSize: '0.76rem', color: 'var(--text-muted)' }}
+              className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+              style={{ fontSize: '0.78rem', color: 'var(--text-muted)', padding: '0.45rem 0.85rem' }}
             >
-              <AlertTriangle size={12} style={{ marginRight: '4px' }} />
+              <AlertTriangle size={14} style={{ marginRight: '5px' }} />
               Clear Records
             </button>
           </div>
@@ -585,10 +586,10 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             </div>
             <button
               onClick={() => handleDeleteClick(currentUser)}
-              className="btn-danger"
-              style={{ fontSize: '0.78rem', padding: '0.4rem 0.85rem' }}
+              className="btn-danger min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+              style={{ fontSize: '0.8rem', padding: '0.45rem 0.95rem' }}
             >
-              <Trash2 size={13} style={{ marginRight: '5px' }} />
+              <Trash2 size={14} style={{ marginRight: '6px' }} />
               Delete Profile
             </button>
           </div>

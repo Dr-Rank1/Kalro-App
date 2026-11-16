@@ -15,13 +15,19 @@ import {
 import {
   createRxDatabase,
   RxDatabase,
-  RxCollection,
-  RxJsonSchema,
 } from 'rxdb';
 import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
 import { getRxStorageMemory } from 'rxdb/plugins/storage-memory';
-import { replicateRxCollection, RxReplicationState } from 'rxdb/plugins/replication';
 import { BehaviorSubject } from 'rxjs';
+import {
+  batchRxSchema,
+  feedLogRxSchema,
+  mortalityLogRxSchema,
+  NsrcPowerSyncRxReplicationConnector,
+  SyncStatus,
+} from './lib/rxdb';
+
+export * from './lib/rxdb';
 
 const GLOBAL_KEYS = {
   usersRegistry: 'kalro_users_registry',
@@ -184,215 +190,6 @@ const DEFAULT_INITIAL_INVENTORY: LeafInventory = {
   },
   lastUpdated: new Date().toISOString(),
 };
-
-// --------------------------------------------------------------------------
-// RxDB Collection Schemas
-// --------------------------------------------------------------------------
-
-const batchRxSchema: RxJsonSchema<Batch> = {
-  version: 0,
-  primaryKey: 'id',
-  type: 'object',
-  properties: {
-    id: { type: 'string', maxLength: 100 },
-    species: { type: 'string' },
-    startDate: { type: 'string' },
-    eggCount: { type: 'number' },
-    status: { type: 'string' },
-    batchTag: { type: 'string' },
-    displayTag: { type: 'string' },
-    notes: { type: 'string' },
-    roomName: { type: 'string' },
-    strain: { type: 'string' },
-    createdBy: { type: 'string' },
-    createdByName: { type: 'string' },
-    assignedStaff: {
-      type: 'array',
-      items: { type: 'string' },
-    },
-    bedAreaSqMeters: { type: 'number' },
-    currentInstar: { type: 'number' },
-    currentTraysCount: { type: 'number' },
-    targetForageCultivar: { type: 'string' },
-    orchardBlock: { type: 'string' },
-    isQuarantined: { type: 'boolean' },
-    quarantineReason: { type: 'string' },
-    quarantinedAt: { type: 'string' },
-    quarantinedBy: { type: 'string' },
-  },
-  required: ['id', 'species', 'startDate', 'eggCount', 'status'],
-};
-
-const feedLogRxSchema: RxJsonSchema<FeedLog> = {
-  version: 0,
-  primaryKey: 'id',
-  type: 'object',
-  properties: {
-    id: { type: 'string', maxLength: 100 },
-    batchId: { type: 'string', maxLength: 100 },
-    recordedAt: { type: 'string' },
-    quantityGrams: { type: 'number' },
-    leafType: { type: 'string' },
-    cultivar: { type: 'string' },
-    wasSkipped: { type: 'boolean' },
-    skippedReason: { type: 'string' },
-    operatorId: { type: 'string' },
-    operatorName: { type: 'string' },
-    operatorRole: { type: 'string' },
-    shift: { type: 'string' },
-    notes: { type: 'string' },
-  },
-  required: ['id', 'batchId', 'recordedAt', 'quantityGrams', 'leafType'],
-  indexes: ['batchId'],
-};
-
-const mortalityLogRxSchema: RxJsonSchema<MortalityLog> = {
-  version: 0,
-  primaryKey: 'id',
-  type: 'object',
-  properties: {
-    id: { type: 'string', maxLength: 100 },
-    batchId: { type: 'string', maxLength: 100 },
-    recordedAt: { type: 'string' },
-    count: { type: 'number' },
-    cause: { type: 'string' },
-    symptoms: { type: 'string' },
-    photoUrl: { type: 'string' },
-    operatorId: { type: 'string' },
-    operatorName: { type: 'string' },
-    operatorRole: { type: 'string' },
-    notes: { type: 'string' },
-  },
-  required: ['id', 'batchId', 'recordedAt', 'count'],
-  indexes: ['batchId'],
-};
-
-// --------------------------------------------------------------------------
-// PowerSync RxDB Replication Connector
-// --------------------------------------------------------------------------
-
-export interface SyncStatus {
-  status: 'idle' | 'syncing' | 'offline' | 'error';
-  lastSyncedAt: string | null;
-  pendingPushes: number;
-}
-
-export class NsrcPowerSyncRxReplicationConnector {
-  public endpoint: string;
-  public token: string | null;
-  public syncStatus$ = new BehaviorSubject<SyncStatus>({
-    status: 'idle',
-    lastSyncedAt: null,
-    pendingPushes: 0,
-  });
-
-  private activeReplications: Map<string, RxReplicationState<any, any>> = new Map();
-
-  constructor(endpoint = 'https://powersync.kalro-nsrc.go.ke', token: string | null = null) {
-    this.endpoint = endpoint;
-    this.token = token;
-  }
-
-  public registerCollectionReplication<T extends { id: string }>(
-    collection: RxCollection<T>
-  ): RxReplicationState<T, any> {
-    const replicationState = replicateRxCollection<T, any>({
-      collection,
-      replicationIdentifier: `powersync-nsrc-${collection.name}`,
-      live: true,
-      retryTime: 5000,
-      autoStart: true,
-      pull: {
-        handler: async (lastCheckpoint, batchSize) => {
-          if (!navigator.onLine || !this.token) {
-            return {
-              checkpoint: lastCheckpoint ?? { lastModified: 0 },
-              documents: [],
-            };
-          }
-          try {
-            this.syncStatus$.next({
-              ...this.syncStatus$.value,
-              status: 'syncing',
-            });
-            const res = await fetch(
-              `${this.endpoint}/api/powersync/pull/${collection.name}?batchSize=${batchSize}`,
-              {
-                headers: {
-                  Authorization: `Bearer ${this.token}`,
-                },
-              }
-            );
-            if (res.ok) {
-              const data = await res.json();
-              this.syncStatus$.next({
-                status: 'idle',
-                lastSyncedAt: new Date().toISOString(),
-                pendingPushes: 0,
-              });
-              return {
-                checkpoint: data.checkpoint,
-                documents: data.documents || [],
-              };
-            }
-          } catch {
-            this.syncStatus$.next({
-              ...this.syncStatus$.value,
-              status: 'offline',
-            });
-          }
-          return {
-            checkpoint: lastCheckpoint ?? { lastModified: 0 },
-            documents: [],
-          };
-        },
-      },
-      push: {
-        handler: async (changeDocs) => {
-          if (!navigator.onLine || !this.token || changeDocs.length === 0) {
-            return [];
-          }
-          try {
-            this.syncStatus$.next({
-              ...this.syncStatus$.value,
-              status: 'syncing',
-              pendingPushes: changeDocs.length,
-            });
-            const res = await fetch(
-              `${this.endpoint}/api/powersync/push/${collection.name}`,
-              {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  Authorization: `Bearer ${this.token}`,
-                },
-                body: JSON.stringify({ documents: changeDocs }),
-              }
-            );
-            if (res.ok) {
-              this.syncStatus$.next({
-                status: 'idle',
-                lastSyncedAt: new Date().toISOString(),
-                pendingPushes: 0,
-              });
-              return [];
-            }
-          } catch {
-            // Rural cellular disruption: changes remain safe in local RxDB IndexedDB
-            this.syncStatus$.next({
-              ...this.syncStatus$.value,
-              status: 'offline',
-            });
-          }
-          return [];
-        },
-      },
-    });
-
-    this.activeReplications.set(collection.name, replicationState);
-    return replicationState;
-  }
-}
 
 // --------------------------------------------------------------------------
 // StorageService with RxDB and RxJS Observables

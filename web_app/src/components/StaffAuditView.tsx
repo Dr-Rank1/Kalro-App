@@ -141,21 +141,21 @@ export const StaffAuditView: React.FC<StaffAuditViewProps> = ({
       case 'feed_log':
         return { label: 'Feeding', bg: 'var(--primary-subtle)', color: 'var(--primary)', icon: Leaf };
       case 'climate_check':
-        return { label: 'Climate', bg: '#EBF4FF', color: '#1E40AF', icon: Thermometer };
+        return { label: 'Climate', bg: 'var(--status-info-subtle)', color: 'var(--status-info)', icon: Thermometer };
       case 'mortality_log':
-        return { label: 'Bed Inspection', bg: '#FEF3C7', color: '#92400E', icon: AlertTriangle };
+        return { label: 'Bed Inspection', bg: 'var(--status-warning-subtle)', color: 'var(--status-warning)', icon: AlertTriangle };
       case 'cocoon_harvest':
-        return { label: 'Harvest', bg: '#FEE2E2', color: '#991B1B', icon: Package };
+        return { label: 'Harvest', bg: 'var(--status-danger-subtle)', color: 'var(--status-danger)', icon: Package };
       case 'leaf_inflow':
-        return { label: 'Leaf Harvest', bg: '#ECFDF5', color: '#065F46', icon: Leaf };
+        return { label: 'Leaf Harvest', bg: 'var(--primary-subtle)', color: 'var(--primary)', icon: Leaf };
       case 'leaf_outflow':
-        return { label: 'Stock Deduct', bg: '#F3F4F6', color: '#374151', icon: Leaf };
+        return { label: 'Stock Deduct', bg: 'var(--bg-subtle)', color: 'var(--text-muted)', icon: Leaf };
       case 'batch_created':
-        return { label: 'Batch Init', bg: '#EDE9FE', color: '#5B21B6', icon: Plus };
+        return { label: 'Batch Init', bg: 'var(--primary-subtle)', color: 'var(--primary)', icon: Plus };
       case 'batch_updated':
-        return { label: 'Batch Update', bg: '#F5F3FF', color: '#6D28D9', icon: RotateCw };
+        return { label: 'Batch Update', bg: 'var(--primary-subtle)', color: 'var(--primary)', icon: RotateCw };
       case 'shift_handover':
-        return { label: 'Shift Handover', bg: '#FEF9C3', color: '#854D0E', icon: ShieldCheck };
+        return { label: 'Shift Handover', bg: 'var(--status-warning-subtle)', color: 'var(--status-warning)', icon: ShieldCheck };
       default:
         return { label: 'Operation', bg: 'var(--bg-subtle)', color: 'var(--text-main)', icon: CheckCircle2 };
     }
@@ -189,8 +189,8 @@ export const StaffAuditView: React.FC<StaffAuditViewProps> = ({
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
             <button
               onClick={() => setShowHandoverModal(true)}
-              className="btn-secondary"
-              style={{ fontSize: '0.8rem', padding: '0.5rem 0.9rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+              className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+              style={{ fontSize: '0.8rem', padding: '0.5rem 0.9rem', display: 'flex', alignItems: 'center', gap: '6px', minHeight: '48px' }}
               title="Record a shift handover or rearing room inspection note"
             >
               <Plus size={14} />
@@ -198,8 +198,8 @@ export const StaffAuditView: React.FC<StaffAuditViewProps> = ({
             </button>
             <button
               onClick={onExportCsv}
-              className="btn-secondary"
-              style={{ fontSize: '0.8rem', padding: '0.5rem 0.9rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+              className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+              style={{ fontSize: '0.8rem', padding: '0.5rem 0.9rem', display: 'flex', alignItems: 'center', gap: '6px', minHeight: '48px' }}
               title="Download audit records as CSV spreadsheet"
             >
               <Download size={14} />
@@ -207,8 +207,8 @@ export const StaffAuditView: React.FC<StaffAuditViewProps> = ({
             </button>
             <button
               onClick={onExportPdf}
-              className="btn-accent"
-              style={{ fontSize: '0.8rem', padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+              className="btn-accent min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+              style={{ fontSize: '0.8rem', padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '6px', minHeight: '48px' }}
               title="Generate formal KALRO Sericulture Staff Duty PDF Report"
             >
               <FileText size={14} />
@@ -295,7 +295,7 @@ export const StaffAuditView: React.FC<StaffAuditViewProps> = ({
           <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>
             Microclimate Checks
           </div>
-          <div className="tabular-nums" style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1E40AF', margin: '2px 0' }}>
+          <div className="tabular-nums" style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--status-info)', margin: '2px 0' }}>
             {climateOpsCount}
           </div>
           <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
@@ -307,7 +307,7 @@ export const StaffAuditView: React.FC<StaffAuditViewProps> = ({
           <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>
             Rotating Staff
           </div>
-          <div className="tabular-nums" style={{ fontSize: '1.5rem', fontWeight: 700, color: '#B45309', margin: '2px 0' }}>
+          <div className="tabular-nums" style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--status-warning)', margin: '2px 0' }}>
             {allUsers.length}
           </div>
           <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
@@ -417,9 +417,10 @@ export const StaffAuditView: React.FC<StaffAuditViewProps> = ({
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
+              className="min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
               style={{
                 position: 'absolute',
-                right: '8px',
+                right: '4px',
                 top: '50%',
                 transform: 'translateY(-50%)',
                 background: 'none',
@@ -429,11 +430,13 @@ export const StaffAuditView: React.FC<StaffAuditViewProps> = ({
                 justifyContent: 'center',
                 color: 'var(--text-muted)',
                 cursor: 'pointer',
-                padding: 0,
+                padding: '12px',
+                minHeight: '48px',
+                minWidth: '48px',
               }}
               aria-label="Clear search"
             >
-              <X size={14} />
+              <X size={16} />
             </button>
           )}
         </div>
@@ -658,7 +661,7 @@ export const StaffAuditView: React.FC<StaffAuditViewProps> = ({
                   Document rearing tray condition, room adjustments, or shift handovers.
                 </p>
               </div>
-              <button onClick={() => setShowHandoverModal(false)} className="modal-close-btn" aria-label="Close dialog">
+              <button onClick={() => setShowHandoverModal(false)} className="modal-close-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]" aria-label="Close dialog">
                 <X size={18} />
               </button>
             </div>
@@ -667,16 +670,18 @@ export const StaffAuditView: React.FC<StaffAuditViewProps> = ({
               <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                 <div className="form-group">
                   <label className="form-label">Shift Handover Period</label>
-                  <div style={{ display: 'flex', gap: '6px' }}>
+                  <div style={{ display: 'flex', gap: '8px' }}>
                     {(['morning', 'midday', 'evening', 'night'] as const).map((s) => (
                       <button
                         key={s}
                         type="button"
                         onClick={() => setHandoverShift(s)}
+                        className="min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
                         style={{
                           flex: 1,
-                          padding: '6px 0',
-                          fontSize: '0.78rem',
+                          minHeight: '48px',
+                          padding: '8px 0',
+                          fontSize: '0.8rem',
                           fontWeight: 600,
                           borderRadius: 'var(--radius-sm)',
                           border: '1px solid var(--border-card)',
@@ -721,11 +726,16 @@ export const StaffAuditView: React.FC<StaffAuditViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowHandoverModal(false)}
-                  className="btn-secondary"
+                  className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                  style={{ minHeight: '48px', padding: '0.5rem 1rem' }}
                 >
                   Cancel
                 </button>
-                <button type="submit" className="btn-accent" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <button
+                  type="submit"
+                  className="btn-accent min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                  style={{ display: 'flex', alignItems: 'center', gap: '6px', minHeight: '48px', padding: '0.5rem 1.25rem' }}
+                >
                   <Send size={14} />
                   <span>Save to Station Ledger</span>
                 </button>

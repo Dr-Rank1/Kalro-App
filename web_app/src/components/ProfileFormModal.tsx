@@ -170,7 +170,7 @@ export const ProfileFormModal: React.FC<ProfileFormModalProps> = ({
                 : 'Update your contact information and farm facility specifications.'}
             </p>
           </div>
-          <button onClick={onClose} className="modal-close-btn" aria-label="Close dialog">
+          <button onClick={onClose} className="modal-close-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]" aria-label="Close dialog">
             <X size={18} />
           </button>
         </div>
@@ -208,29 +208,39 @@ export const ProfileFormModal: React.FC<ProfileFormModalProps> = ({
               <label className="form-label" style={{ fontSize: '0.75rem', marginBottom: '6px' }}>
                 Profile Color
               </label>
-              <div style={{ display: 'flex', gap: '8px' }}>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                 {AVATAR_COLORS.map((c) => (
                   <button
                     key={c}
                     type="button"
                     onClick={() => setAvatarColor(c)}
+                    className="min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
                     style={{
-                      width: '28px',
-                      height: '28px',
-                      borderRadius: '50%',
-                      backgroundColor: c,
-                      border: avatarColor === c ? '2px solid #ffffff' : '2px solid transparent',
-                      outline: avatarColor === c ? `2px solid ${c}` : 'none',
+                      width: '48px',
+                      height: '48px',
+                      minWidth: '48px',
+                      minHeight: '48px',
+                      borderRadius: '8px',
+                      backgroundColor: 'var(--bg-subtle)',
+                      border: avatarColor === c ? '2px solid var(--primary)' : '1px solid var(--border-subtle)',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      color: '#ffffff',
-                      transition: 'transform 0.1s ease',
+                      padding: 0,
                     }}
-                    title={`Color ${c}`}
+                    title={`Select color ${c}`}
                   >
-                    {avatarColor === c && <Check size={14} />}
+                    <span
+                      style={{
+                        width: '28px',
+                        height: '28px',
+                        borderRadius: '50%',
+                        backgroundColor: c,
+                        border: avatarColor === c ? '2px solid #ffffff' : 'none',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                      }}
+                    />
                   </button>
                 ))}
               </div>
@@ -357,16 +367,18 @@ export const ProfileFormModal: React.FC<ProfileFormModalProps> = ({
                 {/* Quick Presets: Rearing Houses */}
                 <div className="form-group">
                   <label className="form-label">Rearing Houses</label>
-                  <div style={{ display: 'flex', gap: '6px' }}>
+                  <div style={{ display: 'flex', gap: '8px' }}>
                     {[1, 2, 3, 4].map((cnt) => (
                       <button
                         key={cnt}
                         type="button"
                         onClick={() => setHouseCount(cnt)}
+                        className="min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
                         style={{
                           flex: 1,
-                          padding: '6px 0',
-                          fontSize: '0.8rem',
+                          minHeight: '48px',
+                          padding: '8px 0',
+                          fontSize: '0.85rem',
                           fontWeight: 600,
                           borderRadius: 'var(--radius-sm)',
                           border: '1px solid var(--border-card)',
@@ -384,16 +396,18 @@ export const ProfileFormModal: React.FC<ProfileFormModalProps> = ({
                 {/* Quick Presets: Mulberry Acreage */}
                 <div className="form-group">
                   <label className="form-label">Mulberry Orchard (Acres)</label>
-                  <div style={{ display: 'flex', gap: '6px' }}>
+                  <div style={{ display: 'flex', gap: '8px' }}>
                     {[0.5, 1.0, 2.0, 5.0].map((ac) => (
                       <button
                         key={ac}
                         type="button"
                         onClick={() => setMulberryAcreage(ac)}
+                        className="min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
                         style={{
                           flex: 1,
-                          padding: '6px 0',
-                          fontSize: '0.78rem',
+                          minHeight: '48px',
+                          padding: '8px 0',
+                          fontSize: '0.8rem',
                           fontWeight: 600,
                           borderRadius: 'var(--radius-sm)',
                           border: '1px solid var(--border-card)',
@@ -414,19 +428,22 @@ export const ProfileFormModal: React.FC<ProfileFormModalProps> = ({
                     <button
                       type="button"
                       onClick={() => setSyncCode(generateSyncCode(county))}
+                      className="min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
                       style={{
                         background: 'none',
                         border: 'none',
                         color: 'var(--primary)',
-                        fontSize: '0.72rem',
+                        fontSize: '0.76rem',
                         fontWeight: 600,
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
                         gap: '4px',
+                        minHeight: '48px',
+                        padding: '0 8px',
                       }}
                     >
-                      <RefreshCw size={11} /> Generate New
+                      <RefreshCw size={12} /> Generate New
                     </button>
                   </div>
                   <input
@@ -455,8 +472,8 @@ export const ProfileFormModal: React.FC<ProfileFormModalProps> = ({
                   onClose();
                   onDelete();
                 }}
-                className="btn-danger-outline"
-                style={{ fontSize: '0.8rem', padding: '0.45rem 0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+                className="btn-danger-outline min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                style={{ fontSize: '0.8rem', padding: '0.5rem 0.9rem', minHeight: '48px', display: 'flex', alignItems: 'center', gap: '6px' }}
                 title="Delete this profile permanently"
               >
                 <Trash2 size={13} />
@@ -464,10 +481,10 @@ export const ProfileFormModal: React.FC<ProfileFormModalProps> = ({
               </button>
             ) : <div />}
             <div style={{ display: 'flex', gap: '8px' }}>
-              <button type="button" onClick={onClose} className="btn-secondary">
+              <button type="button" onClick={onClose} className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]" style={{ minHeight: '48px', padding: '0.5rem 1rem' }}>
                 Cancel
               </button>
-              <button type="submit" className="btn-accent">
+              <button type="submit" className="btn-accent min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]" style={{ minHeight: '48px', padding: '0.5rem 1.25rem' }}>
                 {mode === 'create' ? 'Create Farm Profile' : 'Save Changes'}
               </button>
             </div>

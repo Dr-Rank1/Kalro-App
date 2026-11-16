@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X, Leaf, Plus } from 'lucide-react';
-import { LeafMovement, LeafType, FarmProfile } from '../types';
-import { KENYA_MULBERRY_CULTIVARS, KENYA_CASTOR_VARIETIES } from '../constants';
+import { LeafMovement, LeafType, FarmProfile } from '../../../types';
+import { KENYA_MULBERRY_CULTIVARS, KENYA_CASTOR_VARIETIES } from '../../../constants';
 
 interface LeafStockModalProps {
   isOpen: boolean;
@@ -78,7 +78,7 @@ export const LeafStockModal: React.FC<LeafStockModalProps> = ({
               Add freshly harvested mulberry or castor stock to update station forage stockpile
             </p>
           </div>
-          <button onClick={onClose} className="modal-close-btn" aria-label="Close dialog">
+          <button onClick={onClose} className="modal-close-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]" aria-label="Close dialog">
             <X size={18} />
           </button>
         </div>
@@ -211,10 +211,10 @@ export const LeafStockModal: React.FC<LeafStockModalProps> = ({
           </div>
 
           <div className="modal-footer" style={{ padding: '0.85rem 1.25rem', display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-            <button type="button" onClick={onClose} className="btn-secondary">
+            <button type="button" onClick={onClose} className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]" style={{ minHeight: '48px', padding: '0.5rem 1rem' }}>
               Cancel
             </button>
-            <button type="submit" className="btn-accent" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <button type="submit" className="btn-accent min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', minHeight: '48px', padding: '0.5rem 1.25rem' }}>
               <Plus size={15} />
               Add to Stockpile
             </button>

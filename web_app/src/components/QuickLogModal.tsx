@@ -337,7 +337,7 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
         <div className="log-tab-row">
           <button
             type="button"
-            className={`log-tab-btn ${logType === 'feed' ? 'active' : ''}`}
+            className={`log-tab-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A] ${logType === 'feed' ? 'active' : ''}`}
             onClick={() => { setLogType('feed'); setErrorMessage(null); }}
           >
             <Leaf size={14} />
@@ -345,7 +345,7 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
           </button>
           <button
             type="button"
-            className={`log-tab-btn ${logType === 'mortality' ? 'active' : ''}`}
+            className={`log-tab-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A] ${logType === 'mortality' ? 'active' : ''}`}
             onClick={() => { setLogType('mortality'); setErrorMessage(null); }}
           >
             <AlertTriangle size={14} />
@@ -353,7 +353,7 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
           </button>
           <button
             type="button"
-            className={`log-tab-btn ${logType === 'climate' ? 'active' : ''}`}
+            className={`log-tab-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A] ${logType === 'climate' ? 'active' : ''}`}
             onClick={() => { setLogType('climate'); setErrorMessage(null); }}
           >
             <Thermometer size={14} />
@@ -361,7 +361,7 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
           </button>
           <button
             type="button"
-            className={`log-tab-btn ${logType === 'harvest' ? 'active' : ''}`}
+            className={`log-tab-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A] ${logType === 'harvest' ? 'active' : ''}`}
             onClick={() => { setLogType('harvest'); setErrorMessage(null); }}
           >
             <Package size={14} />
@@ -471,7 +471,7 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
                     onClose();
                     onOpenBatchRegistration();
                   }}
-                  className="btn-accent"
+                  className="btn-accent min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
                   style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 16px', fontSize: '0.82rem' }}
                 >
                   <Plus size={15} />
@@ -481,7 +481,7 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
               <button
                 type="button"
                 onClick={() => setLogType('climate')}
-                className="btn-secondary"
+                className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
                 style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '8px 16px', fontSize: '0.82rem' }}
               >
                 <Thermometer size={14} />
@@ -532,12 +532,13 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px',
-                  background: wasSkipped ? '#fff9e6' : 'var(--bg-subtle)',
-                  border: wasSkipped ? '1px solid #ffeeba' : '1px solid var(--border-subtle)',
-                  padding: '8px 12px',
+                  background: wasSkipped ? 'var(--status-warning-subtle)' : 'var(--bg-subtle)',
+                  border: wasSkipped ? '1px solid var(--status-warning)' : '1px solid var(--border-subtle)',
+                  padding: '10px 14px',
                   borderRadius: 'var(--radius-sm)',
                   marginBottom: '1rem',
                   cursor: 'pointer',
+                  minHeight: '48px',
                 }}
                 onClick={() => setWasSkipped(!wasSkipped)}
               >
@@ -550,7 +551,7 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
                 />
                 <label
                   htmlFor="skipMoultCheck"
-                  style={{ fontSize: '0.78rem', fontWeight: 600, color: wasSkipped ? '#856404' : 'var(--text-main)', cursor: 'pointer', margin: 0 }}
+                  style={{ fontSize: '0.8rem', fontWeight: 600, color: wasSkipped ? 'var(--status-warning)' : 'var(--text-main)', cursor: 'pointer', margin: 0 }}
                 >
                   Moult Fasting / Zero Rations Day (Silkworms resting in moult)
                 </label>
@@ -565,7 +566,7 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
                       <div className="unit-toggle-group">
                         <button
                           type="button"
-                          className={`unit-toggle-btn ${feedUnit === 'kg' ? 'active' : ''}`}
+                          className={`unit-toggle-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A] ${feedUnit === 'kg' ? 'active' : ''}`}
                           onClick={() => {
                             if (feedUnit === 'g' && feedAmount !== '') {
                               setFeedAmount(Number((Number(feedAmount) / 1000).toFixed(2)));
@@ -577,7 +578,7 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
                         </button>
                         <button
                           type="button"
-                          className={`unit-toggle-btn ${feedUnit === 'g' ? 'active' : ''}`}
+                          className={`unit-toggle-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A] ${feedUnit === 'g' ? 'active' : ''}`}
                           onClick={() => {
                             if (feedUnit === 'kg' && feedAmount !== '') {
                               setFeedAmount(Math.round(Number(feedAmount) * 1000));
@@ -865,8 +866,8 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
                   <div
                     style={{
                       display: 'flex',
-                      gap: '6px',
-                      marginBottom: '8px',
+                      gap: '8px',
+                      marginBottom: '10px',
                       flexWrap: 'wrap',
                     }}
                   >
@@ -877,21 +878,23 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
                           key={house}
                           type="button"
                           onClick={() => setSelectedChamber(house)}
+                          className="min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
                           style={{
-                            padding: '6px 12px',
+                            padding: '8px 14px',
+                            minHeight: '48px',
                             borderRadius: 'var(--radius-sm)',
                             border: isSelected ? '2px solid var(--primary)' : '1px solid var(--border-card)',
                             background: isSelected ? 'rgba(20, 61, 43, 0.08)' : 'var(--bg-subtle)',
                             color: isSelected ? 'var(--primary)' : 'var(--text-main)',
                             fontWeight: isSelected ? 700 : 500,
-                            fontSize: '0.78rem',
+                            fontSize: '0.8rem',
                             cursor: 'pointer',
                             display: 'inline-flex',
                             alignItems: 'center',
-                            gap: '5px',
+                            gap: '6px',
                           }}
                         >
-                          <Building2 size={13} />
+                          <Building2 size={15} />
                           <span>{house}</span>
                         </button>
                       );
@@ -984,16 +987,21 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
                       key={v.key}
                       type="button"
                       onClick={() => setVentilation(v.key as any)}
+                      className="min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
                       style={{
                         padding: '8px 6px',
+                        minHeight: '48px',
                         borderRadius: 'var(--radius-sm)',
                         border: ventilation === v.key ? '2px solid var(--primary)' : '1px solid var(--border-card)',
                         background: ventilation === v.key ? 'rgba(20, 61, 43, 0.08)' : 'var(--bg-subtle)',
                         color: ventilation === v.key ? 'var(--primary)' : 'var(--text-main)',
                         fontWeight: ventilation === v.key ? 700 : 500,
-                        fontSize: '0.72rem',
+                        fontSize: '0.74rem',
                         cursor: 'pointer',
                         textAlign: 'center',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                       }}
                     >
                       {v.label}
@@ -1029,7 +1037,7 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
                     <div className="unit-toggle-group">
                       <button
                         type="button"
-                        className={`unit-toggle-btn ${harvestWeightUnit === 'kg' ? 'active' : ''}`}
+                        className={`unit-toggle-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A] ${harvestWeightUnit === 'kg' ? 'active' : ''}`}
                         onClick={() => {
                           if (harvestWeightUnit === 'g' && harvestWeight !== '') {
                             setHarvestWeight(Number((Number(harvestWeight) / 1000).toFixed(2)));
@@ -1041,7 +1049,7 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
                       </button>
                       <button
                         type="button"
-                        className={`unit-toggle-btn ${harvestWeightUnit === 'g' ? 'active' : ''}`}
+                        className={`unit-toggle-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A] ${harvestWeightUnit === 'g' ? 'active' : ''}`}
                         onClick={() => {
                           if (harvestWeightUnit === 'kg' && harvestWeight !== '') {
                             setHarvestWeight(Math.round(Number(harvestWeight) * 1000));
@@ -1072,7 +1080,7 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
                       <span
                         style={{
                           fontWeight: 700,
-                          color: avgCocoonWeight >= 1.8 ? 'var(--status-success)' : '#8c5d07',
+                          color: avgCocoonWeight >= 1.8 ? 'var(--status-success)' : 'var(--status-warning)',
                         }}
                       >
                         ({avgCocoonWeight >= 1.8 ? 'Grade A Benchmark' : 'Grade B Commercial'})
@@ -1123,14 +1131,14 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="btn-secondary"
+              className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
               style={{ padding: '0.55rem 1.15rem' }}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="btn-accent"
+              className="btn-accent min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
               style={{ padding: '0.55rem 1.35rem', fontWeight: 700 }}
             >
               {logType === 'feed'

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Thermometer, Droplets, Leaf, AlertTriangle, ShieldAlert } from 'lucide-react';
-import { BOMBYX_STAGES, ERI_STAGES } from '../constants';
-import { Batch, MilestoneStage, Species } from '../types';
-import { getCurrentStage, getBatchAgeDays } from '../utils';
+import { BOMBYX_STAGES, ERI_STAGES } from '../../../constants';
+import { Batch, MilestoneStage, Species } from '../../../types';
+import { getCurrentStage, getBatchAgeDays } from '../../../utils';
 
 interface PlanViewProps {
   batches: Batch[];
@@ -247,15 +247,18 @@ export const PlanView: React.FC<PlanViewProps> = ({ batches, onSelectTab }) => {
                 <button
                   type="button"
                   onClick={() => onSelectTab('today')}
+                  className="min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
                   style={{
                     border: 'none',
                     background: 'none',
                     color: 'var(--primary)',
                     textDecoration: 'underline',
                     cursor: 'pointer',
-                    fontSize: '0.74rem',
+                    fontSize: '0.78rem',
                     fontWeight: 700,
-                    padding: 0,
+                    padding: '8px 12px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
                   }}
                 >
                   Go to Operations Today →
@@ -271,14 +274,14 @@ export const PlanView: React.FC<PlanViewProps> = ({ batches, onSelectTab }) => {
           <div className="roadmap-toggle-group">
             <button
               type="button"
-              className={`roadmap-toggle-btn ${activeSpecies === 'bombyx' ? 'active' : ''}`}
+              className={`roadmap-toggle-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A] ${activeSpecies === 'bombyx' ? 'active' : ''}`}
               onClick={() => setActiveSpecies('bombyx')}
             >
               Bombyx (Mulberry)
             </button>
             <button
               type="button"
-              className={`roadmap-toggle-btn ${activeSpecies === 'eri' ? 'active' : ''}`}
+              className={`roadmap-toggle-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A] ${activeSpecies === 'eri' ? 'active' : ''}`}
               onClick={() => setActiveSpecies('eri')}
             >
               Eri (Castor)
@@ -289,14 +292,14 @@ export const PlanView: React.FC<PlanViewProps> = ({ batches, onSelectTab }) => {
           <div className="roadmap-toggle-group">
             <button
               type="button"
-              className={`roadmap-toggle-btn ${viewMode === 'phases' ? 'active' : ''}`}
+              className={`roadmap-toggle-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A] ${viewMode === 'phases' ? 'active' : ''}`}
               onClick={() => setViewMode('phases')}
             >
               5 Phases
             </button>
             <button
               type="button"
-              className={`roadmap-toggle-btn ${viewMode === 'detailed' ? 'active' : ''}`}
+              className={`roadmap-toggle-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A] ${viewMode === 'detailed' ? 'active' : ''}`}
               onClick={() => setViewMode('detailed')}
             >
               All Days ({detailedStages.length})

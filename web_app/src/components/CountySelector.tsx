@@ -74,7 +74,7 @@ export const CountySelector: React.FC<CountySelectorProps> = ({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="form-control county-trigger-btn"
+        className="form-control county-trigger-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -84,8 +84,8 @@ export const CountySelector: React.FC<CountySelectorProps> = ({
           backgroundColor: 'var(--bg-card)',
           fontWeight: 600,
           color: 'var(--text-main)',
-          padding: '8px 12px',
-          minHeight: '42px',
+          padding: '8px 14px',
+          minHeight: '48px',
           borderColor: isOpen ? 'var(--primary)' : 'var(--border-silk)',
           boxShadow: isOpen ? '0 0 0 2px var(--primary-subtle)' : 'none',
         }}
@@ -108,15 +108,15 @@ export const CountySelector: React.FC<CountySelectorProps> = ({
       </button>
 
       {/* 1-Tap Quick Select Pills for Top Sericulture Counties */}
-      <div style={{ marginTop: '6px' }}>
-        <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '4px', fontWeight: 600 }}>
+      <div style={{ marginTop: '8px' }}>
+        <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginBottom: '6px', fontWeight: 600 }}>
           Quick Select Sericulture Zones:
         </div>
         <div
           style={{
             display: 'flex',
             flexWrap: 'wrap',
-            gap: '5px',
+            gap: '8px',
           }}
         >
           {TOP_SERICULTURE_COUNTIES.slice(0, 8).map((c) => {
@@ -126,9 +126,11 @@ export const CountySelector: React.FC<CountySelectorProps> = ({
                 key={c}
                 type="button"
                 onClick={() => handleSelect(c)}
+                className="min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
                 style={{
-                  fontSize: '0.72rem',
-                  padding: '3px 8px',
+                  fontSize: '0.78rem',
+                  padding: '8px 12px',
+                  minHeight: '48px',
                   borderRadius: 'var(--radius-sm)',
                   border: isSelected ? '1px solid var(--primary)' : '1px solid var(--border-subtle)',
                   backgroundColor: isSelected ? 'var(--primary)' : 'var(--bg-subtle)',
@@ -137,11 +139,11 @@ export const CountySelector: React.FC<CountySelectorProps> = ({
                   cursor: 'pointer',
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '3px',
+                  gap: '5px',
                   transition: 'all 0.15s ease',
                 }}
               >
-                {isSelected && <Check size={11} />}
+                {isSelected && <Check size={14} />}
                 <span>{c}</span>
               </button>
             );
@@ -239,9 +241,10 @@ export const CountySelector: React.FC<CountySelectorProps> = ({
                     key={c}
                     type="button"
                     onClick={() => handleSelect(c)}
+                    className="min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
                     style={{
                       width: '100%',
-                      padding: '9px 12px',
+                      padding: '12px 14px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
@@ -249,10 +252,10 @@ export const CountySelector: React.FC<CountySelectorProps> = ({
                       background: isSelected ? 'var(--primary-subtle)' : 'transparent',
                       color: isSelected ? 'var(--primary)' : 'var(--text-main)',
                       fontWeight: isSelected ? 700 : 500,
-                      fontSize: '0.82rem',
+                      fontSize: '0.84rem',
                       cursor: 'pointer',
                       textAlign: 'left',
-                      minHeight: '38px',
+                      minHeight: '48px',
                       transition: 'background-color 0.1s ease',
                     }}
                     onMouseEnter={(e) => {

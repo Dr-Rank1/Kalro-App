@@ -3,20 +3,18 @@ import { X } from 'lucide-react';
 import { Header } from './components/Header';
 import { Navigation, NavTab } from './components/Navigation';
 import { TodayView } from './components/TodayView';
-import { BatchesView } from './components/BatchesView';
-import { StationAgronomyView } from './components/StationAgronomyView';
 import { StaffAuditView } from './components/StaffAuditView';
 import { ProfileView } from './components/ProfileView';
 import { QuickLogModal } from './components/QuickLogModal';
-import { QrCodeModal } from './components/QrCodeModal';
 import { ReportExportModal } from './components/ReportExportModal';
 import { ProfileFormModal, ProfileFormData } from './components/ProfileFormModal';
 import { DeleteProfileModal } from './components/DeleteProfileModal';
-import { BatchRegistrationForm } from './components/BatchRegistrationForm';
-import { LeafStockModal } from './components/LeafStockModal';
 import { TerminalLockModal } from './components/TerminalLockModal';
+import { BatchesView, BatchRegistrationForm, QrCodeModal } from './features/batches';
+import { StationAgronomyView, LeafStockModal } from './features/agronomy';
 import { downloadSingleBatchPdf, downloadStaffAuditPdf } from './utils/pdfGenerator';
-import { storage, SyncStatus } from './storage';
+import { storage } from './storage';
+import { SyncStatus } from './lib/rxdb';
 import {
   AuditLogEntry,
   Batch,

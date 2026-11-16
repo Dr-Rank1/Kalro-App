@@ -47,7 +47,7 @@ export const USER_ROLES: { value: UserRole; label: string; desc: string; badgeCo
     value: 'apprentice',
     label: 'Rearing Assistant / Attendant',
     desc: 'Daily shift feeding, bed hygiene, dusting with slaked lime, and log support.',
-    badgeColor: '#4B5563',
+    badgeColor: '#94A3B8',
   },
 ];
 

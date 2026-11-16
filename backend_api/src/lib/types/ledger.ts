@@ -1,13 +1,21 @@
 /**
  * MongoDB Atlas Payout Ledger Document Schema
+ * Adheres to Node Best Practices for Idempotency & Financial Auditing
  */
 
-export type LedgerStatus = 'PENDING' | 'COMPLETED' | 'FAILED' | 'TIMEOUT';
+export type LedgerStatus =
+  | 'INITIATED'
+  | 'PROCESSING'
+  | 'PENDING'
+  | 'COMPLETED'
+  | 'FAILED'
+  | 'TIMEOUT';
 
 export interface PayoutLedgerDocument {
   _id?: any;
   reference: string; // KALRO-B2C-YYYYMMDD-XXXX
-  offlineId: string;
+  offlineId: string; // Client Idempotency Key
+  idempotencyKey?: string; // Explicit duplicate of offlineId for standardized queries
   farmerName: string;
   phoneNumber: string; // 254XXXXXXXXX
   amountKes: number;
@@ -16,9 +24,13 @@ export interface PayoutLedgerDocument {
   batchTag?: string;
   farmOrgName?: string;
   operatorName?: string;
+  stationSyncCode?: string;
   status: LedgerStatus;
+  attempts?: number;
+  lockUntil?: Date; // Distributed lock timestamp to prevent concurrent double-spend
   createdAt: Date;
   updatedAt: Date;
+
   // Daraja Submission Data
   daraja?: {
     conversationId?: string;
@@ -27,6 +39,7 @@ export interface PayoutLedgerDocument {
     responseDescription?: string;
     submittedAt?: Date;
   };
+
   // Callback Result Data from Safaricom Webhook
   callback?: {
     receivedAt: Date;

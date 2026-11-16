@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { X, QrCode, FileText, UserPlus } from 'lucide-react';
-import { Batch, FeedLog, MortalityLog, CocoonHarvest, FarmProfile, EnvironmentLog } from '../types';
-import { getCurrentStage, getLiveLarvaeCount, formatDate } from '../utils';
+import { Batch, FeedLog, MortalityLog, CocoonHarvest, FarmProfile, EnvironmentLog } from '../../../types';
+import { getCurrentStage, getLiveLarvaeCount, formatDate } from '../../../utils';
 import { BatchRegistrationForm } from './BatchRegistrationForm';
-import { downloadSingleBatchPdf } from '../utils/pdfGenerator';
+import { downloadSingleBatchPdf } from '../../../utils/pdfGenerator';
 
 interface BatchesViewProps {
   batches: Batch[];
@@ -126,7 +126,7 @@ export const BatchesView: React.FC<BatchesViewProps> = ({
               <button
                 key={mode}
                 onClick={() => setFilter(mode)}
-                className={`batches-filter-pill-btn ${filter === mode ? 'active' : ''}`}
+                className={`batches-filter-pill-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A] ${filter === mode ? 'active' : ''}`}
               >
                 <span className="btn-text-desktop">{mode === 'all' ? 'All Batches' : mode}</span>
                 <span className="btn-text-mobile">{mode === 'all' ? 'All' : mode}</span>
@@ -134,7 +134,7 @@ export const BatchesView: React.FC<BatchesViewProps> = ({
             ))}
           </div>
 
-          <button onClick={handleNewBatchClick} className="btn-accent batches-new-btn">
+          <button onClick={handleNewBatchClick} className="btn-accent batches-new-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]">
             + New Batch
           </button>
         </div>
@@ -167,7 +167,7 @@ export const BatchesView: React.FC<BatchesViewProps> = ({
             </p>
             <button
               onClick={() => onRequireProfile?.()}
-              className="btn-accent"
+              className="btn-accent min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
               style={{ padding: '0.55rem 1.35rem', fontSize: '0.88rem' }}
             >
               <UserPlus size={15} style={{ marginRight: '6px' }} />
@@ -204,7 +204,7 @@ export const BatchesView: React.FC<BatchesViewProps> = ({
               ? 'No historical closed batches found in local station storage.'
               : 'No batches recorded yet. Click "New Batch" to register your rearing lot.'}
           </p>
-          <button onClick={() => setShowAddModal(true)} className="btn-primary">
+          <button onClick={() => setShowAddModal(true)} className="btn-primary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]">
             Create New Batch
           </button>
         </div>
@@ -289,30 +289,30 @@ export const BatchesView: React.FC<BatchesViewProps> = ({
                   </p>
                 )}
 
-                <div style={{ display: 'flex', gap: '0.45rem', marginTop: 'auto', paddingTop: '0.5rem' }}>
+                <div style={{ display: 'flex', gap: '0.5rem', marginTop: 'auto', paddingTop: '0.65rem' }}>
                   <button
                     onClick={() => setSelectedBatch(batch)}
-                    className="btn-accent"
-                    style={{ flex: 1, fontSize: '0.78rem', padding: '0.4rem' }}
+                    className="btn-accent min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                    style={{ flex: 1, fontSize: '0.8rem', padding: '0.5rem 0.75rem' }}
                   >
                     View Details
                   </button>
                   <button
                     onClick={() => handleExportBatchPdf(batch)}
-                    className="btn-secondary"
-                    style={{ padding: '0.4rem 0.65rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                    className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                    style={{ padding: '0.5rem 0.75rem', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
                     title="Download Individual Batch PDF Dossier"
                   >
-                    <FileText size={14} />
-                    <span style={{ fontSize: '0.72rem', fontWeight: 600 }}>PDF</span>
+                    <FileText size={15} />
+                    <span style={{ fontSize: '0.74rem', fontWeight: 600 }}>PDF</span>
                   </button>
                   <button
                     onClick={() => onOpenQr(batch)}
-                    className="btn-secondary"
-                    style={{ padding: '0.4rem 0.65rem' }}
+                    className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                    style={{ padding: '0.5rem 0.75rem', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
                     title="Generate Tray QR Label"
                   >
-                    <QrCode size={14} />
+                    <QrCode size={16} />
                   </button>
                 </div>
                 </div>
@@ -337,7 +337,7 @@ export const BatchesView: React.FC<BatchesViewProps> = ({
               </div>
               <button
                 onClick={() => setShowAddModal(false)}
-                className="modal-close-btn"
+                className="modal-close-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
                 aria-label="Close modal"
               >
                 <X size={18} />
@@ -394,7 +394,7 @@ export const BatchesView: React.FC<BatchesViewProps> = ({
                   )}
                 </div>
               </div>
-              <button onClick={() => setSelectedBatch(null)} className="modal-close-btn" aria-label="Close modal">
+              <button onClick={() => setSelectedBatch(null)} className="modal-close-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]" aria-label="Close modal">
                 <X size={18} />
               </button>
             </div>
@@ -448,8 +448,8 @@ export const BatchesView: React.FC<BatchesViewProps> = ({
                   setSelectedBatch(null);
                   onOpenQuickLog(selectedBatch.id, 'feed');
                 }}
-                className="btn-accent"
-                style={{ fontSize: '0.78rem' }}
+                className="btn-accent min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                style={{ fontSize: '0.8rem', padding: '0.5rem 0.85rem' }}
               >
                 Log Feed
               </button>
@@ -458,8 +458,8 @@ export const BatchesView: React.FC<BatchesViewProps> = ({
                   setSelectedBatch(null);
                   onOpenQuickLog(selectedBatch.id, 'mortality');
                 }}
-                className="btn-secondary"
-                style={{ fontSize: '0.78rem' }}
+                className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                style={{ fontSize: '0.8rem', padding: '0.5rem 0.85rem' }}
               >
                 Record Loss
               </button>
@@ -468,22 +468,22 @@ export const BatchesView: React.FC<BatchesViewProps> = ({
                   setSelectedBatch(null);
                   onOpenQuickLog(selectedBatch.id, 'harvest');
                 }}
-                className="btn-secondary"
-                style={{ fontSize: '0.78rem' }}
+                className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                style={{ fontSize: '0.8rem', padding: '0.5rem 0.85rem' }}
               >
                 Log Harvest
               </button>
               <button
                 onClick={() => onOpenQr(selectedBatch)}
-                className="btn-secondary"
-                style={{ fontSize: '0.78rem' }}
+                className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                style={{ fontSize: '0.8rem', padding: '0.5rem 0.85rem' }}
               >
                 Tray QR Label
               </button>
               <button
                 onClick={() => handleExportBatchPdf(selectedBatch)}
-                className="btn-secondary"
-                style={{ fontSize: '0.78rem', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+                className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                style={{ fontSize: '0.8rem', padding: '0.5rem 0.85rem', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
                 title="Download verified PDF report for this specific silkworm batch"
               >
                 <FileText size={14} />
@@ -491,9 +491,10 @@ export const BatchesView: React.FC<BatchesViewProps> = ({
               </button>
               <button
                 onClick={() => handleToggleStatus(selectedBatch)}
-                className="btn-secondary"
+                className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
                 style={{
-                  fontSize: '0.78rem',
+                  fontSize: '0.8rem',
+                  padding: '0.5rem 0.85rem',
                   marginLeft: 'auto',
                   color: selectedBatch.status === 'active' ? 'var(--status-danger)' : 'var(--status-success)',
                 }}

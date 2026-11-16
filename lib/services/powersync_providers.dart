@@ -10,7 +10,9 @@ import 'mortality_log_repository.dart';
 
 /// Central FarmStore provider backed by PowerSync
 final farmStoreProvider = Provider<FarmStore>((ref) {
-  return FarmStore();
+  final store = FarmStore();
+  ref.onDispose(store.dispose);
+  return store;
 });
 
 /// Batch repository provider

@@ -128,7 +128,7 @@ export const Header: React.FC<HeaderProps> = ({
           {onLockTerminal && (
             <button
               onClick={onLockTerminal}
-              className="btn-header-secondary"
+              className="btn-header-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
               title="Lock Sericulture Station Terminal with PIN"
               style={{ display: 'inline-flex', alignItems: 'center' }}
             >
@@ -140,7 +140,7 @@ export const Header: React.FC<HeaderProps> = ({
 
           <button
             onClick={onOpenReportModal}
-            className="btn-header-secondary"
+            className="btn-header-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
             title="Generate and export official station PDF report"
           >
             <FileText size={14} style={{ marginRight: '5px' }} />
@@ -152,7 +152,7 @@ export const Header: React.FC<HeaderProps> = ({
           {!currentUser ? (
             <button
               onClick={onOpenNewUserModal}
-              className="btn-header-accent"
+              className="btn-header-accent min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
               title="Set up your farm profile"
             >
               <UserPlus size={14} style={{ marginRight: '5px' }} />
@@ -163,7 +163,7 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="tenant-switcher-wrapper" ref={dropdownRef}>
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="tenant-user-pill"
+                className="tenant-user-pill min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
                 title={`Active Sericulture Operator: ${currentUser.username} (${roleMeta.label})`}
                 aria-expanded={dropdownOpen}
               >
@@ -278,7 +278,7 @@ export const Header: React.FC<HeaderProps> = ({
                         setDropdownOpen(false);
                         onOpenNewUserModal();
                       }}
-                      className="tenant-action-btn"
+                      className="tenant-action-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
                     >
                       <UserPlus size={14} style={{ marginRight: '6px' }} />
                       <span>Register Staff Member</span>
@@ -289,7 +289,7 @@ export const Header: React.FC<HeaderProps> = ({
                         setDropdownOpen(false);
                         onNavigateToProfile();
                       }}
-                      className="tenant-action-btn secondary"
+                      className="tenant-action-btn secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
                     >
                       Station Roster &amp; Profile
                     </button>
@@ -300,7 +300,7 @@ export const Header: React.FC<HeaderProps> = ({
                           setDropdownOpen(false);
                           onLockTerminal();
                         }}
-                        className="tenant-action-btn secondary"
+                        className="tenant-action-btn secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
                         style={{ color: 'var(--primary)', fontWeight: 600 }}
                       >
                         <Lock size={14} style={{ marginRight: '6px' }} />

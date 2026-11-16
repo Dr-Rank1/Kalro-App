@@ -63,8 +63,9 @@ class BatchRepository {
       batchTag: batchTag?.trim().isEmpty == true ? null : batchTag?.trim(),
     );
 
-    final batches = await getAll();
-    _cache = [...batches, batch];
+    if (_cache != null) {
+      _cache = [..._cache!, batch];
+    }
     await _store.upsert(collection, batch.id, batch.toJson());
     return batch;
   }
@@ -82,9 +83,14 @@ class BatchRepository {
   }
 
   Future<void> delete(String id) async {
-    final batches = await getAll();
-    _cache = batches.where((batch) => batch.id != id).toList();
+    if (_cache != null) {
+      _cache = _cache!.where((batch) => batch.id != id).toList();
+    }
     await _store.delete(collection, id);
+  }
+
+  void dispose() {
+    _cache = null;
   }
 
   Future<List<Batch>> _load() async {

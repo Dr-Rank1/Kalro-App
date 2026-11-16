@@ -13,7 +13,7 @@ const inMemoryLedger = new Map<string, PayoutLedgerDocument>();
 
 let indexesInitialized = false;
 
-async function getLedgerCollection(): Promise<Collection<PayoutLedgerDocument> | null> {
+export async function getLedgerCollection(): Promise<Collection<PayoutLedgerDocument> | null> {
   const db: Db | null = await getDatabase();
   if (!db) return null;
 
@@ -21,23 +21,150 @@ async function getLedgerCollection(): Promise<Collection<PayoutLedgerDocument> |
 
   if (!indexesInitialized) {
     try {
-      await collection.createIndex({ reference: 1 }, { unique: true });
-      await collection.createIndex({ offlineId: 1 });
+      // 1. Strict Unique Index on offlineId (The Idempotency Key)
+      await collection.createIndex({ offlineId: 1 }, { unique: true, background: false });
+      // 2. Strict Unique Index on KALRO Reference
+      await collection.createIndex({ reference: 1 }, { unique: true, background: false });
+      // 3. Fast lookups for Safaricom async webhook callbacks
       await collection.createIndex({ 'daraja.originatorConversationId': 1 });
       await collection.createIndex({ 'daraja.conversationId': 1 });
       await collection.createIndex({ status: 1 });
       await collection.createIndex({ createdAt: -1 });
       indexesInitialized = true;
     } catch {
-      // index might already exist or running in constrained environment
+      // Index might already exist or running in restricted cluster
     }
   }
 
   return collection;
 }
 
+export interface ReservationResult {
+  isNew: boolean;
+  doc: PayoutLedgerDocument;
+  action: 'PROCEED' | 'SKIP_COMPLETED' | 'SKIP_PENDING' | 'LOCKED_IN_PROGRESS';
+}
+
 /**
- * Checks if a transaction with the given offlineId or reference already exists.
+ * Atomically reserves a payout transaction by its offlineId (idempotency key).
+ * Prevents race conditions and double-payment when a farmer or rural mobile device retries.
+ */
+export async function reservePayoutIdempotency(params: {
+  offlineId: string;
+  reference: string;
+  farmerName: string;
+  phoneNumber: string;
+  amountKes: number;
+  grade?: string;
+  weightKg?: number;
+  batchTag?: string;
+  farmOrgName?: string;
+  operatorName?: string;
+  stationSyncCode?: string;
+}): Promise<ReservationResult> {
+  const collection = await getLedgerCollection();
+  const now = new Date();
+  const lockUntil = new Date(now.getTime() + 45_000); // 45-second processing lock
+
+  const newDoc: PayoutLedgerDocument = {
+    ...params,
+    idempotencyKey: params.offlineId,
+    status: 'PROCESSING',
+    lockUntil,
+    attempts: 1,
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  // 1. In-Memory Fallback Path (Tests / Offline Mock)
+  if (!collection) {
+    let existing = inMemoryLedger.get(params.reference);
+    if (!existing) {
+      for (const doc of inMemoryLedger.values()) {
+        if (doc.offlineId === params.offlineId) {
+          existing = doc;
+          break;
+        }
+      }
+    }
+
+    if (existing) {
+      if (existing.status === 'COMPLETED') {
+        return { isNew: false, doc: existing, action: 'SKIP_COMPLETED' };
+      }
+      if (existing.status === 'PENDING') {
+        return { isNew: false, doc: existing, action: 'SKIP_PENDING' };
+      }
+      if (existing.status === 'PROCESSING' && existing.lockUntil && existing.lockUntil > now) {
+        return { isNew: false, doc: existing, action: 'LOCKED_IN_PROGRESS' };
+      }
+      // Lock expired; renew
+      existing.status = 'PROCESSING';
+      existing.lockUntil = lockUntil;
+      existing.updatedAt = now;
+      existing.attempts = (existing.attempts || 1) + 1;
+      return { isNew: true, doc: existing, action: 'PROCEED' };
+    }
+
+    inMemoryLedger.set(params.reference, newDoc);
+    return { isNew: true, doc: newDoc, action: 'PROCEED' };
+  }
+
+  // 2. Production MongoDB Atlas Path with Atomic Insertion & Duplicate Guard
+  try {
+    // Attempt atomic insert. The unique index on offlineId guarantees only ONE can ever succeed.
+    await collection.insertOne(newDoc as any);
+    return { isNew: true, doc: newDoc, action: 'PROCEED' };
+  } catch (error: any) {
+    // Check for MongoDB Duplicate Key Error (E11000)
+    if (error?.code === 11000 || error?.message?.includes('duplicate key')) {
+      const existing = await collection.findOne({ offlineId: params.offlineId });
+      if (existing) {
+        if (existing.status === 'COMPLETED') {
+          return { isNew: false, doc: existing, action: 'SKIP_COMPLETED' };
+        }
+        if (existing.status === 'PENDING') {
+          return { isNew: false, doc: existing, action: 'SKIP_PENDING' };
+        }
+        if (existing.status === 'PROCESSING' && existing.lockUntil && existing.lockUntil > now) {
+          return { isNew: false, doc: existing, action: 'LOCKED_IN_PROGRESS' };
+        }
+
+        // Lock expired or failed prior attempt; take over lock atomically
+        const takeover = await collection.findOneAndUpdate(
+          {
+            offlineId: params.offlineId,
+            $or: [
+              { status: 'PROCESSING', lockUntil: { $lte: now } },
+              { status: 'FAILED' },
+            ],
+          },
+          {
+            $set: {
+              status: 'PROCESSING',
+              lockUntil,
+              updatedAt: now,
+            },
+            $inc: { attempts: 1 },
+          },
+          { returnDocument: 'after' }
+        );
+
+        if (takeover) {
+          return { isNew: true, doc: takeover, action: 'PROCEED' };
+        }
+
+        // Another thread won the takeover
+        const fresh = (await collection.findOne({ offlineId: params.offlineId })) || existing;
+        return { isNew: false, doc: fresh, action: 'LOCKED_IN_PROGRESS' };
+      }
+    }
+    throw error;
+  }
+}
+
+/**
+ * Checks if a transaction with the given offlineId already exists.
  */
 export async function findPayoutByOfflineId(
   offlineId: string
@@ -115,7 +242,11 @@ export async function recordPendingPayout(
     return doc;
   }
 
-  await collection.insertOne(doc as any);
+  await collection.updateOne(
+    { reference: doc.reference },
+    { $set: doc },
+    { upsert: true }
+  );
   return doc;
 }
 
@@ -137,10 +268,12 @@ export async function updatePayoutDarajaSubmission(
   if (!collection) {
     const doc = inMemoryLedger.get(reference);
     if (doc) {
+      doc.status = 'PENDING';
       doc.daraja = {
         ...darajaData,
         submittedAt: now,
       };
+      doc.lockUntil = undefined;
       doc.updatedAt = now;
       inMemoryLedger.set(reference, doc);
     }
@@ -151,10 +284,45 @@ export async function updatePayoutDarajaSubmission(
     { reference },
     {
       $set: {
+        status: 'PENDING',
         daraja: {
           ...darajaData,
           submittedAt: now,
         },
+        lockUntil: null as any,
+        updatedAt: now,
+      },
+    }
+  );
+}
+
+/**
+ * Marks a payout as FAILED when Daraja rejects the disbursement request synchronously.
+ */
+export async function markPayoutFailed(
+  reference: string,
+  errorMessage: string
+): Promise<void> {
+  const collection = await getLedgerCollection();
+  const now = new Date();
+
+  if (!collection) {
+    const doc = inMemoryLedger.get(reference);
+    if (doc) {
+      doc.status = 'FAILED';
+      doc.lockUntil = undefined;
+      doc.updatedAt = now;
+      inMemoryLedger.set(reference, doc);
+    }
+    return;
+  }
+
+  await collection.updateOne(
+    { reference },
+    {
+      $set: {
+        status: 'FAILED',
+        lockUntil: null as any,
         updatedAt: now,
       },
     }
@@ -208,12 +376,10 @@ export async function recordDarajaCallback(
   const { OriginatorConversationID, ConversationID, ResultCode, ResultDesc } =
     callbackResult;
 
-  // Extract parsed details from parameters
   const details = extractDarajaCallbackDetails(callbackResult);
   const now = new Date();
   const finalStatus: LedgerStatus = ResultCode === 0 ? 'COMPLETED' : 'FAILED';
 
-  // Look up document
   const existingDoc = await findPayoutByConversationIds(
     OriginatorConversationID,
     ConversationID
@@ -238,6 +404,7 @@ export async function recordDarajaCallback(
     if (existingDoc) {
       existingDoc.status = finalStatus;
       existingDoc.callback = callbackData;
+      existingDoc.lockUntil = undefined;
       existingDoc.updatedAt = now;
       inMemoryLedger.set(existingDoc.reference, existingDoc);
       return existingDoc;
@@ -260,6 +427,7 @@ export async function recordDarajaCallback(
       $set: {
         status: finalStatus,
         callback: callbackData,
+        lockUntil: null as any,
         updatedAt: now,
       },
     },
@@ -285,4 +453,11 @@ export async function getRecentPayouts(limit = 50): Promise<PayoutLedgerDocument
     .sort({ createdAt: -1 })
     .limit(limit)
     .toArray();
+}
+
+/**
+ * Clears the in-memory ledger (used in unit test teardowns)
+ */
+export function clearInMemoryLedger(): void {
+  inMemoryLedger.clear();
 }

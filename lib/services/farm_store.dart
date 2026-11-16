@@ -31,6 +31,7 @@ const kalroPowerSyncSchema = Schema([
     ],
     indexes: [
       Index('idx_batches_status', [IndexedColumn('status')]),
+      Index('idx_batches_created', [IndexedColumn('createdAt')]),
     ],
   ),
   Table(
@@ -47,6 +48,7 @@ const kalroPowerSyncSchema = Schema([
     ],
     indexes: [
       Index('idx_feed_batch', [IndexedColumn('batchId')]),
+      Index('idx_feed_stage', [IndexedColumn('feedingStage')]),
     ],
   ),
   Table(
@@ -222,12 +224,39 @@ class FarmStore {
     String collection, {
     required String jsonKey,
     required Object value,
+    int? limit,
+    bool descending = false,
   }) async {
     final db = await _database();
-    final rows = db.select(
-      "SELECT json FROM records WHERE collection = ? AND json_extract(json, '\$.' || ?) = ? ORDER BY rowid",
-      [collection, jsonKey, value.toString()],
-    );
+    final strVal = value.toString();
+    final limitClause = limit != null ? 'LIMIT $limit' : '';
+
+    // Fast-path indexed queries using virtual generated columns
+    final sqlite.ResultSet rows;
+    if (jsonKey == 'batchId' || jsonKey == 'batch_id') {
+      final orderClause = descending ? 'ORDER BY created_at DESC' : 'ORDER BY rowid';
+      rows = db.select(
+        'SELECT json FROM records WHERE collection = ? AND batch_id = ? $orderClause $limitClause',
+        [collection, strVal],
+      );
+    } else if (jsonKey == 'stage' || jsonKey == 'feedingStage' || jsonKey == 'stageKey') {
+      rows = db.select(
+        'SELECT json FROM records WHERE collection = ? AND stage = ? ORDER BY rowid $limitClause',
+        [collection, strVal],
+      );
+    } else if (jsonKey == 'createdAt' || jsonKey == 'recordedAt' || jsonKey == 'startDate') {
+      rows = db.select(
+        'SELECT json FROM records WHERE collection = ? AND created_at = ? ORDER BY rowid $limitClause',
+        [collection, strVal],
+      );
+    } else {
+      final safeKey = jsonKey.replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '');
+      rows = db.select(
+        "SELECT json FROM records WHERE collection = ? AND json_extract(json, '\$.$safeKey') = ? ORDER BY rowid $limitClause",
+        [collection, strVal],
+      );
+    }
+
     if (rows.isNotEmpty) {
       return [
         for (final row in rows)
@@ -235,16 +264,16 @@ class FarmStore {
       ];
     }
 
-    if (collection == 'feed_logs' && jsonKey == 'batchId') {
+    if (collection == 'feed_logs' && (jsonKey == 'batchId' || jsonKey == 'batch_id')) {
       final psRows = db.select(
-        'SELECT * FROM feed_logs WHERE batchId = ?',
-        [value.toString()],
+        'SELECT * FROM feed_logs WHERE batchId = ? $limitClause',
+        [strVal],
       );
       return [for (final r in psRows) _feedLogRowToMap(r)];
-    } else if (collection == 'mortality_logs' && jsonKey == 'batchId') {
+    } else if (collection == 'mortality_logs' && (jsonKey == 'batchId' || jsonKey == 'batch_id')) {
       final psRows = db.select(
-        'SELECT * FROM mortality_logs WHERE batchId = ?',
-        [value.toString()],
+        'SELECT * FROM mortality_logs WHERE batchId = ? $limitClause',
+        [strVal],
       );
       return [for (final r in psRows) _mortalityLogRowToMap(r)];
     }
@@ -257,74 +286,117 @@ class FarmStore {
     String id,
     Map<String, dynamic> record,
   ) async {
+    await upsertAll(collection, [record]);
+  }
+
+  /// Bulk upsert performing all operations inside an explicit SQLite transaction
+  /// with pre-compiled prepared statements to prevent mobile disk I/O bottlenecks.
+  Future<void> upsertAll(
+    String collection,
+    List<Map<String, dynamic>> records,
+  ) async {
+    if (records.isEmpty) return;
     final db = await _database();
-    db.execute(
+    db.execute('BEGIN IMMEDIATE');
+
+    final stmt = db.prepare(
       'INSERT OR REPLACE INTO records (collection, id, json) VALUES (?, ?, ?)',
-      [collection, id, jsonEncode(record)],
     );
 
+    sqlite.PreparedStatement? batchStmt;
+    sqlite.PreparedStatement? feedStmt;
+    sqlite.PreparedStatement? mortStmt;
+
     if (collection == 'batches') {
-      db.execute('''
+      batchStmt = db.prepare('''
         INSERT OR REPLACE INTO batches (
           id, species, startDate, eggCount, status, createdAt,
           strain, location, caretaker, feedMaterial, eggSource, rearingType, batchTag
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      ''', [
-        id,
-        record['species']?.toString() ?? 'bombyx',
-        record['startDate']?.toString() ?? DateTime.now().toIso8601String(),
-        record['eggCount'] is int
-            ? record['eggCount']
-            : int.tryParse(record['eggCount']?.toString() ?? '') ?? 0,
-        record['status']?.toString() ?? 'active',
-        record['createdAt']?.toString() ?? DateTime.now().toIso8601String(),
-        record['strain']?.toString(),
-        record['location']?.toString(),
-        record['caretaker']?.toString(),
-        record['feedMaterial']?.toString(),
-        record['eggSource']?.toString(),
-        record['rearingType']?.toString(),
-        record['batchTag']?.toString(),
-      ]);
+      ''');
     } else if (collection == 'feed_logs') {
-      db.execute('''
+      feedStmt = db.prepare('''
         INSERT OR REPLACE INTO feed_logs (
           id, batchId, recordedAt, feedType, quantityGrams,
           feedingStage, notes, isSkipped, skipReason
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-      ''', [
-        id,
-        record['batchId']?.toString() ?? '',
-        record['recordedAt']?.toString() ?? DateTime.now().toIso8601String(),
-        record['feedType']?.toString() ?? 'mulberry',
-        record['quantityGrams'] is num
-            ? (record['quantityGrams'] as num).toDouble()
-            : double.tryParse(record['quantityGrams']?.toString() ?? '') ?? 0.0,
-        record['feedingStage']?.toString(),
-        record['notes']?.toString(),
-        (record['isSkipped'] == true || record['isSkipped'] == 1) ? 1 : 0,
-        record['skipReason']?.toString(),
-      ]);
+      ''');
     } else if (collection == 'mortality_logs') {
-      db.execute('''
+      mortStmt = db.prepare('''
         INSERT OR REPLACE INTO mortality_logs (
           id, batchId, recordedAt, count, reason,
           disease, treatment, notes, isolated, photoPath
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      ''', [
-        id,
-        record['batchId']?.toString() ?? '',
-        record['recordedAt']?.toString() ?? DateTime.now().toIso8601String(),
-        record['count'] is int
-            ? record['count']
-            : int.tryParse(record['count']?.toString() ?? '') ?? 0,
-        record['reason']?.toString(),
-        record['disease']?.toString(),
-        record['treatment']?.toString(),
-        record['notes']?.toString(),
-        (record['isolated'] == true || record['isolated'] == 1) ? 1 : 0,
-        record['photoPath']?.toString(),
-      ]);
+      ''');
+    }
+
+    try {
+      for (final record in records) {
+        final id = record['id']?.toString();
+        if (id == null || id.isEmpty) continue;
+
+        stmt.execute([collection, id, jsonEncode(record)]);
+
+        if (batchStmt != null) {
+          batchStmt.execute([
+            id,
+            record['species']?.toString() ?? 'bombyx',
+            record['startDate']?.toString() ?? DateTime.now().toIso8601String(),
+            record['eggCount'] is int
+                ? record['eggCount']
+                : int.tryParse(record['eggCount']?.toString() ?? '') ?? 0,
+            record['status']?.toString() ?? 'active',
+            record['createdAt']?.toString() ?? DateTime.now().toIso8601String(),
+            record['strain']?.toString(),
+            record['location']?.toString(),
+            record['caretaker']?.toString(),
+            record['feedMaterial']?.toString(),
+            record['eggSource']?.toString(),
+            record['rearingType']?.toString(),
+            record['batchTag']?.toString(),
+          ]);
+        } else if (feedStmt != null) {
+          feedStmt.execute([
+            id,
+            record['batchId']?.toString() ?? '',
+            record['recordedAt']?.toString() ?? DateTime.now().toIso8601String(),
+            record['feedType']?.toString() ?? 'mulberry',
+            record['quantityGrams'] is num
+                ? (record['quantityGrams'] as num).toDouble()
+                : double.tryParse(record['quantityGrams']?.toString() ?? '') ?? 0.0,
+            record['feedingStage']?.toString(),
+            record['notes']?.toString(),
+            (record['isSkipped'] == true || record['isSkipped'] == 1) ? 1 : 0,
+            record['skipReason']?.toString(),
+          ]);
+        } else if (mortStmt != null) {
+          mortStmt.execute([
+            id,
+            record['batchId']?.toString() ?? '',
+            record['recordedAt']?.toString() ?? DateTime.now().toIso8601String(),
+            record['count'] is int
+                ? record['count']
+                : int.tryParse(record['count']?.toString() ?? '') ?? 0,
+            record['reason']?.toString(),
+            record['disease']?.toString(),
+            record['treatment']?.toString(),
+            record['notes']?.toString(),
+            (record['isolated'] == true || record['isolated'] == 1) ? 1 : 0,
+            record['photoPath']?.toString(),
+          ]);
+        }
+      }
+      db.execute('COMMIT');
+    } catch (_) {
+      try {
+        db.execute('ROLLBACK');
+      } catch (_) {}
+      rethrow;
+    } finally {
+      stmt.dispose();
+      batchStmt?.dispose();
+      feedStmt?.dispose();
+      mortStmt?.dispose();
     }
 
     _changesController.add(collection);
@@ -352,6 +424,37 @@ class FarmStore {
   ) async {
     final db = await _database();
     db.execute('BEGIN IMMEDIATE');
+
+    sqlite.PreparedStatement? batchStmt;
+    sqlite.PreparedStatement? feedStmt;
+    sqlite.PreparedStatement? mortStmt;
+    final stmt = db.prepare(
+      'INSERT OR REPLACE INTO records (collection, id, json) VALUES (?, ?, ?)',
+    );
+
+    if (collection == 'batches') {
+      batchStmt = db.prepare('''
+        INSERT OR REPLACE INTO batches (
+          id, species, startDate, eggCount, status, createdAt,
+          strain, location, caretaker, feedMaterial, eggSource, rearingType, batchTag
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ''');
+    } else if (collection == 'feed_logs') {
+      feedStmt = db.prepare('''
+        INSERT OR REPLACE INTO feed_logs (
+          id, batchId, recordedAt, feedType, quantityGrams,
+          feedingStage, notes, isSkipped, skipReason
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ''');
+    } else if (collection == 'mortality_logs') {
+      mortStmt = db.prepare('''
+        INSERT OR REPLACE INTO mortality_logs (
+          id, batchId, recordedAt, count, reason,
+          disease, treatment, notes, isolated, photoPath
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ''');
+    }
+
     try {
       db.execute('DELETE FROM records WHERE collection = ?', [collection]);
       if (collection == 'batches') {
@@ -362,87 +465,72 @@ class FarmStore {
         db.execute('DELETE FROM mortality_logs');
       }
 
-      final stmt = db.prepare(
-        'INSERT OR REPLACE INTO records (collection, id, json) VALUES (?, ?, ?)',
-      );
-      try {
-        for (final record in records) {
-          final id = record['id']?.toString();
-          if (id == null || id.isEmpty) continue;
-          stmt.execute([collection, id, jsonEncode(record)]);
+      for (final record in records) {
+        final id = record['id']?.toString();
+        if (id == null || id.isEmpty) continue;
+        stmt.execute([collection, id, jsonEncode(record)]);
 
-          if (collection == 'batches') {
-            db.execute('''
-              INSERT OR REPLACE INTO batches (
-                id, species, startDate, eggCount, status, createdAt,
-                strain, location, caretaker, feedMaterial, eggSource, rearingType, batchTag
-              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ''', [
-              id,
-              record['species']?.toString() ?? 'bombyx',
-              record['startDate']?.toString() ?? DateTime.now().toIso8601String(),
-              record['eggCount'] is int
-                  ? record['eggCount']
-                  : int.tryParse(record['eggCount']?.toString() ?? '') ?? 0,
-              record['status']?.toString() ?? 'active',
-              record['createdAt']?.toString() ?? DateTime.now().toIso8601String(),
-              record['strain']?.toString(),
-              record['location']?.toString(),
-              record['caretaker']?.toString(),
-              record['feedMaterial']?.toString(),
-              record['eggSource']?.toString(),
-              record['rearingType']?.toString(),
-              record['batchTag']?.toString(),
-            ]);
-          } else if (collection == 'feed_logs') {
-            db.execute('''
-              INSERT OR REPLACE INTO feed_logs (
-                id, batchId, recordedAt, feedType, quantityGrams,
-                feedingStage, notes, isSkipped, skipReason
-              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ''', [
-              id,
-              record['batchId']?.toString() ?? '',
-              record['recordedAt']?.toString() ?? DateTime.now().toIso8601String(),
-              record['feedType']?.toString() ?? 'mulberry',
-              record['quantityGrams'] is num
-                  ? (record['quantityGrams'] as num).toDouble()
-                  : double.tryParse(record['quantityGrams']?.toString() ?? '') ?? 0.0,
-              record['feedingStage']?.toString(),
-              record['notes']?.toString(),
-              (record['isSkipped'] == true || record['isSkipped'] == 1) ? 1 : 0,
-              record['skipReason']?.toString(),
-            ]);
-          } else if (collection == 'mortality_logs') {
-            db.execute('''
-              INSERT OR REPLACE INTO mortality_logs (
-                id, batchId, recordedAt, count, reason,
-                disease, treatment, notes, isolated, photoPath
-              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ''', [
-              id,
-              record['batchId']?.toString() ?? '',
-              record['recordedAt']?.toString() ?? DateTime.now().toIso8601String(),
-              record['count'] is int
-                  ? record['count']
-                  : int.tryParse(record['count']?.toString() ?? '') ?? 0,
-              record['reason']?.toString(),
-              record['disease']?.toString(),
-              record['treatment']?.toString(),
-              record['notes']?.toString(),
-              (record['isolated'] == true || record['isolated'] == 1) ? 1 : 0,
-              record['photoPath']?.toString(),
-            ]);
-          }
+        if (batchStmt != null) {
+          batchStmt.execute([
+            id,
+            record['species']?.toString() ?? 'bombyx',
+            record['startDate']?.toString() ?? DateTime.now().toIso8601String(),
+            record['eggCount'] is int
+                ? record['eggCount']
+                : int.tryParse(record['eggCount']?.toString() ?? '') ?? 0,
+            record['status']?.toString() ?? 'active',
+            record['createdAt']?.toString() ?? DateTime.now().toIso8601String(),
+            record['strain']?.toString(),
+            record['location']?.toString(),
+            record['caretaker']?.toString(),
+            record['feedMaterial']?.toString(),
+            record['eggSource']?.toString(),
+            record['rearingType']?.toString(),
+            record['batchTag']?.toString(),
+          ]);
+        } else if (feedStmt != null) {
+          feedStmt.execute([
+            id,
+            record['batchId']?.toString() ?? '',
+            record['recordedAt']?.toString() ?? DateTime.now().toIso8601String(),
+            record['feedType']?.toString() ?? 'mulberry',
+            record['quantityGrams'] is num
+                ? (record['quantityGrams'] as num).toDouble()
+                : double.tryParse(record['quantityGrams']?.toString() ?? '') ?? 0.0,
+            record['feedingStage']?.toString(),
+            record['notes']?.toString(),
+            (record['isSkipped'] == true || record['isSkipped'] == 1) ? 1 : 0,
+            record['skipReason']?.toString(),
+          ]);
+        } else if (mortStmt != null) {
+          mortStmt.execute([
+            id,
+            record['batchId']?.toString() ?? '',
+            record['recordedAt']?.toString() ?? DateTime.now().toIso8601String(),
+            record['count'] is int
+                ? record['count']
+                : int.tryParse(record['count']?.toString() ?? '') ?? 0,
+            record['reason']?.toString(),
+            record['disease']?.toString(),
+            record['treatment']?.toString(),
+            record['notes']?.toString(),
+            (record['isolated'] == true || record['isolated'] == 1) ? 1 : 0,
+            record['photoPath']?.toString(),
+          ]);
         }
-      } finally {
-        stmt.dispose();
       }
       db.execute('COMMIT');
       _changesController.add(collection);
     } catch (_) {
-      db.execute('ROLLBACK');
+      try {
+        db.execute('ROLLBACK');
+      } catch (_) {}
       rethrow;
+    } finally {
+      stmt.dispose();
+      batchStmt?.dispose();
+      feedStmt?.dispose();
+      mortStmt?.dispose();
     }
   }
 
@@ -483,6 +571,14 @@ class FarmStore {
       [name, jsonEncode(value)],
     );
   }
+
+  /// Disposes open resources and delegates to [close].
+  Future<void> dispose() async {
+    await close();
+  }
+
+  /// Whether the database connection is closed.
+  bool get isDisposed => _db == null && _powerSyncDb == null;
 
   Future<void> close() async {
     final dir = await directory();
@@ -528,11 +624,31 @@ class FarmStore {
         collection TEXT NOT NULL,
         id TEXT NOT NULL,
         json TEXT NOT NULL,
+        batch_id TEXT GENERATED ALWAYS AS (json_extract(json, '\$.batchId')) VIRTUAL,
+        created_at TEXT GENERATED ALWAYS AS (COALESCE(json_extract(json, '\$.recordedAt'), json_extract(json, '\$.createdAt'), json_extract(json, '\$.startDate'))) VIRTUAL,
+        stage TEXT GENERATED ALWAYS AS (COALESCE(json_extract(json, '\$.feedingStage'), json_extract(json, '\$.stageKey'), json_extract(json, '\$.stage'))) VIRTUAL,
         PRIMARY KEY (collection, id)
       )
     ''');
+
+    // Migration fallbacks for databases initialized prior to generated virtual columns
+    try {
+      db.execute("ALTER TABLE records ADD COLUMN batch_id TEXT GENERATED ALWAYS AS (json_extract(json, '\$.batchId')) VIRTUAL;");
+    } catch (_) {}
+    try {
+      db.execute("ALTER TABLE records ADD COLUMN created_at TEXT GENERATED ALWAYS AS (COALESCE(json_extract(json, '\$.recordedAt'), json_extract(json, '\$.createdAt'), json_extract(json, '\$.startDate'))) VIRTUAL;");
+    } catch (_) {}
+    try {
+      db.execute("ALTER TABLE records ADD COLUMN stage TEXT GENERATED ALWAYS AS (COALESCE(json_extract(json, '\$.feedingStage'), json_extract(json, '\$.stageKey'), json_extract(json, '\$.stage'))) VIRTUAL;");
+    } catch (_) {}
+
+    // High-performance B-tree indexes avoiding full table scans
     db.execute('CREATE INDEX IF NOT EXISTS idx_records_collection ON records(collection);');
-    db.execute("CREATE INDEX IF NOT EXISTS idx_records_batch ON records(collection, json_extract(json, '\$.batchId'));");
+    db.execute('CREATE INDEX IF NOT EXISTS idx_records_collection_batch ON records(collection, batch_id);');
+    db.execute('CREATE INDEX IF NOT EXISTS idx_records_collection_created ON records(collection, created_at);');
+    db.execute('CREATE INDEX IF NOT EXISTS idx_records_batch_created ON records(collection, batch_id, created_at DESC);');
+    db.execute('CREATE INDEX IF NOT EXISTS idx_records_collection_stage ON records(collection, stage);');
+
     db.execute('''
       CREATE TABLE IF NOT EXISTS singletons (
         name TEXT NOT NULL PRIMARY KEY,
@@ -566,6 +682,7 @@ class FarmStore {
         batchTag TEXT
       );
       CREATE INDEX IF NOT EXISTS idx_batches_status ON batches(status);
+      CREATE INDEX IF NOT EXISTS idx_batches_created ON batches(createdAt DESC);
     ''');
 
     db.execute('''
@@ -581,6 +698,8 @@ class FarmStore {
         skipReason TEXT
       );
       CREATE INDEX IF NOT EXISTS idx_feed_batch ON feed_logs(batchId);
+      CREATE INDEX IF NOT EXISTS idx_feed_batch_recorded ON feed_logs(batchId, recordedAt DESC);
+      CREATE INDEX IF NOT EXISTS idx_feed_stage ON feed_logs(feedingStage);
     ''');
 
     db.execute('''
@@ -597,6 +716,7 @@ class FarmStore {
         photoPath TEXT
       );
       CREATE INDEX IF NOT EXISTS idx_mort_batch ON mortality_logs(batchId);
+      CREATE INDEX IF NOT EXISTS idx_mort_batch_recorded ON mortality_logs(batchId, recordedAt DESC);
     ''');
   }
 
@@ -635,18 +755,41 @@ class FarmStore {
         final stmt = db.prepare(
           'INSERT OR REPLACE INTO records (collection, id, json) VALUES (?, ?, ?)',
         );
+
+        sqlite.PreparedStatement? batchStmt;
+        sqlite.PreparedStatement? feedStmt;
+        sqlite.PreparedStatement? mortStmt;
+
+        if (entry.key == 'batches') {
+          batchStmt = db.prepare('''
+            INSERT OR REPLACE INTO batches (
+              id, species, startDate, eggCount, status, createdAt,
+              strain, location, caretaker, feedMaterial, eggSource, rearingType, batchTag
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          ''');
+        } else if (entry.key == 'feed_logs') {
+          feedStmt = db.prepare('''
+            INSERT OR REPLACE INTO feed_logs (
+              id, batchId, recordedAt, feedType, quantityGrams,
+              feedingStage, notes, isSkipped, skipReason
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+          ''');
+        } else if (entry.key == 'mortality_logs') {
+          mortStmt = db.prepare('''
+            INSERT OR REPLACE INTO mortality_logs (
+              id, batchId, recordedAt, count, reason,
+              disease, treatment, notes, isolated, photoPath
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          ''');
+        }
+
         try {
           for (final item in items) {
             final id = item['id']?.toString();
             if (id == null || id.isEmpty) continue;
             stmt.execute([entry.key, id, jsonEncode(item)]);
-            if (entry.key == 'batches') {
-              db.execute('''
-                INSERT OR REPLACE INTO batches (
-                  id, species, startDate, eggCount, status, createdAt,
-                  strain, location, caretaker, feedMaterial, eggSource, rearingType, batchTag
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-              ''', [
+            if (batchStmt != null) {
+              batchStmt.execute([
                 id,
                 item['species']?.toString() ?? 'bombyx',
                 item['startDate']?.toString() ?? DateTime.now().toIso8601String(),
@@ -663,13 +806,8 @@ class FarmStore {
                 item['rearingType']?.toString(),
                 item['batchTag']?.toString(),
               ]);
-            } else if (entry.key == 'feed_logs') {
-              db.execute('''
-                INSERT OR REPLACE INTO feed_logs (
-                  id, batchId, recordedAt, feedType, quantityGrams,
-                  feedingStage, notes, isSkipped, skipReason
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-              ''', [
+            } else if (feedStmt != null) {
+              feedStmt.execute([
                 id,
                 item['batchId']?.toString() ?? '',
                 item['recordedAt']?.toString() ?? DateTime.now().toIso8601String(),
@@ -682,13 +820,8 @@ class FarmStore {
                 (item['isSkipped'] == true || item['isSkipped'] == 1) ? 1 : 0,
                 item['skipReason']?.toString(),
               ]);
-            } else if (entry.key == 'mortality_logs') {
-              db.execute('''
-                INSERT OR REPLACE INTO mortality_logs (
-                  id, batchId, recordedAt, count, reason,
-                  disease, treatment, notes, isolated, photoPath
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-              ''', [
+            } else if (mortStmt != null) {
+              mortStmt.execute([
                 id,
                 item['batchId']?.toString() ?? '',
                 item['recordedAt']?.toString() ?? DateTime.now().toIso8601String(),
@@ -706,6 +839,9 @@ class FarmStore {
           }
         } finally {
           stmt.dispose();
+          batchStmt?.dispose();
+          feedStmt?.dispose();
+          mortStmt?.dispose();
         }
       }
 
@@ -729,7 +865,9 @@ class FarmStore {
       );
       db.execute('COMMIT');
     } catch (_) {
-      db.execute('ROLLBACK');
+      try {
+        db.execute('ROLLBACK');
+      } catch (_) {}
       rethrow;
     }
   }

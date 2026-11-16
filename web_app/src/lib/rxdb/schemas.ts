@@ -1,0 +1,80 @@
+import { RxJsonSchema } from 'rxdb';
+import { Batch, FeedLog, MortalityLog } from '../../types';
+
+export const batchRxSchema: RxJsonSchema<Batch> = {
+  version: 0,
+  primaryKey: 'id',
+  type: 'object',
+  properties: {
+    id: { type: 'string', maxLength: 100 },
+    species: { type: 'string' },
+    startDate: { type: 'string' },
+    eggCount: { type: 'number' },
+    status: { type: 'string' },
+    batchTag: { type: 'string' },
+    displayTag: { type: 'string' },
+    notes: { type: 'string' },
+    roomName: { type: 'string' },
+    strain: { type: 'string' },
+    createdBy: { type: 'string' },
+    createdByName: { type: 'string' },
+    assignedStaff: {
+      type: 'array',
+      items: { type: 'string' },
+    },
+    bedAreaSqMeters: { type: 'number' },
+    currentInstar: { type: 'number' },
+    currentTraysCount: { type: 'number' },
+    targetForageCultivar: { type: 'string' },
+    orchardBlock: { type: 'string' },
+    isQuarantined: { type: 'boolean' },
+    quarantineReason: { type: 'string' },
+    quarantinedAt: { type: 'string' },
+    quarantinedBy: { type: 'string' },
+  },
+  required: ['id', 'species', 'startDate', 'eggCount', 'status'],
+};
+
+export const feedLogRxSchema: RxJsonSchema<FeedLog> = {
+  version: 0,
+  primaryKey: 'id',
+  type: 'object',
+  properties: {
+    id: { type: 'string', maxLength: 100 },
+    batchId: { type: 'string', maxLength: 100 },
+    recordedAt: { type: 'string' },
+    quantityGrams: { type: 'number' },
+    leafType: { type: 'string' },
+    cultivar: { type: 'string' },
+    wasSkipped: { type: 'boolean' },
+    skippedReason: { type: 'string' },
+    operatorId: { type: 'string' },
+    operatorName: { type: 'string' },
+    operatorRole: { type: 'string' },
+    shift: { type: 'string' },
+    notes: { type: 'string' },
+  },
+  required: ['id', 'batchId', 'recordedAt', 'quantityGrams', 'leafType'],
+  indexes: ['batchId'],
+};
+
+export const mortalityLogRxSchema: RxJsonSchema<MortalityLog> = {
+  version: 0,
+  primaryKey: 'id',
+  type: 'object',
+  properties: {
+    id: { type: 'string', maxLength: 100 },
+    batchId: { type: 'string', maxLength: 100 },
+    recordedAt: { type: 'string' },
+    count: { type: 'number' },
+    cause: { type: 'string' },
+    symptoms: { type: 'string' },
+    photoUrl: { type: 'string' },
+    operatorId: { type: 'string' },
+    operatorName: { type: 'string' },
+    operatorRole: { type: 'string' },
+    notes: { type: 'string' },
+  },
+  required: ['id', 'batchId', 'recordedAt', 'count'],
+  indexes: ['batchId'],
+};

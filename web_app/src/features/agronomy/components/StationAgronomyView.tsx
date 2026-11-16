@@ -3,7 +3,7 @@ import {
   Batch,
   FarmProfile,
   PaymentRecord,
-} from '../types';
+} from '../../../types';
 import {
   KENYA_MULBERRY_CULTIVARS,
   KENYA_CASTOR_VARIETIES,
@@ -14,8 +14,8 @@ import {
   DISEASE_LIBRARY,
   PEST_LIBRARY,
   KENYA_SERICULTURE_BREEDS,
-} from '../constants';
-import { formatCurrency } from '../utils';
+} from '../../../constants';
+import { formatCurrency } from '../../../utils';
 
 interface StationAgronomyViewProps {
   batches: Batch[];
@@ -295,7 +295,7 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
             <button
               key={tab.key}
               onClick={() => setSubTab(tab.key as StationSubTab)}
-              className={`px-3 py-2 rounded-lg transition-all whitespace-nowrap ${
+              className={`min-h-[48px] min-w-[48px] px-3.5 py-2 rounded-lg transition-all whitespace-nowrap focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center justify-center ${
                 subTab === tab.key
                   ? 'bg-[#1A332B] text-white font-semibold'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -332,7 +332,7 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
                   <button
                     key={blk.code}
                     onClick={() => setSelectedOrchardBlock(blk.code)}
-                    className={`text-xs px-3 py-1.5 rounded-lg border text-left transition-all ${
+                    className={`min-h-[48px] min-w-[48px] text-xs px-3.5 py-2 rounded-lg border text-left transition-all focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center ${
                       selectedOrchardBlock === blk.code
                         ? 'border-[#1A332B] bg-[#1A332B] text-white font-semibold'
                         : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'
@@ -372,12 +372,12 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
               <div className="pt-2 space-y-3">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-bold text-gray-800">11 Characterized Mulberry Varieties</h3>
-                  <div className="flex gap-1">
+                  <div className="flex gap-2">
                     {(['all', 'mulberry', 'castor'] as const).map((filter) => (
                       <button
                         key={filter}
                         onClick={() => setCultivarTypeFilter(filter)}
-                        className={`text-xs px-2.5 py-1 rounded capitalize ${
+                        className={`min-h-[48px] min-w-[48px] text-xs px-3.5 py-2 rounded-lg capitalize focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center justify-center ${
                           cultivarTypeFilter === filter
                             ? 'bg-gray-800 text-white font-semibold'
                             : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -578,19 +578,21 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
                         <span className="font-semibold text-gray-800 block text-[11px] truncate" title={def.type}>
                           {def.type}
                         </span>
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-2">
                           <button
                             type="button"
                             onClick={() => setDefectCounts((prev) => ({ ...prev, [def.type]: Math.max(0, count - 1) }))}
-                            className="w-6 h-6 rounded bg-white border border-gray-300 font-bold hover:bg-gray-100"
+                            className="min-h-[48px] min-w-[48px] rounded-lg bg-white border border-gray-300 font-bold hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center justify-center text-base"
+                            aria-label={`Decrease ${def.type}`}
                           >
                             -
                           </button>
-                          <span className="font-bold text-sm tabular-nums w-6 text-center">{count}</span>
+                          <span className="font-bold text-sm tabular-nums min-w-[32px] text-center">{count}</span>
                           <button
                             type="button"
                             onClick={() => setDefectCounts((prev) => ({ ...prev, [def.type]: count + 1 }))}
-                            className="w-6 h-6 rounded bg-white border border-gray-300 font-bold hover:bg-gray-100"
+                            className="min-h-[48px] min-w-[48px] rounded-lg bg-white border border-gray-300 font-bold hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center justify-center text-base"
+                            aria-label={`Increase ${def.type}`}
                           >
                             +
                           </button>
@@ -651,7 +653,7 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
                   setSubTab('finance');
                   onToast(`Navigated to M-Pesa Payout with ${commercialGrade} payout value.`);
                 }}
-                className="w-full py-2.5 bg-[#1A332B] text-white font-semibold rounded-lg text-xs hover:bg-[#214641] transition-all"
+                className="w-full min-h-[48px] min-w-[48px] py-3 bg-[#1A332B] text-white font-semibold rounded-lg text-xs hover:bg-[#214641] transition-all focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center justify-center"
               >
                 Disburse M-Pesa Payment →
               </button>
@@ -713,11 +715,11 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
                 <div className="text-5xl font-extrabold font-mono tracking-wider tabular-nums text-emerald-400">
                   {formatTimer(dryingTimeRemainingSeconds)}
                 </div>
-                <div className="flex items-center justify-center gap-3 pt-2">
+                <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
                   <button
                     type="button"
                     onClick={() => setIsDryingRunning(!isDryingRunning)}
-                    className={`px-5 py-2 rounded-lg font-bold text-xs transition-all ${
+                    className={`min-h-[48px] min-w-[48px] px-5 py-2.5 rounded-lg font-bold text-xs transition-all focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center justify-center ${
                       isDryingRunning
                         ? 'bg-amber-600 hover:bg-amber-700 text-white'
                         : 'bg-emerald-600 hover:bg-emerald-700 text-white'
@@ -733,7 +735,7 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
                       setDryingTimeRemainingSeconds(getStepMinutes(COCOON_HOT_AIR_DRYING_SCHEDULE[next].duration) * 60);
                       onToast(`Switched to Stage ${next + 1}: ${COCOON_HOT_AIR_DRYING_SCHEDULE[next].temperature}`);
                     }}
-                    className="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-xs"
+                    className="min-h-[48px] min-w-[48px] px-4 py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-xs focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center justify-center"
                   >
                     Next Stage →
                   </button>
@@ -743,7 +745,7 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
                       setIsDryingRunning(false);
                       setDryingTimeRemainingSeconds(getStepMinutes(COCOON_HOT_AIR_DRYING_SCHEDULE[currentDryingStepIndex].duration) * 60);
                     }}
-                    className="px-3 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-xs"
+                    className="min-h-[48px] min-w-[48px] px-4 py-2.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-xs focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center justify-center"
                   >
                     Reset Timer
                   </button>
@@ -804,7 +806,7 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
                   ]);
                   onToast('Drying run session saved to local station records.');
                 }}
-                className="w-full py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold rounded-lg text-xs"
+                className="w-full min-h-[48px] min-w-[48px] py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold rounded-lg text-xs focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center justify-center"
               >
                 Save Drying Record
               </button>
@@ -961,7 +963,7 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
                   <button
                     key={d.name}
                     onClick={() => setSelectedDiseaseName(d.name)}
-                    className={`px-3 py-1.5 rounded-lg border text-left transition-all ${
+                    className={`min-h-[48px] min-w-[48px] px-3.5 py-2 rounded-lg border text-left transition-all focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center ${
                       selectedDiseaseName === d.name
                         ? 'bg-rose-900 border-rose-900 text-white font-bold'
                         : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'
@@ -1124,7 +1126,7 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
                   type="button"
                   disabled={isMpesaProcessing}
                   onClick={handleSimulateMpesa}
-                  className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs shadow-sm transition-all disabled:opacity-50"
+                  className="min-h-[48px] min-w-[48px] px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs shadow-sm transition-all disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center justify-center"
                 >
                   {isMpesaProcessing ? 'Sending B2C Request…' : 'Disburse M-Pesa Payout'}
                 </button>
@@ -1187,7 +1189,7 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
                   <button
                     type="button"
                     onClick={() => setUssdStep('main')}
-                    className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-xs"
+                    className="min-h-[48px] min-w-[48px] px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold focus-visible:ring-2 focus-visible:ring-[#16A34A] inline-flex items-center justify-center"
                   >
                     Send Call
                   </button>
@@ -1197,15 +1199,15 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
               {ussdStep === 'main' && (
                 <div className="space-y-2 text-xs">
                   <div className="text-amber-300 font-bold">KALRO SERICULTURE NSRC</div>
-                  <div>1. Ripoti Kulisha (Feed Log)</div>
-                  <div>2. Ripoti Kuingia Moult</div>
-                  <div>3. Ilani ya Mavuno (Harvest Alert)</div>
-                  <div>4. Bei za Hariri Leo (Silk Prices)</div>
+                  <div>1. Log Daily Feeding</div>
+                  <div>2. Report Moult Entry</div>
+                  <div>3. Cocoon Harvest Alert</div>
+                  <div>4. Silk Market Benchmark Prices</div>
                   <div className="flex gap-2 pt-2">
                     <button
                       type="button"
                       onClick={() => setUssdStep('feed')}
-                      className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600 text-xs flex-1"
+                      className="min-h-[48px] min-w-[48px] px-3 py-2 bg-gray-700 rounded-lg hover:bg-gray-600 text-xs font-bold flex-1 focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center justify-center"
                     >
                       1
                     </button>
@@ -1213,9 +1215,9 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
                       type="button"
                       onClick={() => {
                         setUssdStep('moult');
-                        setUssdNotice('Notisi ya Moult imetumwa kwa Bwana Shamba.');
+                        setUssdNotice('Moult notice submitted to KALRO Station Supervisor.');
                       }}
-                      className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600 text-xs flex-1"
+                      className="min-h-[48px] min-w-[48px] px-3 py-2 bg-gray-700 rounded-lg hover:bg-gray-600 text-xs font-bold flex-1 focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center justify-center"
                     >
                       2
                     </button>
@@ -1223,16 +1225,16 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
                       type="button"
                       onClick={() => {
                         setUssdStep('harvest');
-                        setUssdNotice('Mavuno: Mountages zitatumwa masaa 48.');
+                        setUssdNotice('Harvest alert logged: Mountages dispatch scheduled within 48h.');
                       }}
-                      className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600 text-xs flex-1"
+                      className="min-h-[48px] min-w-[48px] px-3 py-2 bg-gray-700 rounded-lg hover:bg-gray-600 text-xs font-bold flex-1 focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center justify-center"
                     >
                       3
                     </button>
                     <button
                       type="button"
                       onClick={() => setUssdStep('prices')}
-                      className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600 text-xs flex-1"
+                      className="min-h-[48px] min-w-[48px] px-3 py-2 bg-gray-700 rounded-lg hover:bg-gray-600 text-xs font-bold flex-1 focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center justify-center"
                     >
                       4
                     </button>
@@ -1242,12 +1244,12 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
 
               {ussdStep === 'feed' && (
                 <div className="space-y-2 text-xs">
-                  <div className="text-amber-300 font-bold">Weka Kiasi cha Majani (kg):</div>
+                  <div className="text-amber-300 font-bold">Enter Feed Amount (kg):</div>
                   <input
                     type="number"
                     value={ussdFeedKg}
                     onChange={(e) => setUssdFeedKg(e.target.value)}
-                    className="w-full bg-gray-800 text-white px-2 py-1 rounded border border-gray-700 text-sm font-bold"
+                    className="w-full bg-gray-800 text-white px-3 py-2 rounded-lg border border-gray-700 text-sm font-bold min-h-[48px]"
                   />
                   <div className="flex gap-2 pt-2">
                     <button
@@ -1256,16 +1258,16 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
                         setUssdStep('idle');
                         onToast(`USSD Feed Log recorded: ${ussdFeedKg} kg!`);
                       }}
-                      className="px-3 py-1 bg-emerald-600 text-white rounded text-xs flex-1"
+                      className="min-h-[48px] min-w-[48px] px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold flex-1 focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center justify-center"
                     >
-                      Tuma (Submit)
+                      Submit
                     </button>
                     <button
                       type="button"
                       onClick={() => setUssdStep('main')}
-                      className="px-3 py-1 bg-gray-700 text-white rounded text-xs"
+                      className="min-h-[48px] min-w-[48px] px-4 py-2 bg-gray-700 text-white rounded-lg text-xs font-semibold focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center justify-center"
                     >
-                      Rudi
+                      Back
                     </button>
                   </div>
                 </div>
@@ -1273,30 +1275,30 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
 
               {ussdStep === 'prices' && (
                 <div className="space-y-2 text-xs">
-                  <div className="text-amber-300 font-bold">BEI ZA HARIRI (NSRC):</div>
-                  <div>• Daraja A: KES 950 / kg</div>
-                  <div>• Daraja B: KES 800 / kg</div>
-                  <div>• Daraja C: KES 600 / kg</div>
+                  <div className="text-amber-300 font-bold">SILK COCOON BENCHMARKS (NSRC):</div>
+                  <div>• Grade A: KES 950 / kg</div>
+                  <div>• Grade B: KES 800 / kg</div>
+                  <div>• Grade C: KES 600 / kg</div>
                   <button
                     type="button"
                     onClick={() => setUssdStep('main')}
-                    className="w-full mt-2 py-1 bg-gray-700 rounded text-xs"
+                    className="w-full min-h-[48px] min-w-[48px] mt-2 py-2 bg-gray-700 rounded-lg text-xs font-semibold focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center justify-center"
                   >
-                    0. Rudi Nyuma
+                    0. Return to Menu
                   </button>
                 </div>
               )}
 
               {(ussdStep === 'moult' || ussdStep === 'harvest') && (
                 <div className="space-y-2 text-xs">
-                  <div className="text-emerald-400 font-bold">ASANTE (SUCCESS)</div>
+                  <div className="text-emerald-400 font-bold">SUBMISSION CONFIRMED</div>
                   <div className="text-[11px] text-gray-300">{ussdNotice}</div>
                   <button
                     type="button"
                     onClick={() => setUssdStep('idle')}
-                    className="w-full mt-2 py-1 bg-gray-700 rounded text-xs"
+                    className="w-full min-h-[48px] min-w-[48px] mt-2 py-2 bg-gray-700 rounded-lg text-xs font-semibold focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center justify-center"
                   >
-                    Toka (Exit)
+                    Exit Session
                   </button>
                 </div>
               )}
@@ -1310,7 +1312,7 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
               Clear spoken audio instructions in Kenyan rural dialects for illiterate or elder smallholders.
             </p>
 
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               {[
                 { code: 'en', label: 'English' },
                 { code: 'sw', label: 'Kiswahili' },
@@ -1320,7 +1322,7 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
                 <button
                   key={lang.code}
                   onClick={() => setSelectedAudioLang(lang.code as typeof selectedAudioLang)}
-                  className={`px-3 py-1.5 rounded-lg border text-xs font-semibold ${
+                  className={`min-h-[48px] min-w-[48px] px-3.5 py-2 rounded-lg border text-xs font-semibold focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center justify-center ${
                     selectedAudioLang === lang.code
                       ? 'bg-[#1A332B] text-white border-[#1A332B]'
                       : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
@@ -1369,7 +1371,7 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
                         }
                         onToast(`Playing audio guide in ${selectedAudioLang.toUpperCase()}`);
                       }}
-                      className="px-2.5 py-1 bg-[#1A332B] text-white rounded font-semibold text-[11px] hover:bg-[#214641]"
+                      className="min-h-[48px] min-w-[48px] px-3.5 py-2 bg-[#1A332B] text-white rounded-lg font-semibold text-xs hover:bg-[#214641] focus-visible:ring-2 focus-visible:ring-[#16A34A] flex items-center justify-center gap-1.5"
                     >
                       ▶ Play Audio
                     </button>

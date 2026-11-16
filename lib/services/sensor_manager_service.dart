@@ -4,7 +4,9 @@ import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:uuid/uuid.dart';
 
+import '../models/environment_log.dart';
 import 'environment_log_repository.dart';
 
 /// Connection and discovery status of environmental BLE beacons.
@@ -393,6 +395,42 @@ class SensorManagerService {
     });
   }
 
+  final List<EnvironmentalSensorReading> _pendingBatch = [];
+
+  /// Bulk saves a batch of sensor readings using a single SQLite transaction.
+  Future<void> saveReadingsBatch({
+    required EnvironmentLogRepository repository,
+    required String batchId,
+    required List<EnvironmentalSensorReading> readings,
+    String? defaultNotes,
+  }) async {
+    if (readings.isEmpty) return;
+    const uuid = Uuid();
+    final logs = [
+      for (final r in readings)
+        EnvironmentLog(
+          id: uuid.v4(),
+          batchId: batchId,
+          recordedAt: r.timestamp,
+          temperatureCelsius: r.temperatureC,
+          humidityPercent: r.humidityPercent,
+          roomName: r.sensorName,
+          notes: defaultNotes ??
+              'Bulk auto-saved via BLE (${r.isSimulated ? "Simulated" : "0x181A Connected"})',
+        ),
+    ];
+    await repository.insertAll(logs);
+    _lastSavedTimestamp = DateTime.now();
+    debugPrint(
+      '[SensorManagerService] Bulk saved ${logs.length} microclimate logs via transaction.',
+    );
+  }
+
+  /// Queues a reading for transaction-batched persistence.
+  void queueReading(EnvironmentalSensorReading reading) {
+    _pendingBatch.add(reading);
+  }
+
   Future<void> _saveReadingToDatabase(
     EnvironmentLogRepository repository,
     String batchId,
@@ -400,15 +438,25 @@ class SensorManagerService {
   ) async {
     try {
       final reading = await scanAndReadSensor(preferredRoomName: roomName);
-      await repository.create(
-        batchId: batchId,
-        recordedAt: reading.timestamp,
-        temperatureCelsius: reading.temperatureC,
-        humidityPercent: reading.humidityPercent,
-        roomName: reading.sensorName,
-        notes: 'Auto-saved via BLE Environmental Beacon (${reading.isSimulated ? "Simulated" : "0x181A Connected"})',
-      );
-      _lastSavedTimestamp = DateTime.now();
+      if (_pendingBatch.isNotEmpty) {
+        final toSave = [..._pendingBatch, reading];
+        _pendingBatch.clear();
+        await saveReadingsBatch(
+          repository: repository,
+          batchId: batchId,
+          readings: toSave,
+        );
+      } else {
+        await repository.create(
+          batchId: batchId,
+          recordedAt: reading.timestamp,
+          temperatureCelsius: reading.temperatureC,
+          humidityPercent: reading.humidityPercent,
+          roomName: reading.sensorName,
+          notes: 'Auto-saved via BLE Environmental Beacon (${reading.isSimulated ? "Simulated" : "0x181A Connected"})',
+        );
+        _lastSavedTimestamp = DateTime.now();
+      }
       debugPrint('[SensorManagerService] Auto-saved microclimate log (${reading.temperatureC}°C, ${reading.humidityPercent}% RH) to FarmStore SQLite.');
     } catch (e) {
       debugPrint('[SensorManagerService] Error during auto-save: $e');
@@ -441,6 +489,7 @@ class SensorManagerService {
     _connectedDevice?.disconnect();
     _readingController.close();
     _statusController.close();
+    _pendingBatch.clear();
   }
 }
 
@@ -476,6 +525,11 @@ class ClimateNotifier extends Notifier<ClimateState> {
 
     _statusSub = service.statusStream.listen((status) {
       state = state.copyWith(status: status);
+    });
+
+    ref.onDispose(() {
+      _readingSub?.cancel();
+      _statusSub?.cancel();
     });
 
     return ClimateState(

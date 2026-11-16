@@ -42,7 +42,7 @@ export const Navigation: React.FC<NavigationProps> = ({
             <button
               key={tab.key}
               onClick={() => onSelectTab(tab.key)}
-              className={`nav-tab ${isActive ? 'active' : ''}`}
+              className={`nav-tab min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A] ${isActive ? 'active' : ''}`}
               aria-current={isActive ? 'page' : undefined}
             >
               <Icon size={14} />

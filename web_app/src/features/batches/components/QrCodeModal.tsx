@@ -1,8 +1,8 @@
 import React, { useRef } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { X, Printer } from 'lucide-react';
-import { Batch } from '../types';
-import { formatDate } from '../utils';
+import { Batch } from '../../../types';
+import { formatDate } from '../../../utils';
 
 interface QrCodeModalProps {
   batch: Batch;
@@ -95,7 +95,7 @@ export const QrCodeModal: React.FC<QrCodeModalProps> = ({ batch, onClose }) => {
           <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>
             Station Tray QR Tag
           </h3>
-          <button onClick={onClose} className="modal-close-btn" aria-label="Close dialog">
+          <button onClick={onClose} className="modal-close-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]" aria-label="Close dialog">
             <X size={18} />
           </button>
         </div>
@@ -126,11 +126,11 @@ export const QrCodeModal: React.FC<QrCodeModalProps> = ({ batch, onClose }) => {
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.85rem' }}>
+        <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.85rem' }}>
           <button
             type="button"
             onClick={onClose}
-            className="btn-secondary"
+            className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
             style={{ flex: 1 }}
           >
             Close
@@ -138,8 +138,8 @@ export const QrCodeModal: React.FC<QrCodeModalProps> = ({ batch, onClose }) => {
           <button
             type="button"
             onClick={handlePrint}
-            className="btn-accent"
-            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}
+            className="btn-accent min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
           >
             <Printer size={15} />
             <span>Print Tray Tag</span>

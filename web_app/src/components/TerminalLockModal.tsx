@@ -365,8 +365,10 @@ export const TerminalLockModal: React.FC<TerminalLockModalProps> = ({
                 key={digit}
                 type="button"
                 onClick={() => handleDigitPress(digit)}
+                className="min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
                 style={{
                   height: '48px',
+                  minHeight: '48px',
                   fontSize: '1.25rem',
                   fontWeight: 600,
                   backgroundColor: 'var(--bg-card-elevated)',
@@ -389,8 +391,10 @@ export const TerminalLockModal: React.FC<TerminalLockModalProps> = ({
             <button
               type="button"
               onClick={handleClear}
+              className="min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
               style={{
                 height: '48px',
+                minHeight: '48px',
                 fontSize: '0.78rem',
                 fontWeight: 600,
                 backgroundColor: 'var(--bg-subtle)',
@@ -406,8 +410,10 @@ export const TerminalLockModal: React.FC<TerminalLockModalProps> = ({
             <button
               type="button"
               onClick={() => handleDigitPress('0')}
+              className="min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
               style={{
                 height: '48px',
+                minHeight: '48px',
                 fontSize: '1.25rem',
                 fontWeight: 600,
                 backgroundColor: 'var(--bg-card-elevated)',
@@ -425,8 +431,10 @@ export const TerminalLockModal: React.FC<TerminalLockModalProps> = ({
             <button
               type="button"
               onClick={handleBackspace}
+              className="min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
               style={{
                 height: '48px',
+                minHeight: '48px',
                 fontSize: '0.78rem',
                 fontWeight: 600,
                 backgroundColor: 'var(--bg-subtle)',
@@ -445,9 +453,11 @@ export const TerminalLockModal: React.FC<TerminalLockModalProps> = ({
             type="button"
             onClick={handleValidatePin}
             disabled={isVerifying || enteredPin.length === 0}
+            className="min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
             style={{
               width: '100%',
-              padding: '10px 16px',
+              minHeight: '48px',
+              padding: '12px 16px',
               backgroundColor: 'var(--primary)',
               color: '#FFFFFF',
               border: 'none',

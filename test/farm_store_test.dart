@@ -102,4 +102,40 @@ void main() {
     expect(creds?.token, equals('test-nsrc-token'));
     expect(creds?.userId, equals('staff-joyce-njuguna'));
   });
+
+  test('upsertAll performs bulk inserts in an atomic transaction', () async {
+    final telemetryBatch = List.generate(
+      50,
+      (i) => {
+        'id': 'env-telemetry-$i',
+        'batchId': 'batch-telemetry-01',
+        'temperatureCelsius': 24.0 + (i * 0.1),
+        'humidityPercent': 75.0 + (i * 0.05),
+        'recordedAt': '2026-11-16T12:${(i % 60).toString().padLeft(2, '0')}:00.000Z',
+      },
+    );
+
+    await store.upsertAll('environment_logs', telemetryBatch);
+
+    final rows = await store.getCollectionWhere(
+      'environment_logs',
+      jsonKey: 'batchId',
+      value: 'batch-telemetry-01',
+    );
+    expect(rows, hasLength(50));
+    expect(rows.first['id'], equals('env-telemetry-0'));
+    expect(rows.last['id'], equals('env-telemetry-49'));
+  });
+
+  test('dispose closes database and resets open connection', () async {
+    await store.upsert('batches', 'dispose-test', {'id': 'dispose-test', 'name': 'Test'});
+    await store.dispose();
+    expect(store.isDisposed, isTrue);
+
+    // After dispose, a new instance can safely open the same database directory
+    final freshStore = FarmStore(directory: tempDir);
+    final rows = await freshStore.getCollection('batches');
+    expect(rows.any((r) => r['id'] == 'dispose-test'), isTrue);
+    await freshStore.dispose();
+  });
 }

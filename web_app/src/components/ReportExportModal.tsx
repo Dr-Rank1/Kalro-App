@@ -113,11 +113,11 @@ export const ReportExportModal: React.FC<ReportExportModalProps> = ({
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '0.65rem', alignItems: 'center', flexWrap: 'wrap' }}>
             <button
               onClick={handlePrint}
-              className="btn-secondary"
-              style={{ fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+              style={{ fontSize: '0.82rem', padding: '0.5rem 1rem', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
               title="Print document or save via system print dialog"
             >
               <Printer size={15} />
@@ -127,8 +127,8 @@ export const ReportExportModal: React.FC<ReportExportModalProps> = ({
             <button
               onClick={handleDownloadPdf}
               disabled={downloading}
-              className="btn-accent"
-              style={{ fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              className="btn-accent min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+              style={{ fontSize: '0.82rem', padding: '0.5rem 1.15rem', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
             >
               {downloadSuccess ? (
                 <>
@@ -143,7 +143,7 @@ export const ReportExportModal: React.FC<ReportExportModalProps> = ({
               )}
             </button>
 
-            <button onClick={onClose} className="modal-close-btn" aria-label="Close report preview">
+            <button onClick={onClose} className="modal-close-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]" aria-label="Close report preview">
               <X size={18} />
             </button>
           </div>

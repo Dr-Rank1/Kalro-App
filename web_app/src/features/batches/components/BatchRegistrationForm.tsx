@@ -3,17 +3,11 @@ import {
   ChevronDown,
   ChevronUp,
   CheckCircle2,
-  Building2,
-  Layers,
 } from 'lucide-react';
-import { Batch, FarmProfile, Species } from '../types';
+import { Batch, FarmProfile, Species } from '../../../types';
 import {
-  KENYA_SERICULTURE_BREEDS,
-  KENYA_MULBERRY_CULTIVARS,
-  KENYA_CASTOR_VARIETIES,
-  KENYA_ORCHARD_BLOCKS,
   MULBERRY_EVALUATION_ACCESSIONS_COUNT,
-} from '../constants';
+} from '../../../constants';
 
 interface BatchRegistrationFormProps {
   onSuccess: (batch: Batch) => void;
@@ -150,7 +144,7 @@ export const BatchRegistrationForm: React.FC<BatchRegistrationFormProps> = ({
           <button
             type="button"
             onClick={() => handleSpeciesChange('bombyx')}
-            className={`species-card-simple ${isBombyx ? 'selected bombyx' : ''}`}
+            className={`species-card-simple min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A] ${isBombyx ? 'selected bombyx' : ''}`}
           >
             <div className="species-card-content">
               <div className="species-card-head">
@@ -166,7 +160,7 @@ export const BatchRegistrationForm: React.FC<BatchRegistrationFormProps> = ({
           <button
             type="button"
             onClick={() => handleSpeciesChange('eri')}
-            className={`species-card-simple ${!isBombyx ? 'selected eri' : ''}`}
+            className={`species-card-simple min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A] ${!isBombyx ? 'selected eri' : ''}`}
           >
             <div className="species-card-content">
               <div className="species-card-head">
@@ -413,14 +407,14 @@ export const BatchRegistrationForm: React.FC<BatchRegistrationFormProps> = ({
               required
             />
             {profile && profile.houseCount > 1 && (
-              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '4px' }}>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '6px' }}>
                 {Array.from({ length: Math.min(profile.houseCount, 4) }, (_, i) => (
                   <button
                     key={i}
                     type="button"
                     onClick={() => setRoomName(`Rearing House ${i + 1} - Bay A`)}
-                    className="roadmap-tag-pill"
-                    style={{ fontSize: '0.7rem', padding: '2px 8px', cursor: 'pointer' }}
+                    className="roadmap-tag-pill min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                    style={{ fontSize: '0.78rem', padding: '6px 12px', minHeight: '48px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center' }}
                   >
                     House {i + 1}
                   </button>
@@ -474,7 +468,8 @@ export const BatchRegistrationForm: React.FC<BatchRegistrationFormProps> = ({
         <button
           type="button"
           onClick={() => setShowAdvanced(!showAdvanced)}
-          className="advanced-toggle-btn"
+          className="advanced-toggle-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+          style={{ minHeight: '48px' }}
         >
           <span>{showAdvanced ? 'Hide Additional Details' : '+ Add Seed Source & Notes (Optional)'}</span>
           {showAdvanced ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -516,11 +511,11 @@ export const BatchRegistrationForm: React.FC<BatchRegistrationFormProps> = ({
       {/* Form Action Controls */}
       <div className="simple-form-actions">
         {onCancel && (
-          <button type="button" onClick={onCancel} className="btn-secondary simple-btn">
+          <button type="button" onClick={onCancel} className="btn-secondary simple-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]">
             Cancel
           </button>
         )}
-        <button type="submit" className="btn-primary simple-btn-submit">
+        <button type="submit" className="btn-primary simple-btn-submit min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]">
           {isModal ? 'Save & Start Batch' : 'Register Batch & Begin Rearing →'}
         </button>
       </div>
