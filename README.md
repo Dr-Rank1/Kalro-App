@@ -148,6 +148,7 @@ Comprehensive, multi-tier engineering and agronomic manuals are centralized in t
 * **[Web Application Architecture (`docs/web_app.md`)](./docs/web_app.md)**: React 19 PWA, `bulletproof-react` feature modules, RxDB offline sync on Dexie (IndexedDB), PowerSync live PostgreSQL replication, and Tailwind CSS v4.
 * **[Cloud Backend API Guide (`docs/backend_api.md`)](./docs/backend_api.md)**: Next.js 15 App Router, Safaricom Daraja 2.0 B2C integration, Zod secrets guard, rate limiting, and idempotency key engine.
 * **[Documentation Directory Hub (`docs/README.md`)](./docs/README.md)**: Master index and table of contents for all platform documentation.
+* **[Original Agronomy & App Spec (`docs/Sericulture App Spec Eri Bombyx.pdf`)](./docs/Sericulture%20App%20Spec%20Eri%20Bombyx.pdf)**: Foundational specification PDF documenting baseline rearing protocols and silkworm agronomy standards.
 
 ---
 
@@ -173,7 +174,8 @@ Kalro-App/
 │   ├── OVERVIEW.md                     # Architectural, Domain & Agronomic Specification
 │   ├── PROJECT_MASTER_DOCUMENTATION.md # Complete Technical Reference Manual
 │   ├── web_app.md                      # React 19 PWA & RxDB Architecture Guide
-│   └── backend_api.md                  # Next.js 15 & Safaricom Daraja B2C Security Guide
+│   ├── backend_api.md                  # Next.js 15 & Safaricom Daraja B2C Security Guide
+│   └── Sericulture App Spec Eri Bombyx.pdf # Original Baseline Specification Document
 │
 ├── lib/                                # Flutter Mobile Client
 │   ├── components/                     # Reusable widgets (cards, health, layout, lifecycle)

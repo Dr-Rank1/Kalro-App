@@ -5,6 +5,8 @@
 *.swp
 *.dll
 .DS_Store
+local.properties
+**/local.properties
 .atom/
 .buildlog/
 .history

@@ -12,6 +12,7 @@ Welcome to the centralized documentation directory for the **KALRO Sericulture F
 | **[System Architecture & Agronomy Guide (`OVERVIEW.md`)](./OVERVIEW.md)** | **Domain Science & Architectural Overview**<br>Biological lifecycle curves, heterosis math, 11 characterized mulberry varieties, 7 castor varieties, 98 evaluation accessions, drying temperature profiles, and multi-tier system diagrams. | Research Agronomists, Extension Officers, Domain Specialists |
 | **[Web Application Architecture (`web_app.md`)](./web_app.md)** | **React 19 PWA & RxDB Offline Layer**<br>Bulletproof feature-based architecture (`features/batches`, `features/agronomy`, `features/finance`, `features/health`), RxDB on Dexie (IndexedDB), PowerSync live PostgreSQL replication, Tailwind CSS v4, and Executive High-Albedo theme. | Frontend Engineers, UI/UX Designers, PWA Specialists |
 | **[Cloud Backend API Guide (`backend_api.md`)](./backend_api.md)** | **Next.js 15 App Router & Daraja 2.0 Payouts**<br>Node.js Best Practices, strict Zod boot-up secrets guard, centralized error handling, sliding-window rate limiting, database-level idempotency protection, and automated test suite. | Backend Engineers, DevOps, Financial Auditors |
+| **[Original Agronomy & App Spec (`Sericulture App Spec Eri Bombyx.pdf`)](./Sericulture%20App%20Spec%20Eri%20Bombyx.pdf)** | **Historical Baseline Specification PDF**<br>Foundational project specifications, original rearing protocols, and Bombyx mori / Eri silkworm standards for Kenyan sericulture. | Field Extension Officers, Historical Reference |
 
 ---
 
