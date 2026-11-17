@@ -1,10 +1,18 @@
-# KALRO Sericulture Cloud Backend API (Next.js 15, Vercel Serverless)
+# KALRO Sericulture Cloud Backend API
 
-The secure cloud counterpart for the offline M-PESA B2C calculator in the KALRO Sericulture Farm Management Flutter mobile application. When rural cellular connectivity is restored, queued offline transactions are synced to this API to execute live Safaricom Daraja 2.0 B2C payment disbursements and update a central MongoDB Atlas ledger.
+[![Next.js](https://img.shields.io/badge/Next.js-15+-000000.svg?logo=next.js)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9+-3178C6.svg?logo=typescript)](https://www.typescriptlang.org)
+[![Zod](https://img.shields.io/badge/Zod-Validation-3E67B1.svg?logo=zod)](https://zod.dev)
+[![Node Best Practices](https://img.shields.io/badge/Node_Best_Practices-Compliant-brightgreen.svg)](https://github.com/goldbergyoni/nodebestpractices)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+
+The **KALRO Sericulture Cloud Backend API** is a secure, serverless financial backend engineered using the **Next.js 15 App Router**. It executes live **Safaricom Daraja 2.0 B2C (Business to Customer)** mobile money payments to smallholder sericulture farmers for cocoon harvest deliveries, and synchronizes transactions to a central **MongoDB Atlas** ledger.
 
 ---
 
-## Architecture Overview
+## Architecture & Security Enforcement (Node Best Practices)
+
+The backend rigorously implements production security and architectural guidelines from [Node.js Best Practices](https://github.com/goldbergyoni/nodebestpractices):
 
 ```
 ┌─────────────────────────────────┐
@@ -15,33 +23,62 @@ The secure cloud counterpart for the offline M-PESA B2C calculator in the KALRO 
                  │ (When Cellular Restored)
                  ▼ POST /api/payout/disburse
 ┌────────────────────────────────────────────────────────┐
-│     KALRO Backend API (Next.js 15 Serverless)          │
+│     KALRO Backend API (Next.js 15 App Router)          │
 │                                                        │
-│  1. Idempotency Check against MongoDB Atlas            │
-│  2. Generate Reference: KALRO-B2C-YYYYMMDD-XXXX        │
-│  3. Fetch/Cache OAuth Token (Safaricom Daraja)         │
-│  4. Dispatch Daraja B2C Payment Request                │
-│  5. Store PENDING Record in MongoDB Atlas Ledger       │
+│  1. Secrets Guard: Zod Boot-Up Environment Validation  │
+│  2. Rate Limiting: In-Memory Sliding-Window Guard      │
+│  3. Payload Sanitization: Strict Zod Validation Schema │
+│  4. Idempotency Guard: Prevents Double-Payment Retries │
+│  5. Daraja 2.0 Client: In-Memory OAuth Token Caching   │
+│  6. Central Error Handler: Standardized, No Leaks      │
 └────────────────┬───────────────────────────────────────┘
                  │
-                 ▼ Safaricom Daraja B2C Engine
+                 ▼ Safaricom Daraja B2C Payment Request
                  │
                  ▼ POST /api/payout/callback (Async Webhook)
 ┌────────────────────────────────────────────────────────┐
-│  6. Validate ResultCode (0 = Success)                  │
-│  7. Extract M-PESA Receipt (e.g. QJ89XZ3411)           │
-│  8. Update Ledger: PENDING -> COMPLETED / FAILED       │
+│  7. Webhook Signature & ResultCode Verification        │
+│  8. M-PESA Receipt Extraction (e.g. QJ89XZ3411)        │
+│  9. Ledger Update: PENDING -> COMPLETED / FAILED       │
 └────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Endpoints
+## Core Security Pillars
+
+### 1. Strict Secrets Guard (`lib/env.ts`)
+* Implements mandatory boot-up environment variable validation via Zod.
+* If `DARAJA_CONSUMER_KEY`, `DARAJA_CONSUMER_SECRET`, or `MONGODB_URI` are missing or fail protocol formats (e.g. invalid MongoDB URI scheme), the application immediately fails fast with explicit configuration guidance before serving requests.
+
+### 2. Centralized Error Handling (`lib/errors.ts`)
+* Catches all synchronous exceptions and unhandled promise rejections through a centralized error formatter.
+* Formats operational errors (`AppError`, `ValidationError`, `RateLimitError`) into consistent JSON responses.
+* In production (`NODE_ENV === 'production'`), internal database errors, system file paths, and stack traces are strictly concealed from client responses to prevent reconnaissance attacks.
+
+### 3. Strict Payload Sanitization (`lib/validation.ts`)
+* All incoming disbursement requests to `POST /api/payout/disburse` pass through strict Zod schemas.
+* Validates Kenyan mobile number formats (canonicalizing `07...` and `01...` to international `254...`).
+* Enforces Safaricom B2C financial boundaries: Minimum **KES 10.00**, Maximum **KES 150,000.00** per transaction.
+* Enforces strict object structures (`.strict()`) to reject unexpected injected keys.
+
+### 4. Idempotency Key Engine (`lib/idempotency.ts`)
+* Designed specifically for rural field connectivity where unstable cellular networks cause mobile apps to retry requests.
+* Atomically claims transaction `offlineId` keys in MongoDB with a `PENDING` lease.
+* If a duplicate request arrives while a payout is pending or completed, the engine intercepts the call and returns the existing transaction status without issuing a duplicate Safaricom disbursement.
+
+### 5. Sliding-Window Rate Limiting (`lib/rate-limiter.ts`)
+* Protects disbursement endpoints from burst abuse and DoS attacks using an in-memory sliding-window log algorithm.
+* Automatically throttles excessive requests with HTTP 429 (`RateLimitError`) and standard `Retry-After` headers.
+
+---
+
+## API Endpoints
 
 ### 1. `POST /api/payout/disburse`
 Accepts a JSON payload containing an array of queued offline transactions from the Flutter mobile app.
 
-#### Request Body
+#### Request Body Example
 ```json
 {
   "transactions": [
@@ -64,7 +101,7 @@ Accepts a JSON payload containing an array of queued offline transactions from t
 }
 ```
 
-#### Response
+#### Response Example
 ```json
 {
   "success": true,
@@ -112,44 +149,18 @@ Asynchronous webhook receiver invoked by Safaricom Daraja once the M-PESA B2C tr
         { "Key": "TransactionAmount", "Value": 25500.0 },
         { "Key": "TransactionReceipt", "Value": "QJ89XZ3411" },
         { "Key": "ReceiverPartyPublicName", "Value": "254712345678 - Grace Wanjiku" },
-        { "Key": "TransactionCompletedDateTime", "Value": "15.11.2026 14:15:30" },
-        { "Key": "B2CWorkingAccountAvailableFunds", "Value": 420000.0 },
-        { "Key": "B2CUtilityAccountAvailableFunds", "Value": 15000.0 }
+        { "Key": "TransactionCompletedDateTime", "Value": "15.11.2026 14:15:30" }
       ]
     }
   }
 }
 ```
 
-#### Callback Response
-```json
-{
-  "ResultCode": 0,
-  "ResultDesc": "Callback accepted successfully"
-}
-```
-
----
-
-## Features
-
-1. **Strict Reference Format (`KALRO-B2C-YYYYMMDD-XXXX`)**:
-   - Every disbursement receives a standard KALRO institutional reference containing an 8-digit date string and a 4-character cryptographic alphanumeric suffix.
-2. **Safaricom Daraja OAuth Token Caching**:
-   - `getDarajaAccessToken()` fetches OAuth credentials with Basic Base64 auth and caches the token in-memory with a 60-second safety expiry margin.
-   - Automatically handles 401 token invalidation and token refresh retries.
-3. **MongoDB Atlas Ledger**:
-   - Connection pool optimized for Vercel Serverless runtimes (`global._mongoClientPromise`).
-   - Idempotency protection prevents double payouts for the same `offlineId`.
-   - Complete audit trail of submitted Daraja requests and webhook outcomes.
-4. **Development Simulation Mode**:
-   - Set `DARAJA_SIMULATION=true` to test full end-to-end disbursement workflows and status transitions without requiring live Safaricom API credentials.
-
 ---
 
 ## Environment Variables
 
-Copy `.env.example` to `.env.local` to configure:
+Copy `.env.example` to `.env.local`:
 
 ```env
 DARAJA_ENVIRONMENT=sandbox
@@ -159,24 +170,25 @@ DARAJA_SHORTCODE=600999
 DARAJA_INITIATOR_NAME=testapi
 DARAJA_SECURITY_CREDENTIAL=your_security_credential
 DARAJA_CALLBACK_URL=https://your-domain.vercel.app/api/payout/callback
-MONGODB_URI=mongodb+srv://...
+MONGODB_URI=mongodb+srv://user:password@cluster.mongodb.net
 MONGODB_DB_NAME=kalro_sericulture
+DARAJA_SIMULATION=true
 ```
 
 ---
 
-## Running Locally & Testing
+## Quality Assurance & Automated Testing
+
+The backend includes an exhaustive test suite (`test_backend.ts`) validating all 5 security test groups:
 
 ```bash
-# Install dependencies
-npm install
-
-# Run unit and integration tests
+# Run security, rate-limiting, and idempotency tests
 npm test
-
-# Run Next.js 15 dev server
-npm run dev
-
-# Build for production
-npm run build
 ```
+
+### Test Suite Output:
+* **Secrets Guard**: Correctly fails on missing consumer keys and malformed MongoDB protocols.
+* **Error Handling**: Verifies standardized JSON formatting and zero stack leaks in production.
+* **Payload Validation**: Tests phone normalizations, boundaries (KES 10 - 150,000), and unknown key rejection.
+* **Rate Limiting**: Verifies threshold adherence and HTTP 429 throttling.
+* **Idempotency Engine**: Proves that subsequent network retries of the same cocoon batch are safely intercepted with **zero double spend**.
