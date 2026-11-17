@@ -285,9 +285,14 @@ Kalro-App/
 │   ├── vite.config.ts                          # Vite build configuration with @tailwindcss/vite
 │   └── package.json                            # Web dependencies and build scripts
 │
+├── docs/                                       # Centralized Platform Documentation
+│   ├── README.md                               # Documentation Index & Roadmap
+│   ├── OVERVIEW.md                             # Architectural, Domain & Agronomic Specification
+│   ├── PROJECT_MASTER_DOCUMENTATION.md         # Complete Technical Reference Manual
+│   ├── web_app.md                              # React 19 PWA & RxDB Architecture Guide
+│   └── backend_api.md                          # Next.js 15 & Safaricom Daraja B2C Security Guide
+│
 ├── test/                                       # Flutter Automated QA Suite (125 Tests)
-├── OVERVIEW.md                                 # Comprehensive Architectural & Agronomic Specification
-├── PROJECT_MASTER_DOCUMENTATION.md             # Complete Technical Reference Manual
 └── README.md                                   # Quickstart, Architecture & Features Summary
 ```
 

@@ -139,11 +139,23 @@ Strictly replaces traditional sun drying (which causes ultraviolet degradation, 
 
 ---
 
+## Documentation Hub
+
+Comprehensive, multi-tier engineering and agronomic manuals are centralized in the [`docs/`](./docs/) directory:
+
+* **[Master Project Documentation (`docs/PROJECT_MASTER_DOCUMENTATION.md`)](./docs/PROJECT_MASTER_DOCUMENTATION.md)**: Exhaustive 18-section technical manual covering institutional context, tri-part architecture, germplasm registry, 5-instar feeding schedules, 4-stage hot-air drying, defect grading, biosecurity triage, financial settlement, on-device formula engine, SQLite C FFI, RxDB offline sync, Node Best Practices, and deployment.
+* **[System Architecture & Agronomy Guide (`docs/OVERVIEW.md`)](./docs/OVERVIEW.md)**: Complete domain, germplasm, and lifecycle specification with biological curves and drying charts.
+* **[Web Application Architecture (`docs/web_app.md`)](./docs/web_app.md)**: React 19 PWA, `bulletproof-react` feature modules, RxDB offline sync on Dexie (IndexedDB), PowerSync live PostgreSQL replication, and Tailwind CSS v4.
+* **[Cloud Backend API Guide (`docs/backend_api.md`)](./docs/backend_api.md)**: Next.js 15 App Router, Safaricom Daraja 2.0 B2C integration, Zod secrets guard, rate limiting, and idempotency key engine.
+* **[Documentation Directory Hub (`docs/README.md`)](./docs/README.md)**: Master index and table of contents for all platform documentation.
+
+---
+
 ## Directory Structure
 
 ```text
 Kalro-App/
-├── backend_api/                        # Next.js 15 Cloud Backend API
+├── backend_api/                        # Next.js 15 Cloud Financial Backend
 │   ├── app/                            # App Router endpoints
 │   │   ├── api/payout/disburse/        # POST disbursement handler with idempotency
 │   │   └── api/payout/callback/        # POST Daraja webhook receiver
@@ -155,6 +167,13 @@ Kalro-App/
 │   │   ├── mongodb.ts                  # MongoDB Atlas connection pooling
 │   │   └── rate-limiter.ts             # Sliding-window rate limiting
 │   └── test_backend.ts                 # Comprehensive security & idempotency test suite
+│
+├── docs/                               # Centralized Platform Documentation
+│   ├── README.md                       # Documentation Index & Roadmap
+│   ├── OVERVIEW.md                     # Architectural, Domain & Agronomic Specification
+│   ├── PROJECT_MASTER_DOCUMENTATION.md # Complete Technical Reference Manual
+│   ├── web_app.md                      # React 19 PWA & RxDB Architecture Guide
+│   └── backend_api.md                  # Next.js 15 & Safaricom Daraja B2C Security Guide
 │
 ├── lib/                                # Flutter Mobile Client
 │   ├── components/                     # Reusable widgets (cards, health, layout, lifecycle)
@@ -187,9 +206,7 @@ Kalro-App/
 │   ├── vite.config.ts                  # Vite build configuration with @tailwindcss/vite
 │   └── package.json                    # Dependencies & build scripts
 │
-├── OVERVIEW.md                         # Detailed Architectural, Domain & Agronomic Specification
-├── PROJECT_MASTER_DOCUMENTATION.md     # Complete Technical Reference Manual
-└── README.md                           # Quickstart, Architecture & Features Summary
+└── README.md                           # Repository Quickstart & Master Overview
 ```
 
 ---
