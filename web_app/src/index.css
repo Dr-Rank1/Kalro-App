@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 :root {
   /* High-Albedo Mostly White Institutional Theme */
   color-scheme: light;
@@ -321,6 +323,20 @@ textarea:required:user-valid {
   transition: all 0.15s ease;
 }
 
+.header-sync-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #F0FDF4;
+  border: 1px solid #BBF7D0;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
 .header-batch-pill .font-bold {
   color: var(--text-main);
 }
@@ -524,14 +540,14 @@ textarea:required:user-valid {
   font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
-  transition: color 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
-  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  transition: all 0.18s ease;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
   position: relative;
 }
 
 .nav-tab:hover {
   color: var(--text-main);
-  background-color: rgba(22, 163, 74, 0.08);
+  background-color: #F1F5F9;
 }
 
 .nav-tab:focus-visible {
@@ -541,19 +557,19 @@ textarea:required:user-valid {
 }
 
 .nav-tab.active {
-  color: #4ADE80;
+  color: #15803D;
   border-bottom-color: #16A34A;
-  background-color: rgba(22, 163, 74, 0.10);
+  background-color: #F0FDF4;
   font-weight: 600;
 }
 
 .tab-badge {
-  background: var(--bg-subtle);
-  border: 1px solid var(--border-silk);
-  color: var(--text-muted);
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  color: #475569;
   font-size: 0.68rem;
   font-weight: 600;
-  padding: 1px 6px;
+  padding: 1px 7px;
   border-radius: var(--radius-full);
   min-width: 18px;
   text-align: center;
@@ -561,9 +577,10 @@ textarea:required:user-valid {
 }
 
 .nav-tab.active .tab-badge {
-  background: rgba(22, 163, 74, 0.25);
-  border-color: rgba(22, 163, 74, 0.45);
-  color: #4ADE80;
+  background: #DCFCE7;
+  border-color: #BBF7D0;
+  color: #15803D;
+  font-weight: 700;
 }
 
 .tab-badge.start-here-badge {
@@ -618,84 +635,76 @@ textarea:required:user-valid {
 .operational-metric-strip {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  background: var(--bg-card);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border-silk);
-  border-radius: var(--radius-lg);
+  gap: 14px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
   box-shadow: none;
   margin-bottom: 1.5rem;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .metric-col {
-  padding: 1.25rem 1.4rem;
-  border-right: 1px solid var(--border-silk);
+  padding: 1.25rem;
+  background-color: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  background: transparent;
-  transition: background-color 0.2s ease;
+  justify-content: space-between;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
 .metric-col:hover {
-  background-color: rgba(255, 255, 255, 0.02);
+  transform: translateY(-2px);
+  border-color: #CBD5E1;
+  box-shadow: 0 6px 16px -2px rgba(0, 0, 0, 0.06);
 }
 
 .metric-col:last-child {
-  border-right: none;
+  border-right: 1px solid #E2E8F0;
 }
 
 @media (max-width: 1080px) {
   .operational-metric-strip {
     grid-template-columns: repeat(3, 1fr);
-  }
-  .metric-col:nth-child(3) {
-    border-right: none;
-  }
-  .metric-col:nth-child(1),
-  .metric-col:nth-child(2),
-  .metric-col:nth-child(3) {
-    border-bottom: 1px solid var(--border-silk);
+    gap: 12px;
   }
 }
 
 @media (max-width: 720px) {
   .operational-metric-strip {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
   }
   .metric-col {
-    border-right: none;
-    border-bottom: 1px solid var(--border-silk);
-    padding: 1rem 1.25rem;
-  }
-  .metric-col:last-child {
-    border-bottom: none;
+    padding: 1rem;
   }
 }
 
 .metric-label {
-  font-size: 0.68rem;
-  font-weight: 500;
+  font-size: 0.7rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   color: var(--text-muted);
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.35rem;
 }
 
 .metric-number {
-  font-size: 1.95rem;
-  font-weight: 400;
+  font-size: 1.85rem;
+  font-weight: 700;
   color: var(--text-main);
-  line-height: 1.1;
-  letter-spacing: -0.03em;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
 }
 
 .metric-sub {
   font-size: 0.72rem;
   color: var(--text-muted);
-  margin-top: 0.35rem;
+  margin-top: 0.5rem;
   line-height: 1.35;
 }
 
@@ -721,7 +730,73 @@ textarea:required:user-valid {
   margin-top: 0.25rem;
 }
 
-/* Operational Control Header - Replaces generic centered hero */
+/* Unified Executive Operations Command Card */
+.ops-command-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.ops-command-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  padding: 1.25rem 1.5rem;
+}
+
+.ops-command-title-group h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #0F172A;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.ops-command-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+  font-size: 0.8rem;
+}
+
+.ops-meta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background-color: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.76rem;
+  color: #475569;
+}
+
+.ops-command-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.ops-command-subbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 0.85rem 1.5rem;
+  background-color: #F8FAFC;
+  border-top: 1px solid #E2E8F0;
+}
+
+/* Operational Control Header - Legacy Fallback */
 .ops-control-header {
   display: flex;
   justify-content: space-between;
@@ -867,34 +942,38 @@ textarea:required:user-valid {
   align-items: flex-start;
   gap: 0.75rem;
   padding: 0.85rem 1rem;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   margin-bottom: 0.75rem;
   font-size: 0.82rem;
   line-height: 1.45;
 }
 
 .alert-box.critical {
-  background-color: var(--status-danger-subtle);
-  border: 1px solid rgba(225, 29, 72, 0.25);
-  color: #FB7185;
+  background-color: #FEF2F2;
+  border: 1px solid #FECACA;
+  border-left: 4px solid #DC2626;
+  color: #991B1B;
 }
 
 .alert-box.warning {
-  background-color: var(--status-warning-subtle);
-  border: 1px solid rgba(245, 158, 11, 0.25);
-  color: #FBBF24;
+  background-color: #FFFBEB;
+  border: 1px solid #FDE68A;
+  border-left: 4px solid #D97706;
+  color: #92400E;
 }
 
 .alert-box.info {
-  background-color: var(--status-info-subtle);
-  border: 1px solid rgba(56, 189, 248, 0.25);
-  color: #7DD3FC;
+  background-color: #F0F9FF;
+  border: 1px solid #BAE6FD;
+  border-left: 4px solid #0284C7;
+  color: #075985;
 }
 
 .alert-box.success {
-  background-color: var(--status-success-subtle);
-  border: 1px solid rgba(22, 163, 74, 0.25);
-  color: #4ADE80;
+  background-color: #F0FDF4;
+  border: 1px solid #BBF7D0;
+  border-left: 4px solid #16A34A;
+  color: #166534;
 }
 
 /* Table Design - Border Only, Tabular Figures */
@@ -951,26 +1030,27 @@ textarea:required:user-valid {
 }
 
 .batch-item-card {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-card);
-  border-radius: var(--radius-md);
+  background-color: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
   padding: 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .batch-item-card.single-command-card {
-  border-left: 4px solid var(--text-main);
-  background: var(--bg-card);
-  box-shadow: 0 4px 20px -3px rgba(0, 0, 0, 0.08);
+  background: #FFFFFF;
+  border-color: #E2E8F0;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
 }
 
 .batch-item-card:hover {
-  border-color: var(--primary);
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.09), 0 0 0 1px var(--primary);
+  border-color: #CBD5E1;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
 }
 
 /* Illustrated Batch Card Header */
@@ -1069,21 +1149,21 @@ textarea:required:user-valid {
 }
 
 .species-badge.bombyx {
-  background-color: rgba(22, 163, 74, 0.12);
-  border: 1px solid rgba(22, 163, 74, 0.30);
-  color: #4ADE80;
+  background-color: #DCFCE7;
+  border: 1px solid #BBF7D0;
+  color: #15803D;
 }
 
 .species-badge.eri {
-  background-color: rgba(245, 158, 11, 0.12);
-  border: 1px solid rgba(245, 158, 11, 0.30);
-  color: #FBBF24;
+  background-color: #FEF3C7;
+  border: 1px solid #FDE68A;
+  color: #B45309;
 }
 
 .status-badge {
   font-size: 0.7rem;
   font-weight: 600;
-  padding: 2px 7px;
+  padding: 3px 8px;
   border-radius: var(--radius-sm);
   display: inline-flex;
   align-items: center;
@@ -1091,63 +1171,63 @@ textarea:required:user-valid {
 }
 
 .status-badge.active {
-  background-color: rgba(20, 83, 45, 0.40);
-  border: 1px solid rgba(74, 222, 128, 0.25);
-  color: #4ADE80;
+  background-color: #ECFDF5;
+  border: 1px solid #A7F3D0;
+  color: #047857;
 }
 
 .status-badge.moult {
-  background-color: rgba(120, 53, 15, 0.35);
-  border: 1px solid rgba(251, 191, 36, 0.25);
-  color: #FBBF24;
+  background-color: #FFFBEB;
+  border: 1px solid #FDE68A;
+  color: #B45309;
 }
 
 .status-badge.closed {
-  background-color: var(--bg-subtle);
-  border: 1px solid var(--border-silk);
-  color: var(--text-muted);
+  background-color: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  color: #475569;
 }
 
-/* Soft Tinted Badges (Organic Enterprise Data Indicators) */
+/* Soft Tinted Badges (Clean High-Contrast Data Indicators) */
 .badge-soft {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 2px 8px;
+  padding: 3px 8px;
   border-radius: var(--radius-sm);
   font-size: 0.72rem;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.35;
 }
 
 .badge-soft-success {
-  background-color: rgba(20, 83, 45, 0.40);
-  color: #4ADE80;
-  border: 1px solid rgba(74, 222, 128, 0.20);
+  background-color: #DCFCE7;
+  color: #15803D;
+  border: 1px solid #BBF7D0;
 }
 
 .badge-soft-warning {
-  background-color: rgba(120, 53, 15, 0.35);
-  color: #FBBF24;
-  border: 1px solid rgba(251, 191, 36, 0.20);
+  background-color: #FEF3C7;
+  color: #B45309;
+  border: 1px solid #FDE68A;
 }
 
 .badge-soft-danger {
-  background-color: rgba(76, 5, 25, 0.40);
-  color: #FB7185;
-  border: 1px solid rgba(251, 113, 133, 0.20);
+  background-color: #FEE2E2;
+  color: #B91C1C;
+  border: 1px solid #FECACA;
 }
 
 .badge-soft-info {
-  background-color: rgba(14, 116, 144, 0.30);
-  color: #7DD3FC;
-  border: 1px solid rgba(125, 211, 252, 0.20);
+  background-color: #E0F2FE;
+  color: #0369A1;
+  border: 1px solid #BAE6FD;
 }
 
 .badge-soft-muted {
-  background-color: var(--bg-subtle);
-  color: var(--text-muted);
-  border: 1px solid var(--border-silk);
+  background-color: #F1F5F9;
+  color: #475569;
+  border: 1px solid #E2E8F0;
 }
 
 /* Onboarding Batch Creation Station for New Users */
@@ -3265,35 +3345,38 @@ textarea:required:user-valid {
 }
 
 .batch-filter-bar {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  padding: 3px;
+  border-radius: 10px;
+  gap: 3px;
+  margin-bottom: 1.25rem;
   flex-wrap: wrap;
-  margin-bottom: 16px;
 }
 
 .batch-filter-btn {
-  background: var(--bg-card);
-  border: 1px solid var(--border-card);
-  border-radius: var(--radius-full);
-  padding: 0.65rem 1.15rem;
-  min-height: 48px;
-  min-width: 48px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  padding: 0.45rem 0.95rem;
+  min-height: 44px;
+  min-width: 44px;
   font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--text-muted);
+  font-weight: 500;
+  color: #475569;
   cursor: pointer;
   transition: all 0.15s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .batch-filter-btn:hover {
-  border-color: var(--primary);
-  color: var(--text-main);
-  background-color: var(--bg-card-elevated);
+  color: #0F172A;
+  background-color: rgba(255, 255, 255, 0.7);
 }
 
 .batch-filter-btn:focus-visible {
@@ -3303,22 +3386,25 @@ textarea:required:user-valid {
 }
 
 .batch-filter-btn.active {
-  background-color: var(--primary);
-  color: #ffffff;
-  border-color: var(--primary);
+  background-color: #FFFFFF;
+  color: #15803D;
+  border-color: #CBD5E1;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .batch-filter-badge {
-  background-color: rgba(0, 0, 0, 0.12);
-  border-radius: 10px;
-  padding: 1px 6px;
+  background-color: #E2E8F0;
+  color: #475569;
+  border-radius: 9999px;
+  padding: 1px 7px;
   font-size: 0.68rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .batch-filter-btn.active .batch-filter-badge {
-  background-color: rgba(255, 255, 255, 0.25);
-  color: #ffffff;
+  background-color: #DCFCE7;
+  color: #15803D;
 }
 
 .instar-guidance-box {

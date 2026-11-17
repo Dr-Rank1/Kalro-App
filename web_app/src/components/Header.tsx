@@ -78,17 +78,10 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Functional Header Actions */}
         <div className="header-controls">
-          {activeBatchesCount > 0 && (
-            <div className="header-batch-pill" title="Batches currently in active rearing">
-              <span className="tabular-nums font-bold">{activeBatchesCount}</span>
-              <span style={{ marginLeft: '5px' }}>Active {activeBatchesCount === 1 ? 'Lot' : 'Lots'}</span>
-            </div>
-          )}
-
           {/* Offline-First PowerSync Status Indicator */}
           {syncStatus && (
             <div
-              className="header-batch-pill"
+              className="header-sync-pill"
               title={
                 syncStatus.status === 'syncing'
                   ? 'Replicating data with NSRC Central PostgreSQL...'
@@ -96,30 +89,24 @@ export const Header: React.FC<HeaderProps> = ({
                   ? 'Offline-first: changes safely buffered in RxDB IndexedDB'
                   : 'PowerSync replication active and up to date'
               }
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '5px',
-                fontSize: '0.74rem',
-              }}
             >
               {syncStatus.status === 'syncing' ? (
                 <>
                   <RefreshCw
-                    size={11}
-                    style={{ animation: 'spin 1.5s linear infinite' }}
+                    size={12}
+                    style={{ animation: 'spin 1.5s linear infinite', color: '#16A34A' }}
                   />
-                  <span>Syncing</span>
+                  <span style={{ color: '#15803D', fontWeight: 600 }}>Syncing</span>
                 </>
               ) : syncStatus.status === 'offline' ? (
                 <>
-                  <CloudOff size={11} />
-                  <span>Offline</span>
+                  <CloudOff size={12} style={{ color: '#B45309' }} />
+                  <span style={{ color: '#B45309', fontWeight: 600 }}>Offline</span>
                 </>
               ) : (
                 <>
-                  <Check size={11} />
-                  <span>PowerSync</span>
+                  <Check size={12} style={{ color: '#16A34A' }} />
+                  <span style={{ color: '#15803D', fontWeight: 600 }}>PowerSync</span>
                 </>
               )}
             </div>

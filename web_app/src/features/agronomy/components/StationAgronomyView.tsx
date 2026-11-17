@@ -432,22 +432,22 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
               <h2 className="text-base font-bold text-gray-900">Biomass & Spacing Calculator</h2>
               <div className="space-y-3">
                 <div>
-                  <label className="block text-gray-600 font-semibold mb-1">Plot Size (Acres)</label>
+                  <label className="block text-gray-700 font-semibold mb-1 text-xs">Plot Size (Acres)</label>
                   <input
                     type="number"
                     step="0.25"
                     min="0.25"
                     value={orchardAcreage}
                     onChange={(e) => setOrchardAcreage(parseFloat(e.target.value) || 0.25)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-semibold text-gray-800"
+                    className="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm font-semibold text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-600 font-semibold mb-1">Planting Geometry</label>
+                  <label className="block text-gray-700 font-semibold mb-1 text-xs">Planting Geometry</label>
                   <select
                     value={spacingModel}
                     onChange={(e) => setSpacingModel(e.target.value as 'standard' | 'paired')}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs font-semibold text-gray-800"
+                    className="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-xs font-semibold text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                   >
                     <option value="standard">Standard Square (1.5m × 1.5m) · 1,798 bushes/ac</option>
                     <option value="paired">Paired-Row Intensive (0.9m × 0.9m) · 4,996 bushes/ac</option>
@@ -455,41 +455,41 @@ export const StationAgronomyView: React.FC<StationAgronomyViewProps> = ({
                 </div>
               </div>
 
-              <div className="bg-gray-50 rounded-lg p-3 space-y-2 border border-gray-200">
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Established Bushes:</span>
-                  <span className="font-bold text-gray-800 tabular-nums">{bushPopulation.toLocaleString()} bushes</span>
+              <div className="bg-slate-50 rounded-lg p-3.5 space-y-2.5 border border-slate-200">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-600">Established Bushes:</span>
+                  <span className="font-bold text-slate-900 tabular-nums">{bushPopulation.toLocaleString()} bushes</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Annual Foliage Capacity:</span>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-600">Annual Foliage Capacity:</span>
                   <span className="font-bold text-emerald-700 tabular-nums">{Math.round(estimatedLeafBiomassKgPerYear).toLocaleString()} kg/yr</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Silkworm Box Carrying Capacity:</span>
-                  <span className="font-bold text-[#1A332B] tabular-nums">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-600">Silkworm Box Capacity:</span>
+                  <span className="font-bold text-slate-900 tabular-nums">
                     {Math.floor(estimatedLeafBiomassKgPerYear / 350)} boxes / year
                   </span>
                 </div>
               </div>
 
-              <div className="pt-2 border-t border-gray-100 space-y-2">
-                <h3 className="font-bold text-gray-800">Pruning & Egg Incubation Sync</h3>
-                <p className="text-gray-500 text-[11px]">
+              <div className="pt-3 border-t border-slate-200 space-y-2.5">
+                <h3 className="font-bold text-slate-800 text-xs">Pruning & Egg Incubation Sync</h3>
+                <p className="text-slate-500 text-[11px] leading-relaxed">
                   Bottom-prune mulberry 45–60 days before egg hatching so young tender leaves match Chawki and shoot harvest matches Instar V.
                 </p>
                 <div>
-                  <label className="block text-gray-600 font-semibold mb-1">Countdown to Brushing (Days)</label>
+                  <label className="block text-slate-700 font-semibold mb-1.5 text-xs">Countdown to Brushing (Days)</label>
                   <input
                     type="range"
                     min="10"
                     max="65"
                     value={pruningDaysToHatch}
                     onChange={(e) => setPruningDaysToHatch(parseInt(e.target.value) || 45)}
-                    className="w-full"
+                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600 my-2"
                   />
-                  <div className="flex justify-between font-mono text-[11px] text-gray-600">
+                  <div className="flex items-center justify-between font-mono text-[11px] text-slate-600 pt-1">
                     <span>{pruningDaysToHatch} Days Until Eggs Arrive</span>
-                    <span className={pruningDaysToHatch >= 45 && pruningDaysToHatch <= 60 ? 'text-emerald-700 font-bold' : 'text-amber-700 font-bold'}>
+                    <span className={pruningDaysToHatch >= 45 && pruningDaysToHatch <= 60 ? 'text-emerald-800 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200' : 'text-amber-800 font-bold bg-amber-50 px-2 py-0.5 rounded border border-amber-200'}>
                       {pruningDaysToHatch >= 45 && pruningDaysToHatch <= 60 ? 'Optimal Pruning Window' : 'Non-Optimal Pruning'}
                     </span>
                   </div>

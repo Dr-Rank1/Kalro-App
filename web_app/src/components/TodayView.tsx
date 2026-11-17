@@ -263,212 +263,151 @@ export const TodayView: React.FC<TodayViewProps> = ({
 
   return (
     <div>
-      {/* 1. Operational Command Header */}
-      <div className="ops-control-header">
-        <div className="ops-title-group">
-          <div className="ops-station-pill">
-            <Building2 size={13} />
-            <span>{profile?.orgName || 'KALRO Sericulture Research Station'}</span>
-            <span>•</span>
-            <span>{profile?.county ? `${profile.county} County` : 'Kenya'}</span>
-          </div>
-          <h2>Rearing House Operations</h2>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginTop: '4px' }}>
-            <span style={{ fontSize: '0.82rem', color: 'var(--text-main)', fontWeight: 600 }}>
-              {formattedDate}
-            </span>
-            <span className="shift-pill">
-              <ShiftIcon size={14} />
-              <span>{shift.title} ({shift.timeWindow})</span>
-            </span>
-          </div>
-        </div>
-
-        <div className="ops-actions">
-          <button
-            onClick={() => onOpenQuickLog(undefined, 'feed')}
-            className="btn-accent min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '12px 20px', fontSize: '0.85rem' }}
-          >
-            <Plus size={16} />
-            Log Feeding
-          </button>
-          <button
-            onClick={() => onOpenQuickLog(undefined, 'mortality')}
-            className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
-            style={{ padding: '12px 20px', fontSize: '0.85rem' }}
-          >
-            Record Loss
-          </button>
-          <button
-            onClick={() => onOpenQuickLog(undefined, 'climate')}
-            className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '12px 20px', fontSize: '0.85rem' }}
-          >
-            <Thermometer size={16} />
-            House Climate
-          </button>
-          <button
-            onClick={() => onOpenQuickLog(undefined, 'harvest')}
-            className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
-            style={{ padding: '12px 20px', fontSize: '0.85rem' }}
-          >
-            Log Harvest
-          </button>
-        </div>
-      </div>
-
-      {/* 1B. Rotating Station Operator Duty Bar */}
-      <div
-        className="station-duty-bar"
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: '12px',
-          padding: '0.75rem 1rem',
-          backgroundColor: 'var(--bg-card)',
-          border: '1px solid var(--border-silk)',
-          borderRadius: 'var(--radius-md)',
-          marginBottom: '1rem',
-          boxShadow: 'var(--shadow-sm)',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: '240px' }}>
-          <div
-            style={{
-              width: '38px',
-              height: '38px',
-              borderRadius: '50%',
-              backgroundColor: currentUser?.avatarColor || 'var(--primary)',
-              color: '#ffffff',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: 700,
-              fontSize: '0.86rem',
-              flexShrink: 0,
-            }}
-          >
-            {currentUser?.avatarInitials || 'ST'}
-          </div>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--text-muted)', fontWeight: 600 }}>
-                Operator on Duty:
+      {/* 1. Executive Operations Command Card (Consolidated Command Center) */}
+      <div className="ops-command-card">
+        <div className="ops-command-main">
+          <div className="ops-command-title-group">
+            <h2>Rearing House Operations</h2>
+            <div className="ops-command-meta">
+              <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-main)' }}>{formattedDate}</span>
+              <span style={{ color: 'var(--border-silk)' }}>•</span>
+              <span className="ops-meta-chip">
+                <ShiftIcon size={13} style={{ color: 'var(--primary)' }} />
+                <span>{shift.title} ({shift.timeWindow})</span>
               </span>
-              <strong style={{ fontSize: '0.88rem', color: 'var(--text-main)' }}>
-                {currentUser?.username || 'Station Operator'}
-              </strong>
+              <span style={{ color: 'var(--border-silk)' }}>•</span>
+              {(() => {
+                const shiftSchedule = getNextShiftSchedule(now);
+                return (
+                  <span className="ops-meta-chip">
+                    <Clock size={13} style={{ color: 'var(--primary)' }} />
+                    <span>Next Ration: <strong style={{ color: 'var(--text-main)' }}>{shiftSchedule.nextRationName} ({String(shiftSchedule.nextRationHour).padStart(2, '0')}:{String(shiftSchedule.nextRationMinute).padStart(2, '0')})</strong> in {shiftSchedule.timeRemainingFormatted}</span>
+                  </span>
+                );
+              })()}
+            </div>
+          </div>
+
+          <div className="ops-command-actions">
+            <button
+              onClick={() => onOpenQuickLog(undefined, 'feed')}
+              className="btn-accent min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 18px', fontSize: '0.85rem' }}
+            >
+              <Plus size={16} />
+              Log Feeding
+            </button>
+            <button
+              onClick={() => onOpenQuickLog(undefined, 'mortality')}
+              className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+              style={{ padding: '10px 16px', fontSize: '0.85rem' }}
+            >
+              Record Loss
+            </button>
+            <button
+              onClick={() => onOpenQuickLog(undefined, 'climate')}
+              className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '10px 16px', fontSize: '0.85rem' }}
+            >
+              <Thermometer size={15} />
+              House Climate
+            </button>
+            <button
+              onClick={() => onOpenQuickLog(undefined, 'harvest')}
+              className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+              style={{ padding: '10px 16px', fontSize: '0.85rem' }}
+            >
+              Log Harvest
+            </button>
+          </div>
+        </div>
+
+        {/* Integrated Station Duty & Audit Sub-Bar */}
+        <div className="ops-command-subbar">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div
+              style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: '50%',
+                backgroundColor: currentUser?.avatarColor || 'var(--primary)',
+                color: '#ffffff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 700,
+                fontSize: '0.8rem',
+                flexShrink: 0,
+              }}
+            >
+              {currentUser?.avatarInitials || 'ST'}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', fontSize: '0.8rem' }}>
+              <span style={{ color: 'var(--text-muted)', fontWeight: 500 }}>Duty Operator:</span>
+              <strong style={{ color: 'var(--text-main)', fontWeight: 600 }}>{currentUser?.username || 'Station Operator'}</strong>
               {currentUser?.staffId && (
                 <span
                   style={{
                     fontSize: '0.68rem',
                     fontFamily: 'monospace',
                     padding: '1px 6px',
-                    borderRadius: '3px',
+                    borderRadius: '4px',
                     backgroundColor: 'var(--bg-subtle)',
-                    border: '1px solid var(--border-subtle)',
+                    border: '1px solid var(--border-silk)',
                     color: 'var(--text-muted)',
                   }}
                 >
                   {currentUser.staffId}
                 </span>
               )}
-            </div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '1px' }}>
-              <span style={{ color: roleMeta?.badgeColor || 'var(--primary)', fontWeight: 600 }}>
-                {roleMeta?.label || 'Sericulture Specialist'}
-              </span>
-              <span>•</span>
-              <span>All operations stamped with operator &amp; time</span>
+              <span style={{ color: 'var(--border-silk)' }}>•</span>
+              <span style={{ color: roleMeta?.badgeColor || 'var(--primary)', fontWeight: 600 }}>{roleMeta?.label || 'Sericulture Specialist'}</span>
+              <span style={{ color: 'var(--text-light)', fontSize: '0.74rem' }}>(All operations digitally stamped)</span>
             </div>
           </div>
-        </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          {allUsers && allUsers.length > 1 && onSwitchUser && (
-            <select
-              value={currentUser?.id || ''}
-              onChange={(e) => onSwitchUser(e.target.value)}
-              className="form-control min-h-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {allUsers && allUsers.length > 1 && onSwitchUser && (
+              <select
+                value={currentUser?.id || ''}
+                onChange={(e) => onSwitchUser(e.target.value)}
+                className="form-control min-h-[40px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                style={{
+                  fontSize: '0.78rem',
+                  padding: '6px 10px',
+                  height: '40px',
+                  width: 'auto',
+                }}
+                title="Switch active sericulture operator on duty"
+              >
+                {allUsers.map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.username} ({u.staffId || u.role})
+                  </option>
+                ))}
+              </select>
+            )}
+
+            <button
+              type="button"
+              onClick={() => onSelectTab('audit')}
+              className="btn-secondary min-h-[40px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
               style={{
-                fontSize: '0.82rem',
+                fontSize: '0.78rem',
                 padding: '8px 12px',
-                height: '48px',
-                width: 'auto',
-                minWidth: '160px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '5px',
               }}
-              title="Switch active sericulture operator on duty"
+              title="View complete chronological audit trail of all staff operations"
             >
-              {allUsers.map((u) => (
-                <option key={u.id} value={u.id}>
-                  {u.username} ({u.staffId || u.role})
-                </option>
-              ))}
-            </select>
-          )}
-
-          <button
-            type="button"
-            onClick={() => onSelectTab('audit')}
-            className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
-            style={{
-              fontSize: '0.82rem',
-              padding: '12px 16px',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-            }}
-            title="View complete chronological audit trail of all staff operations"
-          >
-            <History size={14} />
-            <span>Staff Audit Ledger ({auditLogs?.length || 0})</span>
-            <ArrowRight size={13} />
-          </button>
+              <History size={13} />
+              <span>Audit Ledger ({auditLogs?.length || 0})</span>
+              <ArrowRight size={12} />
+            </button>
+          </div>
         </div>
       </div>
-
-      {/* Shift Ration Status */}
-      {(() => {
-        const shiftSchedule = getNextShiftSchedule(now);
-        return (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '0.65rem 1rem',
-              backgroundColor: 'var(--bg-card)',
-              border: '1px solid var(--border-card)',
-              borderRadius: 'var(--radius-md)',
-              marginBottom: '1rem',
-              fontSize: '0.8rem',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Clock size={15} style={{ color: 'var(--primary)' }} />
-              <span style={{ color: 'var(--text-muted)' }}>Next Ration Window:</span>
-              <strong style={{ color: 'var(--text-main)' }}>
-                {shiftSchedule.nextRationName} ({String(shiftSchedule.nextRationHour).padStart(2, '0')}:{String(shiftSchedule.nextRationMinute).padStart(2, '0')})
-              </strong>
-            </div>
-            <span
-              style={{
-                fontSize: '0.72rem',
-                fontWeight: 600,
-                padding: '2px 8px',
-                borderRadius: 'var(--radius-sm)',
-                backgroundColor: 'var(--bg-subtle)',
-                color: 'var(--text-muted)',
-              }}
-            >
-              In {shiftSchedule.timeRemainingFormatted}
-            </span>
-          </div>
-        );
-      })()}
 
       {/* Profile Setup Callout (If no profile created yet) */}
       {!profile && (
@@ -608,26 +547,48 @@ export const TodayView: React.FC<TodayViewProps> = ({
 
       {/* 3. Active Station Notices / Alerts */}
       {alerts.length > 0 && (
-        <div className="kalro-card" style={{ marginBottom: '24px' }}>
-          <div className="card-header-flex">
-            <h3 className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <AlertTriangle size={18} style={{ color: 'var(--accent-gold)' }} />
-              <span>Active Operational Notices</span>
-            </h3>
-            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-              {alerts.length} action {alerts.length === 1 ? 'item' : 'items'}
-            </span>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
-            {alerts.map((alert, idx) => (
-              <div key={idx} className={`alert-box ${alert.type}`} style={{ margin: 0 }}>
+        <div style={{ marginBottom: '1.25rem', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {alerts.map((alert, idx) => (
+            <div
+              key={idx}
+              className={`alert-box ${alert.type}`}
+              style={{
+                margin: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '12px',
+                padding: '12px 16px',
+                borderRadius: '10px',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', flex: 1, minWidth: '260px' }}>
+                <AlertTriangle
+                  size={18}
+                  style={{
+                    flexShrink: 0,
+                    marginTop: '2px',
+                    color: alert.type === 'critical' ? '#B91C1C' : alert.type === 'warning' ? '#B45309' : '#0369A1',
+                  }}
+                />
                 <div>
-                  <strong>{alert.message}</strong>
-                  {alert.sub && <div style={{ fontSize: '0.78rem', marginTop: '3px' }}>{alert.sub}</div>}
+                  <strong style={{ fontSize: '0.86rem', display: 'block', color: 'inherit' }}>{alert.message}</strong>
+                  {alert.sub && <div style={{ fontSize: '0.78rem', marginTop: '2px', opacity: 0.9 }}>{alert.sub}</div>}
                 </div>
               </div>
-            ))}
-          </div>
+              {onOpenAddLeaf && (alert.message.includes('Forage') || alert.message.includes('Leaf')) && (
+                <button
+                  type="button"
+                  onClick={onOpenAddLeaf}
+                  className="btn-accent min-h-[40px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                  style={{ fontSize: '0.78rem', padding: '8px 14px', whiteSpace: 'nowrap' }}
+                >
+                  + Record Leaf Harvest
+                </button>
+              )}
+            </div>
+          ))}
         </div>
       )}
 
@@ -831,21 +792,21 @@ export const TodayView: React.FC<TodayViewProps> = ({
                     {/* Forage Cultivar Specification Strip */}
                     <div
                       style={{
-                        fontSize: '0.74rem',
-                        padding: '6px 10px',
-                        backgroundColor: 'rgba(22, 163, 74, 0.10)',
-                        border: '1px solid rgba(22, 163, 74, 0.25)',
-                        borderRadius: 'var(--radius-sm)',
-                        color: '#4ADE80',
-                        marginBottom: '0.65rem',
+                        fontSize: '0.75rem',
+                        padding: '7px 12px',
+                        backgroundColor: '#F0FDF4',
+                        border: '1px solid #BBF7D0',
+                        borderRadius: '8px',
+                        color: '#15803D',
+                        marginBottom: '0.75rem',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '6px',
+                        gap: '7px',
                       }}
                     >
-                      <Leaf size={13} style={{ flexShrink: 0 }} />
+                      <Leaf size={14} style={{ flexShrink: 0, color: '#16A34A' }} />
                       <span className="truncate">
-                        <strong>Target Forage:</strong> {recommendedCultivar}
+                        <strong style={{ color: '#166534', fontWeight: 600 }}>Target Forage:</strong> {recommendedCultivar}
                       </span>
                     </div>
 
@@ -854,30 +815,30 @@ export const TodayView: React.FC<TodayViewProps> = ({
                       style={{
                         display: 'grid',
                         gridTemplateColumns: isSingle ? 'repeat(4, 1fr)' : '1fr 1fr',
-                        gap: '0.5rem',
+                        gap: '0.65rem',
                         fontSize: '0.78rem',
                         margin: '0.4rem 0 0.85rem',
-                        background: 'var(--bg-subtle)',
-                        border: '1px solid var(--border-subtle)',
-                        padding: '0.65rem',
-                        borderRadius: 'var(--radius-sm)',
+                        background: '#F8FAFC',
+                        border: '1px solid #E2E8F0',
+                        padding: '0.75rem 0.85rem',
+                        borderRadius: '10px',
                       }}
                     >
                       <div>
-                        <div style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>Live Larvae</div>
-                        <strong className="tabular-nums">{live.toLocaleString()}</strong>
-                        <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginLeft: '4px' }}>
+                        <div style={{ color: '#64748B', fontSize: '0.68rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '2px' }}>Live Larvae</div>
+                        <strong className="tabular-nums" style={{ color: '#0F172A', fontSize: '0.92rem' }}>{live.toLocaleString()}</strong>
+                        <span style={{ fontSize: '0.68rem', color: '#64748B', marginLeft: '4px' }}>
                           ({b.eggCount > 0 ? ((live / b.eggCount) * 100).toFixed(0) : 100}%)
                         </span>
                       </div>
                       <div>
-                        <div style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>Daily Target</div>
-                        <strong className="tabular-nums">
+                        <div style={{ color: '#64748B', fontSize: '0.68rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '2px' }}>Daily Target</div>
+                        <strong className="tabular-nums" style={{ color: '#0F172A', fontSize: '0.92rem' }}>
                           {suggestedFeed > 0 ? `${(suggestedFeed / 1000).toFixed(1)} kg` : 'Moult Fasting'}
                         </strong>
                       </div>
                       <div>
-                        <div style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>Fed Today</div>
+                        <div style={{ color: '#64748B', fontSize: '0.68rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '2px' }}>Fed Today</div>
                         <span
                           className={`badge-soft ${fed ? 'badge-soft-success' : 'badge-soft-danger'}`}
                         >
@@ -885,8 +846,8 @@ export const TodayView: React.FC<TodayViewProps> = ({
                         </span>
                       </div>
                       <div>
-                        <div style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>Target Temp &amp; RH</div>
-                        <strong className="tabular-nums">{stage.idealTemp} · {stage.idealHumidity}</strong>
+                        <div style={{ color: '#64748B', fontSize: '0.68rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '2px' }}>Target Temp &amp; RH</div>
+                        <strong className="tabular-nums" style={{ color: '#0F172A', fontSize: '0.92rem' }}>{stage.idealTemp} · {stage.idealHumidity}</strong>
                       </div>
                     </div>
 
@@ -907,25 +868,25 @@ export const TodayView: React.FC<TodayViewProps> = ({
                           style={{
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '6px',
-                            fontSize: '0.72rem',
-                            color: 'var(--text-muted)',
-                            backgroundColor: 'var(--bg-subtle)',
-                            border: '1px solid var(--border-subtle)',
-                            borderRadius: 'var(--radius-sm)',
-                            padding: '4px 8px',
-                            margin: '0.1rem 0 0.65rem',
+                            gap: '7px',
+                            fontSize: '0.74rem',
+                            color: '#475569',
+                            backgroundColor: '#F8FAFC',
+                            border: '1px solid #E2E8F0',
+                            borderRadius: '8px',
+                            padding: '6px 10px',
+                            margin: '0.1rem 0 0.75rem',
                           }}
                         >
-                          <Clock size={12} style={{ color: 'var(--primary)', flexShrink: 0 }} />
+                          <Clock size={13} style={{ color: '#16A34A', flexShrink: 0 }} />
                           <span className="truncate" style={{ flex: 1 }}>
                             {latestBatchLog ? (
                               <>
-                                <strong style={{ color: 'var(--text-main)' }}>{latestBatchLog.title}:</strong> {latestBatchLog.details} · <span style={{ color: 'var(--primary)', fontWeight: 600 }}>{latestBatchLog.operatorName}</span> ({new Date(latestBatchLog.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})
+                                <strong style={{ color: '#0F172A' }}>{latestBatchLog.title}:</strong> {latestBatchLog.details} · <span style={{ color: '#15803D', fontWeight: 600 }}>{latestBatchLog.operatorName}</span> ({new Date(latestBatchLog.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})
                               </>
                             ) : latestBatchFeed ? (
                               <>
-                                <strong style={{ color: 'var(--text-main)' }}>Last Feed:</strong> {(latestBatchFeed.quantityGrams / 1000).toFixed(1)} kg {latestBatchFeed.cultivar || latestBatchFeed.leafType} by <span style={{ color: 'var(--primary)', fontWeight: 600 }}>{latestBatchFeed.operatorName || 'Staff'}</span> at {new Date(latestBatchFeed.recordedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                <strong style={{ color: '#0F172A' }}>Last Feed:</strong> {(latestBatchFeed.quantityGrams / 1000).toFixed(1)} kg {latestBatchFeed.cultivar || latestBatchFeed.leafType} by <span style={{ color: '#15803D', fontWeight: 600 }}>{latestBatchFeed.operatorName || 'Staff'}</span> at {new Date(latestBatchFeed.recordedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                               </>
                             ) : (
                               <span>Pending first operational log for this shift</span>
