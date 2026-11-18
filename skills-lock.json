@@ -1,0 +1,831 @@
+{
+  "version": 2,
+  "skills": {
+    "a11y-audit": {
+      "source": "plugin87/ux-ui-agent-skills",
+      "commit": "f823acedc3ef4e9b2ba944a28fd86fe2abdde427",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/a11y-audit/SKILL.md",
+      "computedHash": "2090e15311452fa6d6134d8f5ab6bf362da37a08d7bbcc563aff742a33836a5e"
+    },
+    "ai-sdk-5": {
+      "source": "Gentleman-Programming/Gentleman-Skills",
+      "commit": "c8036a37893679dc5e942484975405d39689c63b",
+      "sourceType": "github",
+      "skillPath": "curated/ai-sdk-5/SKILL.md",
+      "computedHash": "a889ce79000c709c4914b406d15f2a8756596d815b4333703c1758be4b38f9ca"
+    },
+    "angular-architecture": {
+      "source": "Gentleman-Programming/Gentleman-Skills",
+      "commit": "c8036a37893679dc5e942484975405d39689c63b",
+      "sourceType": "github",
+      "skillPath": "curated/angular/architecture/SKILL.md",
+      "computedHash": "8d5d961d6385a2199b2978cc189113e57bff06a6105a5167ed6ad3fd2a8c36b4"
+    },
+    "angular-core": {
+      "source": "Gentleman-Programming/Gentleman-Skills",
+      "commit": "c8036a37893679dc5e942484975405d39689c63b",
+      "sourceType": "github",
+      "skillPath": "curated/angular/core/SKILL.md",
+      "computedHash": "fa11465944c679c26679d4d24edbc87e40cfcab16a66c419bcfc427012ea5877"
+    },
+    "angular-forms": {
+      "source": "Gentleman-Programming/Gentleman-Skills",
+      "commit": "c8036a37893679dc5e942484975405d39689c63b",
+      "sourceType": "github",
+      "skillPath": "curated/angular/forms/SKILL.md",
+      "computedHash": "c2331dc74784d4e19dc6987fa12bd3ebc05ed00bb2b7541b988bc552035ed573"
+    },
+    "angular-performance": {
+      "source": "Gentleman-Programming/Gentleman-Skills",
+      "commit": "c8036a37893679dc5e942484975405d39689c63b",
+      "sourceType": "github",
+      "skillPath": "curated/angular/performance/SKILL.md",
+      "computedHash": "93d51b35a8f9216ea0da6cc660222ef335a72a63188b1f836d470898f81d0d01"
+    },
+    "apply-aesthetic": {
+      "source": "plugin87/ux-ui-agent-skills",
+      "commit": "f823acedc3ef4e9b2ba944a28fd86fe2abdde427",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/apply-aesthetic/SKILL.md",
+      "computedHash": "cb59e9b574bee452436d8a827323a561f2d4e842e15b90f8d8db3212f0699409"
+    },
+    "brandkit": {
+      "source": "plugin87/ux-ui-agent-skills",
+      "commit": "f823acedc3ef4e9b2ba944a28fd86fe2abdde427",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/brandkit/SKILL.md",
+      "computedHash": "e7eef37ecff76b1cb8b819381f04f0ab342b488360bc09997e8901db3e686539"
+    },
+    "critique": {
+      "source": "plugin87/ux-ui-agent-skills",
+      "commit": "f823acedc3ef4e9b2ba944a28fd86fe2abdde427",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/critique/SKILL.md",
+      "computedHash": "3f5f8db843ffe7eb0e6ff9c56899beffbd72070fb459ba4a3a831e12a82cf9a3"
+    },
+    "dart-add-unit-test": {
+      "source": "dart-lang/skills",
+      "commit": "f84b16872b5d186f4e877511b49b93c204a1c4ef",
+      "sourceType": "github",
+      "skillPath": "skills/dart-add-unit-test/SKILL.md",
+      "computedHash": "3679f62a634142d81a9f5754eae20356d5fc471e5957e35e18239801bf7a471c"
+    },
+    "dart-build-cli-app": {
+      "source": "dart-lang/skills",
+      "commit": "f84b16872b5d186f4e877511b49b93c204a1c4ef",
+      "sourceType": "github",
+      "skillPath": "skills/dart-build-cli-app/SKILL.md",
+      "computedHash": "ee4104b5cbc46dc60189df9b5109a7357f06ee85c322a76637f5c6d1040a52cd"
+    },
+    "dart-collect-coverage": {
+      "source": "dart-lang/skills",
+      "commit": "f84b16872b5d186f4e877511b49b93c204a1c4ef",
+      "sourceType": "github",
+      "skillPath": "skills/dart-collect-coverage/SKILL.md",
+      "computedHash": "eb267ddc4ae062e7b6f480a6c7d8208cc3a7c77ba4fde28d63e85d355cf0697d"
+    },
+    "dart-concurrency": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/dart-concurrency/SKILL.md",
+      "computedHash": "e8fce68db4a7f549b8573436c1e7297e2cede68ce0ca9554fc26bed0bd2b21f3"
+    },
+    "dart-fix-runtime-errors": {
+      "source": "dart-lang/skills",
+      "commit": "f84b16872b5d186f4e877511b49b93c204a1c4ef",
+      "sourceType": "github",
+      "skillPath": "skills/dart-fix-runtime-errors/SKILL.md",
+      "computedHash": "af09db2bf2d066537020a45bb5211fb3aa9359106197d9ad1e17831fbc6f2a71"
+    },
+    "dart-generate-test-mocks": {
+      "source": "dart-lang/skills",
+      "commit": "f84b16872b5d186f4e877511b49b93c204a1c4ef",
+      "sourceType": "github",
+      "skillPath": "skills/dart-generate-test-mocks/SKILL.md",
+      "computedHash": "d05e998208c3ce6cb266474d27fc27368428b3d4d633512321f903bfad56f948"
+    },
+    "dart-language": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/dart-language/SKILL.md",
+      "computedHash": "8d19144f5532e16c29243f9c1cf1e1582612bada695c7ae8597c676d7afda665"
+    },
+    "dart-migrate-to-checks-package": {
+      "source": "dart-lang/skills",
+      "commit": "f84b16872b5d186f4e877511b49b93c204a1c4ef",
+      "sourceType": "github",
+      "skillPath": "skills/dart-migrate-to-checks-package/SKILL.md",
+      "computedHash": "a4033e45c7d8b7ba21a7b2390ee11c9ff98363620ce4a7d1d57c478b233952ec"
+    },
+    "dart-resolve-package-conflicts": {
+      "source": "dart-lang/skills",
+      "commit": "f84b16872b5d186f4e877511b49b93c204a1c4ef",
+      "sourceType": "github",
+      "skillPath": "skills/dart-resolve-package-conflicts/SKILL.md",
+      "computedHash": "0bdf74d7a0d3dfcd1b1f8a7d3014d65ad957c19adb3c2724387e3b7c75464725"
+    },
+    "dart-run-static-analysis": {
+      "source": "dart-lang/skills",
+      "commit": "f84b16872b5d186f4e877511b49b93c204a1c4ef",
+      "sourceType": "github",
+      "skillPath": "skills/dart-run-static-analysis/SKILL.md",
+      "computedHash": "fa93216b2e985fe86cffbc7f9734361205cbe6c7c8d46b21a87beea19bea2066"
+    },
+    "dart-sdk-changelog": {
+      "source": "RandalSchwartz/dart-sdk-skills",
+      "commit": "3231ba22b0a9833cb6d1126f8064c26505074e1b",
+      "sourceType": "github",
+      "skillPath": "skills/dart-sdk-changelog/SKILL.md",
+      "computedHash": "04a7b0145287240edfe9f52137c707bc634c11e906e232891fb8a7347291c2ea"
+    },
+    "dart-setup-ffi-assets": {
+      "source": "dart-lang/skills",
+      "commit": "f84b16872b5d186f4e877511b49b93c204a1c4ef",
+      "sourceType": "github",
+      "skillPath": "skills/dart-setup-ffi-assets/SKILL.md",
+      "computedHash": "396a0abd000388a06d3547b315743b6d416fb86c074700a790f9f8989c8a32ce"
+    },
+    "dart-use-doc-examples": {
+      "source": "dart-lang/skills",
+      "commit": "f84b16872b5d186f4e877511b49b93c204a1c4ef",
+      "sourceType": "github",
+      "skillPath": "skills/dart-use-doc-examples/SKILL.md",
+      "computedHash": "daf66a018a121fcaf72da87c9bced219c7dc89f1322fb3177eda7fb87da323af"
+    },
+    "dart-use-ffigen": {
+      "source": "dart-lang/skills",
+      "commit": "f84b16872b5d186f4e877511b49b93c204a1c4ef",
+      "sourceType": "github",
+      "skillPath": "skills/dart-use-ffigen/SKILL.md",
+      "computedHash": "6cf19414e11951db1c0bfdf80ca5fa1de235454196a10c50103d734ffe15100b"
+    },
+    "dart-use-path-package": {
+      "source": "dart-lang/skills",
+      "commit": "f84b16872b5d186f4e877511b49b93c204a1c4ef",
+      "sourceType": "github",
+      "skillPath": "skills/dart-use-path-package/SKILL.md",
+      "computedHash": "c6c37a71cd66b8180a625b42facf73679afb0842f8a8b77a6d3f972279178b4d"
+    },
+    "dart-use-pattern-matching": {
+      "source": "dart-lang/skills",
+      "commit": "f84b16872b5d186f4e877511b49b93c204a1c4ef",
+      "sourceType": "github",
+      "skillPath": "skills/dart-use-pattern-matching/SKILL.md",
+      "computedHash": "f04e10a491637ab3ffaa4fa49964090d03e8521c9eff7410f7bd37c7eb3d40a7"
+    },
+    "dart-use-primary-constructors": {
+      "source": "dart-lang/skills",
+      "commit": "f84b16872b5d186f4e877511b49b93c204a1c4ef",
+      "sourceType": "github",
+      "skillPath": "skills/dart-use-primary-constructors/SKILL.md",
+      "computedHash": "c3f9417434d97b846d1b7e02575af550c4656984cdb8d949821be7af4e57440b"
+    },
+    "dart-write-documentation": {
+      "source": "dart-lang/skills",
+      "commit": "f84b16872b5d186f4e877511b49b93c204a1c4ef",
+      "sourceType": "github",
+      "skillPath": "skills/dart-write-documentation/SKILL.md",
+      "computedHash": "672d8e9e5dc290c11eaf58da617a1d07349d0b728f0440cfcf22bf644a50dba6"
+    },
+    "data-dashboard": {
+      "source": "plugin87/ux-ui-agent-skills",
+      "commit": "f823acedc3ef4e9b2ba944a28fd86fe2abdde427",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/data-dashboard/SKILL.md",
+      "computedHash": "dd2464c81701f06a76610de9e85b2fd5d638b0460d076f988235a0d8ccf9766a"
+    },
+    "design-code": {
+      "source": "plugin87/ux-ui-agent-skills",
+      "commit": "f823acedc3ef4e9b2ba944a28fd86fe2abdde427",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/design-code/SKILL.md",
+      "computedHash": "88582fa39762390433501ca1b0950aecc662dedff2f4efe0d36a437c88483f37"
+    },
+    "design-component": {
+      "source": "plugin87/ux-ui-agent-skills",
+      "commit": "f823acedc3ef4e9b2ba944a28fd86fe2abdde427",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/design-component/SKILL.md",
+      "computedHash": "23b7418db29f1083e59d43691a416e4f3d25dc1c516ae5ee8876be252c8894c8"
+    },
+    "design-doctrine": {
+      "source": "plugin87/ux-ui-agent-skills",
+      "commit": "f823acedc3ef4e9b2ba944a28fd86fe2abdde427",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/design-doctrine/SKILL.md",
+      "computedHash": "4d768cc4eef5a22fcee66e1347e34e23b9d04bd855f0753c5e824d98efec4566"
+    },
+    "design-qa": {
+      "source": "plugin87/ux-ui-agent-skills",
+      "commit": "f823acedc3ef4e9b2ba944a28fd86fe2abdde427",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/design-qa/SKILL.md",
+      "computedHash": "69f127a4f7e498a4f68c2aad9c42c83ad0c27f49de908ddd890ba201930e049e"
+    },
+    "design-review": {
+      "source": "plugin87/ux-ui-agent-skills",
+      "commit": "f823acedc3ef4e9b2ba944a28fd86fe2abdde427",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/design-review/SKILL.md",
+      "computedHash": "ec170099c3c7e5901aa5ca1884ff2cff3bceea12ab748259903ed0a483d19f65"
+    },
+    "design-screen": {
+      "source": "plugin87/ux-ui-agent-skills",
+      "commit": "f823acedc3ef4e9b2ba944a28fd86fe2abdde427",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/design-screen/SKILL.md",
+      "computedHash": "765e11e1f591725559ab05251365b52efe202fc908d4e31e86c9b728ccd0b7ae"
+    },
+    "design-tokens": {
+      "source": "plugin87/ux-ui-agent-skills",
+      "commit": "f823acedc3ef4e9b2ba944a28fd86fe2abdde427",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/design-tokens/SKILL.md",
+      "computedHash": "81279d0d65d9341e7fd4618a7e9d30988f4aeca9137bf0f1943220288da7fff2"
+    },
+    "django-drf": {
+      "source": "Gentleman-Programming/Gentleman-Skills",
+      "commit": "c8036a37893679dc5e942484975405d39689c63b",
+      "sourceType": "github",
+      "skillPath": "curated/django-drf/SKILL.md",
+      "computedHash": "60e31caff3914a05dc75a3796d3bf50b9b537693d70d38dcb03c2012aeb03374"
+    },
+    "electron": {
+      "source": "Gentleman-Programming/Gentleman-Skills",
+      "commit": "c8036a37893679dc5e942484975405d39689c63b",
+      "sourceType": "github",
+      "skillPath": "community/electron/SKILL.md",
+      "computedHash": "f0425bca85d0cb8f0cac6358b83c408e4c334f0b98066534dd6c2406cee86f29"
+    },
+    "elixir-antipatterns": {
+      "source": "Gentleman-Programming/Gentleman-Skills",
+      "commit": "c8036a37893679dc5e942484975405d39689c63b",
+      "sourceType": "github",
+      "skillPath": "community/elixir-antipatterns/SKILL.md",
+      "computedHash": "e751f0d768cdeb6dac04dff21a32514c7a54eb01c758eef0e5bcb324721570fa"
+    },
+    "figma-integration": {
+      "source": "plugin87/ux-ui-agent-skills",
+      "commit": "f823acedc3ef4e9b2ba944a28fd86fe2abdde427",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/figma-integration/SKILL.md",
+      "computedHash": "ca777f46e310e629379bc7463992fdd984fc2d26ac5045d0ec7989cc287eb2d9"
+    },
+    "flutter-accessibility": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-accessibility/SKILL.md",
+      "computedHash": "26f76cb032b8c87ece1e30de5d874876c36535c52b5bed30f5d4d719c14bdde0"
+    },
+    "flutter-add-integration-test": {
+      "source": "flutter/skills",
+      "commit": "17fe9182f4c462d69d6a7963aef01b44b1f7f189",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-add-integration-test/SKILL.md",
+      "computedHash": "ce8c06d4673db956810ffc2380e4c9305e068021eab72c0f3506dacdf0fa4027"
+    },
+    "flutter-add-widget-preview": {
+      "source": "flutter/skills",
+      "commit": "17fe9182f4c462d69d6a7963aef01b44b1f7f189",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-add-widget-preview/SKILL.md",
+      "computedHash": "a6866e150ae9f804349bf399bb887e8ede45f888657411deb4e8179400633c88"
+    },
+    "flutter-add-widget-test": {
+      "source": "flutter/skills",
+      "commit": "17fe9182f4c462d69d6a7963aef01b44b1f7f189",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-add-widget-test/SKILL.md",
+      "computedHash": "5cfab5fd20d6b84e28e9b9cc278ac0c3fb2c89a7e850f2b900749b14cb367bbf"
+    },
+    "flutter-ai-integration": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-ai-integration/SKILL.md",
+      "computedHash": "54cf804d4034e3351939e5e2005b719d4b2187ebe5304379468e1ac9bf2cc3fc"
+    },
+    "flutter-animation": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-animation/SKILL.md",
+      "computedHash": "436c41ec7c17ee1751d6f0814c0020ddc60908b3fc3de29f91a85eeff057ff3f"
+    },
+    "flutter-app-workflow": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-app-workflow/SKILL.md",
+      "computedHash": "a5a7e8453a177b91dcc22cdda15805c0e5d2329eae716dcf0c5cae16d5eea0df"
+    },
+    "flutter-apply-architecture-best-practices": {
+      "source": "flutter/skills",
+      "commit": "17fe9182f4c462d69d6a7963aef01b44b1f7f189",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-apply-architecture-best-practices/SKILL.md",
+      "computedHash": "a41b999109cc3c2dc79ddbc05b5fd5f39ed08d5c6c17dab728a6b926d3a504de"
+    },
+    "flutter-architecture": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-architecture/SKILL.md",
+      "computedHash": "c21bfc0d2eb17610f326760b07072ef345c24bd5ee44149356eb4a6deb6f3edf"
+    },
+    "flutter-authentication": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-authentication/SKILL.md",
+      "computedHash": "b686e8af76b20b3538c9f787b06cba7f0855521642722b09771689cd34f10411"
+    },
+    "flutter-background-execution": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-background-execution/SKILL.md",
+      "computedHash": "23750431915b46534a8ec4f335e22d8bd4801571f65f9938eed01e4711d66a22"
+    },
+    "flutter-build-release": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-build-release/SKILL.md",
+      "computedHash": "7aeb8965b61af01491157b22295b88efbccd5a2fc12bab23b942f2fd12e0ef3a"
+    },
+    "flutter-build-responsive-layout": {
+      "source": "flutter/skills",
+      "commit": "17fe9182f4c462d69d6a7963aef01b44b1f7f189",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-build-responsive-layout/SKILL.md",
+      "computedHash": "bdb7ab7ca812ee719237a718376a5f2e15b659201ff66818f1012c5d13751487"
+    },
+    "flutter-ci-cd": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-ci-cd/SKILL.md",
+      "computedHash": "319b03fbd0b867a83be2af91b5d7f047c2f981102112df8f33c051c9a6468fab"
+    },
+    "flutter-code-review": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-code-review/SKILL.md",
+      "computedHash": "40dda784c62121f6c6492033019fc3c4659ac3d5f942d8b6c80afa73cdf2a36c"
+    },
+    "flutter-dependency-upgrades": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-dependency-upgrades/SKILL.md",
+      "computedHash": "979653be511736a8fd110eeabf23bee8a626c4f11c5a75412dbe9af69bef7cc5"
+    },
+    "flutter-device-testing": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-device-testing/SKILL.md",
+      "computedHash": "f244669bd1793b8dedcf0c4a895aaee5b38c3f5f448dd74d94c51b4b92a988e2"
+    },
+    "flutter-figma-workflow": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-figma-workflow/SKILL.md",
+      "computedHash": "876034dabbd9519e720a3a5116977615c454b07585bbd59e1353d2aacaad2c6b"
+    },
+    "flutter-fix-layout-issues": {
+      "source": "flutter/skills",
+      "commit": "17fe9182f4c462d69d6a7963aef01b44b1f7f189",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-fix-layout-issues/SKILL.md",
+      "computedHash": "66c9d468f894704bfd760c9c6f60651e634fadb099f1977ab9d4e2bf73eb5fc1"
+    },
+    "flutter-implement-json-serialization": {
+      "source": "flutter/skills",
+      "commit": "17fe9182f4c462d69d6a7963aef01b44b1f7f189",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-implement-json-serialization/SKILL.md",
+      "computedHash": "48727033cb05de551ef14264112e36e8aec015b3cf955fa2115cfdac6094fe69"
+    },
+    "flutter-in-app-purchases": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-in-app-purchases/SKILL.md",
+      "computedHash": "dec1b798e46ba8ca17c9f4d1340865c73fad563b18b6b550464dc479ff43b7ec"
+    },
+    "flutter-localization": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-localization/SKILL.md",
+      "computedHash": "d2dbdc970dcc256c58ffebd566cefd421ddae472eba9c3dea42ed3889e3f81ae"
+    },
+    "flutter-location-maps": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-location-maps/SKILL.md",
+      "computedHash": "d0c364a798c448b8cc3d165031f00a6d913969079a6f0cc17458eefcdafa5bee"
+    },
+    "flutter-media": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-media/SKILL.md",
+      "computedHash": "d5b86e663539930f82b12cdf3bd9a8cb23dbcafdb9a967ec1716aad2510df17d"
+    },
+    "flutter-navigation": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-navigation/SKILL.md",
+      "computedHash": "49af57e0321bebd4e4acaf9f3db00982ec88196f5968d9729e3d2eef057732eb"
+    },
+    "flutter-networking": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-networking/SKILL.md",
+      "computedHash": "35536bbc5fd245b8f8bc1b8343174a71d1c7bff7a5123207cae905a3f45dccbf"
+    },
+    "flutter-notifications": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-notifications/SKILL.md",
+      "computedHash": "63221cabe07d5e09e90d46783e578292ad460bdd02b62496308f6c702ddc192b"
+    },
+    "flutter-observability": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-observability/SKILL.md",
+      "computedHash": "95e2d25762ed708b055963421b346a0eebb071f97882dba340797fdcfb680f55"
+    },
+    "flutter-openapi-client": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-openapi-client/SKILL.md",
+      "computedHash": "6398dd7c59c46da44ad56c68234337615caa7bff9f4dc0473a63abe5f073a837"
+    },
+    "flutter-package-development": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-package-development/SKILL.md",
+      "computedHash": "ee998cfb354f0419a4d174c1342284f6d9d5c7da71a567f1dfa2e49fa7de2705"
+    },
+    "flutter-payments-checkout": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-payments-checkout/SKILL.md",
+      "computedHash": "c111abbfa35fe0a4467601e3c4e61323c538a938a6a961a2d7452ad3e248aeae"
+    },
+    "flutter-performance": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-performance/SKILL.md",
+      "computedHash": "f1fb078ae9f296c067f7e70d316eddce42e5942e791142c82a08278ea24da44c"
+    },
+    "flutter-persistence": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-persistence/SKILL.md",
+      "computedHash": "a4ba024e809401b064df8b6b369d68879aa9d5315878650feec9ed2593dea7ce"
+    },
+    "flutter-platform-integration": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-platform-integration/SKILL.md",
+      "computedHash": "cd7beb53d35d9db4057514dc840e0daab77743d0f794df7e6d4742b51a389315"
+    },
+    "flutter-product-analytics": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-product-analytics/SKILL.md",
+      "computedHash": "5f92d8f780e72921d847378add8fb40072baadac8e4f7eab5e55efbc39661151"
+    },
+    "flutter-responsive-layout": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-responsive-layout/SKILL.md",
+      "computedHash": "c4c24fff0d340bced1cc8e2450b1b516b551bdf029693d2c472196d60e03e12f"
+    },
+    "flutter-runtime-debugging": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-runtime-debugging/SKILL.md",
+      "computedHash": "8e2b44f4c7225b07917844bc2d862e9a50c2830ab6c5399ba06bb9a68e7552a5"
+    },
+    "flutter-sdk-changelog": {
+      "source": "RandalSchwartz/dart-sdk-skills",
+      "commit": "3231ba22b0a9833cb6d1126f8064c26505074e1b",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-sdk-changelog/SKILL.md",
+      "computedHash": "d78f99e3ba43f9c31d420d7b0e1a861331259f57a35bf77575e13df69da81ebe"
+    },
+    "flutter-security": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-security/SKILL.md",
+      "computedHash": "6b0074c2548af91f6e3673042fcaaca4f2799148acdd50baf1d00e1ff67443c9"
+    },
+    "flutter-setup-declarative-routing": {
+      "source": "flutter/skills",
+      "commit": "17fe9182f4c462d69d6a7963aef01b44b1f7f189",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-setup-declarative-routing/SKILL.md",
+      "computedHash": "566264ee0f746a8b4d571a0dec69d3d3f09c246591a3393d1fb67783661465bf"
+    },
+    "flutter-setup-localization": {
+      "source": "flutter/skills",
+      "commit": "17fe9182f4c462d69d6a7963aef01b44b1f7f189",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-setup-localization/SKILL.md",
+      "computedHash": "4b4214e30accca0601e7f1d929a44caaa126fe9440d80463198e6ab10e23cdc7"
+    },
+    "flutter-state-management": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-state-management/SKILL.md",
+      "computedHash": "8e134ade9d645f8bf32a8d3a93fe4f3ed14e31039da43c824fb4f3e3ae59016c"
+    },
+    "flutter-testing": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-testing/SKILL.md",
+      "computedHash": "6c4204588d3492bbeb19eeb495a962353ff2b9a5c99f8754f0087bbf35d53c07"
+    },
+    "flutter-text-rendering": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-text-rendering/SKILL.md",
+      "computedHash": "744ad787b7a9a7ea4a791b3b5a02c98f4017eea0ff362f97fa469dbb9ce5d6fe"
+    },
+    "flutter-ui-design": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-ui-design/SKILL.md",
+      "computedHash": "7d51a291f9fcdb4d52f25b633f36223308606ba5c838df1dbbff6c0bf4eb555e"
+    },
+    "flutter-ui-patterns": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-ui-patterns/SKILL.md",
+      "computedHash": "23947dec4eb459afd8f132ec74d0399b187a9f1a2df774414e2ef2304ea4c60e"
+    },
+    "flutter-use-http-package": {
+      "source": "flutter/skills",
+      "commit": "17fe9182f4c462d69d6a7963aef01b44b1f7f189",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-use-http-package/SKILL.md",
+      "computedHash": "a9271fff9ed45b37f908ed57acb5e68012f97d887771b6a5efe088649a1d5ec3"
+    },
+    "flutter-visual-effects": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-visual-effects/SKILL.md",
+      "computedHash": "727155d6c285685e49275492a415345b36144302c5819ed69265baa8fb9d5d2d"
+    },
+    "flutter-webview": {
+      "source": "thienqo/flutter-skills",
+      "commit": "0979e054a897dcad0914a78974ff2f5f3efb82fa",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-webview/SKILL.md",
+      "computedHash": "9a236528f401d54025bd2ea0bc8b5be70bf26f67fb0ac0dc9be44b96f8aa15d0"
+    },
+    "gate": {
+      "source": "plugin87/ux-ui-agent-skills",
+      "commit": "f823acedc3ef4e9b2ba944a28fd86fe2abdde427",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/gate/SKILL.md",
+      "computedHash": "a797c8729b4d8b60b793903e4da81e3ab0c56062478b575a2b95691e9f485371"
+    },
+    "github-pr": {
+      "source": "Gentleman-Programming/Gentleman-Skills",
+      "commit": "c8036a37893679dc5e942484975405d39689c63b",
+      "sourceType": "github",
+      "skillPath": "curated/github-pr/SKILL.md",
+      "computedHash": "ccbf44ebb90b6b8db3f91af51d7ee26da13933e0f1dfe9dcf1bef32233b86081"
+    },
+    "governance": {
+      "source": "plugin87/ux-ui-agent-skills",
+      "commit": "f823acedc3ef4e9b2ba944a28fd86fe2abdde427",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/governance/SKILL.md",
+      "computedHash": "31dc01accf9def39e455827fbfa9c5de19c0e468299219a8623da2dc101451d9"
+    },
+    "grill-me": {
+      "source": "plugin87/ux-ui-agent-skills",
+      "commit": "f823acedc3ef4e9b2ba944a28fd86fe2abdde427",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/grill-me/SKILL.md",
+      "computedHash": "03b479885c2de5318c2cd0bde30067b79ca9be8eee4e15422daff944b8218c7e"
+    },
+    "hexagonal-architecture-layers-java": {
+      "source": "Gentleman-Programming/Gentleman-Skills",
+      "commit": "c8036a37893679dc5e942484975405d39689c63b",
+      "sourceType": "github",
+      "skillPath": "community/hexagonal-architecture-layers-java/SKILL.md",
+      "computedHash": "ac8a7a19a54123430035c8a9de8873e3f724eee5c5f2919a132d5588df81274b"
+    },
+    "image-to-code": {
+      "source": "plugin87/ux-ui-agent-skills",
+      "commit": "f823acedc3ef4e9b2ba944a28fd86fe2abdde427",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/image-to-code/SKILL.md",
+      "computedHash": "9a6ade198aa631332a162ee4007486048214463ae5e108d56eb68c9ba62867b4"
+    },
+    "java-21": {
+      "source": "Gentleman-Programming/Gentleman-Skills",
+      "commit": "c8036a37893679dc5e942484975405d39689c63b",
+      "sourceType": "github",
+      "skillPath": "community/java-21/SKILL.md",
+      "computedHash": "452466025458799b75694298b1af06a457a53174c4d8267fad0bc553ccfb0a03"
+    },
+    "jira-epic": {
+      "source": "Gentleman-Programming/Gentleman-Skills",
+      "commit": "c8036a37893679dc5e942484975405d39689c63b",
+      "sourceType": "github",
+      "skillPath": "curated/jira-epic/SKILL.md",
+      "computedHash": "66165047c021e16921ddd64334a0ce10125f745b22f1b78d5c64850a71700cf4"
+    },
+    "jira-task": {
+      "source": "Gentleman-Programming/Gentleman-Skills",
+      "commit": "c8036a37893679dc5e942484975405d39689c63b",
+      "sourceType": "github",
+      "skillPath": "curated/jira-task/SKILL.md",
+      "computedHash": "b55560a355d412078a40e924065c94639b44065e51cc18832ed8d544c1b790a0"
+    },
+    "migrate-design-system": {
+      "source": "plugin87/ux-ui-agent-skills",
+      "commit": "f823acedc3ef4e9b2ba944a28fd86fe2abdde427",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/migrate-design-system/SKILL.md",
+      "computedHash": "c166a4d4d460531b644e180ddbf6ea14f8be4efeed13e87854d75b9a49762bae"
+    },
+    "nextjs-15": {
+      "source": "Gentleman-Programming/Gentleman-Skills",
+      "commit": "c8036a37893679dc5e942484975405d39689c63b",
+      "sourceType": "github",
+      "skillPath": "curated/nextjs-15/SKILL.md",
+      "computedHash": "0232ccfd5a1347232df6d2fabf00a0406ab7b68829235bc6cc237bb2eeac67c1"
+    },
+    "observe": {
+      "source": "plugin87/ux-ui-agent-skills",
+      "commit": "f823acedc3ef4e9b2ba944a28fd86fe2abdde427",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/observe/SKILL.md",
+      "computedHash": "1b562a3e24b88309fccbd1a9ff10a6d115c5569f8feac73992cd7239f54c0bf7"
+    },
+    "performance": {
+      "source": "plugin87/ux-ui-agent-skills",
+      "commit": "f823acedc3ef4e9b2ba944a28fd86fe2abdde427",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/performance/SKILL.md",
+      "computedHash": "ab385463bc9930e8852a1dc5879a4530ce67c8272787975dfe834cb90d37ff33"
+    },
+    "playwright": {
+      "source": "Gentleman-Programming/Gentleman-Skills",
+      "commit": "c8036a37893679dc5e942484975405d39689c63b",
+      "sourceType": "github",
+      "skillPath": "curated/playwright/SKILL.md",
+      "computedHash": "aa0ee6706d922b02453d9948f312021216bfa3c6d85812d383963791f0b7642a"
+    },
+    "prototype": {
+      "source": "plugin87/ux-ui-agent-skills",
+      "commit": "f823acedc3ef4e9b2ba944a28fd86fe2abdde427",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/prototype/SKILL.md",
+      "computedHash": "6998cfcf126f0db9d4831637d2f3ce22dd7553557b66c225a2e1446c7507e43a"
+    },
+    "pytest": {
+      "source": "Gentleman-Programming/Gentleman-Skills",
+      "commit": "c8036a37893679dc5e942484975405d39689c63b",
+      "sourceType": "github",
+      "skillPath": "curated/pytest/SKILL.md",
+      "computedHash": "16a3a5baaa761bce0a31e8bb5e7298fa634553e90803bbb3007a8fe8491bd819"
+    },
+    "react-19": {
+      "source": "Gentleman-Programming/Gentleman-Skills",
+      "commit": "c8036a37893679dc5e942484975405d39689c63b",
+      "sourceType": "github",
+      "skillPath": "curated/react-19/SKILL.md",
+      "computedHash": "49a2a718d77a9a77b2cfc549a6de4633be0569f3ad643583534c4b32e04c3f90"
+    },
+    "react-native": {
+      "source": "Gentleman-Programming/Gentleman-Skills",
+      "commit": "c8036a37893679dc5e942484975405d39689c63b",
+      "sourceType": "github",
+      "skillPath": "community/react-native/SKILL.md",
+      "computedHash": "152a0bbef816241718bb987430ad7e9e49e6fb857e4da31262abe44e66a0e90e"
+    },
+    "redesign": {
+      "source": "plugin87/ux-ui-agent-skills",
+      "commit": "f823acedc3ef4e9b2ba944a28fd86fe2abdde427",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/redesign/SKILL.md",
+      "computedHash": "3bf2a3584de4253961ce1c78d153e5f16feda8675661fa51fe17de8403bb4c09"
+    },
+    "scaffold-project": {
+      "source": "plugin87/ux-ui-agent-skills",
+      "commit": "f823acedc3ef4e9b2ba944a28fd86fe2abdde427",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/scaffold-project/SKILL.md",
+      "computedHash": "32f12bffd086922e66262632554ea5a6ecaba47bbe14a32b5d2dedd5dd818c09"
+    },
+    "ship": {
+      "source": "plugin87/ux-ui-agent-skills",
+      "commit": "f823acedc3ef4e9b2ba944a28fd86fe2abdde427",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/ship/SKILL.md",
+      "computedHash": "5b15ded50dda346444c51891c0e9d607d7e6fce5e497d468b10657f91ff715d8"
+    },
+    "skill-creator": {
+      "source": "Gentleman-Programming/Gentleman-Skills",
+      "commit": "c8036a37893679dc5e942484975405d39689c63b",
+      "sourceType": "github",
+      "skillPath": "curated/skill-creator/SKILL.md",
+      "computedHash": "ba618afc084c5993c6d09d4d90338bd2ccbc877c1ec798466a8cd416bfb46cef"
+    },
+    "spring-boot-3": {
+      "source": "Gentleman-Programming/Gentleman-Skills",
+      "commit": "c8036a37893679dc5e942484975405d39689c63b",
+      "sourceType": "github",
+      "skillPath": "community/spring-boot-3/SKILL.md",
+      "computedHash": "62f15b19af3dd91997abb90274347eb3bc53e1d78608de229f1d44e0a82c81d7"
+    },
+    "tailwind-4": {
+      "source": "Gentleman-Programming/Gentleman-Skills",
+      "commit": "c8036a37893679dc5e942484975405d39689c63b",
+      "sourceType": "github",
+      "skillPath": "curated/tailwind-4/SKILL.md",
+      "computedHash": "e93feb75425a61877df9a2b186c111a8c0936781a84c5abf563c4b4ba8f444e2"
+    },
+    "tailwind-4-docs": {
+      "source": "Lombiq/Tailwind-Agent-Skills",
+      "commit": "634ec184c36e495fae1d8cf7975df7e6969e3a89",
+      "sourceType": "github",
+      "skillPath": "skills/tailwind-4-docs/SKILL.md",
+      "computedHash": "263961b82698e3defdb26dd6a1b7328044517e67a3bbe91c1b33bb2a4273f4ee"
+    },
+    "token-build": {
+      "source": "plugin87/ux-ui-agent-skills",
+      "commit": "f823acedc3ef4e9b2ba944a28fd86fe2abdde427",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/token-build/SKILL.md",
+      "computedHash": "063f52f4caa383aae044b12a5bcb6dedc9fc2928bc9adb86607307a9ccc882e5"
+    },
+    "typescript": {
+      "source": "Gentleman-Programming/Gentleman-Skills",
+      "commit": "c8036a37893679dc5e942484975405d39689c63b",
+      "sourceType": "github",
+      "skillPath": "curated/typescript/SKILL.md",
+      "computedHash": "ca9764c69de7c412f19ffdfb38e65af806ba6cfb072e11d9b19e1972089400f0"
+    },
+    "ux-writing": {
+      "source": "plugin87/ux-ui-agent-skills",
+      "commit": "f823acedc3ef4e9b2ba944a28fd86fe2abdde427",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/ux-writing/SKILL.md",
+      "computedHash": "3d8a5cede682b7b5f4f7b16c6700b0a734c2a4861ac049503056932127d47f70"
+    },
+    "zod-4": {
+      "source": "Gentleman-Programming/Gentleman-Skills",
+      "commit": "c8036a37893679dc5e942484975405d39689c63b",
+      "sourceType": "github",
+      "skillPath": "curated/zod-4/SKILL.md",
+      "computedHash": "ce7f0d546a75ee9c3eeb7e8a76085e768a9bf11a21a5c1ed254692248c800339"
+    },
+    "zustand-5": {
+      "source": "Gentleman-Programming/Gentleman-Skills",
+      "commit": "c8036a37893679dc5e942484975405d39689c63b",
+      "sourceType": "github",
+      "skillPath": "curated/zustand-5/SKILL.md",
+      "computedHash": "688aa72ffa2e6cb3e26dabb0e03c40e958d94faccede5ab4f2f74047ac63e8e3"
+    }
+  }
+}

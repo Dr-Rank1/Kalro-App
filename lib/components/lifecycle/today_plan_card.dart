@@ -125,18 +125,24 @@ class TodayPlanCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.volume_up_outlined, color: Colors.white, size: 22),
-                  tooltip: 'Read aloud'.tr,
-                  onPressed: () {
-                    AudioGuidanceService().speakTodayPlan(
-                      species: speciesLabel ?? 'Silkworms',
-                      stage: plan.stage.label,
-                      suggestedGrams: plan.suggestedGrams,
-                      isMoult: plan.stage.isMoult,
-                      actionTitle: plan.actionTitle,
-                    );
-                  },
+                Semantics(
+                  button: true,
+                  label: 'Read today\'s rearing plan aloud'.tr,
+                  child: IconButton(
+                    constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                    padding: const EdgeInsets.all(12),
+                    icon: const Icon(Icons.volume_up_outlined, color: Colors.white, size: 24),
+                    tooltip: 'Read aloud'.tr,
+                    onPressed: () {
+                      AudioGuidanceService().speakTodayPlan(
+                        species: speciesLabel ?? 'Silkworms',
+                        stage: plan.stage.label,
+                        suggestedGrams: plan.suggestedGrams,
+                        isMoult: plan.stage.isMoult,
+                        actionTitle: plan.actionTitle,
+                      );
+                    },
+                  ),
                 ),
                 Text(
                   '${(plan.progress * 100).round()}%',

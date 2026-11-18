@@ -14,64 +14,37 @@ enum CocoonDefectClass {
   doubleCocoon,
   stained;
 
-  String get label {
-    switch (this) {
-      case CocoonDefectClass.clean:
-        return 'Clean';
-      case CocoonDefectClass.thin:
-        return 'Thin-Shelled';
-      case CocoonDefectClass.framed:
-        return 'Framed';
-      case CocoonDefectClass.irregular:
-        return 'Irregular';
-      case CocoonDefectClass.melted:
-        return 'Melted';
-      case CocoonDefectClass.doubleCocoon:
-        return 'Double (Mutt)';
-      case CocoonDefectClass.stained:
-        return 'Stained';
-    }
-  }
+  String get label => switch (this) {
+        CocoonDefectClass.clean => 'Clean',
+        CocoonDefectClass.thin => 'Thin-Shelled',
+        CocoonDefectClass.framed => 'Framed',
+        CocoonDefectClass.irregular => 'Irregular',
+        CocoonDefectClass.melted => 'Melted',
+        CocoonDefectClass.doubleCocoon => 'Double (Mutt)',
+        CocoonDefectClass.stained => 'Stained',
+      };
 
-  String get swahiliLabel {
-    switch (this) {
-      case CocoonDefectClass.clean:
-        return 'Safi';
-      case CocoonDefectClass.thin:
-        return 'Nyembamba';
-      case CocoonDefectClass.framed:
-        return 'Fremu';
-      case CocoonDefectClass.irregular:
-        return 'Isiyo ya Kawaida';
-      case CocoonDefectClass.melted:
-        return 'Iliyoyeyuka';
-      case CocoonDefectClass.doubleCocoon:
-        return 'Pacha';
-      case CocoonDefectClass.stained:
-        return 'Yenye Madoa';
-    }
-  }
+  String get swahiliLabel => switch (this) {
+        CocoonDefectClass.clean => 'Safi',
+        CocoonDefectClass.thin => 'Nyembamba',
+        CocoonDefectClass.framed => 'Fremu',
+        CocoonDefectClass.irregular => 'Isiyo ya Kawaida',
+        CocoonDefectClass.melted => 'Iliyoyeyuka',
+        CocoonDefectClass.doubleCocoon => 'Pacha',
+        CocoonDefectClass.stained => 'Yenye Madoa',
+      };
 
   bool get isDefect => this != CocoonDefectClass.clean;
 
-  Color get indicatorColor {
-    switch (this) {
-      case CocoonDefectClass.clean:
-        return const Color(0xFF10B981); // Emerald
-      case CocoonDefectClass.thin:
-        return const Color(0xFFF59E0B); // Amber
-      case CocoonDefectClass.framed:
-        return const Color(0xFF6366F1); // Indigo
-      case CocoonDefectClass.irregular:
-        return const Color(0xFF8B5CF6); // Purple
-      case CocoonDefectClass.melted:
-        return const Color(0xFFEF4444); // Red
-      case CocoonDefectClass.doubleCocoon:
-        return const Color(0xFFEC4899); // Pink
-      case CocoonDefectClass.stained:
-        return const Color(0xFFD97706); // Dark Amber
-    }
-  }
+  Color get indicatorColor => switch (this) {
+        CocoonDefectClass.clean => const Color(0xFF10B981), // Emerald
+        CocoonDefectClass.thin => const Color(0xFFF59E0B), // Amber
+        CocoonDefectClass.framed => const Color(0xFF6366F1), // Indigo
+        CocoonDefectClass.irregular => const Color(0xFF8B5CF6), // Purple
+        CocoonDefectClass.melted => const Color(0xFFEF4444), // Red
+        CocoonDefectClass.doubleCocoon => const Color(0xFFEC4899), // Pink
+        CocoonDefectClass.stained => const Color(0xFFD97706), // Dark Amber
+      };
 }
 
 /// Single detected cocoon instance with normalized bounding box and classification.
@@ -159,16 +132,12 @@ class CocoonVisionTally {
 
   String get commercialGrade {
     if (totalDetected == 0) return 'Pending Scan';
-    final defect = defectRatePercent;
-    if (defect <= 5.0) {
-      return 'Grade A (Premier Reelable)';
-    } else if (defect <= 10.0) {
-      return 'Grade B (Standard Commercial)';
-    } else if (defect <= 15.0) {
-      return 'Grade C (Low Commercial)';
-    } else {
-      return 'Reject (Spun Silk / Waste)';
-    }
+    return switch (defectRatePercent) {
+      <= 5.0 => 'Grade A (Premier Reelable)',
+      <= 10.0 => 'Grade B (Standard Commercial)',
+      <= 15.0 => 'Grade C (Low Commercial)',
+      _ => 'Reject (Spun Silk / Waste)',
+    };
   }
 
   Map<String, int> toDefectMap() => {

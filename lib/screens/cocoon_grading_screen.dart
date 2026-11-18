@@ -79,15 +79,15 @@ class _CocoonGradingScreenState extends State<CocoonGradingScreen> {
 
     if (shellRatioPercent >= 21.0 && defectPercentage <= 6.0) {
       grade = 'Grade A (Premier Reelable)';
-      gradeColor = KalroColors.leaf;
+      gradeColor = const Color(0xFF14532D);
       basePriceKesPerKg = 850.0;
     } else if (shellRatioPercent >= 17.0 && defectPercentage <= 14.0) {
       grade = 'Grade B (Standard Commercial)';
-      gradeColor = KalroColors.warning;
+      gradeColor = const Color(0xFF92400E);
       basePriceKesPerKg = 650.0;
     } else {
       grade = 'Grade C (Floss / Rejection)';
-      gradeColor = KalroColors.danger;
+      gradeColor = const Color(0xFF991B1B);
       basePriceKesPerKg = 420.0;
     }
 
@@ -156,8 +156,8 @@ class _CocoonGradingScreenState extends State<CocoonGradingScreen> {
                             value: '${shellRatioPercent.toStringAsFixed(1)}%',
                             subtitle: 'Min 20% target'.tr,
                             valueColor: shellRatioPercent >= 20.0
-                                ? KalroColors.leaf
-                                : KalroColors.warning,
+                                ? const Color(0xFF14532D)
+                                : const Color(0xFF92400E),
                           ),
                         ),
                         Container(width: 1, height: 44, color: KalroColors.divider),
@@ -185,7 +185,7 @@ class _CocoonGradingScreenState extends State<CocoonGradingScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Estimated Total Payout (${_lotNetWeightKg.toStringAsFixed(1)} kg):'.tr,
+                          Translator.fill('Estimated Total Payout ({kg} kg):', {'kg': _lotNetWeightKg.toStringAsFixed(1)}),
                           style: GoogleFonts.poppins(
                             fontSize: 13,
                             fontWeight: FontWeight.w500,
@@ -283,12 +283,18 @@ class _CocoonGradingScreenState extends State<CocoonGradingScreen> {
                       ),
                     ],
                   ),
-                  TextButton.icon(
-                    onPressed: _resetDefects,
-                    icon: const Icon(Icons.refresh, size: 16),
-                    label: Text('Reset'.tr),
-                    style: TextButton.styleFrom(
-                      foregroundColor: KalroColors.textMuted,
+                  Semantics(
+                    button: true,
+                    label: 'Reset all defect counts to zero'.tr,
+                    child: TextButton.icon(
+                      onPressed: _resetDefects,
+                      icon: const Icon(Icons.refresh, size: 16),
+                      label: Text('Reset'.tr),
+                      style: TextButton.styleFrom(
+                        foregroundColor: KalroColors.textMuted,
+                        minimumSize: const Size(0, 48),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                      ),
                     ),
                   ),
                 ],
@@ -335,31 +341,41 @@ class _CocoonGradingScreenState extends State<CocoonGradingScreen> {
                       const SizedBox(width: 8),
                       Row(
                         children: [
-                          IconButton(
-                            onPressed: () => _decrement(defect.id),
-                            icon: const Icon(Icons.remove_circle_outline, size: 22),
-                            color: KalroColors.textMuted,
-                            visualDensity: VisualDensity.compact,
+                          Semantics(
+                            button: true,
+                            label: 'Decrease count for ${defect.name}',
+                            child: IconButton(
+                              onPressed: () => _decrement(defect.id),
+                              icon: const Icon(Icons.remove_circle_outline, size: 24),
+                              color: KalroColors.textMuted,
+                              constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                              padding: const EdgeInsets.all(12),
+                            ),
                           ),
                           Container(
-                            constraints: const BoxConstraints(minWidth: 28),
+                            constraints: const BoxConstraints(minWidth: 32),
                             alignment: Alignment.center,
                             child: Text(
                               '$count',
                               style: GoogleFonts.poppins(
-                                fontSize: 15,
+                                fontSize: 16,
                                 fontWeight: FontWeight.w700,
                                 color: count > 0
-                                    ? KalroColors.danger
+                                    ? const Color(0xFF991B1B)
                                     : KalroColors.textDark,
                               ),
                             ),
                           ),
-                          IconButton(
-                            onPressed: () => _increment(defect.id),
-                            icon: const Icon(Icons.add_circle_outline, size: 22),
-                            color: KalroColors.headerGreen,
-                            visualDensity: VisualDensity.compact,
+                          Semantics(
+                            button: true,
+                            label: 'Increase count for ${defect.name}',
+                            child: IconButton(
+                              onPressed: () => _increment(defect.id),
+                              icon: const Icon(Icons.add_circle_outline, size: 24),
+                              color: KalroColors.headerGreen,
+                              constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                              padding: const EdgeInsets.all(12),
+                            ),
                           ),
                         ],
                       ),

@@ -232,7 +232,7 @@ class _MpesaPayoutScreenState extends State<MpesaPayoutScreen> {
                               decoration: InputDecoration(
                                 labelText: 'County'.tr,
                                 border: const OutlineInputBorder(),
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                               ),
                               items: ['Kiambu', 'Murang\'a', 'Machakos', 'Meru', 'Nyeri', 'Kitui', 'Kakamega']
                                   .map((c) => DropdownMenuItem(value: c, child: Text(c, style: GoogleFonts.poppins(fontSize: 12))))
@@ -251,7 +251,7 @@ class _MpesaPayoutScreenState extends State<MpesaPayoutScreen> {
                               decoration: InputDecoration(
                                 labelText: 'Cocoon Grade'.tr,
                                 border: const OutlineInputBorder(),
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                               ),
                               items: [
                                 DropdownMenuItem(value: 'Grade A', child: Text('Grade A (KES 850/kg)', style: GoogleFonts.poppins(fontSize: 12))),
@@ -310,22 +310,28 @@ class _MpesaPayoutScreenState extends State<MpesaPayoutScreen> {
                       const SizedBox(height: 14),
                       SizedBox(
                         width: double.infinity,
-                        child: ElevatedButton.icon(
-                          onPressed: _isProcessing ? null : _processPayout,
-                          icon: _isProcessing
-                              ? const SizedBox(
-                                  width: 18,
-                                  height: 18,
-                                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                                )
-                              : const Icon(Icons.send_to_mobile, size: 20),
-                          label: Text(
-                            _isProcessing ? 'Processing Daraja B2C...'.tr : 'Disburse M-Pesa Payment'.tr,
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: KalroColors.headerGreen,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
+                        height: 48,
+                        child: Semantics(
+                          button: true,
+                          label: 'Disburse M-Pesa Payment'.tr,
+                          child: ElevatedButton.icon(
+                            onPressed: _isProcessing ? null : _processPayout,
+                            icon: _isProcessing
+                                ? const SizedBox(
+                                    width: 18,
+                                    height: 18,
+                                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                  )
+                                : const Icon(Icons.send_to_mobile, size: 20),
+                            label: Text(
+                              _isProcessing ? 'Processing Daraja B2C...'.tr : 'Disburse M-Pesa Payment'.tr,
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: KalroColors.headerGreen,
+                              foregroundColor: Colors.white,
+                              minimumSize: const Size.fromHeight(48),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                            ),
                           ),
                         ),
                       ),
@@ -347,15 +353,17 @@ class _MpesaPayoutScreenState extends State<MpesaPayoutScreen> {
               ),
               const SizedBox(height: 8),
               ..._payoutHistory.map((item) {
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 10),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: KalroColors.divider),
-                  ),
-                  child: Row(
+                return Semantics(
+                  label: 'Payout ${item['ref']} to ${item['farmer']}, KES ${(item['amountKes'] as double).toStringAsFixed(0)}, Status: ${item['status']}',
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 10),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: KalroColors.divider),
+                    ),
+                    child: Row(
                     children: [
                       Container(
                         padding: const EdgeInsets.all(8),
@@ -411,8 +419,9 @@ class _MpesaPayoutScreenState extends State<MpesaPayoutScreen> {
                       ),
                     ],
                   ),
-                );
-              }),
+                ),
+              );
+            }),
             ],
           ),
         ),

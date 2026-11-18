@@ -165,14 +165,22 @@ class _UssdDialerScreenState extends State<UssdDialerScreen> {
                       ),
                     ),
                     if (_inSession)
-                      InkWell(
-                        onTap: _resetSession,
-                        child: Text(
-                          'CANCEL',
-                          style: GoogleFonts.sourceCodePro(
-                            fontSize: 10,
-                            color: Colors.redAccent,
-                            fontWeight: FontWeight.w700,
+                      Semantics(
+                        button: true,
+                        label: 'Cancel USSD session'.tr,
+                        child: InkWell(
+                          onTap: _resetSession,
+                          borderRadius: BorderRadius.circular(4),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                            child: Text(
+                              'CANCEL',
+                              style: GoogleFonts.sourceCodePro(
+                                fontSize: 11,
+                                color: const Color(0xFFFCA5A5),
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -207,14 +215,19 @@ class _UssdDialerScreenState extends State<UssdDialerScreen> {
                 ),
               ),
               const SizedBox(width: 8),
-              ElevatedButton(
-                onPressed: _sendUssd,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: KalroColors.headerGreen,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+              Semantics(
+                button: true,
+                label: 'Send USSD query'.tr,
+                child: ElevatedButton(
+                  onPressed: _sendUssd,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: KalroColors.headerGreen,
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(0, 48),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  ),
+                  child: Text('Send'.tr),
                 ),
-                child: Text('Send'.tr),
               ),
             ],
           ),
@@ -315,16 +328,22 @@ class _UssdDialerScreenState extends State<UssdDialerScreen> {
                   '${g['speaker']} • ${g['duration']}',
                   style: GoogleFonts.poppins(fontSize: 10, color: KalroColors.textMuted),
                 ),
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      _playingAudioId = isPlaying ? '' : (g['id'] as String);
-                    });
-                  },
-                  icon: Icon(
-                    isPlaying ? Icons.pause_circle_filled : Icons.play_circle_fill,
-                    color: KalroColors.headerGreen,
-                    size: 28,
+                Semantics(
+                  button: true,
+                  label: isPlaying ? 'Pause ${g['title']}' : 'Play ${g['title']}',
+                  child: IconButton(
+                    constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                    padding: const EdgeInsets.all(10),
+                    onPressed: () {
+                      setState(() {
+                        _playingAudioId = isPlaying ? '' : (g['id'] as String);
+                      });
+                    },
+                    icon: Icon(
+                      isPlaying ? Icons.pause_circle_filled : Icons.play_circle_fill,
+                      color: KalroColors.headerGreen,
+                      size: 28,
+                    ),
                   ),
                 ),
               ],
@@ -350,21 +369,32 @@ class _NavBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          decoration: BoxDecoration(
-            color: selected ? KalroColors.headerGreen : KalroColors.background,
-            borderRadius: BorderRadius.circular(6),
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            label,
-            style: GoogleFonts.poppins(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: selected ? Colors.white : KalroColors.textDark,
+      child: Semantics(
+        button: true,
+        selected: selected,
+        label: label,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            constraints: const BoxConstraints(minHeight: 48),
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            decoration: BoxDecoration(
+              color: selected ? KalroColors.headerGreen : KalroColors.background,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: selected ? KalroColors.headerGreen : KalroColors.divider,
+                width: selected ? 1.5 : 1.0,
+              ),
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              label,
+              style: GoogleFonts.poppins(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: selected ? Colors.white : KalroColors.textDark,
+              ),
             ),
           ),
         ),

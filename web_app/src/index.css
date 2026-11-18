@@ -121,8 +121,29 @@ body {
   outline-offset: 2px !important;
 }
 
-/* Universal high-contrast keyboard navigation focus ring for shared research station computers */
-:focus-visible,
+@layer base {
+  /* Baseline Element Resets */
+  button {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit;
+    border-style: solid;
+    border-width: 0;
+    background-color: transparent;
+    cursor: pointer;
+    text-align: inherit;
+  }
+
+  input, select, textarea {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit;
+  }
+}
+
+/* Universal high-contrast accessible keyboard focus for interactive elements only */
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
@@ -130,9 +151,8 @@ select:focus-visible,
 textarea:focus-visible,
 [role="button"]:focus-visible,
 [tabindex="0"]:focus-visible {
-  outline: 2px solid #16A34A !important;
-  outline-offset: 2px !important;
-  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.45) !important;
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
 /* Form Controls Minimum Height for Gloved Hands */
@@ -936,43 +956,40 @@ textarea:required:user-valid {
   opacity: 0.6;
 }
 
-/* Alert Boxes - Strict Flat Surfaces */
+/* Alert Boxes - Clean Institutional Surface */
 .alert-box {
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
-  padding: 0.85rem 1rem;
-  border-radius: var(--radius-md);
+  padding: 0.85rem 1.15rem;
+  border-radius: 12px;
   margin-bottom: 0.75rem;
   font-size: 0.82rem;
   line-height: 1.45;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
 .alert-box.critical {
   background-color: #FEF2F2;
   border: 1px solid #FECACA;
-  border-left: 4px solid #DC2626;
   color: #991B1B;
 }
 
 .alert-box.warning {
   background-color: #FFFBEB;
   border: 1px solid #FDE68A;
-  border-left: 4px solid #D97706;
   color: #92400E;
 }
 
 .alert-box.info {
   background-color: #F0F9FF;
   border: 1px solid #BAE6FD;
-  border-left: 4px solid #0284C7;
   color: #075985;
 }
 
 .alert-box.success {
   background-color: #F0FDF4;
   border: 1px solid #BBF7D0;
-  border-left: 4px solid #16A34A;
   color: #166534;
 }
 
@@ -2716,19 +2733,18 @@ textarea:required:user-valid {
 }
 
 .tenant-user-pill:hover {
-  background-color: var(--bg-card-elevated);
-  border-color: rgba(255, 255, 255, 0.22);
+  background-color: #F1F5F9;
+  border-color: #CBD5E1;
 }
 
 .tenant-user-pill:focus-visible {
   outline: 2px solid #16A34A !important;
   outline-offset: 2px !important;
-  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.45) !important;
 }
 
 .tenant-avatar {
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   color: #ffffff;
   display: flex;
@@ -2744,14 +2760,14 @@ textarea:required:user-valid {
   flex-direction: column;
   align-items: flex-start;
   text-align: left;
-  line-height: 1.1;
+  line-height: 1.15;
 }
 
 .tenant-user-name {
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  color: #ffffff;
-  max-width: 130px;
+  color: #0F172A;
+  max-width: 140px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -2762,7 +2778,7 @@ textarea:required:user-valid {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.3px;
-  background-color: var(--bg-card-elevated);
+  background-color: #F8FAFC;
   border: 1px solid currentColor;
   padding: 1px 5px;
   border-radius: var(--radius-sm);
@@ -4311,32 +4327,320 @@ textarea:required:user-valid {
 /* -------------------------------------------------------------------------- */
 /* Media Print for Official Station Reports                                   */
 /* -------------------------------------------------------------------------- */
-@media print {
-  .main-header,
-  .main-nav,
-  .toast-notice,
-  .modal-close-btn,
-  .modal-header button,
-  .no-print {
-    display: none !important;
+/* ==========================================================================
+   STATION & AGRONOMY HUB INSTITUTIONAL STYLES (KALRO NSRC STANDARDS)
+   ========================================================================== */
+
+.station-suite-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.station-header-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.station-subtabs-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-top: 1rem;
+  border-top: 1px solid #F1F5F9;
+  scrollbar-width: thin;
+}
+
+.station-subtab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #475569;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  white-space: nowrap;
+  min-height: 48px;
+  min-width: 48px;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.station-subtab-btn:hover {
+  background: #F1F5F9;
+  color: #0F172A;
+  border-color: #CBD5E1;
+}
+
+.station-subtab-btn.active {
+  background: #15803D;
+  color: #FFFFFF;
+  border-color: #15803D;
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(21, 128, 61, 0.2);
+}
+
+.station-grid-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .station-grid-layout {
+    grid-template-columns: 2fr 1fr;
   }
-  .modal-overlay {
-    position: static !important;
-    background: transparent !important;
-    padding: 0 !important;
-  }
-  .modal-content {
-    border: none !important;
-    box-shadow: none !important;
-    max-width: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
-  }
-  body {
-    background: #ffffff !important;
-    color: #000000 !important;
+  .station-grid-equal {
+    grid-template-columns: 1fr 1fr;
   }
 }
+
+.station-panel-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.station-panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.station-panel-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0F172A;
+  margin: 0;
+}
+
+.station-panel-desc {
+  font-size: 0.8rem;
+  color: #64748B;
+  margin-top: 0.25rem;
+  line-height: 1.4;
+}
+
+.station-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.station-badge-success {
+  background: #DCFCE7;
+  color: #15803D;
+  border: 1px solid #BBF7D0;
+}
+
+.station-badge-warning {
+  background: #FEF3C7;
+  color: #B45309;
+  border: 1px solid #FDE68A;
+}
+
+.station-badge-info {
+  background: #E0F2FE;
+  color: #0369A1;
+  border: 1px solid #BAE6FD;
+}
+
+.station-badge-neutral {
+  background: #F1F5F9;
+  color: #475569;
+  border: 1px solid #E2E8F0;
+}
+
+.station-blocks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.625rem;
+}
+
+.station-block-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0.625rem 0.85rem;
+  border-radius: 8px;
+  border: 1px solid #E2E8F0;
+  background: #FFFFFF;
+  text-align: left;
+  min-height: 52px;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.station-block-btn:hover {
+  background: #F8FAFC;
+  border-color: #CBD5E1;
+}
+
+.station-block-btn.active {
+  background: #F0FDF4;
+  border-color: #15803D;
+  box-shadow: 0 0 0 1px #15803D;
+}
+
+.station-block-btn-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #0F172A;
+}
+
+.station-block-btn.active .station-block-btn-title {
+  color: #15803D;
+}
+
+.station-block-btn-sub {
+  font-size: 0.7rem;
+  color: #64748B;
+  margin-top: 0.15rem;
+}
+
+.station-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.station-form-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.station-form-input,
+.station-form-select {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #0F172A;
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  border-radius: 8px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.station-form-input:focus,
+.station-form-select:focus {
+  border-color: #15803D;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.12);
+}
+
+.station-calc-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+}
+
+.station-calc-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.station-calc-label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #64748B;
+}
+
+.station-calc-val {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0F172A;
+}
+
+.defect-stepper-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 0.75rem;
+}
+
+.defect-stepper-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.defect-stepper-header {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #1E293B;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.defect-stepper-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.stepper-btn {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 8px;
+  border: 1px solid #CBD5E1;
+  background: #F8FAFC;
+  color: #0F172A;
+  font-weight: 700;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.stepper-btn:hover {
+  background: #E2E8F0;
+  border-color: #94A3B8;
+}
+
+.stepper-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0F172A;
+  min-width: 30px;
+  text-align: center;
+}
+
 
 
 

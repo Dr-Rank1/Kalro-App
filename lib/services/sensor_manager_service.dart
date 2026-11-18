@@ -19,24 +19,15 @@ enum SensorConnectionStatus {
   outOfRange,
   simulated;
 
-  String get label {
-    switch (this) {
-      case SensorConnectionStatus.disconnected:
-        return 'Disconnected';
-      case SensorConnectionStatus.scanning:
-        return 'Scanning BLE...';
-      case SensorConnectionStatus.connected:
-        return 'Connected (0x181A)';
-      case SensorConnectionStatus.bluetoothOff:
-        return 'Bluetooth Off';
-      case SensorConnectionStatus.unauthorized:
-        return 'Location/BLE Permission Needed';
-      case SensorConnectionStatus.outOfRange:
-        return 'Sensor Out of Range';
-      case SensorConnectionStatus.simulated:
-        return 'Simulation Telemetry';
-    }
-  }
+  String get label => switch (this) {
+        SensorConnectionStatus.disconnected => 'Disconnected',
+        SensorConnectionStatus.scanning => 'Scanning BLE...',
+        SensorConnectionStatus.connected => 'Connected (0x181A)',
+        SensorConnectionStatus.bluetoothOff => 'Bluetooth Off',
+        SensorConnectionStatus.unauthorized => 'Location/BLE Permission Needed',
+        SensorConnectionStatus.outOfRange => 'Sensor Out of Range',
+        SensorConnectionStatus.simulated => 'Simulation Telemetry',
+      };
 }
 
 /// Representation of an ambient temperature and relative humidity reading.
@@ -438,25 +429,16 @@ class SensorManagerService {
   ) async {
     try {
       final reading = await scanAndReadSensor(preferredRoomName: roomName);
-      if (_pendingBatch.isNotEmpty) {
-        final toSave = [..._pendingBatch, reading];
-        _pendingBatch.clear();
-        await saveReadingsBatch(
-          repository: repository,
-          batchId: batchId,
-          readings: toSave,
-        );
-      } else {
-        await repository.create(
-          batchId: batchId,
-          recordedAt: reading.timestamp,
-          temperatureCelsius: reading.temperatureC,
-          humidityPercent: reading.humidityPercent,
-          roomName: reading.sensorName,
-          notes: 'Auto-saved via BLE Environmental Beacon (${reading.isSimulated ? "Simulated" : "0x181A Connected"})',
-        );
-        _lastSavedTimestamp = DateTime.now();
-      }
+      final toSave = _pendingBatch.isNotEmpty
+          ? [..._pendingBatch, reading]
+          : [reading];
+      _pendingBatch.clear();
+      await saveReadingsBatch(
+        repository: repository,
+        batchId: batchId,
+        readings: toSave,
+        defaultNotes: 'Auto-saved via BLE Environmental Beacon (${reading.isSimulated ? "Simulated" : "0x181A Connected"})',
+      );
       debugPrint('[SensorManagerService] Auto-saved microclimate log (${reading.temperatureC}°C, ${reading.humidityPercent}% RH) to FarmStore SQLite.');
     } catch (e) {
       debugPrint('[SensorManagerService] Error during auto-save: $e');

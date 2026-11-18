@@ -114,17 +114,16 @@ class FormulaEngine {
     return tokens;
   }
 
+  static int _precedence(String op) => switch (op) {
+        '+' || '-' => 1,
+        '*' || '/' => 2,
+        '^' => 3,
+        _ => 0,
+      };
+
   List<String> _toRpn(List<String> tokens) {
     final output = <String>[];
     final ops = <String>[];
-
-    final precedence = {
-      '+': 1,
-      '-': 1,
-      '*': 2,
-      '/': 2,
-      '^': 3,
-    };
 
     for (var i = 0; i < tokens.length; i++) {
       final t = tokens[i];
@@ -139,14 +138,14 @@ class FormulaEngine {
         if (ops.isNotEmpty && ops.last == '(') {
           ops.removeLast();
         }
-      } else if (precedence.containsKey(t)) {
+      } else if (_precedence(t) > 0) {
         // Handle unary minus
         if (t == '-' && (i == 0 || '(*+/-^'.contains(tokens[i - 1]))) {
           output.add('0');
         }
         while (ops.isNotEmpty &&
             ops.last != '(' &&
-            (precedence[ops.last] ?? 0) >= (precedence[t] ?? 0)) {
+            _precedence(ops.last) >= _precedence(t)) {
           output.add(ops.removeLast());
         }
         ops.add(t);
@@ -165,33 +164,23 @@ class FormulaEngine {
     final stack = <double>[];
 
     for (final token in rpn) {
-      final numVal = double.tryParse(token);
-      if (numVal != null) {
+      if (double.tryParse(token) case final double numVal) {
         stack.add(numVal);
       } else if (_isIdentifier(token)) {
-        final val = variables[token] ?? 0.0;
-        stack.add(val);
+        stack.add(variables[token] ?? 0.0);
       } else if ('+-*/^'.contains(token)) {
         if (stack.length < 2) continue;
         final b = stack.removeLast();
         final a = stack.removeLast();
-        switch (token) {
-          case '+':
-            stack.add(a + b);
-            break;
-          case '-':
-            stack.add(a - b);
-            break;
-          case '*':
-            stack.add(a * b);
-            break;
-          case '/':
-            stack.add(b == 0 ? 0.0 : a / b);
-            break;
-          case '^':
-            stack.add(math.pow(a, b).toDouble());
-            break;
-        }
+        final res = switch (token) {
+          '+' => a + b,
+          '-' => a - b,
+          '*' => a * b,
+          '/' => b == 0 ? 0.0 : a / b,
+          '^' => math.pow(a, b).toDouble(),
+          _ => 0.0,
+        };
+        stack.add(res);
       }
     }
 

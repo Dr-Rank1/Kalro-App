@@ -74,14 +74,14 @@ class _BedSpaceLimeScreenState extends State<BedSpaceLimeScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Egg Cases (${_caseCount * 20000} larvae):'.tr,
+                          Translator.fill('Egg Cases ({n} larvae):', {'n': '${_caseCount * 20000}'}),
                           style: GoogleFonts.poppins(
                             fontSize: 12,
                             color: KalroColors.textMuted,
                           ),
                         ),
                         Text(
-                          '$_caseCount Cases (${_caseCount * 20}k)'.tr,
+                          Translator.fill('{n} Cases ({k}k)', {'n': '$_caseCount', 'k': '${_caseCount * 20}'}),
                           style: GoogleFonts.poppins(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
@@ -90,14 +90,18 @@ class _BedSpaceLimeScreenState extends State<BedSpaceLimeScreen> {
                         ),
                       ],
                     ),
-                    Slider(
-                      value: _caseCount.toDouble(),
-                      min: 1,
-                      max: 10,
-                      divisions: 9,
-                      activeColor: KalroColors.headerGreen,
-                      inactiveColor: KalroColors.divider,
-                      onChanged: (val) => setState(() => _caseCount = val.round()),
+                    Semantics(
+                      label: 'Egg cases slider',
+                      value: '$_caseCount cases',
+                      child: Slider(
+                        value: _caseCount.toDouble(),
+                        min: 1,
+                        max: 10,
+                        divisions: 9,
+                        activeColor: KalroColors.headerGreen,
+                        inactiveColor: KalroColors.divider,
+                        onChanged: (val) => setState(() => _caseCount = val.round()),
+                      ),
                     ),
                     const Divider(height: 20),
                     Text(
@@ -113,25 +117,33 @@ class _BedSpaceLimeScreenState extends State<BedSpaceLimeScreen> {
                       children: [1, 2, 3, 4, 5].map((instar) {
                         final isSel = instar == _selectedInstar;
                         return Expanded(
-                          child: GestureDetector(
-                            onTap: () => setState(() => _selectedInstar = instar),
-                            child: Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 3),
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              decoration: BoxDecoration(
-                                color: isSel ? KalroColors.headerGreen : Colors.white,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(
-                                  color: isSel ? KalroColors.headerGreen : KalroColors.divider,
+                          child: Semantics(
+                            button: true,
+                            selected: isSel,
+                            label: '$instar${_getOrdinal(instar)} instar stage',
+                            child: InkWell(
+                              onTap: () => setState(() => _selectedInstar = instar),
+                              borderRadius: BorderRadius.circular(8),
+                              child: Container(
+                                constraints: const BoxConstraints(minHeight: 48),
+                                margin: const EdgeInsets.symmetric(horizontal: 3),
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                decoration: BoxDecoration(
+                                  color: isSel ? KalroColors.headerGreen : Colors.white,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: isSel ? KalroColors.headerGreen : KalroColors.divider,
+                                    width: isSel ? 1.5 : 1.0,
+                                  ),
                                 ),
-                              ),
-                              alignment: Alignment.center,
-                              child: Text(
-                                '$instar${_getOrdinal(instar)}',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
-                                  color: isSel ? Colors.white : KalroColors.textDark,
+                                alignment: Alignment.center,
+                                child: Text(
+                                  '$instar${_getOrdinal(instar)}',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    color: isSel ? Colors.white : KalroColors.textDark,
+                                  ),
                                 ),
                               ),
                             ),
@@ -171,7 +183,7 @@ class _BedSpaceLimeScreenState extends State<BedSpaceLimeScreen> {
                           child: _KpiBox(
                             title: 'Bed Area Needed'.tr,
                             value: '${scaledMinArea.toStringAsFixed(1)}–${scaledMaxArea.toStringAsFixed(1)} m²',
-                            subtitle: '$minTraysNeeded–$maxTraysNeeded trays (1×2m)'.tr,
+                            subtitle: Translator.fill('{min}–{max} trays (1×2m)', {'min': '$minTraysNeeded', 'max': '$maxTraysNeeded'}),
                             color: KalroColors.headerGreen,
                           ),
                         ),

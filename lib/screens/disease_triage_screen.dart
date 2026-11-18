@@ -89,28 +89,28 @@ class _DiseaseTriageScreenState extends State<DiseaseTriageScreen> {
         'symptoms': 'Oily/shiny skin in young worms. Thin skin, milky white body with swollen intersegments in later stage. Larvae are restless and fall off the bed due to loss of grasping power.',
         'control': 'Thorough disinfection of rearing house and equipment. Maintain hygiene and sufficient ventilation. Discard infected worms by burning and burying. Keep beds dry. Avoid tender leaves for late-stage worms.',
         'tag': 'Viral',
-        'color': KalroColors.danger,
+        'color': const Color(0xFF991B1B),
       },
       {
         'name': 'Pebrine (Microsporidiosis)',
         'symptoms': 'Poor appetite, irregular moulting, death before 3rd stage. Wrinkled skin with rustic brown color and sometimes pepper-like spots on larval skin.',
         'control': 'Thorough disinfection of rearing house and strict hygienic conditions during rearing. Quarantine notifiable disease transmitted transovarially.',
         'tag': 'Microsporidian',
-        'color': KalroColors.accentBrown,
+        'color': const Color(0xFF78350F),
       },
       {
         'name': 'Flacherie (Infectious Flacherie / Dysentery)',
         'symptoms': 'Highly contagious. Loss of appetite, transparent thorax, shrinkage of body, retarded growth and empty foregut. Empty midgut with little mulberry but full of yellowish brownish fluids.',
         'control': 'Thorough disinfection of rearing house and appliances. Recommended climatic conditions for rearing. Complete disposal of diseased larvae together with faeces through burning or burying.',
         'tag': 'Bacterial / Viral',
-        'color': KalroColors.warning,
+        'color': const Color(0xFF92400E),
       },
       {
         'name': 'Muscardine (White Calcino Fungal Disease)',
         'symptoms': 'Moist specks on skin, worm loses appetite and is inactive, limp body and loose skin. Diarrhea, vomiting and eventually death. 6-8 hours after death, becomes stiff and hard.',
         'control': 'Thorough disinfection of rearing house and appliances. Avoid low temperatures and humidity. Keep bed clean and dry. Discard diseased worms through burning or putting in formalin solution.',
         'tag': 'Fungal',
-        'color': KalroColors.leaf,
+        'color': const Color(0xFF14532D),
       },
     ];
 
@@ -372,21 +372,32 @@ class _TabItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          decoration: BoxDecoration(
-            color: selected ? KalroColors.headerGreen : KalroColors.background,
-            borderRadius: BorderRadius.circular(6),
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            label,
-            style: GoogleFonts.poppins(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: selected ? Colors.white : KalroColors.textDark,
+      child: Semantics(
+        button: true,
+        selected: selected,
+        label: label,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            constraints: const BoxConstraints(minHeight: 48),
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            decoration: BoxDecoration(
+              color: selected ? KalroColors.headerGreen : KalroColors.background,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: selected ? KalroColors.headerGreen : KalroColors.divider,
+                width: selected ? 1.5 : 1.0,
+              ),
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              label,
+              style: GoogleFonts.poppins(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: selected ? Colors.white : KalroColors.textDark,
+              ),
             ),
           ),
         ),

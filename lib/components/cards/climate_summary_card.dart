@@ -148,7 +148,7 @@ class _ClimateSummaryCardState extends ConsumerState<ClimateSummaryCard> {
                     border: Border.all(
                       color: isTempOptimal
                           ? const Color(0xFF27272A)
-                          : const Color(0xFFD97706),
+                          : const Color(0xFFFBBF24),
                     ),
                   ),
                   child: Column(
@@ -171,7 +171,7 @@ class _ClimateSummaryCardState extends ConsumerState<ClimateSummaryCard> {
                             size: 16,
                             color: isTempOptimal
                                 ? const Color(0xFF10B981)
-                                : const Color(0xFFD97706),
+                                : const Color(0xFFFBBF24),
                           ),
                         ],
                       ),
@@ -194,7 +194,7 @@ class _ClimateSummaryCardState extends ConsumerState<ClimateSummaryCard> {
                         style: GoogleFonts.poppins(
                           color: isTempOptimal
                               ? const Color(0xFF10B981)
-                              : const Color(0xFFD97706),
+                              : const Color(0xFFFBBF24),
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
                         ),
@@ -216,7 +216,7 @@ class _ClimateSummaryCardState extends ConsumerState<ClimateSummaryCard> {
                     border: Border.all(
                       color: isHumidityOptimal
                           ? const Color(0xFF27272A)
-                          : const Color(0xFFD97706),
+                          : const Color(0xFFFBBF24),
                     ),
                   ),
                   child: Column(
@@ -239,7 +239,7 @@ class _ClimateSummaryCardState extends ConsumerState<ClimateSummaryCard> {
                             size: 16,
                             color: isHumidityOptimal
                                 ? const Color(0xFF10B981)
-                                : const Color(0xFFD97706),
+                                : const Color(0xFFFBBF24),
                           ),
                         ],
                       ),
@@ -262,7 +262,7 @@ class _ClimateSummaryCardState extends ConsumerState<ClimateSummaryCard> {
                         style: GoogleFonts.poppins(
                           color: isHumidityOptimal
                               ? const Color(0xFF10B981)
-                              : const Color(0xFFD97706),
+                              : const Color(0xFFFBBF24),
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
                         ),
@@ -293,36 +293,41 @@ class _ClimateSummaryCardState extends ConsumerState<ClimateSummaryCard> {
                   ),
                 ],
               ),
-              OutlinedButton.icon(
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  side: const BorderSide(color: Color(0xFF3F3F46)),
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6),
+              Semantics(
+                button: true,
+                label: 'Scan BLE microclimate sensor now'.tr,
+                child: OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    side: const BorderSide(color: Color(0xFF3F3F46)),
+                    minimumSize: const Size(0, 48),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
+                  icon: status == SensorConnectionStatus.scanning
+                      ? const SizedBox(
+                          width: 14,
+                          height: 14,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Icon(Icons.refresh, size: 16),
+                  label: Text(
+                    'Scan Now'.tr,
+                    style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600),
+                  ),
+                  onPressed: status == SensorConnectionStatus.scanning
+                      ? null
+                      : () {
+                          ref
+                              .read(climateNotifierProvider.notifier)
+                              .refreshSensor(roomName: widget.roomName);
+                        },
                 ),
-                icon: status == SensorConnectionStatus.scanning
-                    ? const SizedBox(
-                        width: 12,
-                        height: 12,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                    : const Icon(Icons.refresh, size: 14),
-                label: Text(
-                  'Scan Now'.tr,
-                  style: GoogleFonts.poppins(fontSize: 11),
-                ),
-                onPressed: status == SensorConnectionStatus.scanning
-                    ? null
-                    : () {
-                        ref
-                            .read(climateNotifierProvider.notifier)
-                            .refreshSensor(roomName: widget.roomName);
-                      },
               ),
             ],
           ),

@@ -118,7 +118,7 @@ class _BreedingPedigreeScreenState extends State<BreedingPedigreeScreen> {
                             decoration: InputDecoration(
                               labelText: 'Female Parent (♀)'.tr,
                               border: const OutlineInputBorder(),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                             ),
                             items: ['KSK', 'ATK', 'ICIPE', 'KINSHOSHOWA']
                                 .map((s) => DropdownMenuItem(value: s, child: Text(s, style: GoogleFonts.poppins(fontSize: 12))))
@@ -133,7 +133,7 @@ class _BreedingPedigreeScreenState extends State<BreedingPedigreeScreen> {
                             decoration: InputDecoration(
                               labelText: 'Male Parent (♂)'.tr,
                               border: const OutlineInputBorder(),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                             ),
                             items: ['KSK', 'ATK', 'ICIPE', 'KINSHOSHOWA']
                                 .map((s) => DropdownMenuItem(value: s, child: Text(s, style: GoogleFonts.poppins(fontSize: 12))))
@@ -170,17 +170,20 @@ class _BreedingPedigreeScreenState extends State<BreedingPedigreeScreen> {
                           style: GoogleFonts.poppins(fontSize: 12, color: KalroColors.textMuted),
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: isHybrid ? KalroColors.leaf.withValues(alpha: 0.12) : KalroColors.warning.withValues(alpha: 0.12),
+                            color: isHybrid ? const Color(0xFFDCFCE7) : const Color(0xFFFEF3C7),
                             borderRadius: BorderRadius.circular(4),
+                            border: Border.all(
+                              color: isHybrid ? const Color(0xFF14532D).withValues(alpha: 0.3) : const Color(0xFF92400E).withValues(alpha: 0.3),
+                            ),
                           ),
                           child: Text(
                             heterosisVigor,
                             style: GoogleFonts.poppins(
                               fontSize: 11,
                               fontWeight: FontWeight.w700,
-                              color: isHybrid ? KalroColors.leaf : KalroColors.warning,
+                              color: isHybrid ? const Color(0xFF14532D) : const Color(0xFF92400E),
                             ),
                           ),
                         ),
@@ -203,17 +206,19 @@ class _BreedingPedigreeScreenState extends State<BreedingPedigreeScreen> {
               ),
               const SizedBox(height: 8),
               ..._strains.map((strain) {
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: KalroColors.divider),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                return Semantics(
+                  label: '${strain['name']}, ${strain['voltinism']}. Origin: ${strain['origin']}, Shell ratio: ${strain['shellRatio']}',
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: KalroColors.divider),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -264,8 +269,9 @@ class _BreedingPedigreeScreenState extends State<BreedingPedigreeScreen> {
                       ),
                     ],
                   ),
-                );
-              }),
+                ),
+              );
+            }),
             ],
           ),
         ),

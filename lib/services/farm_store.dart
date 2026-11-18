@@ -206,18 +206,21 @@ class FarmStore {
       ];
     }
 
-    if (name == 'batches') {
-      final psRows = db.select('SELECT * FROM batches ORDER BY id');
-      return [for (final r in psRows) _batchRowToMap(r)];
-    } else if (name == 'feed_logs') {
-      final psRows = db.select('SELECT * FROM feed_logs ORDER BY id');
-      return [for (final r in psRows) _feedLogRowToMap(r)];
-    } else if (name == 'mortality_logs') {
-      final psRows = db.select('SELECT * FROM mortality_logs ORDER BY id');
-      return [for (final r in psRows) _mortalityLogRowToMap(r)];
-    }
-
-    return [];
+    return switch (name) {
+      'batches' => [
+          for (final r in db.select('SELECT * FROM batches ORDER BY id'))
+            _batchRowToMap(r),
+        ],
+      'feed_logs' => [
+          for (final r in db.select('SELECT * FROM feed_logs ORDER BY id'))
+            _feedLogRowToMap(r),
+        ],
+      'mortality_logs' => [
+          for (final r in db.select('SELECT * FROM mortality_logs ORDER BY id'))
+            _mortalityLogRowToMap(r),
+        ],
+      _ => [],
+    };
   }
 
   Future<List<Map<String, dynamic>>> getCollectionWhere(
@@ -231,31 +234,28 @@ class FarmStore {
     final strVal = value.toString();
     final limitClause = limit != null ? 'LIMIT $limit' : '';
 
-    // Fast-path indexed queries using virtual generated columns
-    final sqlite.ResultSet rows;
-    if (jsonKey == 'batchId' || jsonKey == 'batch_id') {
-      final orderClause = descending ? 'ORDER BY created_at DESC' : 'ORDER BY rowid';
-      rows = db.select(
-        'SELECT json FROM records WHERE collection = ? AND batch_id = ? $orderClause $limitClause',
-        [collection, strVal],
-      );
-    } else if (jsonKey == 'stage' || jsonKey == 'feedingStage' || jsonKey == 'stageKey') {
-      rows = db.select(
-        'SELECT json FROM records WHERE collection = ? AND stage = ? ORDER BY rowid $limitClause',
-        [collection, strVal],
-      );
-    } else if (jsonKey == 'createdAt' || jsonKey == 'recordedAt' || jsonKey == 'startDate') {
-      rows = db.select(
-        'SELECT json FROM records WHERE collection = ? AND created_at = ? ORDER BY rowid $limitClause',
-        [collection, strVal],
-      );
-    } else {
-      final safeKey = jsonKey.replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '');
-      rows = db.select(
-        "SELECT json FROM records WHERE collection = ? AND json_extract(json, '\$.$safeKey') = ? ORDER BY rowid $limitClause",
-        [collection, strVal],
-      );
-    }
+    // Fast-path indexed queries using virtual generated columns & switch expression
+    final sqlite.ResultSet rows = switch (jsonKey) {
+      'batchId' || 'batch_id' => db.select(
+          'SELECT json FROM records WHERE collection = ? AND batch_id = ? ${descending ? 'ORDER BY created_at DESC' : 'ORDER BY rowid'} $limitClause',
+          [collection, strVal],
+        ),
+      'stage' || 'feedingStage' || 'stageKey' => db.select(
+          'SELECT json FROM records WHERE collection = ? AND stage = ? ORDER BY rowid $limitClause',
+          [collection, strVal],
+        ),
+      'createdAt' || 'recordedAt' || 'startDate' => db.select(
+          'SELECT json FROM records WHERE collection = ? AND created_at = ? ORDER BY rowid $limitClause',
+          [collection, strVal],
+        ),
+      _ => () {
+          final safeKey = jsonKey.replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '');
+          return db.select(
+            "SELECT json FROM records WHERE collection = ? AND json_extract(json, '\$.$safeKey') = ? ORDER BY rowid $limitClause",
+            [collection, strVal],
+          );
+        }(),
+    };
 
     if (rows.isNotEmpty) {
       return [
@@ -264,21 +264,17 @@ class FarmStore {
       ];
     }
 
-    if (collection == 'feed_logs' && (jsonKey == 'batchId' || jsonKey == 'batch_id')) {
-      final psRows = db.select(
-        'SELECT * FROM feed_logs WHERE batchId = ? $limitClause',
-        [strVal],
-      );
-      return [for (final r in psRows) _feedLogRowToMap(r)];
-    } else if (collection == 'mortality_logs' && (jsonKey == 'batchId' || jsonKey == 'batch_id')) {
-      final psRows = db.select(
-        'SELECT * FROM mortality_logs WHERE batchId = ? $limitClause',
-        [strVal],
-      );
-      return [for (final r in psRows) _mortalityLogRowToMap(r)];
-    }
-
-    return [];
+    return switch ((collection, jsonKey)) {
+      ('feed_logs', 'batchId' || 'batch_id') => [
+          for (final r in db.select('SELECT * FROM feed_logs WHERE batchId = ? $limitClause', [strVal]))
+            _feedLogRowToMap(r),
+        ],
+      ('mortality_logs', 'batchId' || 'batch_id') => [
+          for (final r in db.select('SELECT * FROM mortality_logs WHERE batchId = ? $limitClause', [strVal]))
+            _mortalityLogRowToMap(r),
+        ],
+      _ => [],
+    };
   }
 
   Future<void> upsert(
@@ -648,6 +644,13 @@ class FarmStore {
     db.execute('CREATE INDEX IF NOT EXISTS idx_records_collection_created ON records(collection, created_at);');
     db.execute('CREATE INDEX IF NOT EXISTS idx_records_batch_created ON records(collection, batch_id, created_at DESC);');
     db.execute('CREATE INDEX IF NOT EXISTS idx_records_collection_stage ON records(collection, stage);');
+    db.execute('CREATE INDEX IF NOT EXISTS idx_batches_id ON records(id);');
+    db.execute('CREATE INDEX IF NOT EXISTS idx_logs_batch_id ON records(batch_id);');
+    db.execute('CREATE INDEX IF NOT EXISTS idx_logs_created_at ON records(created_at);');
+    db.execute('CREATE INDEX IF NOT EXISTS idx_batches_stage ON records(stage);');
+    try {
+      db.execute("CREATE INDEX IF NOT EXISTS idx_batches_stage_json ON records(json_extract(json, '\$.stage'));");
+    } catch (_) {}
 
     db.execute('''
       CREATE TABLE IF NOT EXISTS singletons (
@@ -683,6 +686,7 @@ class FarmStore {
       );
       CREATE INDEX IF NOT EXISTS idx_batches_status ON batches(status);
       CREATE INDEX IF NOT EXISTS idx_batches_created ON batches(createdAt DESC);
+      CREATE INDEX IF NOT EXISTS idx_batches_id ON batches(id);
     ''');
 
     db.execute('''
@@ -700,6 +704,8 @@ class FarmStore {
       CREATE INDEX IF NOT EXISTS idx_feed_batch ON feed_logs(batchId);
       CREATE INDEX IF NOT EXISTS idx_feed_batch_recorded ON feed_logs(batchId, recordedAt DESC);
       CREATE INDEX IF NOT EXISTS idx_feed_stage ON feed_logs(feedingStage);
+      CREATE INDEX IF NOT EXISTS idx_logs_batch_id ON feed_logs(batchId);
+      CREATE INDEX IF NOT EXISTS idx_logs_created_at ON feed_logs(recordedAt DESC);
     ''');
 
     db.execute('''

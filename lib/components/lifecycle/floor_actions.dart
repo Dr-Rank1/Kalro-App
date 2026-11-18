@@ -721,67 +721,82 @@ class FloorActionsBar extends StatelessWidget {
             style: FilledButton.styleFrom(
               backgroundColor: KalroColors.primaryGreen,
               foregroundColor: Colors.white,
-              minimumSize: const Size.fromHeight(40),
+              minimumSize: const Size.fromHeight(48),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             ),
           ),
         const SizedBox(height: 8),
 
-        // Secondary Action Row
+        // Secondary Action Row (minimum 48dp touch target)
         Row(
           children: [
             Expanded(
-              child: OutlinedButton(
-                onPressed: () => _openFeedOptions(context),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  side: const BorderSide(color: KalroColors.divider),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                ),
-                child: Text(
-                  'Options'.tr,
-                  style: GoogleFonts.poppins(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: KalroColors.textDark,
+              child: Semantics(
+                button: true,
+                label: 'Feeding Options'.tr,
+                child: OutlinedButton(
+                  onPressed: () => _openFeedOptions(context),
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size(0, 48),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    side: const BorderSide(color: KalroColors.divider),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  child: Text(
+                    'Options'.tr,
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: KalroColors.textDark,
+                    ),
                   ),
                 ),
               ),
             ),
             const SizedBox(width: 8),
             Expanded(
-              child: OutlinedButton(
-                onPressed: () => _deaths(context),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  side: const BorderSide(color: KalroColors.divider),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                ),
-                child: Text(
-                  'Deaths'.tr,
-                  style: GoogleFonts.poppins(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: KalroColors.textDark,
+              child: Semantics(
+                button: true,
+                label: 'Record Larval Mortality'.tr,
+                child: OutlinedButton(
+                  onPressed: () => _deaths(context),
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size(0, 48),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    side: const BorderSide(color: KalroColors.divider),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  child: Text(
+                    'Deaths'.tr,
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: KalroColors.textDark,
+                    ),
                   ),
                 ),
               ),
             ),
             const SizedBox(width: 8),
             Expanded(
-              child: OutlinedButton(
-                onPressed: () => _house(context),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  side: const BorderSide(color: KalroColors.divider),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                ),
-                child: Text(
-                  'Chamber'.tr,
-                  style: GoogleFonts.poppins(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: KalroColors.textDark,
+              child: Semantics(
+                button: true,
+                label: 'Record Rearing Chamber Climate'.tr,
+                child: OutlinedButton(
+                  onPressed: () => _house(context),
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size(0, 48),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    side: const BorderSide(color: KalroColors.divider),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  child: Text(
+                    'Chamber'.tr,
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: KalroColors.textDark,
+                    ),
                   ),
                 ),
               ),
@@ -789,19 +804,24 @@ class FloorActionsBar extends StatelessWidget {
             if (onMarkStage != null) ...[
               const SizedBox(width: 8),
               Expanded(
-                child: OutlinedButton(
-                  onPressed: () => onMarkStage!(),
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    side: BorderSide(color: KalroColors.leaf.withValues(alpha: 0.5)),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                  child: Text(
-                    plan.stage.isMoult ? 'In Moult'.tr : 'Next'.tr,
-                    style: GoogleFonts.poppins(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: KalroColors.leaf,
+                child: Semantics(
+                  button: true,
+                  label: plan.stage.isMoult ? 'Confirm In Moult'.tr : 'Next Rearing Stage'.tr,
+                  child: OutlinedButton(
+                    onPressed: () => onMarkStage!(),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(0, 48),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      side: BorderSide(color: KalroColors.leaf.withValues(alpha: 0.5)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    ),
+                    child: Text(
+                      plan.stage.isMoult ? 'In Moult'.tr : 'Next'.tr,
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: KalroColors.leaf,
+                      ),
                     ),
                   ),
                 ),

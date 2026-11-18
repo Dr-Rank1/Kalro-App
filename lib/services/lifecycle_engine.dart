@@ -143,9 +143,9 @@ class LifecycleEngine {
       conditions: conditions,
     );
     for (final milestone in milestones) {
-      if (milestone.type == MilestoneType.cocoonHarvest ||
-          (batch.species == Species.bombyx &&
-              milestone.label == 'Cocoon maturation')) {
+      if (milestone case LifecycleMilestone(type: MilestoneType.cocoonHarvest) ||
+          LifecycleMilestone(label: 'Cocoon maturation')
+              when batch.species == Species.bombyx) {
         return milestone.effectiveDate;
       }
     }
@@ -182,18 +182,16 @@ class LifecycleEngine {
     return null;
   }
 
-  MilestoneType _milestoneType(String stageKey) {
-    return switch (stageKey) {
-      'incubation' => MilestoneType.hatch,
-      'mounting' => MilestoneType.mounting,
-      'spinning' => MilestoneType.spinning,
-      'cocoon_maturation' || 'cocoon_harvest' => MilestoneType.cocoonHarvest,
-      'moth_emergence' => MilestoneType.mothEmergence,
-      _ when stageKey.startsWith('moult') => MilestoneType.moult,
-      _ when stageKey.startsWith('instar') => MilestoneType.instar,
-      _ => MilestoneType.moult,
-    };
-  }
+  MilestoneType _milestoneType(String stageKey) => switch (stageKey) {
+        'incubation' => MilestoneType.hatch,
+        'mounting' => MilestoneType.mounting,
+        'spinning' => MilestoneType.spinning,
+        'cocoon_maturation' || 'cocoon_harvest' => MilestoneType.cocoonHarvest,
+        'moth_emergence' => MilestoneType.mothEmergence,
+        _ when stageKey.startsWith('moult') => MilestoneType.moult,
+        _ when stageKey.startsWith('instar') => MilestoneType.instar,
+        _ => MilestoneType.moult,
+      };
 
   DateTime _dateOnly(DateTime date) {
     return DateTime(date.year, date.month, date.day);

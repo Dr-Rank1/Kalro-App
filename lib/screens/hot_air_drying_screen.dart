@@ -120,14 +120,14 @@ class _HotAirDryingScreenState extends State<HotAirDryingScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: KalroColors.warning.withValues(alpha: 0.12),
+                  color: const Color(0xFFFEF3C7),
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: KalroColors.warning.withValues(alpha: 0.4)),
+                  border: Border.all(color: const Color(0xFF92400E).withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.wb_sunny_outlined, color: KalroColors.warning, size: 20),
+                    const Icon(Icons.wb_sunny_outlined, color: Color(0xFF92400E), size: 20),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
@@ -166,7 +166,7 @@ class _HotAirDryingScreenState extends State<HotAirDryingScreen> {
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
-                            'Stage ${currentStage.stage} of 4'.tr,
+                            Translator.fill('Stage {s} of 4', {'s': '${currentStage.stage}'}),
                             style: GoogleFonts.poppins(
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
@@ -176,14 +176,14 @@ class _HotAirDryingScreenState extends State<HotAirDryingScreen> {
                         ),
                         Row(
                           children: [
-                            const Icon(Icons.thermostat, color: KalroColors.danger, size: 20),
+                            const Icon(Icons.thermostat, color: Color(0xFF991B1B), size: 20),
                             const SizedBox(width: 4),
                             Text(
                               '${currentStage.temperatureC}°C',
                               style: GoogleFonts.poppins(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w700,
-                                color: KalroColors.danger,
+                                color: const Color(0xFF991B1B),
                               ),
                             ),
                           ],
@@ -214,24 +214,35 @@ class _HotAirDryingScreenState extends State<HotAirDryingScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        OutlinedButton.icon(
-                          onPressed: () => _resetToStep(_currentStepIndex),
-                          icon: const Icon(Icons.replay, size: 18),
-                          label: Text('Reset Stage'.tr),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: KalroColors.textDark,
-                            side: const BorderSide(color: KalroColors.divider),
+                        Semantics(
+                          button: true,
+                          label: 'Reset stage timer'.tr,
+                          child: OutlinedButton.icon(
+                            onPressed: () => _resetToStep(_currentStepIndex),
+                            icon: const Icon(Icons.replay, size: 18),
+                            label: Text('Reset Stage'.tr),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: KalroColors.textDark,
+                              side: const BorderSide(color: KalroColors.divider),
+                              minimumSize: const Size(0, 48),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            ),
                           ),
                         ),
                         const SizedBox(width: 14),
-                        ElevatedButton.icon(
-                          onPressed: _togglePlayPause,
-                          icon: Icon(_isRunning ? Icons.pause : Icons.play_arrow, size: 20),
-                          label: Text(_isRunning ? 'Pause'.tr : 'Start Timer'.tr),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: KalroColors.headerGreen,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        Semantics(
+                          button: true,
+                          label: _isRunning ? 'Pause drying timer'.tr : 'Start drying timer'.tr,
+                          child: ElevatedButton.icon(
+                            onPressed: _togglePlayPause,
+                            icon: Icon(_isRunning ? Icons.pause : Icons.play_arrow, size: 20),
+                            label: Text(_isRunning ? 'Pause'.tr : 'Start Timer'.tr),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: KalroColors.headerGreen,
+                              foregroundColor: Colors.white,
+                              minimumSize: const Size(0, 48),
+                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                            ),
                           ),
                         ),
                       ],
@@ -331,7 +342,7 @@ class _HotAirDryingScreenState extends State<HotAirDryingScreen> {
                                 style: GoogleFonts.poppins(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
-                                  color: KalroColors.warning,
+                                  color: const Color(0xFF92400E),
                                 ),
                               ),
                             ],
@@ -357,25 +368,31 @@ class _HotAirDryingScreenState extends State<HotAirDryingScreen> {
               const SizedBox(height: 8),
               ...KenyaDryingSchedule.stages.map((stage) {
                 final isSelected = stage.stage - 1 == _currentStepIndex;
-                return InkWell(
-                  onTap: () => _resetToStep(stage.stage - 1),
-                  child: Container(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? KalroColors.headerGreen.withValues(alpha: 0.06)
-                          : Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
+                return Semantics(
+                  button: true,
+                  selected: isSelected,
+                  label: 'Stage ${stage.stage}: ${stage.temperatureC} degrees Celsius, ${stage.durationMinutes} minutes. ${stage.objective}',
+                  child: InkWell(
+                    onTap: () => _resetToStep(stage.stage - 1),
+                    borderRadius: BorderRadius.circular(10),
+                    child: Container(
+                      constraints: const BoxConstraints(minHeight: 48),
+                      margin: const EdgeInsets.only(bottom: 8),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
                         color: isSelected
-                            ? KalroColors.headerGreen
-                            : KalroColors.divider,
-                        width: isSelected ? 1.5 : 1.0,
+                            ? KalroColors.headerGreen.withValues(alpha: 0.06)
+                            : Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: isSelected
+                              ? KalroColors.headerGreen
+                              : KalroColors.divider,
+                          width: isSelected ? 1.5 : 1.0,
+                        ),
                       ),
-                    ),
-                    child: Row(
-                      children: [
+                      child: Row(
+                        children: [
                         CircleAvatar(
                           radius: 14,
                           backgroundColor: isSelected
@@ -431,8 +448,9 @@ class _HotAirDryingScreenState extends State<HotAirDryingScreen> {
                       ],
                     ),
                   ),
-                );
-              }),
+                ),
+              );
+            }),
             ],
           ),
         ),

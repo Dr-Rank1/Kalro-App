@@ -104,7 +104,7 @@ abstract final class KalroTheme {
           backgroundColor: KalroColors.buttonGreen,
           foregroundColor: Colors.white,
           elevation: 0,
-          minimumSize: const Size.fromHeight(46),
+          minimumSize: const Size.fromHeight(48),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           textStyle: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600),
@@ -114,10 +114,16 @@ abstract final class KalroTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: KalroColors.textDark,
           elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          minimumSize: const Size(0, 48),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           side: const BorderSide(color: KalroColors.divider),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           textStyle: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600),
+        ),
+      ),
+      iconButtonTheme: IconButtonThemeData(
+        style: IconButton.styleFrom(
+          minimumSize: const Size(48, 48),
         ),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
@@ -224,10 +230,26 @@ abstract final class KalroTheme {
           backgroundColor: KalroColors.leaf,
           foregroundColor: Colors.white,
           elevation: 0,
-          minimumSize: const Size.fromHeight(46),
+          minimumSize: const Size.fromHeight(48),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           textStyle: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: KalroColors.darkText,
+          elevation: 0,
+          minimumSize: const Size(0, 48),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          side: const BorderSide(color: KalroColors.darkDivider),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          textStyle: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600),
+        ),
+      ),
+      iconButtonTheme: IconButtonThemeData(
+        style: IconButton.styleFrom(
+          minimumSize: const Size(48, 48),
         ),
       ),
     );

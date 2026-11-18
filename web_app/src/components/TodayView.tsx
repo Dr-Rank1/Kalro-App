@@ -324,86 +324,69 @@ export const TodayView: React.FC<TodayViewProps> = ({
 
         {/* Integrated Station Duty & Audit Sub-Bar */}
         <div className="ops-command-subbar">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div className="flex items-center gap-3 flex-wrap">
             <div
               style={{
                 width: '32px',
                 height: '32px',
                 borderRadius: '50%',
-                backgroundColor: currentUser?.avatarColor || 'var(--primary)',
+                backgroundColor: currentUser?.avatarColor || '#15803D',
                 color: '#ffffff',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontWeight: 700,
-                fontSize: '0.8rem',
+                fontSize: '0.78rem',
                 flexShrink: 0,
               }}
             >
-              {currentUser?.avatarInitials || 'ST'}
+              {currentUser?.avatarInitials || 'SO'}
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', fontSize: '0.8rem' }}>
-              <span style={{ color: 'var(--text-muted)', fontWeight: 500 }}>Duty Operator:</span>
-              <strong style={{ color: 'var(--text-main)', fontWeight: 600 }}>{currentUser?.username || 'Station Operator'}</strong>
+            <div className="flex items-center gap-2 flex-wrap text-xs">
+              <span className="font-bold text-slate-900">{currentUser?.username || 'Station Operator'}</span>
               {currentUser?.staffId && (
-                <span
-                  style={{
-                    fontSize: '0.68rem',
-                    fontFamily: 'monospace',
-                    padding: '1px 6px',
-                    borderRadius: '4px',
-                    backgroundColor: 'var(--bg-subtle)',
-                    border: '1px solid var(--border-silk)',
-                    color: 'var(--text-muted)',
-                  }}
-                >
+                <span className="font-mono text-[11px] px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-slate-600 font-semibold">
                   {currentUser.staffId}
                 </span>
               )}
-              <span style={{ color: 'var(--border-silk)' }}>•</span>
-              <span style={{ color: roleMeta?.badgeColor || 'var(--primary)', fontWeight: 600 }}>{roleMeta?.label || 'Sericulture Specialist'}</span>
-              <span style={{ color: 'var(--text-light)', fontSize: '0.74rem' }}>(All operations digitally stamped)</span>
+              <span className="text-slate-300">•</span>
+              <span className="font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 text-[11px]">
+                {roleMeta?.label || 'Sericulture Specialist'}
+              </span>
+              <span className="text-slate-400 text-[11px] hidden sm:inline">
+                · Operations ledger digitally signed &amp; stamped
+              </span>
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div className="flex items-center gap-2">
             {allUsers && allUsers.length > 1 && onSwitchUser && (
-              <select
-                value={currentUser?.id || ''}
-                onChange={(e) => onSwitchUser(e.target.value)}
-                className="form-control min-h-[40px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
-                style={{
-                  fontSize: '0.78rem',
-                  padding: '6px 10px',
-                  height: '40px',
-                  width: 'auto',
-                }}
-                title="Switch active sericulture operator on duty"
-              >
-                {allUsers.map((u) => (
-                  <option key={u.id} value={u.id}>
-                    {u.username} ({u.staffId || u.role})
-                  </option>
-                ))}
-              </select>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[11px] font-medium text-slate-500 hidden md:inline">Switch Officer:</span>
+                <select
+                  value={currentUser?.id || ''}
+                  onChange={(e) => onSwitchUser(e.target.value)}
+                  className="station-form-select text-xs py-1.5 px-2.5 h-9 w-auto min-w-[130px]"
+                  title="Switch active sericulture operator on duty"
+                >
+                  {allUsers.map((u) => (
+                    <option key={u.id} value={u.id}>
+                      {u.username} ({u.staffId || u.role})
+                    </option>
+                  ))}
+                </select>
+              </div>
             )}
 
             <button
               type="button"
               onClick={() => onSelectTab('audit')}
-              className="btn-secondary min-h-[40px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
-              style={{
-                fontSize: '0.78rem',
-                padding: '8px 12px',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '5px',
-              }}
+              className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 transition-all flex items-center gap-1.5 min-h-[36px]"
               title="View complete chronological audit trail of all staff operations"
             >
-              <History size={13} />
+              <History size={13} className="text-[#15803D]" />
               <span>Audit Ledger ({auditLogs?.length || 0})</span>
-              <ArrowRight size={12} />
+              <ArrowRight size={12} className="text-slate-400" />
             </button>
           </div>
         </div>
@@ -749,105 +732,90 @@ export const TodayView: React.FC<TodayViewProps> = ({
               return (
                 <div key={b.id} className={`batch-item-card ${isSingle ? 'single-command-card' : ''}`}>
                   <div className="batch-card-inner">
-                    <div className="batch-tag-row">
-                      <span className={`species-badge ${b.species}`}>
-                        {b.strain ? `${b.strain} • ` : ''}{b.species === 'bombyx' ? 'Bombyx mori' : 'Samia ricini'}
-                      </span>
-                      <span className={`status-badge ${stage.isMoult ? 'moult' : 'active'}`}>
-                        {stage.name}
-                      </span>
-                      {b.roomName && (
-                        <span className="status-badge" style={{ backgroundColor: 'var(--bg-subtle)', color: 'var(--text-muted)', border: '1px solid var(--border-subtle)' }}>
-                          {b.roomName}
+                    {/* Header Tag Row */}
+                    <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className={`station-badge ${b.species === 'bombyx' ? 'station-badge-success' : 'station-badge-warning'}`}>
+                          {b.strain ? `${b.strain} · ` : ''}{b.species === 'bombyx' ? 'Bombyx mori' : 'Samia ricini'}
                         </span>
-                      )}
+                        <span className={`station-badge ${stage.isMoult ? 'station-badge-warning' : 'station-badge-neutral'}`}>
+                          {stage.name}
+                        </span>
+                      </div>
+                      <span className="text-[11px] font-semibold text-slate-600 bg-slate-100 border border-slate-200 px-2.5 py-0.5 rounded-md">
+                        {b.roomName || 'House 1'}
+                      </span>
                     </div>
 
-                    <h4 className="truncate" style={{ fontSize: isSingle ? '1.15rem' : '1rem', fontWeight: 700, margin: '0 0 0.2rem' }}>
-                      {b.displayTag || b.batchTag || b.id}
-                    </h4>
-                    <p className="truncate" style={{ fontSize: '0.76rem', color: 'var(--text-muted)', margin: '0 0 0.65rem' }}>
-                      {b.roomName || 'Rearing House 1'} • Day {stage.dayStart} of {maxDays} • {b.eggCount.toLocaleString()} Original Seed Eggs
-                    </p>
+                    <div className="mb-2.5">
+                      <h4 className="text-base font-bold text-slate-900 tracking-tight truncate">
+                        {b.displayTag || b.batchTag || b.id}
+                      </h4>
+                      <p className="text-xs text-slate-500 mt-0.5 truncate">
+                        Day {stage.dayStart} of {maxDays} ({progressPct}% Lifecycle) · {b.eggCount.toLocaleString()} Original Seed Eggs
+                      </p>
+                    </div>
 
-                    <div className="progress-bar-bg">
+                    <div className="progress-bar-bg mb-3">
                       <div className="progress-bar-fill" style={{ width: `${progressPct}%` }} />
                     </div>
 
-                    {/* Instar-Specific Guidance Banner */}
-                    {stage.isMoult ? (
-                      <div className="moult-alert-strip">
-                        <strong>Moult Fasting (NSRC Protocol):</strong> Withhold all leaves (18–24h for young instars, up to 48h for 4th). Dust bed with dry slaked agricultural lime powder to regulate humidity and manage pathogens. Maintain 24–25°C.
+                    {/* Unified Rearing Protocol & Forage Guidance */}
+                    <div className="bg-emerald-50/70 border border-emerald-200/80 rounded-xl p-3.5 space-y-2 text-xs mb-3">
+                      <div className="flex items-start gap-2.5">
+                        <Leaf size={15} className="text-[#15803D] shrink-0 mt-0.5" />
+                        <div className="flex-1 space-y-1">
+                          <div className="flex items-center justify-between flex-wrap gap-2">
+                            <span className="font-bold text-emerald-950 text-xs">
+                              {stage.isMoult ? 'Moult Fasting (NSRC Protocol)' : stage.isHarvest ? 'Mounting Stage (NSRC Standards)' : 'Feeding Protocol'}
+                            </span>
+                            <span className="bg-white/90 px-2 py-0.5 rounded border border-emerald-300 font-semibold text-emerald-800 text-[11px]">
+                              Target: {recommendedCultivar}
+                            </span>
+                          </div>
+                          <p className="text-emerald-900 leading-relaxed text-[11.5px]">
+                            {stage.isMoult
+                              ? 'Withhold all leaves (18–24h for young instars, up to 48h for 4th). Dust bed with dry slaked agricultural lime powder (50–100 g/m²). Maintain 24–25°C.'
+                              : stage.isHarvest
+                              ? 'Worms ready to spin. Mount at 90–100 larvae/ft² onto rotary mountages or bamboo frames. Maintain ≤26°C and 60–70% RH.'
+                              : stage.leafRecommendation || 'Feed fresh whole mature shoots 3–4 times daily. Net-clean beds every other day.'}
+                          </p>
+                        </div>
                       </div>
-                    ) : stage.isHarvest ? (
-                      <div className="spinning-alert-strip">
-                        <strong>Mounting Stage (NSRC Standards):</strong> Worms ready to spin. Mount at 90–100 larvae/ft² onto rotary mountages or bamboo folding frames. Spread absorbent paper on floor. Maintain &le;26°C and 60–70% RH.
-                      </div>
-                    ) : (
-                      <div className="instar-guidance-box">
-                        <strong>Feeding Guide:</strong> {stage.leafRecommendation || 'Feed fresh chopped leaves 3 times daily.'}
-                      </div>
-                    )}
-
-                    {/* Forage Cultivar Specification Strip */}
-                    <div
-                      style={{
-                        fontSize: '0.75rem',
-                        padding: '7px 12px',
-                        backgroundColor: '#F0FDF4',
-                        border: '1px solid #BBF7D0',
-                        borderRadius: '8px',
-                        color: '#15803D',
-                        marginBottom: '0.75rem',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '7px',
-                      }}
-                    >
-                      <Leaf size={14} style={{ flexShrink: 0, color: '#16A34A' }} />
-                      <span className="truncate">
-                        <strong style={{ color: '#166534', fontWeight: 600 }}>Target Forage:</strong> {recommendedCultivar}
-                      </span>
                     </div>
 
                     {/* Operational Details Grid */}
-                    <div
-                      style={{
-                        display: 'grid',
-                        gridTemplateColumns: isSingle ? 'repeat(4, 1fr)' : '1fr 1fr',
-                        gap: '0.65rem',
-                        fontSize: '0.78rem',
-                        margin: '0.4rem 0 0.85rem',
-                        background: '#F8FAFC',
-                        border: '1px solid #E2E8F0',
-                        padding: '0.75rem 0.85rem',
-                        borderRadius: '10px',
-                      }}
-                    >
+                    <div className={`grid ${isSingle ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-2'} gap-3 p-3.5 bg-slate-50 border border-slate-200 rounded-xl mb-3 text-xs`}>
                       <div>
-                        <div style={{ color: '#64748B', fontSize: '0.68rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '2px' }}>Live Larvae</div>
-                        <strong className="tabular-nums" style={{ color: '#0F172A', fontSize: '0.92rem' }}>{live.toLocaleString()}</strong>
-                        <span style={{ fontSize: '0.68rem', color: '#64748B', marginLeft: '4px' }}>
-                          ({b.eggCount > 0 ? ((live / b.eggCount) * 100).toFixed(0) : 100}%)
-                        </span>
+                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Live Larvae</div>
+                        <div className="font-extrabold text-sm text-slate-900 tabular-nums">
+                          {live.toLocaleString()}
+                          <span className="text-[11px] font-normal text-slate-500 ml-1">
+                            ({b.eggCount > 0 ? ((live / b.eggCount) * 100).toFixed(0) : 100}%)
+                          </span>
+                        </div>
                       </div>
                       <div>
-                        <div style={{ color: '#64748B', fontSize: '0.68rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '2px' }}>Daily Target</div>
-                        <strong className="tabular-nums" style={{ color: '#0F172A', fontSize: '0.92rem' }}>
+                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Daily Target</div>
+                        <div className="font-extrabold text-sm text-slate-900 tabular-nums">
                           {suggestedFeed > 0 ? `${(suggestedFeed / 1000).toFixed(1)} kg` : 'Moult Fasting'}
-                        </strong>
+                        </div>
                       </div>
                       <div>
-                        <div style={{ color: '#64748B', fontSize: '0.68rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '2px' }}>Fed Today</div>
-                        <span
-                          className={`badge-soft ${fed ? 'badge-soft-success' : 'badge-soft-danger'}`}
-                        >
-                          {fed ? `${(batchFeedToday / 1000).toFixed(1)} kg logged` : 'Pending Feed'}
-                        </span>
+                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Fed Today</div>
+                        <div>
+                          <span className={`inline-block text-[11px] font-bold px-2 py-0.5 rounded border ${
+                            fed ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-rose-50 text-rose-800 border-rose-300'
+                          }`}>
+                            {fed ? `${(batchFeedToday / 1000).toFixed(1)} kg logged` : 'Pending Feed'}
+                          </span>
+                        </div>
                       </div>
                       <div>
-                        <div style={{ color: '#64748B', fontSize: '0.68rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '2px' }}>Target Temp &amp; RH</div>
-                        <strong className="tabular-nums" style={{ color: '#0F172A', fontSize: '0.92rem' }}>{stage.idealTemp} · {stage.idealHumidity}</strong>
+                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Target Temp &amp; RH</div>
+                        <div className="font-extrabold text-sm text-slate-900 tabular-nums">
+                          {stage.idealTemp} · {stage.idealHumidity}
+                        </div>
                       </div>
                     </div>
 
@@ -864,29 +832,16 @@ export const TodayView: React.FC<TodayViewProps> = ({
                         .sort((x, y) => y.recordedAt.localeCompare(x.recordedAt))[0];
 
                       return (
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '7px',
-                            fontSize: '0.74rem',
-                            color: '#475569',
-                            backgroundColor: '#F8FAFC',
-                            border: '1px solid #E2E8F0',
-                            borderRadius: '8px',
-                            padding: '6px 10px',
-                            margin: '0.1rem 0 0.75rem',
-                          }}
-                        >
-                          <Clock size={13} style={{ color: '#16A34A', flexShrink: 0 }} />
-                          <span className="truncate" style={{ flex: 1 }}>
+                        <div className="flex items-center gap-2 text-xs text-slate-600 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 mb-3">
+                          <Clock size={13} className="text-[#15803D] shrink-0" />
+                          <span className="truncate flex-1">
                             {latestBatchLog ? (
                               <>
-                                <strong style={{ color: '#0F172A' }}>{latestBatchLog.title}:</strong> {latestBatchLog.details} · <span style={{ color: '#15803D', fontWeight: 600 }}>{latestBatchLog.operatorName}</span> ({new Date(latestBatchLog.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})
+                                <strong className="text-slate-900">{latestBatchLog.title}:</strong> {latestBatchLog.details} · <span className="text-[#15803D] font-semibold">{latestBatchLog.operatorName}</span> ({new Date(latestBatchLog.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})
                               </>
                             ) : latestBatchFeed ? (
                               <>
-                                <strong style={{ color: '#0F172A' }}>Last Feed:</strong> {(latestBatchFeed.quantityGrams / 1000).toFixed(1)} kg {latestBatchFeed.cultivar || latestBatchFeed.leafType} by <span style={{ color: '#15803D', fontWeight: 600 }}>{latestBatchFeed.operatorName || 'Staff'}</span> at {new Date(latestBatchFeed.recordedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                <strong className="text-slate-900">Last Feed:</strong> {(latestBatchFeed.quantityGrams / 1000).toFixed(1)} kg {latestBatchFeed.cultivar || latestBatchFeed.leafType} by <span className="text-[#15803D] font-semibold">{latestBatchFeed.operatorName || 'Staff'}</span> at {new Date(latestBatchFeed.recordedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                               </>
                             ) : (
                               <span>Pending first operational log for this shift</span>
@@ -897,65 +852,61 @@ export const TodayView: React.FC<TodayViewProps> = ({
                     })()}
 
                     {/* Card Action Buttons */}
-                    <div style={{ display: 'flex', gap: '8px', marginTop: 'auto', flexWrap: 'wrap' }}>
+                    <div className="flex gap-2 mt-auto flex-wrap pt-1">
                       <button
                         type="button"
                         onClick={() => onOpenQuickLog(b.id, 'feed')}
-                        className="btn-accent min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
-                        style={{ flex: 1, minWidth: '100px', fontSize: '0.85rem', padding: '12px 16px' }}
+                        className="btn-accent min-h-[48px] flex-1 min-w-[110px] text-xs font-semibold px-4 py-2.5"
                       >
                         + Log Feed
                       </button>
                       <button
                         type="button"
                         onClick={() => onOpenQuickLog(b.id, 'mortality')}
-                        className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
-                        style={{ flex: 1, minWidth: '100px', fontSize: '0.85rem', padding: '12px 16px' }}
+                        className="btn-secondary min-h-[48px] flex-1 min-w-[110px] text-xs font-semibold px-4 py-2.5"
                       >
                         Record Loss
                       </button>
                       <button
                         type="button"
                         onClick={() => onOpenQuickLog(b.id, 'climate')}
-                        className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
-                        style={{ fontSize: '0.85rem', padding: '12px 16px' }}
+                        className="btn-secondary min-h-[48px] text-xs font-semibold px-4 py-2.5 flex items-center gap-1.5"
                         title="Record chamber microclimate"
                       >
-                        <Thermometer size={14} style={{ marginRight: '4px' }} />
-                        Climate
+                        <Thermometer size={14} className="text-[#15803D]" />
+                        <span>Climate</span>
                       </button>
                       {onExportBatchPdf && (
                         <button
                           type="button"
                           onClick={() => onExportBatchPdf(b)}
-                          className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
-                          style={{ padding: '12px 16px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                          className="btn-secondary min-h-[48px] text-xs font-semibold px-3 py-2.5 flex items-center gap-1"
                           title="Download verified PDF report for this batch"
                           aria-label={`Export PDF dossier for batch ${b.batchTag || b.id}`}
                         >
                           <FileText size={14} />
-                          <span style={{ fontSize: '0.82rem', fontWeight: 600 }}>PDF</span>
+                          <span>PDF</span>
                         </button>
                       )}
                     </div>
 
                     {/* Synchronized Station Links */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', paddingTop: '8px', borderTop: '1px solid var(--border-divider)', fontSize: '0.78rem' }}>
+                    <div className="flex justify-between items-center pt-3 mt-3 border-t border-slate-100 text-xs">
                       <button
                         type="button"
                         onClick={() => onSelectTab('batches')}
-                        className="focus-visible:ring-2 focus-visible:ring-[#16A34A]"
-                        style={{ background: 'none', border: 'none', color: 'var(--primary)', padding: '12px 8px', cursor: 'pointer', textDecoration: 'underline', fontWeight: 600, minHeight: '48px', display: 'inline-flex', alignItems: 'center' }}
+                        className="text-[#15803D] hover:text-emerald-800 font-semibold px-2.5 py-1.5 rounded-lg hover:bg-emerald-50 transition-all flex items-center gap-1 min-h-[36px]"
                       >
-                        Lot Dossier &amp; Trays →
+                        <span>Lot Dossier &amp; Trays</span>
+                        <ArrowRight size={13} />
                       </button>
                       <button
                         type="button"
                         onClick={() => onSelectTab('audit')}
-                        className="focus-visible:ring-2 focus-visible:ring-[#16A34A]"
-                        style={{ background: 'none', border: 'none', color: 'var(--text-muted)', padding: '12px 8px', cursor: 'pointer', textDecoration: 'underline', minHeight: '48px', display: 'inline-flex', alignItems: 'center' }}
+                        className="text-slate-500 hover:text-slate-800 font-medium px-2.5 py-1.5 rounded-lg hover:bg-slate-100 transition-all flex items-center gap-1 min-h-[36px]"
                       >
-                        Shift Audit History →
+                        <span>Shift Audit History</span>
+                        <ArrowRight size={13} />
                       </button>
                     </div>
                   </div>

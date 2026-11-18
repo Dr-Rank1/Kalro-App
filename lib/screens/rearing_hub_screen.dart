@@ -275,22 +275,26 @@ class _MinimalEmptyBatchCard extends StatelessWidget {
           if (canEdit && onCreateBatch != null) ...[
             SizedBox(
               width: double.infinity,
-              height: 44,
-              child: FilledButton.icon(
-                onPressed: onCreateBatch,
-                icon: const Icon(Icons.add, size: 18),
-                label: Text(
-                  'Create First Batch'.tr,
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
+              height: 48,
+              child: Semantics(
+                button: true,
+                label: 'Create First Batch'.tr,
+                child: FilledButton.icon(
+                  onPressed: onCreateBatch,
+                  icon: const Icon(Icons.add, size: 18),
+                  label: Text(
+                    'Create First Batch'.tr,
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-                style: FilledButton.styleFrom(
-                  backgroundColor: KalroColors.primaryGreen,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: KalroColors.primaryGreen,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                 ),
               ),
@@ -298,15 +302,19 @@ class _MinimalEmptyBatchCard extends StatelessWidget {
             const SizedBox(height: 8),
           ],
           if (onOpenGuide != null)
-            TextButton.icon(
-              onPressed: onOpenGuide,
-              icon: const Icon(Icons.menu_book_outlined, size: 16, color: KalroColors.headerGreen),
-              label: Text(
-                'Explore KALRO Field Guide'.tr,
-                style: GoogleFonts.poppins(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: KalroColors.headerGreen,
+            Semantics(
+              button: true,
+              label: 'Explore KALRO Field Guide'.tr,
+              child: TextButton.icon(
+                onPressed: onOpenGuide,
+                icon: const Icon(Icons.menu_book_outlined, size: 16, color: KalroColors.headerGreen),
+                label: Text(
+                  'Explore KALRO Field Guide'.tr,
+                  style: GoogleFonts.poppins(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: KalroColors.headerGreen,
+                  ),
                 ),
               ),
             ),

@@ -22,44 +22,55 @@ class DashboardAlertsBanner extends StatelessWidget {
       children: [
         ...top.map((alert) {
           final color = switch (alert.severity) {
-            BatchAlertSeverity.critical => Colors.red.shade50,
-            BatchAlertSeverity.warning => Colors.orange.shade50,
-            BatchAlertSeverity.info => Colors.blue.shade50,
+            BatchAlertSeverity.critical => const Color(0xFFFEF2F2),
+            BatchAlertSeverity.warning => const Color(0xFFFFFBEB),
+            BatchAlertSeverity.info => const Color(0xFFEFF6FF),
           };
           final iconColor = switch (alert.severity) {
-            BatchAlertSeverity.critical => Colors.red,
-            BatchAlertSeverity.warning => Colors.orange,
-            BatchAlertSeverity.info => Colors.blue,
+            BatchAlertSeverity.critical => const Color(0xFF991B1B),
+            BatchAlertSeverity.warning => const Color(0xFF92400E),
+            BatchAlertSeverity.info => const Color(0xFF1E40AF),
+          };
+          final borderColor = switch (alert.severity) {
+            BatchAlertSeverity.critical => const Color(0xFFFECACA),
+            BatchAlertSeverity.warning => const Color(0xFFFDE68A),
+            BatchAlertSeverity.info => const Color(0xFFBFDBFE),
           };
 
-          return Card(
-            margin: EdgeInsets.only(bottom: 8),
-            color: color,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: BorderSide(color: KalroColors.divider),
-            ),
-            child: ListTile(
-              leading: Icon(
-                Icons.notifications_active,
-                color: iconColor,
-                size: 22,
+          return Semantics(
+            button: onAlertTap != null,
+            label: '${alert.title.tr}: ${alert.message.tr}',
+            child: Card(
+              margin: const EdgeInsets.only(bottom: 8),
+              color: color,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: borderColor),
               ),
-              title: Text(
-                alert.title.tr,
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
+              child: ListTile(
+                minTileHeight: 48,
+                leading: Icon(
+                  Icons.notifications_active,
+                  color: iconColor,
+                  size: 22,
                 ),
-              ),
-              subtitle: Text(
-                alert.message.tr,
-                style: GoogleFonts.poppins(
-                  fontSize: 12,
-                  color: KalroColors.textMuted,
+                title: Text(
+                  alert.title.tr,
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                    color: KalroColors.textDark,
+                  ),
                 ),
+                subtitle: Text(
+                  alert.message.tr,
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    color: KalroColors.textDark.withValues(alpha: 0.8),
+                  ),
+                ),
+                onTap: onAlertTap == null ? null : () => onAlertTap!(alert),
               ),
-              onTap: onAlertTap == null ? null : () => onAlertTap!(alert),
             ),
           );
         }),

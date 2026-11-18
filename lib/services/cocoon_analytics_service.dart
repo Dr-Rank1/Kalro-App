@@ -86,16 +86,14 @@ class CocoonAnalyticsService {
           ((cocoonCount / (cocoonCount + totalBreaks)) * 100).clamp(0.0, 100.0);
     }
 
-    String grade = 'Ungraded';
-    if (shellRatio != null) {
-      if (shellRatio >= 21.0 && defectRate <= 5.0) {
-        grade = 'Grade A';
-      } else if (shellRatio >= 17.0 && defectRate <= 10.0) {
-        grade = 'Grade B';
-      } else {
-        grade = 'Grade C';
-      }
-    }
+    final String grade = switch (shellRatio) {
+      null => 'Ungraded',
+      final double sr => switch ((sr, defectRate)) {
+          (>= 21.0, <= 5.0) => 'Grade A',
+          (>= 17.0, <= 10.0) => 'Grade B',
+          _ => 'Grade C',
+        },
+    };
 
     return CocoonMetrics(
       cocoonCount: cocoonCount,
@@ -155,25 +153,19 @@ class CocoonAnalyticsService {
           ((cocoonCount / (cocoonCount + breakCount)) * 100).clamp(0.0, 100.0);
     }
 
-    String grade = 'Ungraded';
-    if (shellRatio != null) {
-      if (shellRatio >= 21.0 && defectRate <= 5.0) {
-        grade = 'Grade A';
-      } else if (shellRatio >= 17.0 && defectRate <= 10.0) {
-        grade = 'Grade B';
-      } else {
-        grade = 'Grade C';
-      }
-    } else {
-      // Vision-only classification if shell weight sample is pending
-      if (defectRate <= 5.0 && cocoonCount > 0) {
-        grade = 'Grade A (Vision-Estimated)';
-      } else if (defectRate <= 10.0) {
-        grade = 'Grade B (Vision-Estimated)';
-      } else {
-        grade = 'Grade C (Vision-Estimated)';
-      }
-    }
+    final String grade = switch (shellRatio) {
+      final double sr => switch ((sr, defectRate)) {
+          (>= 21.0, <= 5.0) => 'Grade A',
+          (>= 17.0, <= 10.0) => 'Grade B',
+          _ => 'Grade C',
+        },
+      null when cocoonCount == 0 => 'Ungraded',
+      null => switch (defectRate) {
+          <= 5.0 => 'Grade A (Vision-Estimated)',
+          <= 10.0 => 'Grade B (Vision-Estimated)',
+          _ => 'Grade C (Vision-Estimated)',
+        },
+    };
 
     return CocoonMetrics(
       cocoonCount: cocoonCount,
