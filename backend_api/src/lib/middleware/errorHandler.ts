@@ -44,8 +44,42 @@ export interface ApiErrorResponse {
 }
 
 /**
+ * Strips internal server file paths, MongoDB connection strings, and database internals
+ * to prevent zero-day information leaks in production.
+ */
+function sanitizeSensitiveString(text: string): string {
+  return text
+    .replace(/mongodb(?:\+srv)?:\/\/[^\s]+/gi, 'mongodb://[REDACTED_CREDENTIALS]')
+    .replace(/(?:\/[a-zA-Z0-9_\-\.]+)+/g, '[INTERNAL_PATH]')
+    .replace(/[a-zA-Z]:\\(?:[a-zA-Z0-9_\-\.]+\\)+/g, '[INTERNAL_PATH]');
+}
+
+function sanitizeDetails(data: unknown, isProduction: boolean): unknown {
+  if (!isProduction || data === undefined || data === null) {
+    return data;
+  }
+  if (typeof data === 'string') {
+    return sanitizeSensitiveString(data);
+  }
+  if (Array.isArray(data)) {
+    return data.map((item) => sanitizeDetails(item, isProduction));
+  }
+  if (typeof data === 'object') {
+    const sanitized: Record<string, unknown> = {};
+    for (const [key, val] of Object.entries(data as Record<string, unknown>)) {
+      if (['stack', 'path', 'uri', 'connectionString'].includes(key)) {
+        continue;
+      }
+      sanitized[key] = sanitizeDetails(val, isProduction);
+    }
+    return sanitized;
+  }
+  return data;
+}
+
+/**
  * Formats any caught exception into a standardized, safe API error response.
- * Strictly hides stack traces and internal architecture details in production.
+ * Strictly hides stack traces, MongoDB internals, and system paths in production (Node Best Practice).
  */
 export function formatErrorResponse(
   error: unknown,
@@ -71,8 +105,8 @@ export function formatErrorResponse(
       success: false,
       error: {
         code: error.errorCode,
-        message: error.message,
-        ...(error.details !== undefined ? { details: error.details } : {}),
+        message: isProduction ? sanitizeSensitiveString(error.message) : error.message,
+        ...(error.details !== undefined ? { details: sanitizeDetails(error.details, isProduction) } : {}),
         ...(!isProduction && error.stack ? { stack: error.stack } : {}),
       },
       timestamp,
@@ -110,7 +144,7 @@ export function formatErrorResponse(
       error: {
         code: 'IDEMPOTENCY_CONFLICT',
         message: 'A transaction with this offlineId or reference already exists.',
-        details: (error as any).keyValue,
+        details: isProduction ? undefined : (error as any).keyValue,
       },
       timestamp,
     };

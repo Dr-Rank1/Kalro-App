@@ -72,6 +72,14 @@ export const envSchema = z.object({
     .transform((val) => val === true || val === 'true')
     .default(false),
 
+  // Idempotency & Lease Timeout Configuration
+  PENDING_LEASE_TIMEOUT_MS: z
+    .coerce
+    .number()
+    .int()
+    .positive()
+    .default(600000), // 10 minutes default for stuck pending transactions
+
   // Rate Limiting Configuration
   RATE_LIMIT_WINDOW_MS: z
     .coerce

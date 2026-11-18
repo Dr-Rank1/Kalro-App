@@ -3,22 +3,20 @@ import {
   DisburseResponseBody,
   PayoutDisbursementResultItem,
 } from '@/lib/types/payout';
-import { generateB2CReference } from '@/lib/daraja/reference';
+import { generateB2CReference, executeDarajaB2CDisbursement } from '@/lib/daraja';
 import {
   reservePayoutIdempotency,
   updatePayoutDarajaSubmission,
   markPayoutFailed,
   getRecentPayouts,
-} from '@/lib/db/ledger';
-import { executeDarajaB2CDisbursement } from '@/lib/daraja/client';
-import { withErrorHandler } from '@/lib/middleware/errorHandler';
-import { checkRateLimit } from '@/lib/middleware/rateLimiter';
+} from '@/lib/idempotency';
+import { withErrorHandler, BadRequestError } from '@/lib/errors';
+import { checkRateLimit } from '@/lib/rate-limiter';
 import {
   disburseRequestSchema,
   normalizeDisburseInput,
   ValidatedQueuedPayoutItem,
-} from '@/lib/schemas/payout';
-import { BadRequestError } from '@/lib/errors/AppError';
+} from '@/lib/validation';
 
 export const dynamic = 'force-dynamic';
 

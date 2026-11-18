@@ -8,9 +8,10 @@ import {
   isValidB2CReference,
   normalizeKenyanPhoneNumber,
   isValidKenyanPhoneNumber,
-} from './src/lib/daraja/reference';
-import { getDarajaAccessToken, clearDarajaTokenCache } from './src/lib/daraja/auth';
-import { executeDarajaB2CDisbursement } from './src/lib/daraja/client';
+  getDarajaAccessToken,
+  clearDarajaTokenCache,
+  executeDarajaB2CDisbursement,
+} from './src/lib/daraja';
 import {
   reservePayoutIdempotency,
   findPayoutByReference,
@@ -19,24 +20,26 @@ import {
   recordDarajaCallback,
   getRecentPayouts,
   clearInMemoryLedger,
-} from './src/lib/db/ledger';
+  DEFAULT_PENDING_LEASE_TIMEOUT_MS,
+} from './src/lib/idempotency';
 import { validateEnv } from './src/lib/env';
 import {
   AppError,
   BadRequestError,
   ConflictError,
   RateLimitError,
-} from './src/lib/errors/AppError';
-import { formatErrorResponse } from './src/lib/middleware/errorHandler';
+  formatErrorResponse,
+} from './src/lib/errors';
 import {
   checkRateLimit,
   resetRateLimitStore,
-} from './src/lib/middleware/rateLimiter';
+} from './src/lib/rate-limiter';
 import {
   disburseRequestSchema,
   queuedPayoutItemSchema,
+  darajaCallbackSchema,
   normalizeDisburseInput,
-} from './src/lib/schemas/payout';
+} from './src/lib/validation';
 
 async function runTests() {
   console.log('=================================================================');
@@ -114,6 +117,7 @@ async function runTests() {
   assert.strictEqual(validParsed.DARAJA_CONSUMER_KEY, 'valid_key_test');
   assert.strictEqual(validParsed.DARAJA_SHORTCODE, '600999');
   assert.strictEqual(validParsed.DARAJA_COMMAND_ID, 'BusinessPayment');
+  assert.strictEqual(validParsed.PENDING_LEASE_TIMEOUT_MS, 600000);
   console.log('  ✔ Successfully validates and applies defaults on valid configuration\n');
 
   // --------------------------------------------------------------------------
@@ -148,7 +152,22 @@ async function runTests() {
   );
   console.log('  ✔ Strictly conceals stack traces and system paths in production mode');
 
-  // Test 2.3: Stack trace preservation in development mode
+  // Test 2.3: Zero-Leak Redaction of MongoDB internals and paths in operational errors
+  const sensitiveAppErr = new AppError('Database connection to mongodb://admin:secret@cluster0.db.net/prod failed at /home/ian/app.ts', 500, 'DB_LEAK');
+  const sanitizedErr = formatErrorResponse(sensitiveAppErr);
+  assert.strictEqual(
+    sanitizedErr.response.error.message.includes('secret@'),
+    false,
+    'Database passwords must be redacted in production'
+  );
+  assert.strictEqual(
+    sanitizedErr.response.error.message.includes('/home/ian'),
+    false,
+    'Absolute server paths must be redacted in production'
+  );
+  console.log('  ✔ Strips MongoDB credentials and file paths from operational errors');
+
+  // Test 2.4: Stack trace preservation in development mode
   (process.env as any).NODE_ENV = 'development';
   const devErr = new Error('Developer debug notice');
   const devFormatted = formatErrorResponse(devErr);
@@ -196,26 +215,34 @@ async function runTests() {
   }
   console.log('  ✔ Rejects invalid Kenyan phone number formats');
 
-  // Test 3.4: Normalizes valid Kenyan phone numbers to 254XXXXXXXXX
-  const validPhoneResult = queuedPayoutItemSchema.safeParse({
-    offlineId: 'valid-tx-001',
-    farmerName: 'Grace Wanjiku',
-    phone: '0712345678',
-    amountKes: 2500,
-    offlineTimestamp: new Date().toISOString(),
-  });
-  assert.strictEqual(validPhoneResult.success, true);
-  if (validPhoneResult.success) {
-    assert.strictEqual(validPhoneResult.data.phone, '254712345678');
+  // Test 3.4: Normalizes valid Kenyan phone numbers (07... and 01...) to 254XXXXXXXXX
+  const phoneTestCases = [
+    { input: '0712345678', expected: '254712345678' },
+    { input: '0112345678', expected: '254112345678' },
+    { input: '+254722123456', expected: '254722123456' },
+    { input: '254110998877', expected: '254110998877' },
+  ];
+  for (const tc of phoneTestCases) {
+    const validPhoneResult = queuedPayoutItemSchema.safeParse({
+      offlineId: 'valid-tx-001',
+      farmerName: 'Grace Wanjiku',
+      phone: tc.input,
+      amountKes: 2500,
+      offlineTimestamp: new Date().toISOString(),
+    });
+    assert.strictEqual(validPhoneResult.success, true);
+    if (validPhoneResult.success) {
+      assert.strictEqual(validPhoneResult.data.phone, tc.expected);
+    }
   }
-  console.log('  ✔ Canonicalizes local 07... phone format to 2547...');
+  console.log('  ✔ Canonicalizes local 07... and 01... phone formats to 254...');
 
   // Test 3.5: Rejects amountKes below Daraja B2C minimum (KES 10)
   const lowAmountResult = queuedPayoutItemSchema.safeParse({
     offlineId: 'valid-tx-002',
     farmerName: 'Grace Wanjiku',
     phone: '0712345678',
-    amountKes: 5, // Below KES 10
+    amountKes: 9.99, // Below KES 10
     offlineTimestamp: new Date().toISOString(),
   });
   assert.strictEqual(lowAmountResult.success, false);
@@ -226,7 +253,7 @@ async function runTests() {
     offlineId: 'valid-tx-003',
     farmerName: 'Grace Wanjiku',
     phone: '0712345678',
-    amountKes: 150001,
+    amountKes: 150000.50,
     offlineTimestamp: new Date().toISOString(),
   });
   assert.strictEqual(highAmountResult.success, false);
@@ -377,6 +404,142 @@ async function runTests() {
   const recent = await getRecentPayouts(10);
   assert.ok(recent.length > 0);
   console.log(`  ✔ Ledger retrieval verified (${recent.length} records found)\n`);
+
+  // --------------------------------------------------------------------------
+  // SECTION 6: High-Concurrency Burst Idempotency & Stuck Pending Recovery
+  // --------------------------------------------------------------------------
+  console.log('▶ [TEST GROUP 6] High-Concurrency Burst Idempotency & Stuck Pending Recovery');
+
+  // Test 6.1: Concurrent duplicate burst (10 simultaneous claims for identical offlineId)
+  clearInMemoryLedger();
+  const burstOfflineId = `burst-tx-${Date.now()}`;
+  const burstPromises = Array.from({ length: 10 }).map((_, idx) =>
+    reservePayoutIdempotency({
+      offlineId: burstOfflineId,
+      reference: `KALRO-BURST-${idx}`,
+      farmerName: 'Kiprono Koech',
+      phoneNumber: '254712000000',
+      amountKes: 12000,
+    })
+  );
+
+  const burstResults = await Promise.all(burstPromises);
+  const proceedCount = burstResults.filter((r) => r.action === 'PROCEED').length;
+  const lockedCount = burstResults.filter((r) => r.action === 'LOCKED_IN_PROGRESS').length;
+
+  assert.strictEqual(proceedCount, 1, 'Strictly ONE burst attempt must receive PROCEED');
+  assert.strictEqual(lockedCount, 9, 'All 9 concurrent duplicate attempts must be LOCKED_IN_PROGRESS');
+  console.log('  ✔ Concurrent burst of 10 identical claims yields strictly 1 PROCEED and 9 LOCKED_IN_PROGRESS');
+
+  // Test 6.2: Stuck PENDING lease recovery after timeout
+  clearInMemoryLedger();
+  const stuckOfflineId = `stuck-tx-${Date.now()}`;
+  const stuckRef = generateB2CReference();
+
+  // 1. Initial reservation
+  const stuckInit = await reservePayoutIdempotency({
+    offlineId: stuckOfflineId,
+    reference: stuckRef,
+    farmerName: 'Mama Jane',
+    phoneNumber: '254711223344',
+    amountKes: 5000,
+  });
+  assert.strictEqual(stuckInit.action, 'PROCEED');
+
+  // 2. Submit to Daraja -> marked PENDING
+  await updatePayoutDarajaSubmission(stuckRef, {
+    conversationId: 'AG_STUCK_111',
+    originatorConversationId: 'ORIG_STUCK_111',
+    responseCode: '0',
+    responseDescription: 'Accept the service request successfully.',
+  });
+
+  // Verify recent pending blocks retries
+  const freshRetry = await reservePayoutIdempotency({
+    offlineId: stuckOfflineId,
+    reference: generateB2CReference(),
+    farmerName: 'Mama Jane',
+    phoneNumber: '254711223344',
+    amountKes: 5000,
+  });
+  assert.strictEqual(freshRetry.action, 'SKIP_PENDING');
+
+  // 3. Simulate stuck pending lease: updatedAt set to 15 minutes ago (> 10m threshold)
+  const stuckDoc = await findPayoutByOfflineId(stuckOfflineId);
+  assert.ok(stuckDoc);
+  if (stuckDoc) {
+    stuckDoc.updatedAt = new Date(Date.now() - 15 * 60 * 1000);
+  }
+
+  // 4. Farmer retries now that the upstream network dropped the callback
+  const recoveredLease = await reservePayoutIdempotency({
+    offlineId: stuckOfflineId,
+    reference: generateB2CReference(),
+    farmerName: 'Mama Jane',
+    phoneNumber: '254711223344',
+    amountKes: 5000,
+  });
+  assert.strictEqual(recoveredLease.action, 'PROCEED', 'Stuck PENDING lease must be recovered for retry');
+  assert.strictEqual(recoveredLease.isNew, true);
+  console.log('  ✔ Stuck PENDING lease automatically recovered after upstream timeout\n');
+
+  // --------------------------------------------------------------------------
+  // SECTION 7: Daraja 2.0 OAuth Anti-Stampede & Webhook Resilience
+  // --------------------------------------------------------------------------
+  console.log('▶ [TEST GROUP 7] Daraja 2.0 OAuth Anti-Stampede & Webhook Callback Resilience');
+
+  // Test 7.1: Concurrent OAuth token requests do not stampede
+  clearDarajaTokenCache();
+  process.env.DARAJA_SIMULATION = 'true';
+
+  const concurrentAuth = await Promise.all([
+    getDarajaAccessToken(),
+    getDarajaAccessToken(),
+    getDarajaAccessToken(),
+    getDarajaAccessToken(),
+    getDarajaAccessToken(),
+  ]);
+
+  const firstToken = concurrentAuth[0];
+  assert.ok(firstToken.startsWith('simulated_daraja_b2c_token'));
+  for (const t of concurrentAuth) {
+    assert.strictEqual(t, firstToken, 'All concurrent token callers must share the exact same access token');
+  }
+  console.log('  ✔ Concurrent token requests safely share in-flight promise (zero stampede)');
+
+  // Test 7.2: Webhook callback strict Zod validation
+  const validCallbackPayload = {
+    Result: {
+      ResultType: 0,
+      ResultCode: 0,
+      ResultDesc: 'The service request is processed successfully.',
+      OriginatorConversationID: 'ORIG_CONV_9999',
+      ConversationID: 'CONV_8888',
+      TransactionID: 'QJ89XZ3411',
+      ResultParameters: {
+        ResultParameter: [
+          { Key: 'TransactionAmount', Value: 3500 },
+          { Key: 'TransactionReceipt', Value: 'QJ89XZ3411' },
+          { Key: 'ReceiverPartyPublicName', Value: '254712345678 - Peter' },
+        ],
+      },
+    },
+  };
+  const validCallbackResult = darajaCallbackSchema.safeParse(validCallbackPayload);
+  assert.strictEqual(validCallbackResult.success, true);
+  console.log('  ✔ Safaricom Daraja webhook callback strictly validates valid schema');
+
+  // Test 7.3: Webhook callback rejects malformed payloads (missing ConversationID)
+  const invalidCallbackPayload = {
+    Result: {
+      ResultCode: 0,
+      ResultDesc: 'Missing IDs',
+      // Missing OriginatorConversationID and ConversationID
+    },
+  };
+  const invalidCallbackResult = darajaCallbackSchema.safeParse(invalidCallbackPayload);
+  assert.strictEqual(invalidCallbackResult.success, false);
+  console.log('  ✔ Malformed webhook callback is strictly rejected by Zod schema\n');
 
   console.log('=================================================================');
   console.log('🎉 ALL BACKEND API SECURITY & ARCHITECTURAL TESTS PASSED (100%)');

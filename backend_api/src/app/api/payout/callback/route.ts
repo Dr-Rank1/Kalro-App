@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { DarajaB2CCallbackPayload } from '@/lib/types/daraja';
-import { recordDarajaCallback } from '@/lib/db/ledger';
+import { recordDarajaCallback } from '@/lib/idempotency';
 import { withErrorHandler } from '@/lib/middleware/errorHandler';
 import { BadRequestError } from '@/lib/errors/AppError';
+import { darajaCallbackSchema } from '@/lib/validation';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,24 +10,33 @@ export const dynamic = 'force-dynamic';
  * POST /api/payout/callback
  * Safaricom Daraja B2C Webhook Callback Endpoint
  *
- * Receives asynchronous transaction results from Safaricom M-PESA B2C engine,
- * verifies the transaction status (ResultCode === 0), and updates the MongoDB Atlas ledger.
+ * Receives asynchronous transaction results from Safaricom M-PESA B2C engine:
+ * 1. Validates callback payload structure strictly via Zod (darajaCallbackSchema).
+ * 2. Extracts TransactionReceipt (e.g., QJ89XZ3411) from ResultParameters or TransactionID.
+ * 3. Idempotently transitions the MongoDB ledger record from PENDING to COMPLETED (ResultCode === 0)
+ *    or FAILED (ResultCode !== 0).
+ * 4. Returns standard Safaricom Daraja acknowledgment response.
  */
 export const POST = withErrorHandler(async (request: NextRequest): Promise<NextResponse> => {
   const isTimeout = request.nextUrl.searchParams.get('timeout') === 'true';
 
-  let payload: DarajaB2CCallbackPayload;
+  let rawBody: unknown;
   try {
-    payload = (await request.json()) as DarajaB2CCallbackPayload;
+    rawBody = await request.json();
   } catch {
     throw new BadRequestError('Invalid JSON callback payload from Safaricom webhook.');
   }
 
-  if (!payload?.Result) {
-    throw new BadRequestError('Webhook payload missing Result root attribute.');
+  // 1. Strict Zod validation of Safaricom Daraja Webhook Payload
+  const parseResult = darajaCallbackSchema.safeParse(rawBody);
+  if (!parseResult.success) {
+    throw new BadRequestError(
+      'Malformed Safaricom Daraja webhook callback payload structure.',
+      parseResult.error.issues
+    );
   }
 
-  const { Result } = payload;
+  const { Result } = parseResult.data;
   const {
     ResultCode,
     ResultDesc,
@@ -39,25 +48,26 @@ export const POST = withErrorHandler(async (request: NextRequest): Promise<NextR
   console.log(
     `[Daraja Callback] Webhook received: ConversationID=${ConversationID}, ` +
       `OriginatorConversationID=${OriginatorConversationID}, ` +
-      `ResultCode=${ResultCode} (${ResultDesc}), Receipt=${TransactionID}, Timeout=${isTimeout}`
+      `ResultCode=${ResultCode} (${ResultDesc}), Receipt=${TransactionID || 'N/A'}, Timeout=${isTimeout}`
   );
 
-  // Update MongoDB Atlas ledger with transaction result
-  const updatedLedgerDoc = await recordDarajaCallback(Result);
+  // 2. Idempotently update MongoDB Atlas ledger record
+  const updatedLedgerDoc = await recordDarajaCallback(Result as any);
 
   if (!updatedLedgerDoc) {
     console.warn(
       `[Daraja Callback] No matching ledger record found for ` +
-        `OriginatorConversationID="${OriginatorConversationID}" or ConversationID="${ConversationID}"`
+        `OriginatorConversationID="${OriginatorConversationID}" or ConversationID="${ConversationID}". ` +
+        `Callback may be for external or expired transaction.`
     );
   } else {
     console.log(
       `[Daraja Callback] Ledger updated successfully for reference="${updatedLedgerDoc.reference}" ` +
-        `to status="${updatedLedgerDoc.status}"`
+        `to status="${updatedLedgerDoc.status}" with receipt="${updatedLedgerDoc.callback?.transactionId || 'N/A'}"`
     );
   }
 
-  // Safaricom Daraja expects standard acknowledgment format
+  // 3. Safaricom Daraja acknowledgment response
   return NextResponse.json(
     {
       ResultCode: 0,
