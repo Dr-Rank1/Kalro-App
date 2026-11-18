@@ -325,24 +325,24 @@ export const StationAgronomyView = ({
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3">
           <div>
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#15803D]" />
-              <h1 className="text-lg font-bold text-slate-900 tracking-tight">Station & Agronomy Hub</h1>
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-700" />
+              <h1 className="text-lg font-bold text-slate-900 tracking-tight">Station &amp; Agronomy Hub</h1>
               <span className="station-badge station-badge-success">
                 KALRO NSRC Thika
               </span>
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              National Sericulture Research Centre · Mulberry & Castor Genebank, Quality Grading, 4-Stage Drying & M-Pesa Disbursements
+              National Sericulture Research Centre · Mulberry &amp; Castor Genebank, Quality Grading, 4-Stage Drying &amp; M-Pesa Disbursements
             </p>
           </div>
           <div className="flex items-center gap-2 text-xs text-slate-600 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
-            <Building2 size={13} className="text-[#15803D]" />
+            <Building2 size={13} className="text-emerald-700" />
             <span>Station: <strong className="text-slate-800">{profile?.orgName || 'NSRC Thika Station'}</strong></span>
           </div>
         </div>
 
         {/* Sub-Tabs Navigation */}
-        <div className="station-subtabs-nav">
+        <div className="station-subtabs-nav scrollbar-none pb-1">
           {subTabItems.map((tab) => {
             const Icon = tab.icon;
             const isActive = subTab === tab.key;
@@ -354,7 +354,7 @@ export const StationAgronomyView = ({
                 className={`station-subtab-btn ${isActive ? 'active' : ''}`}
                 aria-current={isActive ? 'page' : undefined}
               >
-                <Icon size={15} />
+                <Icon size={16} className="shrink-0" />
                 <span>{tab.label}</span>
               </button>
             );
@@ -416,9 +416,17 @@ export const StationAgronomyView = ({
                       onClick={() => setSelectedOrchardBlock(blk.code)}
                       className={`station-block-btn ${isSelected ? 'active' : ''}`}
                     >
-                      <span className="station-block-btn-title">{blk.name}</span>
+                      <div className="flex items-center justify-between w-full">
+                        <span className="station-badge station-badge-neutral text-[10px] py-0 px-1.5 font-mono">{blk.code}</span>
+                        <span className="text-[11px] font-semibold text-slate-500">{blk.acreage} ac</span>
+                      </div>
+                      <span className="station-block-btn-title mt-1.5">{blk.name}</span>
                       <span className="station-block-btn-sub">
-                        {blk.category} · {blk.acreage} ac
+                        <span className="flex items-center gap-1 truncate text-slate-600">
+                          <Leaf size={11} className={isSelected ? 'text-emerald-700' : 'text-slate-400'} />
+                          <span>{blk.cultivar}</span>
+                        </span>
+                        {isSelected && <Check size={14} className="text-emerald-700 shrink-0 ml-1" />}
                       </span>
                     </button>
                   );
@@ -432,7 +440,7 @@ export const StationAgronomyView = ({
                   <div className="bg-emerald-50/70 border border-emerald-200 rounded-xl p-4 space-y-2 text-xs">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <Leaf size={14} className="text-[#15803D]" />
+                        <Leaf size={14} className="text-emerald-700" />
                         <span className="font-bold text-slate-900 text-sm">{activeBlk.name}</span>
                       </div>
                       <span className="bg-white px-2.5 py-0.5 rounded border border-emerald-300 font-medium text-emerald-800 text-[11px]">
@@ -465,7 +473,7 @@ export const StationAgronomyView = ({
                         onClick={() => setCultivarTypeFilter(filter)}
                         className={`text-xs px-3 py-1 rounded-md capitalize font-medium transition-all ${
                           cultivarTypeFilter === filter
-                            ? 'bg-[#15803D] text-white shadow-xs'
+                            ? 'bg-emerald-700 text-white shadow-xs'
                             : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                         }`}
                       >
@@ -478,7 +486,7 @@ export const StationAgronomyView = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-80 overflow-y-auto pr-1">
                   {(cultivarTypeFilter === 'all' || cultivarTypeFilter === 'mulberry') &&
                     KENYA_MULBERRY_CULTIVARS.map((m) => (
-                      <div key={m.code} className="border border-slate-200 rounded-lg p-3 bg-white space-y-1.5 text-xs">
+                      <div key={m.code} className="border border-slate-200 rounded-lg p-3 bg-white space-y-1.5 text-xs hover:border-slate-300 transition-all">
                         <div className="flex items-center justify-between">
                           <span className="font-bold text-slate-900 text-sm">{m.name}</span>
                           <span className="station-badge station-badge-success text-[10px]">
@@ -494,7 +502,7 @@ export const StationAgronomyView = ({
 
                   {(cultivarTypeFilter === 'all' || cultivarTypeFilter === 'castor') &&
                     KENYA_CASTOR_VARIETIES.map((c) => (
-                      <div key={c.code} className="border border-slate-200 rounded-lg p-3 bg-white space-y-1.5 text-xs">
+                      <div key={c.code} className="border border-slate-200 rounded-lg p-3 bg-white space-y-1.5 text-xs hover:border-slate-300 transition-all">
                         <div className="flex items-center justify-between">
                           <span className="font-bold text-slate-900 text-sm">{c.name}</span>
                           <span className="station-badge station-badge-warning text-[10px]">
@@ -526,23 +534,33 @@ export const StationAgronomyView = ({
 
               <div className="space-y-3">
                 <div className="station-form-group">
-                  <label className="station-form-label">Plot Size (Acres)</label>
-                  <input
-                    type="number"
-                    step="0.25"
-                    min="0.25"
-                    value={orchardAcreage}
-                    onChange={(e) => setOrchardAcreage(parseFloat(e.target.value) || 0.25)}
-                    className="station-form-input"
-                  />
+                  <label className="station-form-label flex items-center justify-between">
+                    <span>Plot Size</span>
+                    <span className="text-xs text-slate-400 font-normal">Kenyan Acreage Model</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      step="0.25"
+                      min="0.25"
+                      value={orchardAcreage}
+                      onChange={(e) => setOrchardAcreage(parseFloat(e.target.value) || 0.25)}
+                      className="station-form-input pl-3 pr-16 font-bold text-slate-900"
+                    />
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                      <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                        Acres
+                      </span>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="station-form-group">
-                  <label className="station-form-label">Planting Geometry</label>
+                  <label className="station-form-label">Planting Geometry System</label>
                   <select
                     value={spacingModel}
                     onChange={(e) => setSpacingModel(e.target.value as 'standard' | 'paired')}
-                    className="station-form-select"
+                    className="station-form-select font-medium text-slate-800"
                   >
                     <option value="standard">Standard Square (1.5m × 1.5m) · 1,798 bushes/ac</option>
                     <option value="paired">Paired Row System (0.9m × 0.9m) · 4,996 bushes/ac</option>
@@ -550,18 +568,21 @@ export const StationAgronomyView = ({
                 </div>
 
                 {/* Calculation Output Strip */}
-                <div className="station-calc-strip">
-                  <div className="station-calc-item">
-                    <span className="station-calc-label">Total Bushes</span>
-                    <span className="station-calc-val tabular-nums">{bushPopulation.toLocaleString()}</span>
+                <div className="grid grid-cols-3 gap-2.5 bg-emerald-50/60 border border-emerald-200/80 rounded-xl p-3">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800">Total Bushes</span>
+                    <span className="text-base font-extrabold text-emerald-950 tabular-nums">{bushPopulation.toLocaleString()}</span>
+                    <span className="text-[10px] text-emerald-700/80">established</span>
                   </div>
-                  <div className="station-calc-item">
-                    <span className="station-calc-label">Annual Foliage</span>
-                    <span className="station-calc-val tabular-nums">{Math.round(estimatedLeafBiomassKgPerYear).toLocaleString()} kg</span>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800">Annual Foliage</span>
+                    <span className="text-base font-extrabold text-emerald-950 tabular-nums">{Math.round(estimatedLeafBiomassKgPerYear).toLocaleString()}</span>
+                    <span className="text-[10px] text-emerald-700/80">kg / year</span>
                   </div>
-                  <div className="station-calc-item">
-                    <span className="station-calc-label">Box Capacity</span>
-                    <span className="station-calc-val tabular-nums">{silkwormBoxCapacity} boxes/yr</span>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800">Box Capacity</span>
+                    <span className="text-base font-extrabold text-emerald-950 tabular-nums">{silkwormBoxCapacity}</span>
+                    <span className="text-[10px] text-emerald-700/80">boxes / yr</span>
                   </div>
                 </div>
               </div>
@@ -593,7 +614,7 @@ export const StationAgronomyView = ({
                     max="90"
                     value={pruningDaysToHatch}
                     onChange={(e) => setPruningDaysToHatch(parseInt(e.target.value) || 50)}
-                    className="w-full accent-[#15803D] cursor-pointer"
+                    className="w-full accent-emerald-700 cursor-pointer"
                   />
                   <div className="flex justify-between text-[10px] text-slate-400 font-mono">
                     <span>10 Days</span>
@@ -746,7 +767,7 @@ export const StationAgronomyView = ({
                 </div>
                 <div className="flex justify-between pt-1">
                   <span className="text-slate-700 font-bold">Total Batch Payout:</span>
-                  <span className="font-extrabold text-lg text-[#15803D] tabular-nums">
+                  <span className="font-extrabold text-lg text-emerald-700 tabular-nums">
                     KES {totalPayoutValue.toLocaleString()}
                   </span>
                 </div>
@@ -798,7 +819,7 @@ export const StationAgronomyView = ({
                       key={st.step}
                       className={`p-3 rounded-xl border text-center transition-all ${
                         isCurrent
-                          ? 'border-[#15803D] bg-emerald-50 text-emerald-950 font-bold shadow-xs'
+                          ? 'border-emerald-700 bg-emerald-50 text-emerald-950 font-bold shadow-xs'
                           : 'border-slate-200 bg-slate-50 text-slate-700'
                       }`}
                     >
@@ -883,7 +904,7 @@ export const StationAgronomyView = ({
 
               <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 space-y-1">
                 <span className="text-slate-600 text-[11px] font-medium">Target Dry Cocoon Weight (40%):</span>
-                <div className="text-2xl font-extrabold text-[#15803D] tabular-nums">
+                <div className="text-2xl font-extrabold text-emerald-700 tabular-nums">
                   {(freshCocoonWeightKg * 0.4).toFixed(1)} kg
                 </div>
                 <span className="text-[10px] text-slate-500">
@@ -930,7 +951,7 @@ export const StationAgronomyView = ({
                     {dryingHistory.map((h, i) => (
                       <div key={i} className="p-2 bg-slate-50 rounded-lg border border-slate-200 flex justify-between items-center">
                         <span className="font-medium text-slate-800">{h.step} ({h.temp})</span>
-                        <span className="text-[#15803D] font-bold">{h.dryKg} kg dry</span>
+                        <span className="text-emerald-700 font-bold">{h.dryKg} kg dry</span>
                       </div>
                     ))}
                   </div>
@@ -995,7 +1016,7 @@ export const StationAgronomyView = ({
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
                 <div className="bg-emerald-50/70 border border-emerald-200 rounded-xl p-3.5 space-y-1">
                   <span className="text-slate-600 font-medium text-[11px]">Required Floor Area:</span>
-                  <div className="text-2xl font-extrabold text-[#15803D] tabular-nums">
+                  <div className="text-2xl font-extrabold text-emerald-700 tabular-nums">
                     {requiredBedAreaSqMeters.toFixed(1)} m²
                   </div>
                   <span className="text-[10px] text-slate-500 font-mono">
@@ -1047,7 +1068,7 @@ export const StationAgronomyView = ({
                 </div>
                 <div className="flex justify-between pt-2 border-t border-slate-200">
                   <span className="text-slate-800 font-bold">Total Slaked Lime Powder:</span>
-                  <span className="font-extrabold text-[#15803D] text-base tabular-nums">
+                  <span className="font-extrabold text-emerald-700 text-base tabular-nums">
                     {slakedLimeGrams >= 1000 ? `${(slakedLimeGrams / 1000).toFixed(2)} kg` : `${slakedLimeGrams} grams`}
                   </span>
                 </div>
@@ -1130,7 +1151,7 @@ export const StationAgronomyView = ({
                         <span className="station-badge station-badge-neutral text-[10px]">Pest</span>
                       </div>
                       <p className="text-slate-600 text-[11px]">{p.danger}</p>
-                      <div className="text-[11px] text-[#15803D] font-medium">Control: {p.control}</div>
+                      <div className="text-[11px] text-emerald-700 font-medium">Control: {p.control}</div>
                     </div>
                   ))}
                 </div>
@@ -1163,7 +1184,7 @@ export const StationAgronomyView = ({
               <div className="space-y-3">
                 <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-1">
                   <span className="text-slate-700 font-bold block">2% Formalin Spray:</span>
-                  <div className="text-xl font-extrabold text-[#15803D] tabular-nums">
+                  <div className="text-xl font-extrabold text-emerald-700 tabular-nums">
                     {formalin2PercentMl >= 1000 ? `${(formalin2PercentMl / 1000).toFixed(1)} L` : `${formalin2PercentMl} mL`} Formalin
                   </div>
                   <span className="text-[10px] text-slate-500">
@@ -1240,7 +1261,7 @@ export const StationAgronomyView = ({
                     type="number"
                     value={payoutRatePerKg}
                     onChange={(e) => setPayoutRatePerKg(parseFloat(e.target.value) || 0)}
-                    className="station-form-input font-bold text-[#15803D]"
+                    className="station-form-input font-bold text-emerald-700"
                   />
                 </div>
               </div>
@@ -1248,7 +1269,7 @@ export const StationAgronomyView = ({
               <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between flex-wrap gap-3">
                 <div>
                   <span className="text-xs text-slate-600 font-medium block">Total M-Pesa Disbursement</span>
-                  <span className="text-2xl font-extrabold text-[#15803D] tabular-nums">
+                  <span className="text-2xl font-extrabold text-emerald-700 tabular-nums">
                     KES {(grossCocoonKg * payoutRatePerKg).toLocaleString()}
                   </span>
                 </div>
@@ -1472,7 +1493,7 @@ export const StationAgronomyView = ({
                   onClick={() => setSelectedAudioLang(lang.code as typeof selectedAudioLang)}
                   className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${
                     selectedAudioLang === lang.code
-                      ? 'bg-[#15803D] text-white border-[#15803D] shadow-xs'
+                      ? 'bg-emerald-700 text-white border-emerald-700 shadow-xs'
                       : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                   }`}
                 >

@@ -14,6 +14,12 @@ import {
   ArrowRight,
   History,
   Layers,
+  Activity,
+  Package,
+  CheckCircle2,
+  TrendingUp,
+  Sparkles,
+  HeartCrack,
 } from 'lucide-react';
 import {
   Batch,
@@ -262,11 +268,20 @@ export const TodayView: React.FC<TodayViewProps> = ({
   }
 
   return (
-    <div>
+    <div className="space-y-5">
       {/* 1. Executive Operations Command Card (Consolidated Command Center) */}
-      <div className="ops-command-card">
+      <div className="ops-command-card border-t-4 border-t-emerald-600 shadow-sm">
         <div className="ops-command-main">
           <div className="ops-command-title-group">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="flex h-2.5 w-2.5 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-600"></span>
+              </span>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-800">
+                Live Operations Console · NSRC Thika
+              </span>
+            </div>
             <h2>Rearing House Operations</h2>
             <div className="ops-command-meta">
               <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-main)' }}>{formattedDate}</span>
@@ -291,32 +306,34 @@ export const TodayView: React.FC<TodayViewProps> = ({
           <div className="ops-command-actions">
             <button
               onClick={() => onOpenQuickLog(undefined, 'feed')}
-              className="btn-accent min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 18px', fontSize: '0.85rem' }}
+              className="btn-accent min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-emerald-600 font-bold shadow-xs hover:shadow-md transition-all"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 20px', fontSize: '0.88rem' }}
             >
               <Plus size={16} />
               Log Feeding
             </button>
             <button
               onClick={() => onOpenQuickLog(undefined, 'mortality')}
-              className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
-              style={{ padding: '10px 16px', fontSize: '0.85rem' }}
+              className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-emerald-600 font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-all"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '10px 16px', fontSize: '0.85rem' }}
             >
+              <HeartCrack size={15} className="text-rose-600" />
               Record Loss
             </button>
             <button
               onClick={() => onOpenQuickLog(undefined, 'climate')}
-              className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+              className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-emerald-600 font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-all"
               style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '10px 16px', fontSize: '0.85rem' }}
             >
-              <Thermometer size={15} />
+              <Thermometer size={15} className="text-emerald-700" />
               House Climate
             </button>
             <button
               onClick={() => onOpenQuickLog(undefined, 'harvest')}
-              className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
-              style={{ padding: '10px 16px', fontSize: '0.85rem' }}
+              className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-emerald-600 font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-all"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '10px 16px', fontSize: '0.85rem' }}
             >
+              <Layers size={15} className="text-amber-600" />
               Log Harvest
             </button>
           </div>
@@ -327,8 +344,8 @@ export const TodayView: React.FC<TodayViewProps> = ({
           <div className="flex items-center gap-3 flex-wrap">
             <div
               style={{
-                width: '32px',
-                height: '32px',
+                width: '34px',
+                height: '34px',
                 borderRadius: '50%',
                 backgroundColor: currentUser?.avatarColor || '#15803D',
                 color: '#ffffff',
@@ -336,8 +353,9 @@ export const TodayView: React.FC<TodayViewProps> = ({
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontWeight: 700,
-                fontSize: '0.78rem',
+                fontSize: '0.82rem',
                 flexShrink: 0,
+                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
               }}
             >
               {currentUser?.avatarInitials || 'SO'}
@@ -345,12 +363,12 @@ export const TodayView: React.FC<TodayViewProps> = ({
             <div className="flex items-center gap-2 flex-wrap text-xs">
               <span className="font-bold text-slate-900">{currentUser?.username || 'Station Operator'}</span>
               {currentUser?.staffId && (
-                <span className="font-mono text-[11px] px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-slate-600 font-semibold">
+                <span className="font-mono text-[11px] px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-slate-700 font-semibold">
                   {currentUser.staffId}
                 </span>
               )}
               <span className="text-slate-300">•</span>
-              <span className="font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 text-[11px]">
+              <span className="font-semibold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded border border-emerald-200 text-[11px]">
                 {roleMeta?.label || 'Sericulture Specialist'}
               </span>
               <span className="text-slate-400 text-[11px] hidden sm:inline">
@@ -366,7 +384,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
                 <select
                   value={currentUser?.id || ''}
                   onChange={(e) => onSwitchUser(e.target.value)}
-                  className="station-form-select text-xs py-1.5 px-2.5 h-9 w-auto min-w-[130px]"
+                  className="station-form-select text-xs py-1.5 px-2.5 h-9 w-auto min-w-[140px] font-medium"
                   title="Switch active sericulture operator on duty"
                 >
                   {allUsers.map((u) => (
@@ -381,10 +399,10 @@ export const TodayView: React.FC<TodayViewProps> = ({
             <button
               type="button"
               onClick={() => onSelectTab('audit')}
-              className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 transition-all flex items-center gap-1.5 min-h-[36px]"
+              className="px-3.5 py-1.5 text-xs font-semibold rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 transition-all flex items-center gap-1.5 min-h-[38px] shadow-2xs"
               title="View complete chronological audit trail of all staff operations"
             >
-              <History size={13} className="text-[#15803D]" />
+              <History size={13} className="text-emerald-700" />
               <span>Audit Ledger ({auditLogs?.length || 0})</span>
               <ArrowRight size={12} className="text-slate-400" />
             </button>
@@ -421,7 +439,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
                 <Building2 size={20} />
               </div>
               <div>
-                <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700, color: '#FDE68A' }}>
+                <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700, color: '#0F172A' }}>
                   Set Up Your Farm Profile
                 </h4>
                 <p style={{ margin: '4px 0 0', fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>
@@ -433,7 +451,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
               <button
                 type="button"
                 onClick={onOpenCreateProfile}
-                className="btn-accent min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                className="btn-accent min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-emerald-600"
                 style={{ padding: '12px 20px', fontSize: '0.85rem', whiteSpace: 'nowrap' }}
               >
                 + Set Up Profile
@@ -443,10 +461,15 @@ export const TodayView: React.FC<TodayViewProps> = ({
         </div>
       )}
 
-      {/* 2. Key Operational Metrics Strip (Single seamless horizontal glass card with silk dividers) */}
+      {/* 2. Key Operational Metrics Strip (Elevated Telemetry Grid) */}
       <div className="operational-metric-strip">
         <div className="metric-col">
-          <span className="metric-label">Live Silkworms</span>
+          <div className="flex items-center justify-between mb-1">
+            <span className="metric-label">Live Silkworms</span>
+            <div className="w-7 h-7 rounded-lg bg-emerald-50 border border-emerald-200/60 flex items-center justify-center text-emerald-700">
+              <Activity size={15} />
+            </div>
+          </div>
           <span className="metric-number tabular-nums">{totalLiveLarvae.toLocaleString()}</span>
           <span className="metric-sub">
             <span className="badge-soft badge-soft-success">
@@ -456,7 +479,12 @@ export const TodayView: React.FC<TodayViewProps> = ({
         </div>
 
         <div className="metric-col">
-          <span className="metric-label">Feed Dispatched</span>
+          <div className="flex items-center justify-between mb-1">
+            <span className="metric-label">Feed Dispatched</span>
+            <div className="w-7 h-7 rounded-lg bg-emerald-50 border border-emerald-200/60 flex items-center justify-center text-emerald-700">
+              <Leaf size={15} />
+            </div>
+          </div>
           <span className="metric-number tabular-nums">{feedTodayKg.toFixed(1)} kg</span>
           <span className="metric-sub">
             {feedTargetKg > 0 ? (
@@ -470,7 +498,16 @@ export const TodayView: React.FC<TodayViewProps> = ({
         </div>
 
         <div className="metric-col">
-          <span className="metric-label">Forage Runway</span>
+          <div className="flex items-center justify-between mb-1">
+            <span className="metric-label">Forage Runway</span>
+            <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${
+              leafCoverage.urgency === 'critical'
+                ? 'bg-rose-50 border border-rose-200 text-rose-700'
+                : 'bg-amber-50 border border-amber-200 text-amber-700'
+            }`}>
+              <Package size={15} />
+            </div>
+          </div>
           <span className="metric-number tabular-nums">
             {activeBatches.length > 0 ? `${leafCoverage.daysOfCover} Days` : '--'}
           </span>
@@ -479,7 +516,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
               <span
                 className={`badge-soft ${
                   leafCoverage.urgency === 'critical'
-                    ? 'badge-soft-danger'
+                    ? 'badge-soft-danger font-bold'
                     : leafCoverage.urgency === 'warning'
                     ? 'badge-soft-warning'
                     : 'badge-soft-success'
@@ -494,7 +531,12 @@ export const TodayView: React.FC<TodayViewProps> = ({
         </div>
 
         <div className="metric-col">
-          <span className="metric-label">Average Survival</span>
+          <div className="flex items-center justify-between mb-1">
+            <span className="metric-label">Average Survival</span>
+            <div className="w-7 h-7 rounded-lg bg-teal-50 border border-teal-200/60 flex items-center justify-center text-teal-700">
+              <TrendingUp size={15} />
+            </div>
+          </div>
           <span className="metric-number tabular-nums">
             {totalOriginalEggs > 0 ? `${avgSurvival.toFixed(1)}%` : '--'}
           </span>
@@ -510,7 +552,12 @@ export const TodayView: React.FC<TodayViewProps> = ({
         </div>
 
         <div className="metric-col">
-          <span className="metric-label">Chamber Climate</span>
+          <div className="flex items-center justify-between mb-1">
+            <span className="metric-label">Chamber Climate</span>
+            <div className="w-7 h-7 rounded-lg bg-sky-50 border border-sky-200/60 flex items-center justify-center text-sky-700">
+              <Thermometer size={15} />
+            </div>
+          </div>
           <span className="metric-number tabular-nums">
             {latestEnv
               ? `${latestEnv.temperatureCelsius.toFixed(1)}°C`
@@ -564,7 +611,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
                 <button
                   type="button"
                   onClick={onOpenAddLeaf}
-                  className="btn-accent min-h-[40px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+                  className="btn-accent min-h-[40px] focus-visible:ring-2 focus-visible:ring-emerald-600 shadow-xs"
                   style={{ fontSize: '0.78rem', padding: '8px 14px', whiteSpace: 'nowrap' }}
                 >
                   + Record Leaf Harvest
@@ -586,7 +633,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
           </div>
           <button
             onClick={() => onSelectTab('batches')}
-            className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+            className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-emerald-600 font-semibold"
             style={{ fontSize: '0.85rem', padding: '12px 20px' }}
           >
             Manage All Batches
@@ -598,7 +645,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
           <div className="batch-filter-bar">
             <button
               type="button"
-              className={`batch-filter-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A] ${batchFilter === 'all' ? 'active' : ''}`}
+              className={`batch-filter-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-emerald-600 ${batchFilter === 'all' ? 'active' : ''}`}
               onClick={() => setBatchFilter('all')}
             >
               <span>All Active</span>
@@ -606,7 +653,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
             </button>
             <button
               type="button"
-              className={`batch-filter-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A] ${batchFilter === 'due' ? 'active' : ''}`}
+              className={`batch-filter-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-emerald-600 ${batchFilter === 'due' ? 'active' : ''}`}
               onClick={() => setBatchFilter('due')}
             >
               <span>Feeding Due</span>
@@ -614,7 +661,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
             </button>
             <button
               type="button"
-              className={`batch-filter-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A] ${batchFilter === 'moult' ? 'active' : ''}`}
+              className={`batch-filter-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-emerald-600 ${batchFilter === 'moult' ? 'active' : ''}`}
               onClick={() => setBatchFilter('moult')}
             >
               <span>In Moult</span>
@@ -623,7 +670,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
             {spinningBatches.length > 0 && (
               <button
                 type="button"
-                className={`batch-filter-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A] ${batchFilter === 'spinning' ? 'active' : ''}`}
+                className={`batch-filter-btn min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-emerald-600 ${batchFilter === 'spinning' ? 'active' : ''}`}
                 onClick={() => setBatchFilter('spinning')}
               >
                 <span>Spinning</span>
@@ -679,7 +726,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
                   onSelectTab('batches');
                 }
               }}
-              className="btn-accent min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+              className="btn-accent min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-emerald-600"
               style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.88rem', padding: '12px 24px' }}
             >
               <Plus size={16} />
@@ -694,7 +741,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
             <button
               type="button"
               onClick={() => setBatchFilter('all')}
-              className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-[#16A34A]"
+              className="btn-secondary min-h-[48px] min-w-[48px] focus-visible:ring-2 focus-visible:ring-emerald-600"
               style={{ marginTop: '16px', fontSize: '0.85rem', padding: '12px 24px' }}
             >
               Reset Filter
@@ -742,7 +789,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
                           {stage.name}
                         </span>
                       </div>
-                      <span className="text-[11px] font-semibold text-slate-600 bg-slate-100 border border-slate-200 px-2.5 py-0.5 rounded-md">
+                      <span className="text-[11px] font-semibold text-slate-700 bg-slate-100 border border-slate-200 px-2.5 py-0.5 rounded-md">
                         {b.roomName || 'House 1'}
                       </span>
                     </div>
@@ -756,14 +803,55 @@ export const TodayView: React.FC<TodayViewProps> = ({
                       </p>
                     </div>
 
-                    <div className="progress-bar-bg mb-3">
-                      <div className="progress-bar-fill" style={{ width: `${progressPct}%` }} />
+                    {/* Visual 5-Instar + 4-Moult Roadmap */}
+                    <div className="py-3 px-6 bg-slate-50 border border-slate-200/90 rounded-xl mb-3 overflow-x-auto scrollbar-none">
+                      <div className="flex items-center justify-between w-full min-w-[620px] relative px-6">
+                        <div className="absolute left-8 right-8 top-1/2 -translate-y-1/2 h-1 bg-slate-200 rounded-full z-0" />
+                        {[
+                          { num: 1, label: 'Instar I', isMoult: false },
+                          { num: 1, label: 'M1', isMoult: true },
+                          { num: 2, label: 'Instar II', isMoult: false },
+                          { num: 2, label: 'M2', isMoult: true },
+                          { num: 3, label: 'Instar III', isMoult: false },
+                          { num: 3, label: 'M3', isMoult: true },
+                          { num: 4, label: 'Instar IV', isMoult: false },
+                          { num: 4, label: 'M4', isMoult: true },
+                          { num: 5, label: 'Instar V', isMoult: false },
+                          { num: 6, label: 'Spinning', isMoult: false, isHarvest: true },
+                        ].map((st, i) => {
+                          const currentInstar = stage.instarNumber || 1;
+                          const isDone = !st.isHarvest && (st.num < currentInstar || (st.num === currentInstar && !stage.isMoult && st.isMoult));
+                          const isCurrent = (stage.isHarvest && st.isHarvest) || (!stage.isHarvest && st.num === currentInstar && Boolean(st.isMoult) === Boolean(stage.isMoult));
+                          return (
+                            <div key={i} className="relative z-10 flex flex-col items-center gap-1 min-w-[48px]">
+                              <div
+                                className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border-2 transition-all ${
+                                  isDone
+                                    ? 'bg-emerald-700 text-white border-emerald-700 shadow-2xs'
+                                    : isCurrent
+                                    ? 'bg-white text-emerald-800 border-emerald-600 ring-4 ring-emerald-100 font-extrabold scale-110'
+                                    : 'bg-white text-slate-400 border-slate-300'
+                                }`}
+                              >
+                                {isDone ? '✓' : st.isMoult ? 'M' : st.num === 6 ? '★' : st.num}
+                              </div>
+                              <span
+                                className={`text-[10px] font-semibold whitespace-nowrap ${
+                                  isCurrent ? 'text-emerald-900 font-bold' : isDone ? 'text-slate-700' : 'text-slate-400'
+                                }`}
+                              >
+                                {st.label}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
 
                     {/* Unified Rearing Protocol & Forage Guidance */}
                     <div className="bg-emerald-50/70 border border-emerald-200/80 rounded-xl p-3.5 space-y-2 text-xs mb-3">
                       <div className="flex items-start gap-2.5">
-                        <Leaf size={15} className="text-[#15803D] shrink-0 mt-0.5" />
+                        <Leaf size={15} className="text-emerald-700 shrink-0 mt-0.5" />
                         <div className="flex-1 space-y-1">
                           <div className="flex items-center justify-between flex-wrap gap-2">
                             <span className="font-bold text-emerald-950 text-xs">
@@ -833,15 +921,15 @@ export const TodayView: React.FC<TodayViewProps> = ({
 
                       return (
                         <div className="flex items-center gap-2 text-xs text-slate-600 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 mb-3">
-                          <Clock size={13} className="text-[#15803D] shrink-0" />
+                          <Clock size={13} className="text-emerald-700 shrink-0" />
                           <span className="truncate flex-1">
                             {latestBatchLog ? (
                               <>
-                                <strong className="text-slate-900">{latestBatchLog.title}:</strong> {latestBatchLog.details} · <span className="text-[#15803D] font-semibold">{latestBatchLog.operatorName}</span> ({new Date(latestBatchLog.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})
+                                <strong className="text-slate-900">{latestBatchLog.title}:</strong> {latestBatchLog.details} · <span className="text-emerald-700 font-semibold">{latestBatchLog.operatorName}</span> ({new Date(latestBatchLog.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})
                               </>
                             ) : latestBatchFeed ? (
                               <>
-                                <strong className="text-slate-900">Last Feed:</strong> {(latestBatchFeed.quantityGrams / 1000).toFixed(1)} kg {latestBatchFeed.cultivar || latestBatchFeed.leafType} by <span className="text-[#15803D] font-semibold">{latestBatchFeed.operatorName || 'Staff'}</span> at {new Date(latestBatchFeed.recordedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                <strong className="text-slate-900">Last Feed:</strong> {(latestBatchFeed.quantityGrams / 1000).toFixed(1)} kg {latestBatchFeed.cultivar || latestBatchFeed.leafType} by <span className="text-emerald-700 font-semibold">{latestBatchFeed.operatorName || 'Staff'}</span> at {new Date(latestBatchFeed.recordedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                               </>
                             ) : (
                               <span>Pending first operational log for this shift</span>
@@ -856,31 +944,31 @@ export const TodayView: React.FC<TodayViewProps> = ({
                       <button
                         type="button"
                         onClick={() => onOpenQuickLog(b.id, 'feed')}
-                        className="btn-accent min-h-[48px] flex-1 min-w-[110px] text-xs font-semibold px-4 py-2.5"
+                        className="btn-accent min-h-[48px] flex-1 min-w-[110px] text-xs font-bold px-4 py-2.5 shadow-xs"
                       >
                         + Log Feed
                       </button>
                       <button
                         type="button"
                         onClick={() => onOpenQuickLog(b.id, 'mortality')}
-                        className="btn-secondary min-h-[48px] flex-1 min-w-[110px] text-xs font-semibold px-4 py-2.5"
+                        className="btn-secondary min-h-[48px] flex-1 min-w-[110px] text-xs font-semibold px-4 py-2.5 text-slate-700 hover:text-slate-900"
                       >
                         Record Loss
                       </button>
                       <button
                         type="button"
                         onClick={() => onOpenQuickLog(b.id, 'climate')}
-                        className="btn-secondary min-h-[48px] text-xs font-semibold px-4 py-2.5 flex items-center gap-1.5"
+                        className="btn-secondary min-h-[48px] text-xs font-semibold px-4 py-2.5 flex items-center gap-1.5 text-slate-700 hover:text-slate-900"
                         title="Record chamber microclimate"
                       >
-                        <Thermometer size={14} className="text-[#15803D]" />
+                        <Thermometer size={14} className="text-emerald-700" />
                         <span>Climate</span>
                       </button>
                       {onExportBatchPdf && (
                         <button
                           type="button"
                           onClick={() => onExportBatchPdf(b)}
-                          className="btn-secondary min-h-[48px] text-xs font-semibold px-3 py-2.5 flex items-center gap-1"
+                          className="btn-secondary min-h-[48px] text-xs font-semibold px-3.5 py-2.5 flex items-center gap-1 text-slate-700 hover:text-slate-900"
                           title="Download verified PDF report for this batch"
                           aria-label={`Export PDF dossier for batch ${b.batchTag || b.id}`}
                         >
@@ -895,7 +983,7 @@ export const TodayView: React.FC<TodayViewProps> = ({
                       <button
                         type="button"
                         onClick={() => onSelectTab('batches')}
-                        className="text-[#15803D] hover:text-emerald-800 font-semibold px-2.5 py-1.5 rounded-lg hover:bg-emerald-50 transition-all flex items-center gap-1 min-h-[36px]"
+                        className="text-emerald-700 hover:text-emerald-800 font-semibold px-2.5 py-1.5 rounded-lg hover:bg-emerald-50 transition-all flex items-center gap-1 min-h-[36px]"
                       >
                         <span>Lot Dossier &amp; Trays</span>
                         <ArrowRight size={13} />
